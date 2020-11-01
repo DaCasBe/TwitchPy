@@ -1,8 +1,8 @@
 import requests
-from user import User
-from game import Game
-from stream import Stream
-from channel import Channel
+from twitchpy.user import User
+from twitchpy.game import Game
+from twitchpy.stream import Stream
+from twitchpy.channel import Channel
 
 class Client:
     """
