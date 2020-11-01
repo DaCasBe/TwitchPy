@@ -5,6 +5,7 @@ class User:
 
     def __init__(self,id,login,display_name,type,broadcaster_type,description,profile_image_url,offline_image_url,view_count):
         """
+        Parameters:
         id (int) -- User's ID
         login (str) -- User's login
         display_name (str) -- User's name
