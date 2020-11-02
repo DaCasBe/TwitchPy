@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="twitchpy",
+    name="TwitchPy",
     version="0.1",
     description="This is a package you can use to connect with the Twitch API, manage a channel, create bots, etc",
     author="DaCasBe",
