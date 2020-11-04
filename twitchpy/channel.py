@@ -145,13 +145,17 @@ class Channel():
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            stream=response["data"][0]
-            stream=(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"],)
+        try:
+            if len(response["data"])>0:
+                stream=response["data"][0]
+                stream=(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"],)
 
-            return stream
+                return stream
 
-        else:
+            else:
+                return None
+        
+        except KeyError:
             return None
 
     def host(self,username):

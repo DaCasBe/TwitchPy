@@ -25,7 +25,6 @@ class Bot:
         self.__irc_port=6697
         self.__client=Client(oauth_token,client_id,client_secret)
         self.__oauth_token=oauth_token
-        self.__access_token=self.__client.get_access_token()
         self.username=username
         self.channels=[]
 

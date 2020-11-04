@@ -74,10 +74,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            return response["data"][0]["followed_at"]
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]["followed_at"]
 
-        else:
+            else:
+                return None
+        
+        except KeyError:
             return None
 
     def get_followers(self,user_id):
@@ -88,7 +92,8 @@ class Client:
         user_id (int) -- User's ID
 
         Return:
-        list[User]
+        list[User] -- Si se puede acceder a los datos
+        None -- Si no se puede acceder a los datos
         """
 
         url=f"https://api.twitch.tv/helix/users/follows"
@@ -99,11 +104,15 @@ class Client:
 
         followers=[]
 
-        for follower in response["data"]:
-            user=self.get_user_by_id(follower["from_id"])
-            followers.append({"follower":user,"followed_at":follower["followed_at"]})
+        try:
+            for follower in response["data"]:
+                user=self.get_user_by_id(follower["from_id"])
+                followers.append({"follower":user,"followed_at":follower["followed_at"]})
 
-        return followers
+            return followers
+
+        except KeyError:
+            return None
 
     def get_following(self,user_id):
         """
@@ -113,7 +122,8 @@ class Client:
         user_id (int) -- User's ID
 
         Return:
-        list[User]
+        list[User] -- Si se puede acceder a los datos
+        None -- Si no se puede acceder a los datos
         """
 
         url=f"https://api.twitch.tv/helix/users/follows"
@@ -124,11 +134,15 @@ class Client:
         
         followings=[]
 
-        for following in response["data"]:
-            user=self.get_user_by_id(following["to_id"])
-            followings.append({"follower":user,"followed_at":following["followed_at"]})
+        try:
+            for following in response["data"]:
+                user=self.get_user_by_id(following["to_id"])
+                followings.append({"follower":user,"followed_at":following["followed_at"]})
 
-        return followings
+            return followings
+
+        except KeyError:
+            return None
 
     def get_game_by_id(self,game_id):
         """
@@ -148,12 +162,16 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            game=Game(response["data"][0]["id"],response["data"][0]["name"],response["data"][0]["box_art_url"])
+        try:
+            if len(response["data"])>0:
+                game=Game(response["data"][0]["id"],response["data"][0]["name"],response["data"][0]["box_art_url"])
 
-            return game
+                return game
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_game_by_name(self,game_name):
@@ -174,12 +192,16 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            game=Game(response["data"][0]["id"],response["data"][0]["name"],response["data"][0]["box_art_url"])
+        try:
+            if len(response["data"])>0:
+                game=Game(response["data"][0]["id"],response["data"][0]["name"],response["data"][0]["box_art_url"])
 
-            return game
+                return game
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_stream_by_channel_id(self,id):
@@ -200,12 +222,16 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            stream=Stream(response["data"][0]["id"],response["data"][0]["user_id"],response["data"][0]["user_name"],response["data"][0]["game_id"],response["data"][0]["type"],response["data"][0]["title"],response["data"][0]["viewer_count"],response["data"][0]["started_at"],response["data"][0]["language"],response["data"][0]["thumbnail_url"],response["data"][0]["tag_ids"])
+        try:
+            if len(response["data"])>0:
+                stream=Stream(response["data"][0]["id"],response["data"][0]["user_id"],response["data"][0]["user_name"],response["data"][0]["game_id"],response["data"][0]["type"],response["data"][0]["title"],response["data"][0]["viewer_count"],response["data"][0]["started_at"],response["data"][0]["language"],response["data"][0]["thumbnail_url"],response["data"][0]["tag_ids"])
 
-            return stream
+                return stream
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_stream_by_username(self,username):
@@ -226,12 +252,16 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            stream=Stream(response["data"][0]["id"],response["data"][0]["user_id"],response["data"][0]["user_name"],response["data"][0]["game_id"],response["data"][0]["type"],response["data"][0]["title"],response["data"][0]["viewer_count"],response["data"][0]["started_at"],response["data"][0]["language"],response["data"][0]["thumbnail_url"],response["data"][0]["tag_ids"])
+        try:
+            if len(response["data"])>0:
+                stream=Stream(response["data"][0]["id"],response["data"][0]["user_id"],response["data"][0]["user_name"],response["data"][0]["game_id"],response["data"][0]["type"],response["data"][0]["title"],response["data"][0]["viewer_count"],response["data"][0]["started_at"],response["data"][0]["language"],response["data"][0]["thumbnail_url"],response["data"][0]["tag_ids"])
 
-            return stream
+                return stream
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_top_games(self,count=20):
@@ -242,7 +272,8 @@ class Client:
         count (int) -- Number of categories to return
 
         Return:
-        list[Game]
+        list[Game] -- If data can be accessed
+        None -- If data cannot be accessed
         """
 
         url=f"https://api.twitch.tv/helix/games/top"
@@ -252,10 +283,14 @@ class Client:
         response=requests.get(url,headers=headers,params=params).json()
         games=[]
         
-        for game in response["data"]:
-            games.append(self.get_game_by_id(game["id"])[0])
+        try:
+            for game in response["data"]:
+                games.append(self.get_game_by_id(game["id"])[0])
 
-        return games
+            return games
+
+        except KeyError:
+            return None
 
     def get_user_by_id(self,id):
         """
@@ -275,13 +310,17 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            user=response["data"][0]
-            user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
-            
-            return user
+        try:
+            if len(response["data"])>0:
+                user=response["data"][0]
+                user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
+                
+                return user
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_user_by_name(self,username):
@@ -302,13 +341,17 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            user=response["data"][0]
-            user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
-            
-            return user
+        try:
+            if len(response["data"])>0:
+                user=response["data"][0]
+                user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
+                
+                return user
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_channel(self,user_id):
@@ -329,13 +372,17 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
         
-        if len(response["data"])>0:
-            channel=response["data"][0]
-            channel=Channel(self.oauth_token,self.client_id,self.client_secret,self.get_user_by_id(channel["broadcaster_id"]).login,channel["game_name"],channel["broadcaster_language"],channel["title"])
-            
-            return channel
+        try:
+            if len(response["data"])>0:
+                channel=response["data"][0]
+                channel=Channel(self.oauth_token,self.client_id,self.client_secret,self.get_user_by_id(channel["broadcaster_id"]).login,channel["game_name"],channel["broadcaster_language"],channel["title"])
+                
+                return channel
 
-        else:
+            else:
+                return None
+
+        except:
             return None
 
     def get_cheermotes(self,channel_id=None):
@@ -359,10 +406,14 @@ class Client:
             params={"broadcaster_id":channel_id}
             response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_clips_by_channel_id(self,channel_id):
@@ -373,7 +424,8 @@ class Client:
         channel_id (int) -- Channel's ID
 
         Return:
-        list[dict]
+        list[dict] -- If the channel exists
+        None -- If the channel doesn't exist
         """
 
         url="https://api.twitch.tv/helix/clips"
@@ -382,10 +434,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_clips_by_game_id(self,game_id):
@@ -396,7 +452,8 @@ class Client:
         game_id (int) -- Category's ID
 
         Return:
-        list[dict]
+        list[dict] -- If the game exists
+        None -- If the game doesn't exists
         """
 
         url="https://api.twitch.tv/helix/clips"
@@ -405,10 +462,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_clips_by_clip_id(self,clip_id):
@@ -429,10 +490,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"][0]
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_hype_train_events(self,channel_id):
@@ -453,10 +518,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_streams_by_game_id(self,game_id,count=20):
@@ -478,10 +547,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_streams_by_language(self,language,count=20):
@@ -503,10 +576,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_stream_tags(self,channel_id=None,tag_id=None,count=20):
@@ -542,10 +619,14 @@ class Client:
                 params={"broadcaster_id":channel_id,"tag_id":tag_id,"first":count}
                 response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_videos_by_id(self,id):
@@ -566,10 +647,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"][0]
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_videos_by_user_id(self,user_id):
@@ -590,10 +675,14 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
 
     def get_videos_by_game_id(self,game_id):
@@ -614,8 +703,12 @@ class Client:
 
         response=requests.get(url,headers=headers,params=params).json()
 
-        if len(response["data"])>0:
-            return response["data"]
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        else:
+            else:
+                return None
+
+        except KeyError:
             return None
