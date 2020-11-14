@@ -86,7 +86,8 @@ Parameters:<br>
 channel_id&nbsp;(int)&nbsp;--&nbsp;Channel's&nbsp;ID<br>
 &nbsp;<br>
 Return:<br>
-list[dict]</tt></dd></dl>
+list[dict]&nbsp;--&nbsp;If&nbsp;the&nbsp;channel&nbsp;exists<br>
+None&nbsp;--&nbsp;If&nbsp;the&nbsp;channel&nbsp;doesn't&nbsp;exist</tt></dd></dl>
 
 <dl><dt><a name="Client-get_clips_by_clip_id"><strong>get_clips_by_clip_id</strong></a>(self, clip_id)</dt><dd><tt>Method&nbsp;for&nbsp;obtaining&nbsp;a&nbsp;clip&nbsp;from&nbsp;its&nbsp;ID<br>
 &nbsp;<br>
@@ -103,7 +104,8 @@ Parameters:<br>
 game_id&nbsp;(int)&nbsp;--&nbsp;Category's&nbsp;ID<br>
 &nbsp;<br>
 Return:<br>
-list[dict]</tt></dd></dl>
+list[dict]&nbsp;--&nbsp;If&nbsp;the&nbsp;game&nbsp;exists<br>
+None&nbsp;--&nbsp;If&nbsp;the&nbsp;game&nbsp;doesn't&nbsp;exists</tt></dd></dl>
 
 <dl><dt><a name="Client-get_follow"><strong>get_follow</strong></a>(self, from_id, to_id)</dt><dd><tt>Method&nbsp;for&nbsp;obtaining&nbsp;the&nbsp;date&nbsp;when&nbsp;one&nbsp;user&nbsp;followed&nbsp;another<br>
 &nbsp;<br>
@@ -121,7 +123,8 @@ Parameters:<br>
 user_id&nbsp;(int)&nbsp;--&nbsp;User's&nbsp;ID<br>
 &nbsp;<br>
 Return:<br>
-list[User]</tt></dd></dl>
+list[User]&nbsp;--&nbsp;Si&nbsp;se&nbsp;puede&nbsp;acceder&nbsp;a&nbsp;los&nbsp;datos<br>
+None&nbsp;--&nbsp;Si&nbsp;no&nbsp;se&nbsp;puede&nbsp;acceder&nbsp;a&nbsp;los&nbsp;datos</tt></dd></dl>
 
 <dl><dt><a name="Client-get_following"><strong>get_following</strong></a>(self, user_id)</dt><dd><tt>Method&nbsp;to&nbsp;obtain&nbsp;the&nbsp;followings&nbsp;of&nbsp;a&nbsp;user<br>
 &nbsp;<br>
@@ -129,7 +132,8 @@ Parameters:<br>
 user_id&nbsp;(int)&nbsp;--&nbsp;User's&nbsp;ID<br>
 &nbsp;<br>
 Return:<br>
-list[User]</tt></dd></dl>
+list[User]&nbsp;--&nbsp;Si&nbsp;se&nbsp;puede&nbsp;acceder&nbsp;a&nbsp;los&nbsp;datos<br>
+None&nbsp;--&nbsp;Si&nbsp;no&nbsp;se&nbsp;puede&nbsp;acceder&nbsp;a&nbsp;los&nbsp;datos</tt></dd></dl>
 
 <dl><dt><a name="Client-get_game_by_id"><strong>get_game_by_id</strong></a>(self, game_id)</dt><dd><tt>Method&nbsp;for&nbsp;obtaining&nbsp;a&nbsp;category&nbsp;from&nbsp;its&nbsp;ID<br>
 &nbsp;<br>
@@ -213,7 +217,8 @@ Parameters:<br>
 count&nbsp;(int)&nbsp;--&nbsp;Number&nbsp;of&nbsp;categories&nbsp;to&nbsp;return<br>
 &nbsp;<br>
 Return:<br>
-list[Game]</tt></dd></dl>
+list[Game]&nbsp;--&nbsp;If&nbsp;data&nbsp;can&nbsp;be&nbsp;accessed<br>
+None&nbsp;--&nbsp;If&nbsp;data&nbsp;cannot&nbsp;be&nbsp;accessed</tt></dd></dl>
 
 <dl><dt><a name="Client-get_user_by_id"><strong>get_user_by_id</strong></a>(self, id)</dt><dd><tt>Method&nbsp;for&nbsp;obtaining&nbsp;a&nbsp;user&nbsp;from&nbsp;his&nbsp;ID<br>
 &nbsp;<br>

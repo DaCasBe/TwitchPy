@@ -1,8 +1,8 @@
-from twitchpy.client import Client
+from client import Client
 import ssl
 import socket
-from twitchpy.message import Message
-from twitchpy.channel import Channel
+from message import Message
+from channel import Channel
 
 class Bot:
     """
@@ -29,7 +29,10 @@ class Bot:
         self.channels=[]
 
         for channel in channels:
-            self.channels.append(self.__client.get_channel(self.__client.get_user_by_name(channel).id))
+            channel_aux=self.__client.get_user_by_name(channel)
+
+            if channel_aux!=None:
+                self.channels.append(self.__client.get_channel(channel_aux.id))
 
         self.command_prefix=command_prefix
         self.ready_message=ready_message
@@ -522,6 +525,328 @@ class Bot:
         """
 
         return self.__client.get_videos_by_game_id(game_id)
+
+    def ban(self,channel,user,reason=""):
+        """
+        Method for banning a user from a channel
+
+        Parameters:
+        channel (str) -- Channel who bans
+        user (str) -- User to ban
+        reason (str) -- Reason of the ban
+        """
+
+        self.__send_privmsg(channel,f"/ban @{user} {reason}")
+
+    def block(self,channel,user):
+        """
+        Method for blocking a user
+
+        Parameters:
+        channel (str) -- Channel who blocks
+        user (str) -- User to block
+        """
+
+        self.__send_privmsg(channel,f"/block @{user}")
+
+    def clear(self,channel):
+        """
+        Method for clearing the chat
+
+        Parameters:
+        channel (str) -- Channel to clean the chat
+        """
+
+        self.__send_privmsg(channel,"/clear")
+
+    def color(self,channel,color):
+        """
+        Method to change the color of the channel's name in the chat
+
+        Parameters:
+        channel (str) -- Channel to change color
+        color (str) -- New color's name
+        """
+
+        self.__send_privmsg(channel,f"/color {color}")
+
+    def commercial(self,channel,duration=30):
+        """
+        Method for placing advertising in the channel
+
+        Parameters:
+        channel (str) -- Channel on which start the commercial
+        duration (int) -- Duration of advertising
+        """
+
+        self.__send_privmsg(channel,f"/commercial {duration}")
+
+    def emoteonly(self,channel):
+        """
+        Method for activating the "emotes only" mode
+
+        Parameters:
+        channel (str) -- Channel on which activate the mode
+        """
+
+        self.__send_privmsg(channel,"/emoteonly")
+
+    def emoteonly_off(self,channel):
+        """
+        Method for disabling "emotes only" mode
+
+        Parameters:
+        channel (str) -- Channel on which disable the mode
+        """
+
+        self.__send_privmsg(self.name,"/emoteonlyoff")
+
+    def followers(self,channel):
+        """
+        Method for activating the "followers only" mode
+
+        Parameters:
+        channel (str) -- Channel on which activate the mode
+        """
+
+        self.__send_privmsg(channel,"/followers")
+
+    def followers_off(self,channel):
+        """
+        Method for disabling the "followers only" mode
+
+        Parameters:
+        channel (str) -- Channel on which disable the mode
+        """
+
+        self.__send_privmsg(channel,"/followersoff")
+
+    def host(self,channel,username):
+        """
+        Method for hosting another channel
+
+        Parameters:
+        channel (str) -- Name of the channel who hosts
+        username (str) -- Name of the channel to host
+        """
+
+        self.__send_privmsg(channel,f"/host {username}")
+
+    def marker(self,channel,description=""):
+        """
+        Method for leaving a mark on the channel's stream
+
+        Parameters:
+        channel (str) -- Channel in which leave the mark
+        description (str) -- Mark's description
+        """
+
+        self.__send_privmsg(channel,f"/marker {description}")
+
+    def mod(self,channel,username):
+        """
+        Method for making a user mod
+
+        Parameters:
+        channel (str) -- Channel who promotes the user
+        username (str) -- Name of the user to be promoted
+        """
+
+        self.__send_privmsg(channel,f"/mod {username}")
+
+    def raid(self,channel,username):
+        """
+        Method for raiding another channel
+
+        Parameters:
+        channel (str) -- Name of the channel who raids
+        username (str) -- Name of the channel to raid
+        """
+
+        self.__send_privmsg(channel,f"/raid {username}")
+
+    def send(self,channel,text):
+        """
+        Method for sending a message by chat
+
+        Parameters:
+        channel (str) -- Owner of the chat
+        text (str) -- Message's text
+        """
+
+        self.__send_privmsg(channel,text)
+
+    def send_me(self,channel,text):
+        """
+        Method for sending a message by chat
+
+        Parameters:
+        channel (str) -- Owner of the chat
+        text (str) -- Message's text
+        """
+
+        self.__send_privmsg(channel,f"/me {text}")
+
+    def slow(self,channel,duration):
+        """
+        Method for activating the "slow" mode
+
+        Parameters:
+        channel (str) -- Channel on which activate the mode
+        duration (int) -- Time between messages
+        """
+
+        self.__send_privmsg(channel,f"/slow {duration}")
+
+    def slow_off(self,channel):
+        """
+        Method for disabling the "slow" mode
+
+        Parameters:
+        channel (str) -- Channel on which disable the mode
+        """
+
+        self.__send_privmsg(channel,f"/slow_off")
+
+    def subscribers(self,channel):
+        """
+        Method for activating the "subscribers only" mode
+
+        Parameters:
+        channel (str) -- Channel on which activate the mode
+        """
+
+        self.__send_privmsg(channel,"/subscribers")
+
+    def subscribers_off(self,channel):
+        """
+        Method for disabling "subscriber only" mode
+
+        Parameters:
+        channel (str) -- Channel on which disable the mode
+        """
+
+        self.__send_privmsg(channel,"/subscribersoff")
+
+    def timeout(self,channel,user,duration=600,reason=""):
+        """
+        Method for temporarily expelling a user
+
+        Parameters:
+        channel (str) -- Channel who ejects
+        user (str) -- Name of the user to expel
+        duration (int) -- Ejecting time
+        reason (str) -- Reason for expulsion
+        """
+
+        self.__send_privmsg(channel,f"/timeout @{user} {duration} {reason}")
+
+    def unban(self,channel,user):
+        """
+        Method for undoing the ban of a user
+
+        Parameters:
+        channel (str) -- Name of the channel who readmits
+        user (str) -- Name of the user to readmit
+        """
+
+        self.__send_privmsg(channel,f"/unban @{user}")
+
+    def unblock(self,channel,user):
+        """
+        Method for unblocking a user
+
+        Parameters:
+        channel (str) -- Name of the channel who unblocks
+        user (str) -- Name of the user to unblock
+        """
+
+        self.__send_privmsg(channel,f"/unblock @{user}")
+
+    def uniquechat(self,channel):
+        """
+        Method for activating the "unique" mode
+
+        Parameters:
+        channel (str) -- Channel on which activate the mode
+        """
+
+        self.__send_privmsg(channel,"/uniquechat")
+
+    def uniquechat_off(self,channel):
+        """
+        Method for disabling the "unique" mode
+
+        Parameters:
+        channel (str) -- Channel on which disable the mode
+        """
+
+        self.__send_privmsg(channel,"/uniquechatoff")
+
+    def unhost(self,channel):
+        """
+        Method for unhosting the hosted channel
+
+        Parameters:
+        channel (str) -- Channel who unhosts
+        """
+
+        self.__send_privmsg(channel,f"/unhost")
+
+    def unmod(self,channel,username):
+        """
+        Method to remove the moderator's rank from a user
+
+        Parameters:
+        channel (str) -- Channel who removes the moderator's rank
+        username (str) -- User's name
+        """
+
+        self.__send_privmsg(channel,f"/unmod {username}")
+
+    def unraid(self,channel):
+        """
+        Method to cancel an raid
+
+        Parameters:
+        channel (str) -- Channel who unraids
+        """
+
+        self.__send_privmsg(channel,f"/unraid")
+
+    def unvip(self,channel,username):
+        """
+        Method to remove the vip range from a user
+
+        Parameters:
+        channel (str) -- Channel who remove's the vip range
+        username (str) -- User's name
+        """
+
+        self.__send_privmsg(channel,f"/unvip {username}")
+
+    def vip(self,channel,username):
+        """
+        Method for making a user vip
+
+        Parameters:
+        channel (str) -- Channel who makes a user vip
+        username (str) -- User's name
+        """
+
+        self.__send_privmsg(channel,f"/vip {username}")
+
+    def whisper(self,channel,user,text):
+        """
+        Method for whispering to a user
+
+        Parameters:
+        channel (str) -- Channel on which send the whisp
+        user (str) -- User's name
+        text (str) -- Whisper's text
+        """
+
+        self.__send_privmsg(channel,f"/w {user} {text}")
 
     def add_method_after_commands(self,name,method):
         """

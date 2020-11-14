@@ -91,6 +91,56 @@ Parameters:<br>
 name&nbsp;(str)&nbsp;--&nbsp;Method's&nbsp;name<br>
 method&nbsp;(func)&nbsp;--&nbsp;Method&nbsp;to&nbsp;be&nbsp;executed&nbsp;before&nbsp;each&nbsp;command</tt></dd></dl>
 
+<dl><dt><a name="Bot-ban"><strong>ban</strong></a>(self, channel, user, reason='')</dt><dd><tt>Method&nbsp;for&nbsp;banning&nbsp;a&nbsp;user&nbsp;from&nbsp;a&nbsp;channel<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;bans<br>
+user&nbsp;(str)&nbsp;--&nbsp;User&nbsp;to&nbsp;ban<br>
+reason&nbsp;(str)&nbsp;--&nbsp;Reason&nbsp;of&nbsp;the&nbsp;ban</tt></dd></dl>
+
+<dl><dt><a name="Bot-block"><strong>block</strong></a>(self, channel, user)</dt><dd><tt>Method&nbsp;for&nbsp;blocking&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;blocks<br>
+user&nbsp;(str)&nbsp;--&nbsp;User&nbsp;to&nbsp;block</tt></dd></dl>
+
+<dl><dt><a name="Bot-clear"><strong>clear</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;clearing&nbsp;the&nbsp;chat<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;to&nbsp;clean&nbsp;the&nbsp;chat</tt></dd></dl>
+
+<dl><dt><a name="Bot-color"><strong>color</strong></a>(self, channel, color)</dt><dd><tt>Method&nbsp;to&nbsp;change&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;channel's&nbsp;name&nbsp;in&nbsp;the&nbsp;chat<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;to&nbsp;change&nbsp;color<br>
+color&nbsp;(str)&nbsp;--&nbsp;New&nbsp;color's&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Bot-commercial"><strong>commercial</strong></a>(self, channel, duration=30)</dt><dd><tt>Method&nbsp;for&nbsp;placing&nbsp;advertising&nbsp;in&nbsp;the&nbsp;channel<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;start&nbsp;the&nbsp;commercial<br>
+duration&nbsp;(int)&nbsp;--&nbsp;Duration&nbsp;of&nbsp;advertising</tt></dd></dl>
+
+<dl><dt><a name="Bot-emoteonly"><strong>emoteonly</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"emotes&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;activate&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-emoteonly_off"><strong>emoteonly_off</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;"emotes&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;disable&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-followers"><strong>followers</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;activate&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-followers_off"><strong>followers_off</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;disable&nbsp;the&nbsp;mode</tt></dd></dl>
+
 <dl><dt><a name="Bot-get_channel"><strong>get_channel</strong></a>(self, id)</dt><dd><tt>Method&nbsp;that&nbsp;returns&nbsp;a&nbsp;channel<br>
 &nbsp;<br>
 Parameters:<br>
@@ -296,6 +346,30 @@ Return:<br>
 list[dict]&nbsp;--&nbsp;If&nbsp;the&nbsp;channel&nbsp;exists<br>
 None&nbsp;--&nbsp;If&nbsp;the&nbsp;channel&nbsp;doesn't&nbsp;exist</tt></dd></dl>
 
+<dl><dt><a name="Bot-host"><strong>host</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;for&nbsp;hosting&nbsp;another&nbsp;channel<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;who&nbsp;hosts<br>
+username&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;host</tt></dd></dl>
+
+<dl><dt><a name="Bot-marker"><strong>marker</strong></a>(self, channel, description='')</dt><dd><tt>Method&nbsp;for&nbsp;leaving&nbsp;a&nbsp;mark&nbsp;on&nbsp;the&nbsp;channel's&nbsp;stream<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;in&nbsp;which&nbsp;leave&nbsp;the&nbsp;mark<br>
+description&nbsp;(str)&nbsp;--&nbsp;Mark's&nbsp;description</tt></dd></dl>
+
+<dl><dt><a name="Bot-mod"><strong>mod</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;for&nbsp;making&nbsp;a&nbsp;user&nbsp;mod<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;promotes&nbsp;the&nbsp;user<br>
+username&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;promoted</tt></dd></dl>
+
+<dl><dt><a name="Bot-raid"><strong>raid</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;for&nbsp;raiding&nbsp;another&nbsp;channel<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;who&nbsp;raids<br>
+username&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;raid</tt></dd></dl>
+
 <dl><dt><a name="Bot-remove_check"><strong>remove_check</strong></a>(self, name)</dt><dd><tt>Method&nbsp;for&nbsp;removing&nbsp;a&nbsp;check&nbsp;from&nbsp;the&nbsp;bot<br>
 &nbsp;<br>
 Parameters:<br>
@@ -317,6 +391,104 @@ Parameters:<br>
 name&nbsp;(str)&nbsp;--&nbsp;Method's&nbsp;name</tt></dd></dl>
 
 <dl><dt><a name="Bot-run"><strong>run</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;starting&nbsp;the&nbsp;bot</tt></dd></dl>
+
+<dl><dt><a name="Bot-send"><strong>send</strong></a>(self, channel, text)</dt><dd><tt>Method&nbsp;for&nbsp;sending&nbsp;a&nbsp;message&nbsp;by&nbsp;chat<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Owner&nbsp;of&nbsp;the&nbsp;chat<br>
+text&nbsp;(str)&nbsp;--&nbsp;Message's&nbsp;text</tt></dd></dl>
+
+<dl><dt><a name="Bot-send_me"><strong>send_me</strong></a>(self, channel, text)</dt><dd><tt>Method&nbsp;for&nbsp;sending&nbsp;a&nbsp;message&nbsp;by&nbsp;chat<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Owner&nbsp;of&nbsp;the&nbsp;chat<br>
+text&nbsp;(str)&nbsp;--&nbsp;Message's&nbsp;text</tt></dd></dl>
+
+<dl><dt><a name="Bot-slow"><strong>slow</strong></a>(self, channel, duration)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"slow"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;activate&nbsp;the&nbsp;mode<br>
+duration&nbsp;(int)&nbsp;--&nbsp;Time&nbsp;between&nbsp;messages</tt></dd></dl>
+
+<dl><dt><a name="Bot-slow_off"><strong>slow_off</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"slow"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;disable&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-subscribers"><strong>subscribers</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"subscribers&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;activate&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-subscribers_off"><strong>subscribers_off</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;"subscriber&nbsp;only"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;disable&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-timeout"><strong>timeout</strong></a>(self, channel, user, duration=600, reason='')</dt><dd><tt>Method&nbsp;for&nbsp;temporarily&nbsp;expelling&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;ejects<br>
+user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;expel<br>
+duration&nbsp;(int)&nbsp;--&nbsp;Ejecting&nbsp;time<br>
+reason&nbsp;(str)&nbsp;--&nbsp;Reason&nbsp;for&nbsp;expulsion</tt></dd></dl>
+
+<dl><dt><a name="Bot-unban"><strong>unban</strong></a>(self, channel, user)</dt><dd><tt>Method&nbsp;for&nbsp;undoing&nbsp;the&nbsp;ban&nbsp;of&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;who&nbsp;readmits<br>
+user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;readmit</tt></dd></dl>
+
+<dl><dt><a name="Bot-unblock"><strong>unblock</strong></a>(self, channel, user)</dt><dd><tt>Method&nbsp;for&nbsp;unblocking&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;who&nbsp;unblocks<br>
+user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;unblock</tt></dd></dl>
+
+<dl><dt><a name="Bot-unhost"><strong>unhost</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;unhosting&nbsp;the&nbsp;hosted&nbsp;channel<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;unhosts</tt></dd></dl>
+
+<dl><dt><a name="Bot-uniquechat"><strong>uniquechat</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"unique"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;activate&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-uniquechat_off"><strong>uniquechat_off</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"unique"&nbsp;mode<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;disable&nbsp;the&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Bot-unmod"><strong>unmod</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;to&nbsp;remove&nbsp;the&nbsp;moderator's&nbsp;rank&nbsp;from&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;removes&nbsp;the&nbsp;moderator's&nbsp;rank<br>
+username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Bot-unraid"><strong>unraid</strong></a>(self, channel)</dt><dd><tt>Method&nbsp;to&nbsp;cancel&nbsp;an&nbsp;raid<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;unraids</tt></dd></dl>
+
+<dl><dt><a name="Bot-unvip"><strong>unvip</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;to&nbsp;remove&nbsp;the&nbsp;vip&nbsp;range&nbsp;from&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;remove's&nbsp;the&nbsp;vip&nbsp;range<br>
+username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Bot-vip"><strong>vip</strong></a>(self, channel, username)</dt><dd><tt>Method&nbsp;for&nbsp;making&nbsp;a&nbsp;user&nbsp;vip<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;who&nbsp;makes&nbsp;a&nbsp;user&nbsp;vip<br>
+username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
+
+<dl><dt><a name="Bot-whisper"><strong>whisper</strong></a>(self, channel, user, text)</dt><dd><tt>Method&nbsp;for&nbsp;whispering&nbsp;to&nbsp;a&nbsp;user<br>
+&nbsp;<br>
+Parameters:<br>
+channel&nbsp;(str)&nbsp;--&nbsp;Channel&nbsp;on&nbsp;which&nbsp;send&nbsp;the&nbsp;whisp<br>
+user&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name<br>
+text&nbsp;(str)&nbsp;--&nbsp;Whisper's&nbsp;text</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>

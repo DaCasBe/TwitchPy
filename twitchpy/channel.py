@@ -29,7 +29,6 @@ class Channel():
         self.game_name=game_name
         self.broadcaster_language=broadcaster_language
         self.title=title
-        self.__connect()
 
     def __get_access_token(self):
         url="https://id.twitch.tv/oauth2/token"
@@ -39,7 +38,7 @@ class Channel():
 
         return response["access_token"]
 
-    def __connect(self):
+    def connect(self):
         self.irc=ssl.wrap_socket(socket.socket())
         self.irc.connect((self.__irc_server,self.__irc_port))
         
