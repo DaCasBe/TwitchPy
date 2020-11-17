@@ -1,8 +1,8 @@
-from client import Client
+from twitchpy.client import Client
 import ssl
 import socket
-from message import Message
-from channel import Channel
+from twitchpy.message import Message
+from twitchpy.channel import Channel
 
 class Bot:
     """
