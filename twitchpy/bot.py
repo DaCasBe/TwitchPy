@@ -16,7 +16,7 @@ class Bot:
         client_id (str) -- Client ID to identify the application
         client_secret (str) -- Client secret to identify the application
         username (str) -- Name of the bot
-        channels (list[str]) -- Channels the bot will access
+        channels (list[str]) -- Names of channels the bot will access
         command_prefix (str) -- Prefix of the commands the bot will recognize
         ready_message (str) -- Message that the bot will send through the chats of the channels it access
         """
@@ -26,14 +26,7 @@ class Bot:
         self.__client=Client(oauth_token,client_id,client_secret)
         self.__oauth_token=oauth_token
         self.username=username
-        self.channels=[]
-
-        for channel in channels:
-            channel_aux=self.__client.get_user_by_name(channel)
-
-            if channel_aux!=None:
-                self.channels.append(self.__client.get_channel(channel_aux.id))
-
+        self.channels=channels
         self.command_prefix=command_prefix
         self.ready_message=ready_message
         self.custom_checks={}
@@ -63,8 +56,8 @@ class Bot:
         self.__send_command(f"NICK {self.username}")
 
         for channel in self.channels:
-            self.__send_command(f"JOIN #{channel.name}")
-            self.__send_privmsg(channel.name,self.ready_message)
+            self.__send_command(f"JOIN #{channel}")
+            self.__send_privmsg(channel,self.ready_message)
 
         for check in self.custom_checks.values():
             if check()!=True:
