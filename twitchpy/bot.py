@@ -31,9 +31,13 @@ class Bot:
         self.ready_message=ready_message
         self.custom_checks={}
         self.custom_listeners={}
+        self.listeners_to_remove=[]
         self.custom_commands={}
+        self.commands_to_remove=[]
         self.custom_methods_after_commands={}
+        self.methods_after_commands_to_remove=[]
         self.custom_methods_before_commands={}
+        self.methods_before_commands_to_remove=[]
 
     def __send_privmsg(self,channel,text):
         self.__send_command(f"PRIVMSG #{channel} :{text}")
@@ -143,15 +147,29 @@ class Bot:
         for listener in self.custom_listeners.values():
             listener(message)
 
+        for listener in self.listeners_to_remove:
+            if listener in self.custom_listeners.keys():
+                self.custom_listeners.pop(listener)
+
+        self.listeners_to_remove=[]
+
         if message.irc_command=="PRIVMSG":
             if message.text_command in self.custom_commands:
                 for before in self.custom_methods_before_commands.values():
                     before(message)
 
+                for method in self.methods_before_commands_to_remove:
+                    if method in self.custom_methods_before_commands.keys():
+                        self.custom_methods_before_commands.pop(method)
+
                 self.custom_commands[message.text_command](message)
 
                 for after in self.custom_methods_after_commands.values():
                     after(message)
+
+                for method in self.methods_after_commands_to_remove:
+                    if method in self.custom_methods_after_commands.keys():
+                        self.custom_methods_after_commands.pop(method)
 
     def __loop(self):
         while True:
@@ -159,6 +177,10 @@ class Bot:
 
             for received_msg in received_msgs.split("\r\n"):
                 self.__handle_message(received_msg)
+
+            for command in self.commands_to_remove:
+                if command in self.custom_commands.keys():
+                    self.custom_commands.pop(command)
 
     def add_check(self,name,check):
         """
@@ -871,7 +893,7 @@ class Bot:
         name (str) -- Check's name
         """
 
-        self.custom_checks.pop(name,None)
+        self.custom_checks.pop(name)
 
     def remove_listener(self,name):
         """
@@ -881,7 +903,15 @@ class Bot:
         name (str) -- Listener's name
         """
 
-        self.custom_listeners.pop(name,None)
+        self.listeners_to_remove.append(name)
+
+    def remove_command(self,name):
+        """
+        Method for removing a command from the bot
+
+        Parameters:
+            name (str) -- Command's name
+        """
 
     def remove_method_after_commands(self,name):
         """
