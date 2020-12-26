@@ -48,6 +48,8 @@ class Client:
         dict
         """
 
+        channel_name=channel_name.replace("@","").lower()
+
         url=f"https://tmi.twitch.tv/group/user/{channel_name}/chatters"
         headers={"Authorization": f"Bearer {self.__access_token}","Client-Id":self.client_id}
 
@@ -246,6 +248,8 @@ class Client:
         None -- If the stream is not live
         """
 
+        username=username.replace("@","").lower()
+
         url=f"https://api.twitch.tv/helix/streams"
         headers={"Authorization": f"Bearer {self.__access_token}","Client-Id":self.client_id}
         params={"user_login":username}
@@ -334,6 +338,8 @@ class Client:
         User -- If the user exists
         None -- If the user doesn't exist
         """
+
+        username=username.replace("@","").lower()
 
         url=f"https://api.twitch.tv/helix/users"
         headers={"Authorization": f"Bearer {self.__access_token}","Client-Id":self.client_id}

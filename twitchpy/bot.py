@@ -26,7 +26,12 @@ class Bot:
         self.__client=Client(oauth_token,client_id,client_secret)
         self.__oauth_token=oauth_token
         self.username=username
-        self.channels=channels
+
+        self.channels=[]
+
+        for channel in channels:
+            self.channels.append(channel.replace("@","").lower())
+
         self.command_prefix=command_prefix
         self.ready_message=ready_message
         self.custom_checks={}

@@ -25,7 +25,7 @@ class Channel():
         self.__access_token=self.__get_access_token()
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.name=name
+        self.name=name.replace("@","").lower()
         self.game_name=game_name
         self.broadcaster_language=broadcaster_language
         self.title=title
@@ -62,6 +62,7 @@ class Channel():
         reason (str) -- Reason of the ban
         """
 
+        user=user.replace("@","").lower()
         self.__send_privmsg(self.name,f"/ban @{user} {reason}")
 
     def block(self,user):
@@ -72,6 +73,7 @@ class Channel():
         user (str) -- User to block
         """
 
+        user=user.replace("@","").lower()
         self.__send_privmsg(self.name,f"/block @{user}")
 
     def clear(self):
@@ -165,6 +167,7 @@ class Channel():
         username (str) -- Name of the channel to host
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/host {username}")
 
     def marker(self,description=""):
@@ -185,6 +188,7 @@ class Channel():
         username (str) -- Name of the user to be promoted
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/mod {username}")
 
     def raid(self,username):
@@ -195,6 +199,7 @@ class Channel():
         username -- Name of the channel to raid
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/raid {username}")
 
     def send(self,text):
@@ -258,6 +263,7 @@ class Channel():
         reason (str) -- Reason for expulsion
         """
 
+        user=user.replace("@","").lower()
         self.__send_privmsg(self.name,f"/timeout @{user} {duration} {reason}")
 
     def unban(self,user):
@@ -268,6 +274,7 @@ class Channel():
         user (str) -- Name of the user to readmit
         """
 
+        user=user.replace("@","").lower()
         self.__send_privmsg(self.name,f"/unban @{user}")
 
     def unblock(self,user):
@@ -278,6 +285,7 @@ class Channel():
         user (str) -- Name of the user to unblock
         """
 
+        user=user.replace("@","").lower()
         self.__send_privmsg(self.name,f"/unblock @{user}")
 
     def uniquechat(self):
@@ -309,6 +317,7 @@ class Channel():
         username (str) -- User's name
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/unmod {username}")
 
     def unraid(self):
@@ -326,6 +335,7 @@ class Channel():
         username (str) -- User's name
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/unvip {username}")
 
     def vip(self,username):
@@ -336,6 +346,7 @@ class Channel():
         username (str) -- User's name
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/vip {username}")
 
     def whisper(self,user,text):
@@ -347,4 +358,5 @@ class Channel():
         text (str) -- Whisper's text
         """
 
+        username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/w {user} {text}")
