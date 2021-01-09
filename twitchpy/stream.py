@@ -1,22 +1,22 @@
 class Stream:
     """
-    Class that represents a stream
+    Represents a stream
     """
 
     def __init__(self,id,user_id,user_name,game_id,type,title,viewer_count,started_at,language,thumbnail_url,tag_ids):
         """
-        Parameters:
-        id (int) -- Stream's ID
-        user_id (int) -- Channel's ID
-        user_name (str) -- Channel's name
-        game_id (int) -- Stream's category's ID
-        type (str) -- Stream's status
-        title (str) -- Stream's title
-        viewer_count (int) -- Number of viewers
-        started_at (str) -- Stream's start date and time
-        language (str) -- Stream's language
-        thumbnail_url (str) -- URL of the preview image
-        tag_ids (list[int]) -- IDs of the stream's tags
+        Args:
+            id (int): Stream's ID
+            user_id (int): Channel's ID
+            user_name (str): Channel's name
+            game_id (int): Stream's category's ID
+            type (str): Stream's status
+            title (str): Stream's title
+            viewer_count (int): Number of viewers
+            started_at (str): Stream's start date and time
+            language (str): Stream's language
+            thumbnail_url (str): URL of the preview image
+            tag_ids (list): IDs of the stream's tags
         """
 
         self.id=id

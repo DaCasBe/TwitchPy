@@ -42,145 +42,139 @@
 <font color="#000000" face="helvetica, arial"><a name="Channel">class <strong>Channel</strong></a>(<a href="https://docs.python.org/3/library/builtins.html#module-builtins">builtins.object</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Channel(oauth_token,&nbsp;client_id,&nbsp;client_secret,&nbsp;name,&nbsp;game_name,&nbsp;broadcaster_language,&nbsp;title)<br>
+<td colspan=2><tt><a href="#Channel">Channel</a>(oauth_token,&nbsp;client_id,&nbsp;client_secret,&nbsp;name,&nbsp;game_name,&nbsp;broadcaster_language,&nbsp;title)<br>
 &nbsp;<br>
-Class&nbsp;that&nbsp;represents&nbsp;a&nbsp;channel<br>&nbsp;</tt></td></tr>
+Represents&nbsp;a&nbsp;channel<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="Channel-__init__"><strong>__init__</strong></a>(self, oauth_token, client_id, client_secret, name, game_name, broadcaster_language, title)</dt><dd><tt>Parameters:<br>
-oauth_token&nbsp;(str)&nbsp;--&nbsp;OAuth&nbsp;token&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
-client_id&nbsp;(str)&nbsp;--&nbsp;Client&nbsp;ID&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
-client_secret&nbsp;(str)&nbsp;--&nbsp;Client&nbsp;secret&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
-name&nbsp;(str)&nbsp;--&nbsp;Channel's&nbsp;name<br>
-game_name&nbsp;(str)&nbsp;--&nbsp;Channel's&nbsp;category's&nbsp;name<br>
-broadcaster_language&nbsp;(str)&nbsp;--&nbsp;Channel's&nbsp;language<br>
-title&nbsp;--&nbsp;Title&nbsp;in&nbsp;the&nbsp;channel</tt></dd></dl>
+<dl><dt><a name="Channel-__init__"><strong>__init__</strong></a>(self, oauth_token, client_id, client_secret, name, game_name, broadcaster_language, title)</dt><dd><tt>Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;oauth_token&nbsp;(str):&nbsp;OAuth&nbsp;token&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
+&nbsp;&nbsp;&nbsp;&nbsp;client_id&nbsp;(str):&nbsp;Client&nbsp;ID&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
+&nbsp;&nbsp;&nbsp;&nbsp;client_secret&nbsp;(str):&nbsp;Client&nbsp;secret&nbsp;to&nbsp;identify&nbsp;the&nbsp;application<br>
+&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;(str):&nbsp;<a href="#Channel">Channel</a>'s&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;game_name&nbsp;(str):&nbsp;<a href="#Channel">Channel</a>'s&nbsp;category's&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;broadcaster_language&nbsp;(str):&nbsp;<a href="#Channel">Channel</a>'s&nbsp;language<br>
+&nbsp;&nbsp;&nbsp;&nbsp;title&nbsp;(str):&nbsp;Title&nbsp;in&nbsp;the&nbsp;channel</tt></dd></dl>
 
-<dl><dt><a name="Channel-ban"><strong>ban</strong></a>(self, user, reason='')</dt><dd><tt>Method&nbsp;for&nbsp;banning&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-ban"><strong>ban</strong></a>(self, username, reason='')</dt><dd><tt>Bans&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;User&nbsp;to&nbsp;ban<br>
-reason&nbsp;(str)&nbsp;--&nbsp;Reason&nbsp;of&nbsp;the&nbsp;ban</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User&nbsp;to&nbsp;ban<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reason&nbsp;(str,&nbsp;optional):&nbsp;Reason&nbsp;of&nbsp;the&nbsp;ban</tt></dd></dl>
 
-<dl><dt><a name="Channel-block"><strong>block</strong></a>(self, user)</dt><dd><tt>Method&nbsp;for&nbsp;blocking&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-block"><strong>block</strong></a>(self, username)</dt><dd><tt>Blocks&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;User&nbsp;to&nbsp;block</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User&nbsp;to&nbsp;block</tt></dd></dl>
 
-<dl><dt><a name="Channel-clear"><strong>clear</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;clearing&nbsp;the&nbsp;chat</tt></dd></dl>
+<dl><dt><a name="Channel-clear"><strong>clear</strong></a>(self)</dt><dd><tt>Clears&nbsp;the&nbsp;chat</tt></dd></dl>
 
-<dl><dt><a name="Channel-color"><strong>color</strong></a>(self, color)</dt><dd><tt>Method&nbsp;to&nbsp;change&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;channel's&nbsp;name&nbsp;in&nbsp;the&nbsp;chat<br>
+<dl><dt><a name="Channel-color"><strong>color</strong></a>(self, color)</dt><dd><tt>Changes&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;channel's&nbsp;name&nbsp;in&nbsp;the&nbsp;chat<br>
 &nbsp;<br>
-Parameters:<br>
-color&nbsp;(str)&nbsp;--&nbsp;New&nbsp;color's&nbsp;name</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;color&nbsp;(str):&nbsp;New&nbsp;color's&nbsp;name</tt></dd></dl>
 
-<dl><dt><a name="Channel-commercial"><strong>commercial</strong></a>(self, duration=30)</dt><dd><tt>Method&nbsp;for&nbsp;placing&nbsp;advertising&nbsp;in&nbsp;the&nbsp;channel<br>
+<dl><dt><a name="Channel-commercial"><strong>commercial</strong></a>(self, duration=30)</dt><dd><tt>Places&nbsp;advertising&nbsp;in&nbsp;the&nbsp;channel<br>
 &nbsp;<br>
-Parameters:<br>
-duration&nbsp;(int)&nbsp;--&nbsp;Duration&nbsp;of&nbsp;advertising</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;(int,&nbsp;optional):&nbsp;Duration&nbsp;of&nbsp;advertising</tt></dd></dl>
 
-<dl><dt><a name="Channel-connect"><strong>connect</strong></a>(self)</dt></dl>
+<dl><dt><a name="Channel-connect"><strong>connect</strong></a>(self)</dt><dd><tt>Creates&nbsp;a&nbsp;connection&nbsp;with&nbsp;the&nbsp;channel</tt></dd></dl>
 
-<dl><dt><a name="Channel-emoteonly"><strong>emoteonly</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"emotes&nbsp;only"&nbsp;mode</tt></dd></dl>
+<dl><dt><a name="Channel-emoteonly"><strong>emoteonly</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;"emotes&nbsp;only"&nbsp;mode</tt></dd></dl>
 
-<dl><dt><a name="Channel-emoteonly_off"><strong>emoteonly_off</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;"emotes&nbsp;only"&nbsp;mode</tt></dd></dl>
+<dl><dt><a name="Channel-emoteonly_off"><strong>emoteonly_off</strong></a>(self)</dt><dd><tt>Disables&nbsp;"emotes&nbsp;only"&nbsp;mode</tt></dd></dl>
 
-<dl><dt><a name="Channel-followers"><strong>followers</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode</tt></dd></dl>
+<dl><dt><a name="Channel-followers"><strong>followers</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode</tt></dd></dl>
 
-<dl><dt><a name="Channel-followers_off"><strong>followers_off</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode</tt></dd></dl>
+<dl><dt><a name="Channel-followers_off"><strong>followers_off</strong></a>(self)</dt><dd><tt>Disables&nbsp;the&nbsp;"followers&nbsp;only"&nbsp;mode</tt></dd></dl>
 
-<dl><dt><a name="Channel-get_stream"><strong>get_stream</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;obtaining&nbsp;information&nbsp;about&nbsp;the&nbsp;channel's&nbsp;stream<br>
+<dl><dt><a name="Channel-host"><strong>host</strong></a>(self, channel)</dt><dd><tt>Hosts&nbsp;a&nbsp;channel<br>
 &nbsp;<br>
-Return:<br>
-Stream&nbsp;--&nbsp;If&nbsp;the&nbsp;stream&nbsp;is&nbsp;live<br>
-None&nbsp;--&nbsp;If&nbsp;the&nbsp;stream&nbsp;isn't&nbsp;live</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;channel&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;host</tt></dd></dl>
 
-<dl><dt><a name="Channel-host"><strong>host</strong></a>(self, username)</dt><dd><tt>Method&nbsp;for&nbsp;hosting&nbsp;another&nbsp;channel<br>
+<dl><dt><a name="Channel-marker"><strong>marker</strong></a>(self, description='')</dt><dd><tt>Leaves&nbsp;a&nbsp;mark&nbsp;on&nbsp;the&nbsp;channel's&nbsp;stream<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;host</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;description&nbsp;(str,&nbsp;optional):&nbsp;Mark's&nbsp;description</tt></dd></dl>
 
-<dl><dt><a name="Channel-marker"><strong>marker</strong></a>(self, description='')</dt><dd><tt>Method&nbsp;for&nbsp;leaving&nbsp;a&nbsp;mark&nbsp;on&nbsp;the&nbsp;channel's&nbsp;stream<br>
+<dl><dt><a name="Channel-mod"><strong>mod</strong></a>(self, username)</dt><dd><tt>Makes&nbsp;a&nbsp;user&nbsp;mod<br>
 &nbsp;<br>
-Parameters:<br>
-description&nbsp;(str)&nbsp;--&nbsp;Mark's&nbsp;description</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;promoted</tt></dd></dl>
 
-<dl><dt><a name="Channel-mod"><strong>mod</strong></a>(self, username)</dt><dd><tt>Method&nbsp;for&nbsp;making&nbsp;a&nbsp;user&nbsp;mod<br>
+<dl><dt><a name="Channel-raid"><strong>raid</strong></a>(self, channel)</dt><dd><tt>Raids&nbsp;another&nbsp;channel<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;be&nbsp;promoted</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;channel&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;raid</tt></dd></dl>
 
-<dl><dt><a name="Channel-raid"><strong>raid</strong></a>(self, username)</dt><dd><tt>Method&nbsp;for&nbsp;raiding&nbsp;another&nbsp;channel<br>
+<dl><dt><a name="Channel-send"><strong>send</strong></a>(self, text)</dt><dd><tt>Sends&nbsp;a&nbsp;message&nbsp;by&nbsp;chat<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;channel&nbsp;to&nbsp;raid</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;Message's&nbsp;text</tt></dd></dl>
 
-<dl><dt><a name="Channel-send"><strong>send</strong></a>(self, text)</dt><dd><tt>Method&nbsp;for&nbsp;sending&nbsp;a&nbsp;message&nbsp;by&nbsp;chat<br>
+<dl><dt><a name="Channel-send_me"><strong>send_me</strong></a>(self, text)</dt><dd><tt>Sends&nbsp;a&nbsp;message&nbsp;by&nbsp;chat&nbsp;with&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;channel's&nbsp;name<br>
 &nbsp;<br>
-Parameters:<br>
-text&nbsp;(str)&nbsp;--&nbsp;Message's&nbsp;text</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;Message'&nbsp;text</tt></dd></dl>
 
-<dl><dt><a name="Channel-send_me"><strong>send_me</strong></a>(self, text)</dt><dd><tt>Method&nbsp;to&nbsp;send&nbsp;a&nbsp;message&nbsp;by&nbsp;chat&nbsp;with&nbsp;the&nbsp;color&nbsp;of&nbsp;the&nbsp;channel's&nbsp;name<br>
+<dl><dt><a name="Channel-slow"><strong>slow</strong></a>(self, duration)</dt><dd><tt>Activates&nbsp;the&nbsp;"slow"&nbsp;mode<br>
 &nbsp;<br>
-Parameters:<br>
-text&nbsp;(str)&nbsp;--&nbsp;Message'&nbsp;text</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;(int):&nbsp;Time&nbsp;between&nbsp;messages</tt></dd></dl>
 
-<dl><dt><a name="Channel-slow"><strong>slow</strong></a>(self, duration)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"slow"&nbsp;mode<br>
+<dl><dt><a name="Channel-slow_off"><strong>slow_off</strong></a>(self)</dt><dd><tt>Disables&nbsp;the&nbsp;"slow"&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Channel-subscribers"><strong>subscribers</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;"subscribers&nbsp;only"&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Channel-subscribers_off"><strong>subscribers_off</strong></a>(self)</dt><dd><tt>Disables&nbsp;"subscriber&nbsp;only"&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Channel-timeout"><strong>timeout</strong></a>(self, username, duration=600, reason='')</dt><dd><tt>Expels&nbsp;a&nbsp;user&nbsp;temporarily<br>
 &nbsp;<br>
-Parameters:<br>
-duration&nbsp;(int)&nbsp;--&nbsp;Time&nbsp;between&nbsp;messages</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;expel<br>
+&nbsp;&nbsp;&nbsp;&nbsp;duration&nbsp;(int,&nbsp;optional):&nbsp;Ejecting&nbsp;time<br>
+&nbsp;&nbsp;&nbsp;&nbsp;reason&nbsp;(str,&nbsp;optional):&nbsp;Reason&nbsp;for&nbsp;expulsion</tt></dd></dl>
 
-<dl><dt><a name="Channel-slow_off"><strong>slow_off</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"slow"&nbsp;mode</tt></dd></dl>
-
-<dl><dt><a name="Channel-subscribers"><strong>subscribers</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"subscribers&nbsp;only"&nbsp;mode</tt></dd></dl>
-
-<dl><dt><a name="Channel-subscribers_off"><strong>subscribers_off</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;"subscriber&nbsp;only"&nbsp;mode</tt></dd></dl>
-
-<dl><dt><a name="Channel-timeout"><strong>timeout</strong></a>(self, user, duration=600, reason='')</dt><dd><tt>Method&nbsp;for&nbsp;temporarily&nbsp;expelling&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-unban"><strong>unban</strong></a>(self, username)</dt><dd><tt>Undoes&nbsp;the&nbsp;ban&nbsp;of&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;expel<br>
-duration&nbsp;(int)&nbsp;--&nbsp;Ejecting&nbsp;time<br>
-reason&nbsp;(str)&nbsp;--&nbsp;Reason&nbsp;for&nbsp;expulsion</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;readmit</tt></dd></dl>
 
-<dl><dt><a name="Channel-unban"><strong>unban</strong></a>(self, user)</dt><dd><tt>Method&nbsp;for&nbsp;undoing&nbsp;the&nbsp;ban&nbsp;of&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-unblock"><strong>unblock</strong></a>(self, username)</dt><dd><tt>Unblocks&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;readmit</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;unblock</tt></dd></dl>
 
-<dl><dt><a name="Channel-unblock"><strong>unblock</strong></a>(self, user)</dt><dd><tt>Method&nbsp;for&nbsp;unblocking&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-unhost"><strong>unhost</strong></a>(self)</dt><dd><tt>Unhosts&nbsp;the&nbsp;hosted&nbsp;channel</tt></dd></dl>
+
+<dl><dt><a name="Channel-uniquechat"><strong>uniquechat</strong></a>(self)</dt><dd><tt>Activates&nbsp;the&nbsp;"unique"&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Channel-uniquechat_off"><strong>uniquechat_off</strong></a>(self)</dt><dd><tt>Disables&nbsp;the&nbsp;"unique"&nbsp;mode</tt></dd></dl>
+
+<dl><dt><a name="Channel-unmod"><strong>unmod</strong></a>(self, username)</dt><dd><tt>Removes&nbsp;the&nbsp;moderator's&nbsp;rank&nbsp;from&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;Name&nbsp;of&nbsp;the&nbsp;user&nbsp;to&nbsp;unblock</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User's&nbsp;name</tt></dd></dl>
 
-<dl><dt><a name="Channel-unhost"><strong>unhost</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;unhosting&nbsp;the&nbsp;hosted&nbsp;channel</tt></dd></dl>
+<dl><dt><a name="Channel-unraid"><strong>unraid</strong></a>(self)</dt><dd><tt>Cancels&nbsp;an&nbsp;raid</tt></dd></dl>
 
-<dl><dt><a name="Channel-uniquechat"><strong>uniquechat</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;activating&nbsp;the&nbsp;"unique"&nbsp;mode</tt></dd></dl>
-
-<dl><dt><a name="Channel-uniquechat_off"><strong>uniquechat_off</strong></a>(self)</dt><dd><tt>Method&nbsp;for&nbsp;disabling&nbsp;the&nbsp;"unique"&nbsp;mode</tt></dd></dl>
-
-<dl><dt><a name="Channel-unmod"><strong>unmod</strong></a>(self, username)</dt><dd><tt>Method&nbsp;to&nbsp;remove&nbsp;the&nbsp;moderator's&nbsp;rank&nbsp;from&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-unvip"><strong>unvip</strong></a>(self, username)</dt><dd><tt>Removes&nbsp;the&nbsp;vip&nbsp;range&nbsp;from&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User's&nbsp;name</tt></dd></dl>
 
-<dl><dt><a name="Channel-unraid"><strong>unraid</strong></a>(self)</dt><dd><tt>Method&nbsp;to&nbsp;cancel&nbsp;an&nbsp;raid</tt></dd></dl>
-
-<dl><dt><a name="Channel-unvip"><strong>unvip</strong></a>(self, username)</dt><dd><tt>Method&nbsp;to&nbsp;remove&nbsp;the&nbsp;vip&nbsp;range&nbsp;from&nbsp;a&nbsp;user<br>
+<dl><dt><a name="Channel-vip"><strong>vip</strong></a>(self, username)</dt><dd><tt>Makes&nbsp;a&nbsp;user&nbsp;vip<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User's&nbsp;name</tt></dd></dl>
 
-<dl><dt><a name="Channel-vip"><strong>vip</strong></a>(self, username)</dt><dd><tt>Method&nbsp;for&nbsp;making&nbsp;a&nbsp;user&nbsp;vip<br>
+<dl><dt><a name="Channel-whisper"><strong>whisper</strong></a>(self, username, text)</dt><dd><tt>Whispers&nbsp;to&nbsp;a&nbsp;user<br>
 &nbsp;<br>
-Parameters:<br>
-username&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name</tt></dd></dl>
-
-<dl><dt><a name="Channel-whisper"><strong>whisper</strong></a>(self, user, text)</dt><dd><tt>Method&nbsp;for&nbsp;whispering&nbsp;to&nbsp;a&nbsp;user<br>
-&nbsp;<br>
-Parameters:<br>
-user&nbsp;(str)&nbsp;--&nbsp;User's&nbsp;name<br>
-text&nbsp;(str)&nbsp;--&nbsp;Whisper's&nbsp;text</tt></dd></dl>
+Args:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;username&nbsp;(str):&nbsp;User's&nbsp;name<br>
+&nbsp;&nbsp;&nbsp;&nbsp;text&nbsp;(str):&nbsp;Whisper's&nbsp;text</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
