@@ -5,6 +5,7 @@ from twitchpy.stream import Stream
 from twitchpy.channel import Channel
 import os
 from twitchpy.reward import Reward
+from twitchpy.redemption import Redemption
 
 class Client:
     """
@@ -511,7 +512,12 @@ class Client:
 
         try:
             if len(response["data"])>0:
-                return response["data"]
+                redemptions=[]
+
+                for redemption in response["data"]:
+                    redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],redemption["reward"]))
+                
+                return redemptions
 
             else:
                 return None
@@ -627,7 +633,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"id":id,"broadcaster_id":broadcaster_id,"reward_id":reward_id}
 
         if status!="":
@@ -637,7 +643,9 @@ class Client:
 
         try:
             if len(response["data"])>0:
-                return response["data"]
+                redemption=Redemption(response["data"][0]["broadcaster_name"],response["data"][0]["broadcaster_id"],response["data"][0]["id"],response["data"][0]["user_id"],response["data"][0]["user_name"],response["data"][0]["user_input"],response["data"][0]["status"],response["data"][0]["redeemed_at"],response["data"][0]["reward"])
+                
+                return redemption
 
             else:
                 return None
@@ -665,7 +673,7 @@ class Client:
         if has_delay!=False:
             payload["has_delay"]=has_delay
 
-        response=requests.get(url,headers=headers,json=payload).json()
+        response=requests.post(url,headers=headers,json=payload).json()
 
         try:
             if len(response["data"])>0:
@@ -965,7 +973,7 @@ class Client:
         except KeyError:
             return None
 
-    def check_automod_status(self,broadcaster_id,msg_id="",msg_user="",user_id=""):
+    def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
@@ -981,16 +989,7 @@ class Client:
 
         url="https://api.twitch.tv/helix/moderation/enforcements/status"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id}
-
-        if msg_id!="":
-            payload["msg_id"]=msg_id
-
-        if msg_user!="":
-            payload["msg_user"]=msg_user
-
-        if user_id!="":
-            payload["user_id"]=user_id
+        payload={"broadcaster_id":broadcaster_id,"data":[{"msg_id":msg_id,"msg_user":msg_user,"user_id":user_id}]}
 
         response=requests.post(url,headers=headers,json=payload).json()
 
@@ -1185,7 +1184,7 @@ class Client:
                 games=[]
 
                 for game in response["data"]:
-                    games.append(get_game(id=game["id"]))
+                    games.append(self.get_game(id=game["id"]))
 
                 return games
 
@@ -1211,7 +1210,7 @@ class Client:
             list
         """
 
-        url="helix/search/channels"
+        url="https://api.twitch.tv/helix/search/channels"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"query":query}
 
@@ -1228,7 +1227,7 @@ class Client:
                 channels=[]
 
                 for channel in response["data"]:
-                    channels.append(get_channel(channel["id"]))
+                    channels.append(self.get_channel(channel["id"]))
 
                 return channels
 
@@ -1308,7 +1307,7 @@ class Client:
                 streams=[]
 
                 for stream in response["data"]:
-                    streams.append(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"])
+                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
 
                 return streams
 
@@ -1415,21 +1414,30 @@ class Client:
         except:
             return None
 
-    def modify_channel_information(self,broadcaster_id,game_id,broadcaster_language,title):
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
         """
         Modifies channel information
         game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
 
         Args:
             broadcaster_id (str): ID of the channel to be updated
-            game_id (str): The current game ID being played on the channel
-            broadcaster_language (str): The language of the channel
-            title (str): The title of the stream
+            game_id (str, optional): The current game ID being played on the channel
+            broadcaster_language (str, optional): The language of the channel
+            title (str, optional): The title of the stream
         """
 
         url="https://api.twitch.tv/helix/channels"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
-        data={"broadcaster_id":broadcaster_id,"game_id":game_id,"broadcaster_language":broadcaster_language,"title":title}
+        data={"broadcaster_id":broadcaster_id}
+
+        if game_id!="":
+            data["game_id"]=game_id
+
+        if broadcaster_language!="":
+            data["broadcaster_language"]=broadcaster_language
+
+        if title!="":
+            data["title"]=title
 
         response=requests.patch(url,headers=headers,data=data)
 
@@ -1449,7 +1457,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/subscriptions"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client_Id":self.client_id}
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
         if user_id!="":
@@ -1485,7 +1493,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/tags/streams"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client_Id":self.client_id}
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
 
         if first==20 and tag_id=="":
             response=requests.get(url,headers=headers).json()

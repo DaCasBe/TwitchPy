@@ -59,6 +59,7 @@ class Bot:
         """
 
         self.irc=ssl.wrap_socket(socket.socket())
+        self.irc.settimeout(1)
         self.irc.connect((self.__irc_server,self.__irc_port))
         
         self.__send_command(f"PASS {self.__oauth_token}")
@@ -67,10 +68,6 @@ class Bot:
         for channel in self.channels:
             self.__send_command(f"JOIN #{channel}")
             self.__send_privmsg(channel,self.ready_message)
-
-        for check in self.custom_checks.values():
-            if check()!=True:
-                return
 
         self.__loop()
 
@@ -178,14 +175,19 @@ class Bot:
 
     def __loop(self):
         while True:
-            received_msgs=self.irc.recv(2048).decode()
+            try:
+                received_msgs=self.irc.recv(2048).decode()
 
-            for received_msg in received_msgs.split("\r\n"):
-                self.__handle_message(received_msg)
+                for received_msg in received_msgs.split("\r\n"):
+                    self.__handle_message(received_msg)
 
-            for command in self.commands_to_remove:
-                if command in self.custom_commands.keys():
-                    self.custom_commands.pop(command)
+                for command in self.commands_to_remove:
+                    if command in self.custom_commands.keys():
+                        self.custom_commands.pop(command)
+
+            except socket.timeout:
+                for check in self.custom_checks.values():
+                    check()
 
     def add_check(self,name,check):
         """
@@ -790,16 +792,16 @@ class Bot:
 
         return self.__client.get_channel(broadcaster_id)
 
-    def modify_channel_information(self,broadcaster_id,game_id,broadcaster_language,title):
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
         """
         Modifies channel information
         game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
 
         Args:
             broadcaster_id (str): ID of the channel to be updated
-            game_id (str): The current game ID being played on the channel
-            broadcaster_language (str): The language of the channel
-            title (str): The title of the stream
+            game_id (str, optional): The current game ID being played on the channel
+            broadcaster_language (str, optional): The language of the channel
+            title (str, optional): The title of the stream
         """
 
         self.__client.modify_channel_information(broadcaster_id,game_id,broadcaster_language,title)
