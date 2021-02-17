@@ -6,31 +6,29 @@ from twitchpy.channel import Channel
 import os
 from twitchpy.reward import Reward
 from twitchpy.redemption import Redemption
+import twitchpy.errors
 
 class Client:
     """
     Represents a client connection to the Twitch API
     """
 
-    def __init__(self,app_token,client_id,client_secret):
+    def __init__(self,app_token,client_id,client_secret,code=""):
         """
         Args:
             app_token (str): OAuth Token
             client_id (str): Client ID
             client_secret (str): Client secret
-            user_token (str, optional): User Token
-            refresh_token (str, optional): Refresh Token for getting a new User Token
             code (str, optional): Code
-            redirect_url (str, optional): Redirect URL
         """
         
         self.app_token=app_token
         self.client_id=client_id
         self.client_secret=client_secret
-        self.__app_token=self.get_app_token()
-        self.__user_token,self.__refresh_user_token=self.get_user_token()
+        self.__app_token=self.__get_app_token()
+        self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
 
-    def get_app_token(self):
+    def __get_app_token(self):
         """
         Method for obtaining a Twitch API app token
 
@@ -45,55 +43,74 @@ class Client:
 
         return response["access_token"]
 
-    def get_user_token(self):
+    def __get_user_token(self,code):
         """
         Method for obtaining a Twitch API user token
 
         Returns:
-            str
+            str, str
         """
 
-        secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","rt")
-        secrets=secret_file.readlines()
-        secret_file.close()
+        try:
+            secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","rt")
+            secrets=secret_file.readlines()
+            secret_file.close()
 
-        for i in range(len(secrets)):
-            secret=secrets[i].split("=")
+            for i in range(len(secrets)):
+                secret=secrets[i].split("=")
 
-            if "USER_TOKEN"==secret[0]:
-                self.__user_token=secret[1].replace("\n","")
+                if "USER_TOKEN"==secret[0]:
+                    self.__user_token=secret[1].replace("\n","")
 
-            if "REFRESH_USER_TOKEN"==secret[0]:
-                self.__refresh_user_token=secret[1].replace("\n","")
+                if "REFRESH_USER_TOKEN"==secret[0]:
+                    self.__refresh_user_token=secret[1].replace("\n","")
 
-        url="https://id.twitch.tv/oauth2/token"
-        payload={"grant_type":"refresh_token","refresh_token":self.__refresh_user_token,"client_id":self.client_id,"client_secret":self.client_secret}
+            url="https://id.twitch.tv/oauth2/token"
+            payload={"grant_type":"refresh_token","refresh_token":self.__refresh_user_token,"client_id":self.client_id,"client_secret":self.client_secret}
 
-        response=requests.post(url,json=payload).json()
+            response=requests.post(url,json=payload).json()
 
-        self.__user_token=response["access_token"]
-        self.__refresh_user_token=response["refresh_token"]
+            secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","rt")
+            secrets=secret_file.readlines()
+            secret_file.close()
 
-        secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","rt")
-        secrets=secret_file.readlines()
-        secret_file.close()
+            data=""
 
-        data=""
+            for i in range(len(secrets)):
+                secret=secrets[i].split("=")
 
-        for i in range(len(secrets)):
-            secret=secrets[i].split("=")
+                if "USER_TOKEN"==secret[0]:
+                    secrets[i]=f"USER_TOKEN={response['access_token']}\n"
 
-            if "USER_TOKEN"==secret[0]:
-                secrets[i]=f"USER_TOKEN={response['access_token']}\n"
+                if "REFRESH_USER_TOKEN"==secret[0]:
+                    secrets[i]=f"REFRESH_USER_TOKEN={response['refresh_token']}"
 
-            if "REFRESH_USER_TOKEN"==secret[0]:
-                secrets[i]=f"REFRESH_USER_TOKEN={response['refresh_token']}"
+                data+=secrets[i]
 
-            data+=secrets[i]
+            secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","wt")
+            secret_file.write(data)
+            secret_file.close()
 
-        secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","wt")
-        secret_file.write(data)
-        secret_file.close()
+        except FileNotFoundError:
+            try:
+                url=f"https://id.twitch.tv/oauth2/token?client_id={self.client_id}&client_secret={self.client_secret}&code={code}&grant_type=authorization_code&redirect_uri=https://localhost"
+
+                response=requests.post(url).json()
+
+                data=f"USER_TOKEN={response['access_token']}\nREFRESH_USER_TOKEN={response['refresh_token']}"
+
+                secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","wt")
+                secret_file.write(data)
+                secret_file.close()
+
+            except KeyError:
+                raise twitchpy.errors.InvalidCodeError("Invalid code")
+
+        except KeyError:
+            raise twitchpy.errors.InvalidCodeError("Invalid code")
+
+        except AttributeError:
+            raise twitchpy.errors.InvalidCodeError("Invalid code")
 
         return response["access_token"],response["refresh_token"]
 
@@ -124,7 +141,7 @@ class Client:
                 return None
         
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_extension_analytics(self,extension_id="",first=20,type=""):
         """
@@ -170,7 +187,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_game_analytics(self,first=20,game_id="",type=""):
         """
@@ -216,7 +233,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_bits_leaderboard(self,count=10,user_id=""):
         """
@@ -257,7 +274,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_cheermotes(self,broadcaster_id=""):
         """
@@ -289,7 +306,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
         
     def get_extension_transactions(self,extension_id,id="",first=20):
         """
@@ -326,7 +343,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def create_custom_reward(self,broadcaster_id,title,cost,prompt="",is_enabled=True,background_color="",is_user_input_required=False,is_max_per_stream_enabled=False,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,should_redemptions_skip_request_queue=False):
         """
@@ -411,7 +428,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def delete_custom_reward(self,broadcaster_id,id):
         """
@@ -468,7 +485,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_custom_reward_redemption(self,broadcaster_id,reward_id,id="",status="",sort="OLDEST",first=20):
         """
@@ -523,7 +540,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
         """
@@ -615,7 +632,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def update_redemption_status(self,id,broadcaster_id,reward_id,status=""):
         """
@@ -651,7 +668,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def create_clip(self,broadcaster_id,has_delay=False):
         """
@@ -683,11 +700,11 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_clips(self,broadcaster_id="",game_id="",id="",first=20):
         """
-        Gets clip information by clip ID, broadcaster ID or game ID
+        Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
         Args:
             broadcaster_id (str, optional): ID of the broadcaster for whom clips are returned
@@ -708,6 +725,9 @@ class Client:
             response=requests.get(url,headers=headers).json()
 
         else:
+            if (broadcaster_id!="" and game_id!="") or (broadcaster_id!="" and id!="") or (game_id!="" and id!="") or (broadcaster_id!="" and game_id!="" and id!=""):
+                raise twitchpy.errors.TooManyArgumentsError("Too many arguments have been given")
+
             params={}
 
             if broadcaster_id!="":
@@ -732,7 +752,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def create_entitlement_grants_upload_url(self,manifest_id,type):
         """
@@ -762,7 +782,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_code_status(self,code,user_id):
         """
@@ -790,7 +810,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_drops_entitlements(self,id="",user_id="",game_id="",first=20):
         """
@@ -834,7 +854,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def redeem_code(self,code,user_id):
         """
@@ -862,7 +882,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_top_games(self,first=20):
         """
@@ -896,7 +916,7 @@ class Client:
             return games
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_game(self,id="",name=""):
         """
@@ -934,7 +954,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
@@ -971,7 +991,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
@@ -1001,7 +1021,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_banned_events(self,broadcaster_id,user_id="",first=20):
         """
@@ -1038,7 +1058,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_banned_users(self,broadcaster_id,user_id="",first=20):
         """
@@ -1075,7 +1095,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_moderators(self,broadcaster_id,user_id="",first=20):
         """
@@ -1117,7 +1137,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_moderator_events(self,broadcaster_id,user_id="",first=20):
         """
@@ -1154,7 +1174,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def search_categories(self,query,first=20):
         """
@@ -1192,7 +1212,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def search_channels(self,query,first=20,live_only=False):
         """
@@ -1235,7 +1255,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_stream_key(self,broadcaster_id):
         """
@@ -1262,7 +1282,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_streams(self,first=20,game_id="",language="",user_id="",user_login=""):
         """
@@ -1315,7 +1335,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def create_stream_marker(self,user_id,description=""):
         """
@@ -1347,7 +1367,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_stream_markers(self,user_id,video_id,first=20):
         """
@@ -1382,7 +1402,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_channel(self,broadcaster_id):
         """
@@ -1412,7 +1432,7 @@ class Client:
                 return None
 
         except:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
         """
@@ -1429,6 +1449,9 @@ class Client:
         url="https://api.twitch.tv/helix/channels"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
         data={"broadcaster_id":broadcaster_id}
+
+        if (game_id!="" and broadcaster_language!="") or (game_id!="" and title!="") or (broadcaster_language!="" and title!=""):
+            raise twitchpy.errors.FewArgumentsError("game_id, broadcaster_language or title must be provided")
 
         if game_id!="":
             data["game_id"]=game_id
@@ -1476,7 +1499,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_all_stream_tags(self,first=20,tag_id=""):
         """
@@ -1517,7 +1540,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_stream_tags(self,broadcaster_id):
         """
@@ -1544,7 +1567,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def replace_stream_tags(self,broadcaster_id,tag_ids=[]):
         """
@@ -1637,7 +1660,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_user_follows(self,first=20,from_id="",to_id=""):
         """
@@ -1678,7 +1701,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def update_user(self,description=""):
         """
@@ -1712,7 +1735,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_user_extensions(self):
         """
@@ -1735,7 +1758,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_user_active_extensions(self,user_id=""):
         """
@@ -1767,7 +1790,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def update_user_extensions(self):
         """
@@ -1790,7 +1813,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_videos(self,id,user_id,game_id,first=20,language="",period="all",sort="time",type="all"):
         """
@@ -1852,7 +1875,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_webhook_subscriptions(self,first=20):
         """
@@ -1886,7 +1909,7 @@ class Client:
                 return None
 
         except KeyError:
-            return None
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_chatters(self,channel_name):
         """
@@ -1906,4 +1929,8 @@ class Client:
 
         response=requests.post(url,headers=headers).json()
 
-        return response["chatters"]
+        try:
+            return response["chatters"]
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])

@@ -9,7 +9,7 @@ class Bot:
     Represents a bot
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,username,channels,command_prefix,ready_message=""):
+    def __init__(self,oauth_token,client_id,client_secret,username,channels,command_prefix,code="",ready_message=""):
         """
         Args:
             oauth_token (str): OAuth token to identify the application
@@ -23,7 +23,7 @@ class Bot:
 
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.__client=Client(oauth_token,client_id,client_secret)
+        self.__client=Client(oauth_token,client_id,client_secret,code)
         self.__oauth_token=oauth_token
         self.username=username
 
