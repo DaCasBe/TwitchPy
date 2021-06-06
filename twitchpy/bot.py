@@ -16,9 +16,10 @@ class Bot:
             client_id (str): Client ID to identify the application
             client_secret (str): Client secret to identify the application
             username (str): Name of the bot
-            channels (list[str]): Names of channels the bot will access
+            channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
-            ready_message (str): Message that the bot will send through the chats of the channels it access
+            code (str, optional): Authorization code
+            ready_message (str, optional): Message that the bot will send through the chats of the channels it access
         """
 
         self.__irc_server="irc.chat.twitch.tv"
@@ -320,6 +321,46 @@ class Bot:
 
         return self.__client.get_extension_transactions(extension_id,id,first)
 
+    def get_channel(self,broadcaster_id):
+        """
+        Gets a channel
+
+        Args:
+            broadcaster_id (str): ID of the channel to be updated
+
+        Returns:
+            Channel
+        """
+
+        return self.__client.get_channel(broadcaster_id)
+
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
+        """
+        Modifies channel information
+        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+
+        Args:
+            broadcaster_id (str): ID of the channel to be updated
+            game_id (str, optional): The current game ID being played on the channel
+            broadcaster_language (str, optional): The language of the channel
+            title (str, optional): The title of the stream
+        """
+
+        self.__client.modify_channel_information(broadcaster_id,game_id,broadcaster_language,title)
+
+    def get_channel_editors(self,broadcaster_id):
+        """
+        Gets a list of users who have editor permissions for a specific channel
+
+        Args:
+            broadcaster_id (str): Broadcaster’s user ID associated with the channel
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_channel_editors(broadcaster_id)
+
     def create_custom_reward(self,broadcaster_id,title,cost,prompt="",is_enabled=True,background_color="",is_user_input_required=False,is_max_per_stream_enabled=False,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,should_redemptions_skip_request_queue=False):
         """
         Creates a Custom Reward on a channel
@@ -453,6 +494,29 @@ class Bot:
 
         return self.__client.update_redemption_status(id,broadcaster_id,reward_id,status)
 
+    def get_channel_chat_badges(self,broadcaster_id):
+        """
+        Gets a list of custom chat badges that can be used in chat for the specified channel
+
+        Args:
+            broadcaster_id (str): The broadcaster whose chat badges are being requested
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_channel_chat_badges(broadcaster_id)
+
+    def get_global_chat_badges(self):
+        """
+        Gets a list of chat badges that can be used in chat for any channel
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_global_chat_badges()
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip.
@@ -485,22 +549,6 @@ class Bot:
         """
 
         return self.__client.get_clips(broadcaster_id,game_id,id,first)
-
-    def create_entitlement_grants_upload_url(self,manifest_id,type):
-        """
-        Creates a URL where you can upload a manifest file and notify users that they have an entitlement
-
-        Args:
-            manifest_id (string): Unique identifier of the manifest file to be uploaded
-                                  Must be 1-64 characters
-            type (string): Type of entitlement being granted
-                           Only bulk_drops_grant is supported
-
-        Returns:
-            str
-        """
-
-        return self.__client.create_entitlement_grants_upload_url(manifest_id,type)
 
     def get_code_status(self,code,user_id):
         """
@@ -547,6 +595,49 @@ class Bot:
         """
 
         return self.__client.redeem_code(code,user_id)
+
+    def create_eventsub_subscription(self,type,version,condition,transport):
+        """
+        Creates an EventSub subscription
+
+        Args:
+            type (str): The category of the subscription that is being created
+                        Valid values: "channel.update", "channel.follow", "channel.subscribe", "channel.subscription.end", "channel.subscription.gift", "channel.cheer", "channel.raid", "channel.ban", "channel.unban", "channel.moderator.add", "channel.moderator.remove", "channel.channel_points_custom_reward.add", "channel.channel_points_custom_reward.update", "channel.channel_points_custom_reward.remove", "channel.channel_points_custom_reward_redemption.add", "channel.channel_points_custom_reward_redemption.update", "channel.poll.begin", "channel.poll.progress", "channel.poll.end", "channel.prediction.begin", "channel.prediction.progress", "channel.prediction.lock", "channel.prediction.end", "extension.bits_transaction.create", "channel.hype_train.begin", "channel.hype_train.progress", "channel.hype_train.end", "stream.online", "stream.offline", "user.authorization.revoke", "user.update"
+            version (str): The version of the subscription type that is being created
+            condition (dict): Custom parameters for the subscription
+            transport (dict): Notification delivery specific configuration
+
+        Returns:
+            dict
+        """
+
+        return self.__client.create_eventsub_subscription(type,version,condition,transport)
+
+    def delete_eventsub_subscription(self,id):
+        """
+        Delete an EventSub subscription
+
+        Args:
+            id (str): The subscription ID for the subscription to delete
+        """
+
+        self.__client.delete_eventsub_subscription(id)
+
+    def get_eventsub_subscriptions(self,status="",type=""):
+        """
+        Get a list of your EventSub subscriptions
+        Only include one filter query parameter
+
+        Args:
+            status (str, optional): Filters subscriptions by one status type
+                                    Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "user_removed"
+            type (str, optional): Filters subscriptions by subscription type name
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_eventsub_subscriptions(status,type)
 
     def get_top_games(self,first=20):
         """
@@ -611,6 +702,19 @@ class Bot:
         """
 
         return self.__client.check_automod_status(broadcaster_id,msg_id,msg_user,user_id)
+
+    def manage_held_automod_messages(self,user_id,msg_id,action):
+        """
+        Allow or deny a message that was held for review by AutoMod
+
+        Args:
+            user_id (str): The moderator who is approving or rejecting the held message
+            msg_id (str): ID of the message to be allowed or denied
+            action (str): The action to take for the message
+                          Valid values: "ALLOW", "DENY"
+        """
+
+        self.manage_held_automod_messages(user_id,msg_id,action)
 
     def get_banned_events(self,broadcaster_id,user_id="",first=20):
         """
@@ -680,6 +784,126 @@ class Bot:
 
         return self.__client.get_moderator_events(broadcaster_id,user_id,first)
 
+    def get_polls(self,broadcaster_id,id="",first=20):
+        """
+        Get information about all polls or specific polls for a Twitch channel
+        Poll information is available for 90 days
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            id (str, optional): ID of a poll
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 20
+                                   Default: 20
+
+        Returns:
+            list
+        """
+        
+        return self.__client.get_polls(broadcaster_id,id,first)
+
+    def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
+        """
+        Create a poll for a specific Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            title (str): Question displayed for the poll
+                         Maximum: 60 characters
+            choices (list): Array of the poll choices
+                            Minimum: 2 choices
+                            Maximum: 5 choices
+            duration (int): Total duration for the poll (in seconds)
+                            Minimum: 15
+                            Maximum: 1800
+            bits_voting_enabled (bool, optional): Indicates if Bits can be used for voting
+                                                  Default: False
+            bits_per_vote (int, optional): Number of Bits required to vote once with Bits
+                                           Minimum: 0
+                                           Maximum: 10000
+            channel_points_voting_enabled (bool, optional): Indicates if Channel Points can be used for voting
+                                                            Default: False
+            channel_points_per_vote (int, optional): Number of Channel Points required to vote once with Channel Points
+                                                     Minimum: 0
+                                                     Maximum: 1000000
+
+        Returns:
+            dict
+        """
+
+        return self.__client.create_poll(broadcaster_id,title,choices,duration,bits_voting_enabled,bits_per_vote,channel_points_voting_enabled,channel_points_per_vote)
+
+    def end_poll(self,broadcaster_id,id,status):
+        """
+        End a poll that is currently active
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            id (str): ID of the poll
+            status (str): The poll status to be set
+                          Valid values: "TERMINATED", "ARCHIVED"
+
+        Returns:
+            dict
+        """
+
+        return self.__client.end_poll(broadcaster_id,id,status)
+
+    def get_predictions(self,broadcaster_id,id="",first=20):
+        """
+        Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running Predictions
+            id (str, optional): ID of a Prediction
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 20
+                                   Default: 20
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_predictions(broadcaster_id,id,first)
+
+    def create_prediction(self,broadcaster_id,title,outcomes,prediction_window):
+        """
+        Create a Channel Points Prediction for a specific Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running Predictions
+            title (str): Title for the Prediction
+                         Maximum: 45 characters
+            outcomes (list): Array of outcome objects with titles for the Prediction
+                             Array size must be 2
+            prediction_window (int): Total duration for the Prediction (in seconds)
+                                     Minimum: 1
+                                     Maximum: 1800
+
+        Returns:
+            dict
+        """
+
+        return self.__client.create_prediction(broadcaster_id,title,outcomes,prediction_window)
+
+    def end_prediction(self,broadcaster_id,id,status,winning_outcome_id=""):
+        """
+        Lock, resolve, or cancel a Channel Points Prediction
+
+        Args:
+            broadcaster_id (str): The broadcaster running prediction events
+            id (str): ID of the Prediction
+            status (str): The Prediction status to be set
+                          Valid values: "RESOLVED", "CANCELED", "LOCKED"
+            winning_outcome_id (str, optional): ID of the winning outcome for the Prediction
+                                                This parameter is required if status is being set to RESOLVED
+
+        Returns:
+            dict
+        """
+
+        return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
+
     def search_categories(self,query,first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially
@@ -746,6 +970,22 @@ class Bot:
 
         return self.__client.get_streams(first,game_id,language,user_id,user_login)
 
+    def get_followed_streams(self,user_id,first=100):
+        """
+        Gets information about active streams belonging to channels that the authenticated user follows
+
+        Args:
+            user_id (str): Results will only include active streams from the channels that this Twitch user follows
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 100
+                                   Default: 100
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_followed_streams(user_id,first)
+
     def create_stream_marker(self,user_id,description=""):
         """
         Creates a marker in the stream of a user specified by user ID
@@ -779,33 +1019,6 @@ class Bot:
 
         return self.__client.get_stream_markers(user_id,video_id,first)
 
-    def get_channel(self,broadcaster_id):
-        """
-        Gets a channel
-
-        Args:
-            broadcaster_id (str): ID of the channel to be updated
-
-        Returns:
-            Channel
-        """
-
-        return self.__client.get_channel(broadcaster_id)
-
-    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
-        """
-        Modifies channel information
-        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
-
-        Args:
-            broadcaster_id (str): ID of the channel to be updated
-            game_id (str, optional): The current game ID being played on the channel
-            broadcaster_language (str, optional): The language of the channel
-            title (str, optional): The title of the stream
-        """
-
-        self.__client.modify_channel_information(broadcaster_id,game_id,broadcaster_language,title)
-
     def get_broadcaster_subscriptions(self,broadcaster_id,user_id="",first=20):
         """
         Get all of a broadcaster’s subscriptions
@@ -822,6 +1035,20 @@ class Bot:
         """
 
         return self.__client.get_broadcaster_subscriptions(broadcaster_id,user_id,first)
+
+    def check_user_subscription(self,broadcaster_id,user_id):
+        """
+        Checks if a specific user is subscribed to a specific channel
+
+        Args:
+            broadcaster_id (str): User ID of an Affiliate or Partner broadcaster
+            user_id (str): User ID of a Twitch viewer
+
+        Returns:
+            dict
+        """
+
+        return self.__client.check_user_subscription(broadcaster_id,user_id)
 
     def get_all_stream_tags(self,first=20,tag_id=""):
         """
@@ -865,6 +1092,79 @@ class Bot:
 
         self.__client.replace_stream_tags(broadcaster_id,tag_ids)
 
+    def get_channel_teams(self,broadcaster_id):
+        """
+        Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
+
+        Args:
+            broadcaster_id (str): User ID for a Twitch user
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_channel_teams(broadcaster_id)
+
+    def get_team(self,name="",id=""):
+        """
+        Gets information for a specific Twitch Team
+        One of the two optional query parameters must be specified to return Team information
+
+        Args:
+            name (str, optional): Team name
+            id (str, optional): Team ID
+
+        Returns:
+            Team
+        """
+
+        return self.__client.get_team(name,id)
+
+    def get_user(self,id="",login=""):
+        """
+        Gets an user
+
+        Args:
+            id (str, optional): User ID
+            login (str, optional): User login name
+
+        Returns:
+            User
+        """
+
+        return self.__client.get_user(id,login)
+
+    def update_user(self,description=""):
+        """
+        Updates the description of a user
+
+        Args:
+            description (str, optional): User’s account description
+
+        Returns:
+            User
+        """
+
+        return self.__client.update_user(description)
+
+    def get_user_follows(self,first=20,from_id="",to_id=""):
+        """
+        Gets information on follow relationships between Twitch users
+        At minimum, from_id or to_id must be provided for a query to be valid
+
+        Args:
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 100
+                                   Default: 20
+            from_id (str, optional): User ID
+            to_id (str, optional): User ID
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_user_follows(first,from_id,to_id)
+
     def create_user_follows(self,from_id,to_id,allow_notifications=False):
         """
         Adds a specified user to the followers of a specified channel
@@ -889,50 +1189,45 @@ class Bot:
 
         self.__client.delete_user_follows(from_id,to_id)
 
-    def get_user(self,id="",login=""):
+    def get_user_block_list(self,broadcaster_id,first=100):
         """
-        Gets an user
+        Gets a specified user’s block list
 
         Args:
-            id (str, optional): User ID
-            login (str, optional): User login name
-
-        Returns:
-            User
-        """
-
-        return self.__client.get_user(id,login)
-
-    def get_user_follows(self,first=20,from_id="",to_id=""):
-        """
-        Gets information on follow relationships between Twitch users
-        At minimum, from_id or to_id must be provided for a query to be valid
-
-        Args:
+            broadcaster_id (str): User ID for a Twitch user
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
-            from_id (str, optional): User ID
-            to_id (str, optional): User ID
 
         Returns:
             list
         """
 
-        return self.__client.get_user_follows(first,from_id,to_id)
+        return self.__client.get_user_block_list(broadcaster_id,first)
 
-    def update_user(self,description=""):
+    def block_user(self,target_user_id,source_context="",reason=""):
         """
-        Updates the description of a user
+        Blocks the specified user on behalf of the authenticated user
 
         Args:
-            description (str, optional): User’s account description
-
-        Returns:
-            User
+            target_user_id (str): User ID of the user to be blocked
+            source_context (str, optional): Source context for blocking the user
+                                            Valid values: "chat", "whisper"
+            reason (str, optional): Reason for blocking the user
+                                    Valid values: "spam", "harassment", or "other"
         """
 
-        return self.__client.update_user(description)
+        self.__client.block_user(target_user_id,source_context,reason)
+
+    def unblock_user(self,target_user_id):
+        """
+        Unblocks the specified user on behalf of the authenticated user
+
+        Args:
+            target_user_id (str): User ID of the user to be unblocked
+        """
+
+        self.__client.unblock_user(target_user_id)
 
     def get_user_extensions(self):
         """
@@ -994,6 +1289,15 @@ class Bot:
         """
 
         return self.__client.get_videos(id,user_id,game_id,first,language,period,sort,type)
+
+    def delete_video(self,id):
+        """
+        Deletes a video
+
+        Args:
+            id (str): ID of the video to be deleted
+        """
+        self.__client.delete_videos(id)
 
     def get_webhook_subscriptions(self,first=20):
         """

@@ -19,7 +19,7 @@ class Client:
             app_token (str): OAuth Token
             client_id (str): Client ID
             client_secret (str): Client secret
-            code (str, optional): Code
+            code (str, optional): Authorization code
         """
         
         self.app_token=app_token
@@ -29,13 +29,6 @@ class Client:
         self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
 
     def __get_app_token(self):
-        """
-        Method for obtaining a Twitch API app token
-
-        Returns:
-            str
-        """
-
         url="https://id.twitch.tv/oauth2/token"
         payload={"client_id":self.client_id,"client_secret":self.client_secret,"grant_type":"client_credentials"}
 
@@ -44,13 +37,6 @@ class Client:
         return response["access_token"]
 
     def __get_user_token(self,code):
-        """
-        Method for obtaining a Twitch API user token
-
-        Returns:
-            str, str
-        """
-
         try:
             secret_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret","rt")
             secrets=secret_file.readlines()
@@ -123,6 +109,9 @@ class Client:
             length (int): Desired length of the commercial in seconds
                           Valid options are 30, 60, 90, 120, 150 and 180
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -154,6 +143,9 @@ class Client:
                                    Maximum: 100
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v1" and "overview_v2"
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -201,6 +193,9 @@ class Client:
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v1" and "overview_v2"
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -245,6 +240,9 @@ class Client:
                                    Default: 10
             user_id (str, optional): ID of the user whose results are returned
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -284,6 +282,9 @@ class Client:
         Args:
             broadcaster_id (str, optional): ID for the broadcaster who might own specialized Cheermotes
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -319,6 +320,9 @@ class Client:
                                    Maximum: 100
                                    Default: 20
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -338,6 +342,107 @@ class Client:
         try:
             if len(response["data"])>0:
                 return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_channel(self,broadcaster_id):
+        """
+        Gets a channel
+
+        Args:
+            broadcaster_id (str): ID of the channel to be updated
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            Channel
+        """
+
+        url="https://api.twitch.tv/helix/channels"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                channel=response["data"][0]
+                channel=Channel(self.app_token,self.client_id,self.client_secret,self.get_user(id=channel["broadcaster_id"]).login,channel["game_name"],channel["broadcaster_language"],channel["title"])
+                
+                return channel
+
+            else:
+                return None
+
+        except:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
+        """
+        Modifies channel information
+        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+
+        Args:
+            broadcaster_id (str): ID of the channel to be updated
+            game_id (str, optional): The current game ID being played on the channel
+            broadcaster_language (str, optional): The language of the channel
+            title (str, optional): The title of the stream
+
+        Raises:
+            twitchpy.errors.FewArgumentsError
+        """
+
+        url="https://api.twitch.tv/helix/channels"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        data={"broadcaster_id":broadcaster_id}
+
+        if (game_id!="" and broadcaster_language!="") or (game_id!="" and title!="") or (broadcaster_language!="" and title!=""):
+            raise twitchpy.errors.FewArgumentsError("game_id, broadcaster_language or title must be provided")
+
+        if game_id!="":
+            data["game_id"]=game_id
+
+        if broadcaster_language!="":
+            data["broadcaster_language"]=broadcaster_language
+
+        if title!="":
+            data["title"]=title
+
+        response=requests.patch(url,headers=headers,data=data)
+
+    def get_channel_editors(self,broadcaster_id):
+        """
+        Gets a list of users who have editor permissions for a specific channel
+
+        Args:
+            broadcaster_id (str): Broadcaster’s user ID associated with the channel
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/channels/editors"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                users=[]
+
+                for user in response["data"]:
+                    users.append(self.get_user(id=user["user_id"]))
+
+                return users
 
             else:
                 return None
@@ -371,6 +476,9 @@ class Client:
             global_cooldown_seconds (int, optional): The cooldown in seconds if enabled
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
                                                                     Defaults false
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -456,6 +564,9 @@ class Client:
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
                                                       Defaults false.
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -504,6 +615,9 @@ class Client:
             first (int, optional): Number of results to be returned when getting the paginated Custom Reward Redemption objects for a reward
                                    Limit: 50
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -566,6 +680,9 @@ class Client:
             global_cooldown_seconds (int, optional): The cooldown in seconds if enabled
             is_paused (bool, optional): Is the reward currently paused
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -645,6 +762,9 @@ class Client:
             status (str, optional): The new status to set redemptions to
                                     Can be either FULFILLED or CANCELED
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -670,14 +790,73 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def get_channel_chat_badges(self,broadcaster_id):
+        """
+        Gets a list of custom chat badges that can be used in chat for the specified channel
+
+        Args:
+            broadcaster_id (str): The broadcaster whose chat badges are being requested
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/chat/badges"
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_global_chat_badges(self):
+        """
+        Gets a list of chat badges that can be used in chat for any channel
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/chat/badges/global"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+
+        response=requests.get(url,headers=headers).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
-        This returns both an ID and an edit URL for a new clip.
+        This returns both an ID and an edit URL for a new clip
 
         Args:
             broadcaster_id (str): ID of the stream from which the clip will be made
             has_delay (bool, optional): If false, the clip is captured from the live stream when the API is called; otherwise, a delay is added before the clip is captured (to account for the brief delay between the broadcaster’s stream and the viewer’s experience of that stream)
                                         Default: false.
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             dict
@@ -713,6 +892,10 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.TooManyArgumentsError
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -754,36 +937,6 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def create_entitlement_grants_upload_url(self,manifest_id,type):
-        """
-        Creates a URL where you can upload a manifest file and notify users that they have an entitlement
-
-        Args:
-            manifest_id (string): Unique identifier of the manifest file to be uploaded
-                                  Must be 1-64 characters
-            type (string): Type of entitlement being granted
-                           Only bulk_drops_grant is supported
-
-        Returns:
-            str
-        """
-
-        url="https://api.twitch.tv/helix/entitlements/upload"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        payload={"manifest_id":manifest_id,"type":type}
-
-        response=requests.post(url,headers=headers,json=payload).json()
-
-        try:
-            if len(response["data"][0])>0:
-                return response["data"][0][url]
-
-            else:
-                return None
-
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
-
     def get_code_status(self,code,user_id):
         """
         Gets the status of one or more provided codes
@@ -791,6 +944,9 @@ class Client:
         Args:
             code (str): The code to get the status of
             user_id (int): ID of the user which is going to receive the entitlement associated with the code
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -823,6 +979,9 @@ class Client:
             first (int, optional): Maximum number of entitlements to return
                                    Default: 20
                                    Max: 100
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -864,6 +1023,9 @@ class Client:
             code (str): The code to redeem
             user_id (int): ID of the user which is going to receive the entitlement
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -884,6 +1046,93 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def create_eventsub_subscription(self,type,version,condition,transport):
+        """
+        Creates an EventSub subscription
+
+        Args:
+            type (str): The category of the subscription that is being created
+                        Valid values: "channel.update", "channel.follow", "channel.subscribe", "channel.subscription.end", "channel.subscription.gift", "channel.cheer", "channel.raid", "channel.ban", "channel.unban", "channel.moderator.add", "channel.moderator.remove", "channel.channel_points_custom_reward.add", "channel.channel_points_custom_reward.update", "channel.channel_points_custom_reward.remove", "channel.channel_points_custom_reward_redemption.add", "channel.channel_points_custom_reward_redemption.update", "channel.poll.begin", "channel.poll.progress", "channel.poll.end", "channel.prediction.begin", "channel.prediction.progress", "channel.prediction.lock", "channel.prediction.end", "extension.bits_transaction.create", "channel.hype_train.begin", "channel.hype_train.progress", "channel.hype_train.end", "stream.online", "stream.offline", "user.authorization.revoke", "user.update"
+            version (str): The version of the subscription type that is being created
+            condition (dict): Custom parameters for the subscription
+            transport (dict): Notification delivery specific configuration
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/eventsub/subscriptions"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        payload={"type":type,"version":version,"condition":condition,"transport":transport}
+
+        response=requests.post(url,headers=headers,json=payload).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def delete_eventsub_subscription(self,id):
+        """
+        Delete an EventSub subscription
+
+        Args:
+            id (str): The subscription ID for the subscription to delete
+        """
+
+        url="https://api.twitch.tv/helix/eventsub/subscriptions"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        data={"id":id}
+
+        response=requests.delete(url,headers=headers,data=data)
+
+    def get_eventsub_subscriptions(self,status="",type=""):
+        """
+        Get a list of your EventSub subscriptions
+        Only include one filter query parameter
+
+        Args:
+            status (str, optional): Filters subscriptions by one status type
+                                    Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "user_removed"
+            type (str, optional): Filters subscriptions by subscription type name
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+        
+        url="https://api.twitch.tv/helix/eventsub/subscriptions"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
+
+        if status!="":
+            params["status"]=status
+
+        if type!="":
+            params["type"]=type
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def get_top_games(self,first=20):
         """
         Gets the most popular games
@@ -892,6 +1141,9 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -927,6 +1179,9 @@ class Client:
             id (str, optional): Game ID
             name (str, optional): Game name
                                   The name must be an exact match
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             Game
@@ -967,6 +1222,9 @@ class Client:
                                    Default: 1
             id (str, optional): The id of the wanted event
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1003,6 +1261,9 @@ class Client:
             msg_user (str, optional): Message text
             user_id (str, optional): User ID of the sender
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1023,6 +1284,23 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def manage_held_automod_messages(self,user_id,msg_id,action):
+        """
+        Allow or deny a message that was held for review by AutoMod
+
+        Args:
+            user_id (str): The moderator who is approving or rejecting the held message
+            msg_id (str): ID of the message to be allowed or denied
+            action (str): The action to take for the message
+                          Valid values: "ALLOW", "DENY"
+        """
+
+        url="https://api.twitch.tv/helix/moderation/automod/message"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        payload={"user_id":user_id,"msg_id":msg_id,"action":action}
+
+        response=requests.post(url,headers=headers,json=payload)
+
     def get_banned_events(self,broadcaster_id,user_id="",first=20):
         """
         Returns all user bans and un-bans in a channel
@@ -1033,6 +1311,9 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1071,6 +1352,9 @@ class Client:
                                    Maximum: 100
                                    Default: 20
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1107,6 +1391,9 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1150,6 +1437,9 @@ class Client:
                                    Maximum: 100
                                    Default: 20
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1176,6 +1466,255 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def get_polls(self,broadcaster_id,id="",first=20):
+        """
+        Get information about all polls or specific polls for a Twitch channel
+        Poll information is available for 90 days
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            id (str, optional): ID of a poll
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 20
+                                   Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/polls"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        if id!="":
+            params["id"]=id
+
+        if first!=20:
+            params["first"]=first
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
+        """
+        Create a poll for a specific Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            title (str): Question displayed for the poll
+                         Maximum: 60 characters
+            choices (list): Array of the poll choices
+                            Minimum: 2 choices
+                            Maximum: 5 choices
+            duration (int): Total duration for the poll (in seconds)
+                            Minimum: 15
+                            Maximum: 1800
+            bits_voting_enabled (bool, optional): Indicates if Bits can be used for voting
+                                                  Default: False
+            bits_per_vote (int, optional): Number of Bits required to vote once with Bits
+                                           Minimum: 0
+                                           Maximum: 10000
+            channel_points_voting_enabled (bool, optional): Indicates if Channel Points can be used for voting
+                                                            Default: False
+            channel_points_per_vote (int, optional): Number of Channel Points required to vote once with Channel Points
+                                                     Minimum: 0
+                                                     Maximum: 1000000
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/polls"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        payload={"broadcaster_id":broadcaster_id,"title":title,"choices":choices,"duration":duration}
+
+        if bits_voting_enabled!=False:
+            payload["bits_voting_enabled"]=bits_voting_enabled
+
+        if bits_per_vote!=0:
+            payload["bits_per_vote"]=bits_per_vote
+
+        if channel_points_voting_enabled!=False:
+            payload["channel_points_voting_enabled"]=channel_points_voting_enabled
+
+        if channel_points_per_vote!=0:
+            payload["channel_points_per_vote"]=channel_points_per_vote
+
+        response=requests.post(url,headers=headers,json=payload).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def end_poll(self,broadcaster_id,id,status):
+        """
+        End a poll that is currently active
+
+        Args:
+            broadcaster_id (str): The broadcaster running polls
+            id (str): ID of the poll
+            status (str): The poll status to be set
+                          Valid values: "TERMINATED", "ARCHIVED"
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/polls"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
+
+        response=requests.patch(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_predictions(self,broadcaster_id,id="",first=20):
+        """
+        Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running Predictions
+            id (str, optional): ID of a Prediction
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 20
+                                   Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/predictions"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        if id!="":
+            params["id"]=id
+
+        if first!=20:
+            params["first"]=first
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def create_prediction(self,broadcaster_id,title,outcomes,prediction_window):
+        """
+        Create a Channel Points Prediction for a specific Twitch channel
+
+        Args:
+            broadcaster_id (str): The broadcaster running Predictions
+            title (str): Title for the Prediction
+                         Maximum: 45 characters
+            outcomes (list): Array of outcome objects with titles for the Prediction
+                             Array size must be 2
+            prediction_window (int): Total duration for the Prediction (in seconds)
+                                     Minimum: 1
+                                     Maximum: 1800
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/predictions"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        payload={"broadcaster_id":broadcaster_id,"title":title,"outcomes":outcomes,"prediction_window":prediction:window}
+
+        response=requests.post(url,headers=headers,json=payload).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def end_prediction(self,broadcaster_id,id,status,winning_outcome_id=""):
+        """
+        Lock, resolve, or cancel a Channel Points Prediction
+
+        Args:
+            broadcaster_id (str): The broadcaster running prediction events
+            id (str): ID of the Prediction
+            status (str): The Prediction status to be set
+                          Valid values: "RESOLVED", "CANCELED", "LOCKED"
+            winning_outcome_id (str, optional): ID of the winning outcome for the Prediction
+                                                This parameter is required if status is being set to RESOLVED
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/predictions"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
+
+        if winning_outcome_id!="":
+            data["winning_outcome_id"]=winning_outcome_id
+
+        response=requests.patch(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def search_categories(self,query,first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially
@@ -1185,6 +1724,9 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1226,6 +1768,9 @@ class Client:
             live_only (bool, optional): Filter results for live streams only
                                         Default: false
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1264,6 +1809,9 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             str
         """
@@ -1296,6 +1844,9 @@ class Client:
             language (str, optional): Stream language
             user_id (str, optional): Returns streams broadcast by one or more specified user IDs
             user_login (str, optional): Returns streams broadcast by one or more specified user login names
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1337,6 +1888,44 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def get_followed_streams(self,user_id,first=100):
+        """
+        Gets information about active streams belonging to channels that the authenticated user follows
+
+        Args:
+            user_id (str): Results will only include active streams from the channels that this Twitch user follows
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 100
+                                   Default: 100
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/streams/followed"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"user_id":user_id}
+
+        if first!=100:
+            params["first"]=first
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                streams=[]
+
+                for stream in response["data"]:
+                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+
+                return streams
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def create_stream_marker(self,user_id,description=""):
         """
         Creates a marker in the stream of a user specified by user ID
@@ -1345,6 +1934,9 @@ class Client:
             user_id (str): ID of the broadcaster in whose live stream the marker is created
             description (str, optional): Description of or comments on the marker
                                          Max length is 140 characters
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1381,6 +1973,9 @@ class Client:
                                    Limit: 100
                                    Default: 20
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1404,66 +1999,6 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_channel(self,broadcaster_id):
-        """
-        Gets a channel
-
-        Args:
-            broadcaster_id (str): ID of the channel to be updated
-
-        Returns:
-            Channel
-        """
-
-        url="https://api.twitch.tv/helix/channels"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
-
-        response=requests.get(url,headers=headers,params=params).json()
-
-        try:
-            if len(response["data"])>0:
-                channel=response["data"][0]
-                channel=Channel(self.app_token,self.client_id,self.client_secret,self.get_user(id=channel["broadcaster_id"]).login,channel["game_name"],channel["broadcaster_language"],channel["title"])
-                
-                return channel
-
-            else:
-                return None
-
-        except:
-            raise twitchpy.errors.ClientError(response["message"])
-
-    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
-        """
-        Modifies channel information
-        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
-
-        Args:
-            broadcaster_id (str): ID of the channel to be updated
-            game_id (str, optional): The current game ID being played on the channel
-            broadcaster_language (str, optional): The language of the channel
-            title (str, optional): The title of the stream
-        """
-
-        url="https://api.twitch.tv/helix/channels"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
-        data={"broadcaster_id":broadcaster_id}
-
-        if (game_id!="" and broadcaster_language!="") or (game_id!="" and title!="") or (broadcaster_language!="" and title!=""):
-            raise twitchpy.errors.FewArgumentsError("game_id, broadcaster_language or title must be provided")
-
-        if game_id!="":
-            data["game_id"]=game_id
-
-        if broadcaster_language!="":
-            data["broadcaster_language"]=broadcaster_language
-
-        if title!="":
-            data["title"]=title
-
-        response=requests.patch(url,headers=headers,data=data)
-
     def get_broadcaster_subscriptions(self,broadcaster_id,user_id="",first=20):
         """
         Get all of a broadcaster’s subscriptions
@@ -1474,6 +2009,9 @@ class Client:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1501,6 +2039,37 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def check_user_subscription(self,broadcaster_id,user_id):
+        """
+        Checks if a specific user is subscribed to a specific channel
+
+        Args:
+            broadcaster_id (str): User ID of an Affiliate or Partner broadcaster
+            user_id (str): User ID of a Twitch viewer
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/subscriptions/user"
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id,"user_id":user_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def get_all_stream_tags(self,first=20,tag_id=""):
         """
         Gets the list of all stream tags defined by Twitch
@@ -1510,6 +2079,9 @@ class Client:
                                    Maximum: 100
                                    Default: 20
             tag_id (str, optional): ID of a tag
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1548,6 +2120,9 @@ class Client:
 
         Args:
             broadcaster_id (str): ID of the stream thats tags are going to be fetched
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1589,6 +2164,204 @@ class Client:
 
         response=requests.put(url,headers=headers,data=data)
 
+    def get_channel_teams(self,broadcaster_id):
+        """
+        Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
+
+        Args:
+            broadcaster_id (str): User ID for a Twitch user
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/teams/channel"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params):json()
+
+        try:
+            if len(response["data"])>0:
+                teams=[]
+
+                for team in response["data"]:
+                    teams.append(Team(team["users"],team["background_image_url"],team["banner"],team["created_at"],team["updated_at"],team["info"],team["thumbnail_url"],team["team_name"],team["team_display_name"],team["id"]))
+
+                return teams
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_team(self,name="",id=""):
+        """
+        Gets information for a specific Twitch Team
+        One of the two optional query parameters must be specified to return Team information
+
+        Args:
+            name (str, optional): Team name
+            id (str, optional): Team ID
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            Team
+        """
+
+        url="https://api.twitch.tv/helix/teams"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
+
+        if name!="":
+            params["name"]=name
+
+        if id!="":
+            params["id"]=id
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                team=response["data"][0]
+                team=Team(team["users"],team["background_image_url"],team["banner"],team["created_at"],team["updated_at"],team["info"],team["thumbnail_url"],team["team_name"],team["team_display_name"],team["id"])
+
+                return team
+                
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_user(self,id="",login=""):
+        """
+        Gets an user
+
+        Args:
+            id (str, optional): User ID
+            login (str, optional): User login name
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            User
+        """
+
+        url="https://api.twitch.tv/helix/users"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
+
+        if id!="":
+            params["id"]=id
+
+        if login!="":
+            login=login.replace("@","").lower()
+            params["login"]=login
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                user=response["data"][0]
+                user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
+                
+                return user
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def update_user(self,description=""):
+        """
+        Updates the description of a user
+
+        Args:
+            description (str, optional): User’s account description
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            User
+        """
+
+        url="https://api.twitch.tv/helix/users"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+
+        if description=="":
+            response=requests.put(url,headers=headers).json()
+
+        else:
+            data={"description":description}
+
+            response=requests.put(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                user=get_user(id=response["data"][0]["id"])
+
+                return user
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_user_follows(self,first=20,from_id="",to_id=""):
+        """
+        Gets information on follow relationships between Twitch users
+        At minimum, from_id or to_id must be provided for a query to be valid
+
+        Args:
+            first (int, optional): Maximum number of objects to return
+                                   Maximum: 100
+                                   Default: 20
+            from_id (str, optional): User ID
+            to_id (str, optional): User ID
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/users/follows"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
+
+        if first!=20:
+            params["first"]=first
+
+        if from_id!="":
+            params["from_id"]=from_id
+
+        if to_id!="":
+            params["to_id"]=to_id
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def create_user_follows(self,from_id,to_id,allow_notifications=False):
         """
         Adds a specified user to the followers of a specified channel
@@ -1624,78 +2397,40 @@ class Client:
 
         response=requests.delete(url,headers=headers,data=data)
 
-    def get_user(self,id="",login=""):
+    def get_user_block_list(self,broadcaster_id,first=20):
         """
-        Gets an user
+        Gets a specified user’s block list
 
         Args:
-            id (str, optional): User ID
-            login (str, optional): User login name
-
-        Returns:
-            User
-        """
-
-        url="https://api.twitch.tv/helix/users"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
-
-        if id!="":
-            params["id"]=id
-
-        if login!="":
-            login=login.replace("@","").lower()
-            params["login"]=login
-
-        response=requests.get(url,headers=headers,params=params).json()
-
-        try:
-            if len(response["data"])>0:
-                user=response["data"][0]
-                user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
-                
-                return user
-
-            else:
-                return None
-
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
-
-    def get_user_follows(self,first=20,from_id="",to_id=""):
-        """
-        Gets information on follow relationships between Twitch users
-        At minimum, from_id or to_id must be provided for a query to be valid
-
-        Args:
+            broadcaster_id (str): User ID for a Twitch user
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
-            from_id (str, optional): User ID
-            to_id (str, optional): User ID
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
         """
 
-        url="https://api.twitch.tv/helix/users/follows"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url="https://api.twitch.tv/helix/users/blocks"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
 
         if first!=20:
             params["first"]=first
-
-        if from_id!="":
-            params["from_id"]=from_id
-
-        if to_id!="":
-            params["to_id"]=to_id
 
         response=requests.get(url,headers=headers,params=params).json()
 
         try:
             if len(response["data"])>0:
-                return response["data"]
+                users=[]
+
+                for user in response["data"]:
+                    users.append(self.get_user(id=user["user_id"]))
+
+                return users
 
             else:
                 return None
@@ -1703,43 +2438,50 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def update_user(self,description=""):
+    def block_user(self,target_user_id,source_context="",reason=""):
         """
-        Updates the description of a user
+        Blocks the specified user on behalf of the authenticated user
 
         Args:
-            description (str, optional): User’s account description
-
-        Returns:
-            User
+            target_user_id (str): User ID of the user to be blocked
+            source_context (str, optional): Source context for blocking the user
+                                            Valid values: "chat", "whisper"
+            reason (str, optional): Reason for blocking the user
+                                    Valid values: "spam", "harassment", or "other"
         """
 
-        url="https://api.twitch.tv/helix/users"
+        url="https://api.twitch.tv/helix/users/blocks"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"target_user_id":target_user_id}
 
-        if description=="":
-            response=requests.put(url,headers=headers).json()
+        if source_context!="":
+            data["source_context"]=source_context
 
-        else:
-            data={"description":description}
+        if reason!="":
+            data["reason"]=reason
 
-            response=requests.put(url,headers=headers,data=data).json()
+        response=requests.put(url,headers=headers,data=data)
 
-        try:
-            if len(response["data"])>0:
-                user=get_user(id=response["data"][0]["id"])
+    def unblock_user(self,target_user_id):
+        """
+        Unblocks the specified user on behalf of the authenticated user
 
-                return user
+        Args:
+            target_user_id (str): User ID of the user to be unblocked
+        """
 
-            else:
-                return None
+        url="https://api.twitch.tv/helix/users/blocks"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"target_user_id":target_user_id}
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+        response=requests.delete(url,headers=headers,data=data)
 
     def get_user_extensions(self):
         """
         Gets a list of all extensions (both active and inactive) for a specified user
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1766,6 +2508,9 @@ class Client:
 
         Args:
             user_id (str, optional): ID of the user whose installed extensions will be returned
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1795,6 +2540,9 @@ class Client:
     def update_user_extensions(self):
         """
         Updates the activation state, extension ID, and/or version number of installed extensions for a specified user
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1837,6 +2585,9 @@ class Client:
                                   Valid values: "all", "upload", "archive", "highlight"
                                   Default: "all"
 
+        Raises:
+            twitchpy.errors.ClientError
+
         Returns:
             list
         """
@@ -1877,6 +2628,20 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def delete_video(self,id):
+        """
+        Deletes a video
+
+        Args:
+            id (str): ID of the video to be deleted
+        """
+
+        url="https://api.twitch.tv/helix/videos"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"id":id}
+
+        response=requests.delete(url,headers=headers,data=data)
+
     def get_webhook_subscriptions(self,first=20):
         """
         Gets the Webhook subscriptions of a user
@@ -1885,6 +2650,9 @@ class Client:
             first (int, optional): Number of values to be returned per page
                                    Limit: 100
                                    Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
@@ -1917,6 +2685,9 @@ class Client:
 
         Args:
             channel_name (str): Name of the user who is owner of the chat
+
+        Raises:
+            twitchpy.errors.ClientError
 
         Returns:
             list
