@@ -298,7 +298,7 @@ class Channel():
 
     def unraid(self):
         """
-        Cancels an raid
+        Cancels a raid
         """
 
         self.__send_privmsg(self.name,f"/unraid")

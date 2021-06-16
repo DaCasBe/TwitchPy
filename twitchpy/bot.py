@@ -12,9 +12,9 @@ class Bot:
     def __init__(self,oauth_token,client_id,client_secret,username,channels,command_prefix,code="",ready_message=""):
         """
         Args:
-            oauth_token (str): OAuth token to identify the application
-            client_id (str): Client ID to identify the application
-            client_secret (str): Client secret to identify the application
+            oauth_token (str): OAuth token
+            client_id (str): Client ID
+            client_secret (str): Client secret
             username (str): Name of the bot
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
@@ -193,6 +193,7 @@ class Bot:
     def add_check(self,name,check):
         """
         Adds a check to the bot
+        Checks work permanently
 
         Args:
             name (str): Check's name
@@ -204,6 +205,7 @@ class Bot:
     def add_listener(self,name,listener):
         """
         Adds a command to the bot
+        Listeners work only when a message is received
 
         Args:
             name (str): Command's name
@@ -240,15 +242,16 @@ class Bot:
 
     def get_extension_analytics(self,extension_id="",first=20,type=""):
         """
-        Gets a URL that extension developers can use to download analytics reports for their extensions
+        Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
 
         Args:
             extension_id (str, optional): Client ID value assigned to the extension when it is created
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
+                                   Default: 20
             type (str, optional): Type of analytics report that is returned
-                                  Valid values: "overview_v1" and "overview_v2"
+                                  Valid values: "overview_v2"
 
         Returns:
             list
@@ -264,9 +267,10 @@ class Bot:
         Args:
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
+                                   Default: 20
             game_id (str, optional): Game ID
             type (str, optional): Type of analytics report that is returned
-                                  Valid values: "overview_v1" and "overview_v2"
+                                  Valid values: "overview_v2"
 
         Returns:
             list
@@ -283,6 +287,7 @@ class Bot:
                                    Maximum: 100
                                    Default: 10
             user_id (str, optional): ID of the user whose results are returned
+                                     As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
         Returns:
             list
@@ -307,6 +312,7 @@ class Bot:
     def get_extension_transactions(self,extension_id,id="",first=20):
         """
         Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
+        A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
             extension_id (str): ID of the extension to list transactions for
@@ -336,13 +342,14 @@ class Bot:
 
     def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
         """
-        Modifies channel information
+        Modifies channel information for users
         game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
 
         Args:
             broadcaster_id (str): ID of the channel to be updated
             game_id (str, optional): The current game ID being played on the channel
             broadcaster_language (str, optional): The language of the channel
+                                                  A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
             title (str, optional): The title of the stream
         """
 
@@ -371,22 +378,25 @@ class Bot:
             cost (int): The cost of the reward
             prompt (str, optional): The prompt for the viewer when they are redeeming the reward
             is_enabled (bool, optional): Is the reward currently enabled, if false the reward won’t show up to viewers
-                                         Defaults true
+                                         Default: true
             background_color (str, optional): Custom background color for the reward
                                               Format: Hex with # prefix
             is_user_input_required (bool, optional): Does the user need to enter information when redeeming the reward
-                                                     Defaults false
+                                                     Default: false
             is_max_per_stream_enabled (bool, optional): Whether a maximum per stream is enabled
-                                                        Defaults to false
+                                                        Default: false
             max_per_stream (int, optional): The maximum number per stream if enabled
+                                            Required when any value of is_max_per_stream_enabled is included
             is_max_per_user_per_stream_enabled (bool, optional): Whether a maximum per user per stream is enabled
-                                                                 Defaults to false
+                                                                 Default: false
             max_per_user_per_stream (int, optional): The maximum number per user per stream if enabled
+                                                     Required when any value of is_max_per_user_per_stream_enabled is included
             is_global_cooldown_enabled (bool, optional): Whether a cooldown is enabled
-                                                         Defaults to false
+                                                         Default: false
             global_cooldown_seconds (int, optional): The cooldown in seconds if enabled
+                                                     Required when any value of is_global_cooldown_enabled is included
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
-                                                                    Defaults false
+                                                                    Default: false
 
         Returns:
             list
@@ -397,11 +407,13 @@ class Bot:
     def delete_custom_reward(self,broadcaster_id,id):
         """
         Deletes a Custom Reward on a channel
+        The Custom Reward specified by id must have been created by the client_id attached to the OAuth token in order to be deleted
         Any UNFULFILLED Custom Reward Redemptions of the deleted Custom Reward will be updated to the FULFILLED status
 
         Args:
-            broadcaster_id (str): ID of the channel deleting a reward
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             id (str): ID of the Custom Reward to delete
+                      Must match a Custom Reward on broadcaster_id’s channel
         """
 
         self.__client.delete_custom_reward(broadcaster_id,id)
@@ -411,10 +423,10 @@ class Bot:
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
         Args:
-            broadcaster_id (str): ID of the channel deleting a reward
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
-                                                      Defaults false.
+                                                      Default: false
 
         Returns:
             list
@@ -424,19 +436,19 @@ class Bot:
 
     def get_custom_reward_redemption(self,broadcaster_id,reward_id,id="",status="",sort="OLDEST",first=20):
         """
-        Returns Custom Reward Redemption objects for a Custom Reward on a channel
-        You may specify only one of the args
+        Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
+        Developers only have access to get and update redemptions for the rewards created programmatically by the same client_id
 
         Args:
-            broadcaster_id (str): ID of the channel owner of a reward
-            reward_id (str): This parameter returns paginated Custom Reward Redemption objects for redemptions of the Custom Reward
-            id (str, optional): This param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
-            status (str, optional): This param filters the paginated Custom Reward Redemption objects for redemptions with the matching status
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
+            reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
+            id (str, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+            status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                                     Can be one of UNFULFILLED, FULFILLED or CANCELED
-            sort (str, optional): Sort order of redemptions returned when getting the paginated Custom Reward Redemption objects for a reward
+            sort (str, optional): Sort order of redemptions returned when getting the Custom Reward Redemption objects for a reward
                                   One of: OLDEST, NEWEST
                                   Default: OLDEST
-            first (int, optional): Number of results to be returned when getting the paginated Custom Reward Redemption objects for a reward
+            first (int, optional): Number of results to be returned when getting the Custom Reward Redemption objects for a reward
                                    Limit: 50
                                    Default: 20
 
@@ -449,26 +461,31 @@ class Bot:
     def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
         """
         Updates a Custom Reward created on a channel
+        The Custom Reward specified by id must have been created by the client_id attached to the user OAuth token
 
         Args:
-            broadcaster_id (str): ID of the channel updating a reward
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             id (str): ID of the Custom Reward to update
+                      Must match a Custom Reward on the channel of the broadcaster_id
             title (str, optional): The title of the reward
             prompt (str, optional): The prompt for the viewer when they are redeeming the reward
             cost (int, optional): The cost of the reward
-            background_color (str, optional): Custom background color for the reward
-                                              Format: Hex with # prefix
-            is_enabled (bool, optional): Is the reward currently enabled
+            background_color (str, optional): Custom background color for the reward as a hexadecimal value
+            is_enabled (bool, optional): Is the reward currently enabled, if false the reward won’t show up to viewers
             is_user_input_required (bool, optional): Does the user need to enter information when redeeming the reward
             is_max_per_stream_enabled (bool, optional): Whether a maximum per stream is enabled
+                                                        Required when any value of max_per_stream is included
             max_per_stream (int, optional): The maximum number per stream if enabled
+                                            Required when any value of is_max_per_stream_enabled is included
             is_max_per_user_per_stream_enabled (bool, optional): Whether a maximum per user per stream is enabled
-                                                                 Defaults to false
+                                                                 Required when any value of max_per_user_per_stream is included
             max_per_user_per_stream (int, optional): The maximum number per user per stream if enabled
+                                                     Required when any value of is_max_per_user_per_stream_enabled is included
             is_global_cooldown_enabled (bool, optional): Whether a cooldown is enabled
-                                                         Defaults to false
+                                                         Required when any value of global_cooldown_seconds is included
             global_cooldown_seconds (int, optional): The cooldown in seconds if enabled
-            is_paused (bool, optional): Is the reward currently paused
+                                                     Required when any value of is_global_cooldown_enabled is included
+            is_paused (bool, optional): Is the reward currently paused, if true viewers cannot redeem
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
 
         Returns:
@@ -480,13 +497,16 @@ class Bot:
     def update_redemption_status(self,id,broadcaster_id,reward_id,status=""):
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
+        The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
 
         Args:
             id (str): ID of the Custom Reward Redemption to update
-            broadcaster_id (str): ID of the channel updating a reward redemption
+                      Must match a Custom Reward Redemption on broadcaster_id’s channel
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward the redemptions to be updated are for
             status (str, optional): The new status to set redemptions to
                                     Can be either FULFILLED or CANCELED
+                                    Updating to CANCELED will refund the user their Channel Points
 
         Returns:
             list
@@ -497,9 +517,11 @@ class Bot:
     def get_channel_chat_badges(self,broadcaster_id):
         """
         Gets a list of custom chat badges that can be used in chat for the specified channel
+        This includes subscriber badges and Bit badges
 
         Args:
             broadcaster_id (str): The broadcaster whose chat badges are being requested
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
 
         Returns:
             list
@@ -519,12 +541,12 @@ class Bot:
 
     def create_clip(self,broadcaster_id,has_delay=False):
         """
-        This returns both an ID and an edit URL for a new clip.
+        This returns both an ID and an edit URL for a new clip
 
         Args:
             broadcaster_id (str): ID of the stream from which the clip will be made
             has_delay (bool, optional): If false, the clip is captured from the live stream when the API is called; otherwise, a delay is added before the clip is captured (to account for the brief delay between the broadcaster’s stream and the viewer’s experience of that stream)
-                                        Default: false.
+                                        Default: false
 
         Returns:
             dict
@@ -534,7 +556,7 @@ class Bot:
 
     def get_clips(self,broadcaster_id="",game_id="",id="",first=20):
         """
-        Gets clip information by clip ID, broadcaster ID or game ID
+        Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
         Args:
             broadcaster_id (str, optional): ID of the broadcaster for whom clips are returned
@@ -553,10 +575,11 @@ class Bot:
     def get_code_status(self,code,user_id):
         """
         Gets the status of one or more provided codes
+        All codes are single-use
 
         Args:
             code (str): The code to get the status of
-            user_id (int): ID of the user which is going to receive the entitlement associated with the code
+            user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Returns:
             list
@@ -574,7 +597,7 @@ class Bot:
             game_id (str, optional): A Twitch Game ID
             first (int, optional): Maximum number of entitlements to return
                                    Default: 20
-                                   Max: 100
+                                   Max: 1000
 
         Returns:
             list
@@ -585,10 +608,11 @@ class Bot:
     def redeem_code(self,code,user_id):
         """
         Redeems one or more provided codes
+        All codes are single-use
 
         Args:
-            code (str): The code to redeem
-            user_id (int): ID of the user which is going to receive the entitlement
+            code (str): The code to redeem to the authenticated user’s account
+            user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Returns:
             list
@@ -604,8 +628,11 @@ class Bot:
             type (str): The category of the subscription that is being created
                         Valid values: "channel.update", "channel.follow", "channel.subscribe", "channel.subscription.end", "channel.subscription.gift", "channel.cheer", "channel.raid", "channel.ban", "channel.unban", "channel.moderator.add", "channel.moderator.remove", "channel.channel_points_custom_reward.add", "channel.channel_points_custom_reward.update", "channel.channel_points_custom_reward.remove", "channel.channel_points_custom_reward_redemption.add", "channel.channel_points_custom_reward_redemption.update", "channel.poll.begin", "channel.poll.progress", "channel.poll.end", "channel.prediction.begin", "channel.prediction.progress", "channel.prediction.lock", "channel.prediction.end", "extension.bits_transaction.create", "channel.hype_train.begin", "channel.hype_train.progress", "channel.hype_train.end", "stream.online", "stream.offline", "user.authorization.revoke", "user.update"
             version (str): The version of the subscription type that is being created
+                           Each subscription type has independent versioning
             condition (dict): Custom parameters for the subscription
-            transport (dict): Notification delivery specific configuration
+            transport (dict): Notification delivery specific configuration including a method string
+                              Valid transport methods include: webhook
+                              In addition to the method string, a webhook transport must include the callback and secret information
 
         Returns:
             dict
@@ -641,7 +668,7 @@ class Bot:
 
     def get_top_games(self,first=20):
         """
-        Gets the most popular games
+        Gets games sorted by number of current viewers on Twitch, most popular first
 
         Args:
             first (int, optional): Maximum number of objects to return
@@ -673,9 +700,13 @@ class Bot:
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
         Gets the information of the most recent Hype Train of the given channel ID
+        When there is currently an active Hype Train, it returns information about that Hype Train
+        When there is currently no active Hype Train, it returns information about the most recent Hype Train
+        After 5 days, if no Hype Train has been active, the endpoint will return an empty response
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
+                                  Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 1
@@ -692,7 +723,7 @@ class Bot:
         Determines whether a string message meets the channel’s AutoMod requirements
 
         Args:
-            broadcaster_id (str): User ID of the broadcaster
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
             msg_id (str, optional): Developer-generated identifier for mapping messages to results
             msg_user (str, optional): Message text
             user_id (str, optional): User ID of the sender
@@ -709,9 +740,10 @@ class Bot:
 
         Args:
             user_id (str): The moderator who is approving or rejecting the held message
+                           Must match the user_id in the user OAuth token
             msg_id (str): ID of the message to be allowed or denied
             action (str): The action to take for the message
-                          Valid values: "ALLOW", "DENY"
+                          Must be "ALLOW" or "DENY"
         """
 
         self.manage_held_automod_messages(user_id,msg_id,action)
@@ -721,8 +753,8 @@ class Bot:
         Returns all user bans and un-bans in a channel
 
         Args:
-            broadcaster_id (str): User ID of the broadcaster
-            user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in the channel
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+            user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -738,8 +770,8 @@ class Bot:
         Returns all banned and timed-out users in a channel
 
         Args:
-            broadcaster_id (str): User ID of the broadcaster
-            user_id (str, optional): Filters the results and only returns a status object for users who are banned in the channel
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+            user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -755,8 +787,8 @@ class Bot:
         Returns all moderators in a channel
 
         Args:
-            broadcaster_id (str): User ID of the broadcaster
-            user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+            user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -772,8 +804,8 @@ class Bot:
         Returns a list of moderators or users added and removed as moderators from a channel
 
         Args:
-            broadcaster_id (str): User ID of the broadcaster
-            user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in the channel
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+            user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -791,6 +823,7 @@ class Bot:
 
         Args:
             broadcaster_id (str): The broadcaster running polls
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): ID of a poll
             first (int, optional): Maximum number of objects to return
                                    Maximum: 20
@@ -808,6 +841,7 @@ class Bot:
 
         Args:
             broadcaster_id (str): The broadcaster running polls
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Question displayed for the poll
                          Maximum: 60 characters
             choices (list): Array of the poll choices
@@ -817,12 +851,12 @@ class Bot:
                             Minimum: 15
                             Maximum: 1800
             bits_voting_enabled (bool, optional): Indicates if Bits can be used for voting
-                                                  Default: False
+                                                  Default: false
             bits_per_vote (int, optional): Number of Bits required to vote once with Bits
                                            Minimum: 0
                                            Maximum: 10000
             channel_points_voting_enabled (bool, optional): Indicates if Channel Points can be used for voting
-                                                            Default: False
+                                                            Default: false
             channel_points_per_vote (int, optional): Number of Channel Points required to vote once with Channel Points
                                                      Minimum: 0
                                                      Maximum: 1000000
@@ -839,6 +873,7 @@ class Bot:
 
         Args:
             broadcaster_id (str): The broadcaster running polls
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             id (str): ID of the poll
             status (str): The poll status to be set
                           Valid values: "TERMINATED", "ARCHIVED"
@@ -855,6 +890,7 @@ class Bot:
 
         Args:
             broadcaster_id (str): The broadcaster running Predictions
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): ID of a Prediction
             first (int, optional): Maximum number of objects to return
                                    Maximum: 20
@@ -872,10 +908,12 @@ class Bot:
 
         Args:
             broadcaster_id (str): The broadcaster running Predictions
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Title for the Prediction
                          Maximum: 45 characters
             outcomes (list): Array of outcome objects with titles for the Prediction
                              Array size must be 2
+                             The first outcome object is the "blue" outcome and the second outcome object is the "pink" outcome when viewing the Prediction on Twitch
             prediction_window (int): Total duration for the Prediction (in seconds)
                                      Minimum: 1
                                      Maximum: 1800
@@ -889,9 +927,12 @@ class Bot:
     def end_prediction(self,broadcaster_id,id,status,winning_outcome_id=""):
         """
         Lock, resolve, or cancel a Channel Points Prediction
+        Active Predictions can be updated to be "locked", "resolved", or "canceled"
+        Locked Predictions can be updated to be "resolved" or "canceled"
 
         Args:
             broadcaster_id (str): The broadcaster running prediction events
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
             id (str): ID of the Prediction
             status (str): The Prediction status to be set
                           Valid values: "RESOLVED", "CANCELED", "LOCKED"
@@ -909,7 +950,7 @@ class Bot:
         Returns a list of games or categories that match the query via name either entirely or partially
 
         Args:
-            query (str): url encoded search query
+            query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -922,10 +963,10 @@ class Bot:
 
     def search_channels(self,query,first=20,live_only=False):
         """
-        Returns a list of channels that match the query via channel name or description either entirely or partially
+        Returns a list of channels (users who have streamed within the past 6 months) that match the query via channel name or description either entirely or partially
 
         Args:
-            query (str): url encoded search query
+            query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -961,8 +1002,9 @@ class Bot:
                                    Default: 20
             game_id (str, optional): Returns streams broadcasting a specified game ID
             language (str, optional): Stream language
-            user_id (str, optional): Returns streams broadcast by one or more specified user IDs
-            user_login (str, optional): Returns streams broadcast by one or more specified user login names
+                                      A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
+            user_id (str, optional): Returns streams broadcast by a specified user ID
+            user_login (str, optional): Returns streams broadcast by a specified user login name
 
         Returns:
             list
@@ -976,6 +1018,7 @@ class Bot:
 
         Args:
             user_id (str): Results will only include active streams from the channels that this Twitch user follows
+                           user_id must match the User ID in the bearer token
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 100
@@ -989,6 +1032,8 @@ class Bot:
     def create_stream_marker(self,user_id,description=""):
         """
         Creates a marker in the stream of a user specified by user ID
+        A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
+        The marker is created at the current timestamp in the live broadcast when the request is processed
 
         Args:
             user_id (str): ID of the broadcaster in whose live stream the marker is created
@@ -1003,7 +1048,9 @@ class Bot:
 
     def get_stream_markers(self,user_id,video_id,first=20):
         """
-        Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream), ordered by recency
+        Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
+        A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
+        The only markers returned are those created by the user identified by the Bearer token
         Only one of user_id and video_id must be specified
 
         Args:
@@ -1025,7 +1072,8 @@ class Bot:
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
-            user_id (str, optional): ID of account to get subscription status of
+                                  Must match the User ID in the Bearer token
+            user_id (str, optional): Filters results to only include potential subscriptions made by the provided user ID
             first (int, optional): Maximum number of objects to return
                                    Maximum: 100
                                    Default: 20
@@ -1038,7 +1086,7 @@ class Bot:
 
     def check_user_subscription(self,broadcaster_id,user_id):
         """
-        Checks if a specific user is subscribed to a specific channel
+        Checks if a specific user (user_id) is subscribed to a specific channel (broadcaster_id)
 
         Args:
             broadcaster_id (str): User ID of an Affiliate or Partner broadcaster
@@ -1068,10 +1116,10 @@ class Bot:
 
     def get_stream_tags(self,broadcaster_id):
         """
-        Gets the list of tags for a specified stream (channel)
+        Gets the list of current stream tags that have been set for a channel
 
         Args:
-            broadcaster_id (str): ID of the stream thats tags are going to be fetched
+            broadcaster_id (str): User ID of the channel to get tags
 
         Returns:
             list
@@ -1082,12 +1130,12 @@ class Bot:
     def replace_stream_tags(self,broadcaster_id,tag_ids=[]):
         """
         Applies specified tags to a specified stream (channel), overwriting any existing tags applied to that stream
-        If no tag ids are provided, all tags are removed from the stream
+        If no tags are specified, all tags previously applied to the stream are removed
+        Automated tags are not affected by this operation
 
         Args:
             broadcaster_id (str): ID of the stream for which tags are to be replaced
             tag_ids (list, optional): IDs of tags to be applied to the stream
-                                      Maximum of 100 supported
         """
 
         self.__client.replace_stream_tags(broadcaster_id,tag_ids)
@@ -1123,6 +1171,8 @@ class Bot:
     def get_user(self,id="",login=""):
         """
         Gets an user
+        Users are identified by optional user IDs and/or login name
+        If neither a user ID nor a login name is specified, the user is looked up by Bearer token
 
         Args:
             id (str, optional): User ID
@@ -1136,7 +1186,8 @@ class Bot:
 
     def update_user(self,description=""):
         """
-        Updates the description of a user
+        Updates the description of a user specified by the bearer token
+        If the description parameter is not provided, no update will occur and the current user data is returned
 
         Args:
             description (str, optional): User’s account description
@@ -1149,7 +1200,7 @@ class Bot:
 
     def get_user_follows(self,first=20,from_id="",to_id=""):
         """
-        Gets information on follow relationships between Twitch users
+        Gets information on follow relationships between two Twitch users
         At minimum, from_id or to_id must be provided for a query to be valid
 
         Args:
@@ -1157,7 +1208,9 @@ class Bot:
                                    Maximum: 100
                                    Default: 20
             from_id (str, optional): User ID
+                                     The request returns information about users who are being followed by the from_id user
             to_id (str, optional): User ID
+                                   The request returns information about users who are following the to_id user
 
         Returns:
             list
@@ -1231,7 +1284,7 @@ class Bot:
 
     def get_user_extensions(self):
         """
-        Gets a list of all extensions (both active and inactive) for a specified user
+        Gets a list of all extensions (both active and inactive) for a specified user, identified by a Bearer token
 
         Returns:
             list
@@ -1241,7 +1294,7 @@ class Bot:
 
     def get_user_active_extensions(self,user_id=""):
         """
-        Gets information about active extensions installed by a specified user
+        Gets information about active extensions installed by a specified user, identified by a user ID or Bearer token
 
         Args:
             user_id (str, optional): ID of the user whose installed extensions will be returned
@@ -1254,7 +1307,8 @@ class Bot:
 
     def update_user_extensions(self):
         """
-        Updates the activation state, extension ID, and/or version number of installed extensions for a specified user
+        Updates the activation state, extension ID, and/or version number of installed extensions for a specified user, identified by a Bearer token
+        If you try to activate a given extension under multiple extension types, the last write wins (and there is no guarantee of write order)
 
         Returns:
             list
@@ -1268,13 +1322,14 @@ class Bot:
         Each request must specify one video id, one user_id, or one game_id
 
         Args:
-            id (str): ID of the video
+            id (str): ID of the video being queried
             user_id (str): ID of the user who owns the video
             game_id (str): ID of the game the video is of
-            first (int, optional): Number of values to be returned
+            first (int, optional): Number of values to be returned when getting videos by user or game ID
                                    Limit: 100
                                    Default: 20
-            language (str, optional): Language of the video
+            language (str, optional): Language of the video being queried
+                                      A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
             period (str, optional): Period during which the video was created
                                     Valid values: "all", "day", "week", "month"
             sort (str, optional): Sort order of the videos
@@ -1293,18 +1348,20 @@ class Bot:
     def delete_video(self,id):
         """
         Deletes a video
+        Videos are past broadcasts, Highlights, or uploads
 
         Args:
             id (str): ID of the video to be deleted
         """
+
         self.__client.delete_videos(id)
 
     def get_webhook_subscriptions(self,first=20):
         """
-        Gets the Webhook subscriptions of a user
+        Gets the Webhook subscriptions of an application identified by a Bearer token, in order of expiration
 
         Args:
-            first (int, optional): Number of values to be returned per page
+            first (int, optional): Number of values to be returned
                                    Limit: 100
                                    Default: 20
 
@@ -1316,10 +1373,10 @@ class Bot:
 
     def get_chatters(self,username):
         """
-        Gets the users into a channel chat
+        Gets all users in a chat
 
         Args:
-            username (str): Channel's name
+            channel_name (str): Name of the user who is owner of the chat
 
         Returns:
             dict
@@ -1479,7 +1536,7 @@ class Bot:
 
     def send_me(self,channel,text):
         """
-        Sends a message by chat with the color of the channel's name
+        Sends a message by chat in italics
 
         Args:
             channel (str): Owner of the chat

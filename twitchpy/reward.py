@@ -1,8 +1,10 @@
 class Reward:
+    """
+    Represents a reward
+    """
+    
     def __init__(self,broadcaster_name,broadcaster_id,id,image,background_color,is_enabled,cost,title,prompt,is_user_input_required,max_per_stream_setting,max_per_user_per_stream_setting,global_cooldown_setting,is_paused,is_in_stock,default_image,should_redemptions_skip_request_queue,redemptions_redeemed_current_stream,cooldown_expires_at):
         """
-        Represents a reward
-
         Args:
             broadcaster_name (str): Name of the channel owner of the reward
             broadcaster_id (str): ID of the channel owner of the reward

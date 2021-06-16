@@ -1,4 +1,8 @@
 class Redemption:
+    """
+    Represents a reward redemption
+    """
+    
     def __init__(self,broadcaster_name,broadcaster_id,id,user_id,user_name,user_input,status,redeemed_at,reward):
         """
         Args:
