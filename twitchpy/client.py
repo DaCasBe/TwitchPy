@@ -30,6 +30,10 @@ class Client:
         if code!="":
             self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
 
+        else:
+            self.__user_token=""
+            self.__refresh_user_token=""
+
     def __get_app_token(self):
         url="https://id.twitch.tv/oauth2/token"
         payload={"client_id":self.client_id,"client_secret":self.client_secret,"grant_type":"client_credentials"}
@@ -2034,10 +2038,10 @@ class Client:
         if category_id!="":
             data["category_id"]=category_id
 
-        if title!=""
+        if title!="":
             data["title"]=title
 
-        if is_canceled!=False
+        if is_canceled!=False:
             data["is_canceled"]=is_canceled
 
         if timezone!="":
