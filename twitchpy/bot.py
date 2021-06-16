@@ -983,6 +983,122 @@ class Bot:
 
         return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
 
+    def get_channel_stream_schedule(self,broadcaster_id,id="",start_time="",utc_offset="0",first=20):
+        """
+        Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
+        Scheduled broadcasts are defined as "stream segments"
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str, optional): The ID of the stream segment to return
+            start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
+                                        If not specified, the current date and time is used
+            utc_offset (str, optional): A timezone offset for the requester specified in minutes
+                                        If not specified, "0" is used for GMT
+            first (int, optional): Maximum number of stream segments to return
+                                   Maximum: 25
+                                   Default: 20
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_channel_stream_schedule(broadcaster_id,id,start_time,utc_offset,first)
+
+    def get_channel_iCalendar(self,broadcaster_id):
+        """
+        Gets all scheduled broadcasts from a channel’s stream schedule as an iCalendar
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+
+        Returns:
+            str
+        """
+
+        return self.__client.get_channel_iCalendar(broadcaster_id)
+
+    def update_channel_stream_schedule(self,broadcaster_id,is_vacation_enabled=False,vacation_start_time="",vacation_end_time="",timezone=""):
+        """
+        Update the settings for a channel’s stream schedule
+        This can be used for setting vacation details
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            is_vacation_enabled (bool, optional): Indicates if Vacation Mode is enabled
+                                                  Set to true to add a vacation or false to remove vacation from the channel streaming schedule
+            vacation_start_time (str, optional): Start time for vacation specified in RFC3339 format
+                                                 Required if is_vacation_enabled is set to true
+            vacation_end_time (str, optional): End time for vacation specified in RFC3339 format
+                                               Required if is_vacation_enabled is set to true
+            timezone (str, optional): The timezone for when the vacation is being scheduled using the IANA time zone database format
+                                      Required if is_vacation_enabled is set to true
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_channel_stream_schedule(broadcaster_id,is_vacation_enabled,vacation_start_time,vacation_end_time,timezone)
+
+    def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
+        """
+        Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
+            timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+            is_recurring (bool): Indicates if the scheduled broadcast is recurring weekly
+            duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
+                                      Default: 240
+            category_id (str, optional): Game/Category ID for the scheduled broadcast
+            title (str, optional): Title for the scheduled broadcast
+                                   Maximum: 140 characters
+
+        Returns:
+            dict
+        """
+
+        return self.__client.create_channel_stream_schedule_segment(broadcaster_id,start_time,timezone,is_recurring,duration,category_id,title)
+
+    def update_channel_stream_schedule_segment(self,broadcaster_id,id,start_time="",duration=240,category_id="",title="",is_canceled=False,timezone=""):
+        """
+        Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str): The ID of the streaming segment to update
+            start_time (str, optional): Start time for the scheduled broadcast specified in RFC3339 format
+            duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
+                                      Default: 240
+            category_id (str, optional): Game/Category ID for the scheduled broadcast
+            title (str, optional): Title for the scheduled broadcast
+                                   Maximum: 140 characters
+            is_canceled (bool, optional): Indicated if the scheduled broadcast is canceled
+            timezone (str, optional): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_channel_stream_schedule_segment(broadcaster_id,id,start_time,duration,category_id,title,is_canceled,timezone)
+
+    def delete_channel_stream_schedule_segment(self,broadcaster_id,id):
+        """
+        Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str): The ID of the streaming segment to delete
+        """
+
+        self.__client.delete_channel_stream_schedule_segment(broadcaster_id,id)
+
     def search_categories(self,query,first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially

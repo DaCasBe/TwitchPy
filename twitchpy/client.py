@@ -1835,6 +1835,242 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
+    def get_channel_stream_schedule(self,broadcaster_id,id="",start_time="",utc_offset="0",first=20):
+        """
+        Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
+        Scheduled broadcasts are defined as "stream segments"
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str, optional): The ID of the stream segment to return
+            start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
+                                        If not specified, the current date and time is used
+            utc_offset (str, optional): A timezone offset for the requester specified in minutes
+                                        If not specified, "0" is used for GMT
+            first (int, optional): Maximum number of stream segments to return
+                                   Maximum: 25
+                                   Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/schedule"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        if id!="":
+            params["id"]=id
+
+        if start_time!="":
+            params["start_time"]=start_time
+
+        if utc_offset!="0":
+            params["utc_offset"]=utc_offset
+
+        if first!=20:
+            params["first"]=first
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_channel_iCalendar(self,broadcaster_id):
+        """
+        Gets all scheduled broadcasts from a channel’s stream schedule as an iCalendar
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+
+        Returns:
+            str
+        """
+
+        url="https://api.twitch.tv/helix/schedule/icalendar"
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,params=params)
+
+        if response.status_code==200:
+            return response.text
+
+        else:
+            return None
+
+    def update_channel_stream_schedule(self,broadcaster_id,is_vacation_enabled=False,vacation_start_time="",vacation_end_time="",timezone=""):
+        """
+        Update the settings for a channel’s stream schedule
+        This can be used for setting vacation details
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            is_vacation_enabled (bool, optional): Indicates if Vacation Mode is enabled
+                                                  Set to true to add a vacation or false to remove vacation from the channel streaming schedule
+            vacation_start_time (str, optional): Start time for vacation specified in RFC3339 format
+                                                 Required if is_vacation_enabled is set to true
+            vacation_end_time (str, optional): End time for vacation specified in RFC3339 format
+                                               Required if is_vacation_enabled is set to true
+            timezone (str, optional): The timezone for when the vacation is being scheduled using the IANA time zone database format
+                                      Required if is_vacation_enabled is set to true
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/schedule/settings"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id}
+
+        response=requests.patch(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
+        """
+        Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
+            timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+            is_recurring (bool): Indicates if the scheduled broadcast is recurring weekly
+            duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
+                                      Default: 240
+            category_id (str, optional): Game/Category ID for the scheduled broadcast
+            title (str, optional): Title for the scheduled broadcast
+                                   Maximum: 140 characters
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/schedule/segment"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        payload={"broadcaster_id":broadcaster_id,"start_time":start_time,"timezone":timezone,"is_recurring":is_recurring}
+
+        if duration!=240:
+            payload["duration"]=duration
+
+        if category_id!="":
+            payload["category_id"]=category_id
+
+        if title!="":
+            payload["title"]=title
+
+        response=requests.post(url,headers=headers,json=payload).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def update_channel_stream_schedule_segment(self,broadcaster_id,id,start_time="",duration=240,category_id="",title="",is_canceled=False,timezone=""):
+        """
+        Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str): The ID of the streaming segment to update
+            start_time (str, optional): Start time for the scheduled broadcast specified in RFC3339 format
+            duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
+                                      Default: 240
+            category_id (str, optional): Game/Category ID for the scheduled broadcast
+            title (str, optional): Title for the scheduled broadcast
+                                   Maximum: 140 characters
+            is_canceled (bool, optional): Indicated if the scheduled broadcast is canceled
+            timezone (str, optional): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/schedule/segment"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"id":id}
+
+        if start_time!="":
+            data["start_time"]=start_time
+
+        if duration!=240:
+            data["duration"]=duration
+
+        if category_id!="":
+            data["category_id"]=category_id
+
+        if title!=""
+            data["title"]=title
+
+        if is_canceled!=False
+            data["is_canceled"]=is_canceled
+
+        if timezone!="":
+            data["timezone"]=timezone
+
+        response=requests.patch(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"][0]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def delete_channel_stream_schedule_segment(self,broadcaster_id,id):
+        """
+        Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
+                                  Provided broadcaster_id must match the user_id in the user OAuth token
+            id (str): The ID of the streaming segment to delete
+        """
+
+        url="https://api.twitch.tv/helix/schedule/segment"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"id":id}
+
+        response=requests.delete(url,headers=headers,data=data)
+
     def search_categories(self,query,first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially
