@@ -514,6 +514,44 @@ class Bot:
 
         return self.__client.update_redemption_status(id,broadcaster_id,reward_id,status)
 
+    def get_channel_emotes(self,broadcaster_id):
+        """
+        Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes
+        Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
+
+        Args:
+            broadcaster_id (str): The broadcaster whose emotes are being requested
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_channel_emotes(broadcaster_id)
+
+    def get_global_emotes(self):
+        """
+        Gets all global emotes
+        Global emotes are Twitch-specific emoticons that every user can use in Twitch chat
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_global_emotes()
+
+    def get_emote_sets(self,emote_set_id):
+        """
+        Gets all Twitch emotes for one or more specific emote sets
+
+        Args:
+            emote_set_id (str): ID of the emote set
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_emote_sets(emote_set_id)
+
     def get_channel_chat_badges(self,broadcaster_id):
         """
         Gets a list of custom chat badges that can be used in chat for the specified channel

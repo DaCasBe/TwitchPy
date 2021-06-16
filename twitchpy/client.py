@@ -26,7 +26,9 @@ class Client:
         self.client_id=client_id
         self.client_secret=client_secret
         self.__app_token=self.__get_app_token()
-        self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
+
+        if code!="":
+            self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
 
     def __get_app_token(self):
         url="https://id.twitch.tv/oauth2/token"
@@ -804,6 +806,85 @@ class Client:
 
             else:
                 return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_channel_emotes(self,broadcaster_id):
+        """
+        Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes
+        Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
+
+        Args:
+            broadcaster_id (str): The broadcaster whose emotes are being requested
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/chat/emotes"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_global_emotes(self):
+        """
+        Gets all global emotes
+        Global emotes are Twitch-specific emoticons that every user can use in Twitch chat
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/chat/emotes"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+
+        response=requests.get(url,headers=headers).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
+    def get_emote_sets(self,emote_set_id):
+        """
+        Gets all Twitch emotes for one or more specific emote sets
+
+        Args:
+            emote_set_id (str): ID of the emote set
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/chat/emotes/set"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"emote_set_id":emote_set_id}
+
+        response=requests.get(url,headers=headers,params=params).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])

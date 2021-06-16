@@ -448,6 +448,58 @@ The Custom Reward Redemption specified by id must be for a Custom Reward created
 
 **Returns**: list
 
+### Get channel emotes
+
+~~~
+function get_channel_emotes(broadcaster_id)
+~~~
+
+Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes  
+Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
+
+**Args**:
+
++ broadcaster_id (str): The broadcaster whose emotes are being requested
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
+### Get global emotes
+
+~~~
+function get_global_emotes()
+~~~
+
+Gets all global emotes  
+Global emotes are Twitch-specific emoticons that every user can use in Twitch chat
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
+### Get emote sets
+
+~~~
+function get_emote_sets(emote_set_id)
+~~~
+
+Gets all Twitch emotes for one or more specific emote sets
+
+**Args**:
+
++ emote_set_id (str): ID of the emote set
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
 ### Get channel chat badges
 
 ~~~
@@ -2427,6 +2479,46 @@ The Custom Reward Redemption specified by id must be for a Custom Reward created
 + status (str, optional): The new status to set redemptions to  
                           Can be either FULFILLED or CANCELED  
                           Updating to CANCELED will refund the user their Channel Points
+
+**Returns**: list
+
+### Get channel emotes
+
+~~~
+function get_channel_emotes(broadcaster_id)
+~~~
+
+Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes  
+Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
+
+**Args**:
+
++ broadcaster_id (str): The broadcaster whose emotes are being requested
+
+**Returns**: list
+
+### Get global emotes
+
+~~~
+function get_global_emotes()
+~~~
+
+Gets all global emotes  
+Global emotes are Twitch-specific emoticons that every user can use in Twitch chat
+
+**Returns**: list
+
+### Get emote sets
+
+~~~
+function get_emote_sets(emote_set_id)
+~~~
+
+Gets all Twitch emotes for one or more specific emote sets
+
+**Args**:
+
++ emote_set_id (str): ID of the emote set
 
 **Returns**: list
 
