@@ -57,6 +57,16 @@ class Channel():
     def __send_privmsg(self,channel,text):
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
+    def send(self,text):
+        """
+        Sends a message by chat
+
+        Args:
+            text (str): Message's text
+        """
+
+        self.__send_privmsg(self.name,text)
+
     def ban(self,username,reason=""):
         """
         Bans a user
@@ -69,16 +79,16 @@ class Channel():
         username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/ban @{username} {reason}")
 
-    def block(self,username):
+    def unban(self,username):
         """
-        Blocks a user
+        Undoes the ban of a user
 
         Args:
-            username (str): User to block
+            username (str): Name of the user to readmit
         """
 
         username=username.replace("@","").lower()
-        self.__send_privmsg(self.name,f"/block @{username}")
+        self.__send_privmsg(self.name,f"/unban @{username}")
 
     def clear(self):
         """
@@ -87,25 +97,12 @@ class Channel():
 
         self.__send_privmsg(self.name,"/clear")
 
-    def color(self,color):
+    def delete_poll(self):
         """
-        Changes the color of the channel's name in the chat
-
-        Args:
-            color (str): New color's name
+        Eliminates the active poll
         """
 
-        self.__send_privmsg(self.name,f"/color {color}")
-
-    def commercial(self,duration=30):
-        """
-        Places advertising in the channel
-
-        Args:
-            duration (int, optional): Duration of advertising
-        """
-
-        self.__send_privmsg(self.name,f"/commercial {duration}")
+        self.__send_privmsg(self.name,"/deletepoll")
 
     def emoteonly(self):
         """
@@ -121,12 +118,22 @@ class Channel():
 
         self.__send_privmsg(self.name,"/emoteonlyoff")
 
-    def followers(self):
+    def end_poll(self):
         """
-        Activates the "followers only" mode
+        Finish the active poll
         """
 
-        self.__send_privmsg(self.name,"/followers")
+        self.__send_privmsg(self.name,"/endpoll")
+
+    def followers(self,duration="0m"):
+        """
+        Activates the "followers only" mode
+
+        Args:
+            duration (str, optional): Follow-up duration
+        """
+
+        self.__send_privmsg(self.name,f"/followers {duration}")
 
     def followers_off(self):
         """
@@ -145,6 +152,13 @@ class Channel():
 
         channel=channel.replace("@","").lower()
         self.__send_privmsg(self.name,f"/host {channel}")
+
+    def unhost(self):
+        """
+        Unhosts the hosted channel
+        """
+
+        self.__send_privmsg(self.name,f"/unhost")
 
     def marker(self,description=""):
         """
@@ -167,6 +181,31 @@ class Channel():
         username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/mod {username}")
 
+    def unmod(self,username):
+        """
+        Removes the moderator's rank from a user
+
+        Args:
+            username (str): User's name
+        """
+
+        username=username.replace("@","").lower()
+        self.__send_privmsg(self.name,f"/unmod {username}")
+
+    def poll(self):
+        """
+        Opens a configuration menu for creating a poll
+        """
+
+        self.__send_privmsg(self.name,"/poll")
+
+    def prediction(self):
+        """
+        Opens a configuration menu for creating a prediction
+        """
+
+        self.__send_privmsg(self.name,"/prediction")
+
     def raid(self,channel):
         """
         Raids another channel
@@ -178,25 +217,19 @@ class Channel():
         channel=channel.replace("@","").lower()
         self.__send_privmsg(self.name,f"/raid {channel}")
 
-    def send(self,text):
+    def unraid(self):
         """
-        Sends a message by chat
-
-        Args:
-            text (str): Message's text
+        Cancels a raid
         """
 
-        self.__send_privmsg(self.name,text)
+        self.__send_privmsg(self.name,"/unraid")
 
-    def send_me(self,text):
+    def requests(self):
         """
-        Sends a message by chat with the color of the channel's name
-
-        Args:
-            text (str): Message' text
+        Opens the reward requests queue
         """
 
-        self.__send_privmsg(self.name,f"/me {text}")
+        self.__send_privmsg(self.name,"/requests")
 
     def slow(self,duration):
         """
@@ -213,7 +246,7 @@ class Channel():
         Disables the "slow" mode
         """
 
-        self.__send_privmsg(self.name,f"/slow_off")
+        self.__send_privmsg(self.name,f"/slowoff")
 
     def subscribers(self):
         """
@@ -242,27 +275,16 @@ class Channel():
         username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/timeout @{username} {duration} {reason}")
 
-    def unban(self,username):
+    def untimeout(self,username):
         """
-        Undoes the ban of a user
+        Cancels the timeout of a user
 
         Args:
-            username (str): Name of the user to readmit
+            username (str): User to readmit
         """
 
         username=username.replace("@","").lower()
-        self.__send_privmsg(self.name,f"/unban @{username}")
-
-    def unblock(self,username):
-        """
-        Unblocks a user
-
-        Args:
-            username (str): Name of the user to unblock
-        """
-
-        username=username.replace("@","").lower()
-        self.__send_privmsg(self.name,f"/unblock @{username}")
+        self.__send_privmsg(self.name,f"/untimeout @{username}")
 
     def uniquechat(self):
         """
@@ -278,30 +300,27 @@ class Channel():
 
         self.__send_privmsg(self.name,"/uniquechatoff")
 
-    def unhost(self):
+    def user(self,username):
         """
-        Unhosts the hosted channel
+        Shows information about a user
+
+        Args:
+            username (str): User to show information about
         """
 
-        self.__send_privmsg(self.name,f"/unhost")
+        username=username.replace("@","").lower()
+        self.__send_privmsg(self.name,f"/user {username}")
 
-    def unmod(self,username):
+    def vip(self,username):
         """
-        Removes the moderator's rank from a user
+        Makes a user vip
 
         Args:
             username (str): User's name
         """
 
         username=username.replace("@","").lower()
-        self.__send_privmsg(self.name,f"/unmod {username}")
-
-    def unraid(self):
-        """
-        Cancels a raid
-        """
-
-        self.__send_privmsg(self.name,f"/unraid")
+        self.__send_privmsg(self.name,f"/vip {username}")
 
     def unvip(self,username):
         """
@@ -314,16 +333,91 @@ class Channel():
         username=username.replace("@","").lower()
         self.__send_privmsg(self.name,f"/unvip {username}")
 
-    def vip(self,username):
+    def block(self,username):
         """
-        Makes a user vip
+        Blocks a user
 
         Args:
-            username (str): User's name
+            username (str): User to block
         """
 
         username=username.replace("@","").lower()
-        self.__send_privmsg(self.name,f"/vip {username}")
+        self.__send_privmsg(self.name,f"/block @{username}")
+
+    def unblock(self,username):
+        """
+        Unblocks a user
+
+        Args:
+            username (str): Name of the user to unblock
+        """
+
+        username=username.replace("@","").lower()
+        self.__send_privmsg(self.name,f"/unblock @{username}")
+
+    def color(self,color):
+        """
+        Changes the color of the channel's name in the chat
+
+        Args:
+            color (str): New color's name
+        """
+
+        self.__send_privmsg(self.name,f"/color {color}")
+
+    def help(self,command):
+        """
+        Shows detailed information about a command
+
+        Args:
+            command (str): Command to show information about
+        """
+
+        self.__send_privmsg(self.name,f"/help {command}")
+
+    def me(self,text):
+        """
+        Sends a message by chat with the color of the channel's name
+
+        Args:
+            text (str): Message' text
+        """
+
+        self.__send_privmsg(self.name,f"/me {text}")
+
+    def mods(self):
+        """
+        Shows the moderators list of the channel
+        """
+
+        self.__send_privmsg(self.name,"/mods")
+
+    def vips(self):
+        """
+        Shows the vips list of the channel
+        """
+
+        self.__send_privmsg(self.name,"/vips")
+
+    def vote(self,index):
+        """
+        Votes in the active poll
+
+        Args:
+            index (int): Number of the option
+        """
+
+        self.__send_privmsg(self.name,f"/vote {index}")
+
+    def commercial(self,duration=30):
+        """
+        Places advertising in the channel
+
+        Args:
+            duration (int, optional): Duration of advertising
+        """
+
+        self.__send_privmsg(self.name,f"/commercial {duration}")
 
     def whisper(self,username,text):
         """

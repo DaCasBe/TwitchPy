@@ -1889,6 +1889,18 @@ function connect()
 
 Creates a connection with the channel
 
+### Send
+
+~~~
+function send(text)
+~~~
+
+Sends a message by chat
+
+**Args**:
+
++ text (str): Message's text
+
 ### Ban
 
 ~~~
@@ -1903,17 +1915,17 @@ Bans a user
 
 + reason (str, optional): Reason of the ban
 
-### Block
+### Unban
 
 ~~~
-function block(username)
+function unban(username)
 ~~~
 
-Blocks a user
+Undoes the ban of a user
 
 **Args**:
 
-+ username (str): User to block
++ username (str): Name of the user to readmit
 
 ### Clear
 
@@ -1923,29 +1935,13 @@ function clear()
 
 Clears the chat
 
-### Color
+### Delete poll
 
 ~~~
-function color(color)
+function delete_poll()
 ~~~
 
-Changes the color of the channel's name in the chat
-
-**Args**:
-
-+ color (str): New color's name
-
-### Commercial
-
-~~~
-function commercial(duration=30)
-~~~
-
-Places advertising in the channel
-
-**Args**:
-
-+ duration (int, optional): Duration of advertising
+Eliminates the active poll
 
 ### Emoteonly
 
@@ -1963,13 +1959,25 @@ function emoteonly_off()
 
 Disables "emotes only" mode
 
+### End poll
+
+~~~
+function end_poll()
+~~~
+
+Finish the active poll
+
 ### Followers
 
 ~~~
-function followers()
+function followers(duration="0m")
 ~~~
 
 Activates the "followers only" mode
+
+**Args**:
+
++ duration (str, optional): Follow-up duration
 
 ### Followers off
 
@@ -1989,7 +1997,15 @@ Hosts a channel
 
 **Args**:
 
-+ channel (str): Name of the channel to host
+channel (str): Name of the channel to host
+
+### Unhost
+
+~~~
+function unhost()
+~~~
+
+Unhosts the hosted channel
 
 ### Marker
 
@@ -2015,6 +2031,34 @@ Makes a user mod
 
 + username (str): Name of the user to be promoted
 
+### Unmod
+
+~~~
+function unmod(username)
+~~~
+
+Removes the moderator's rank from a user
+
+**Args**:
+
++ username (str): User's name
+
+### Poll
+
+~~~
+function poll()
+~~~
+
+Opens a configuration menu for creating a poll
+
+### Prediction
+
+~~~
+function prediction()
+~~~
+
+Opens a configuration menu for creating a prediction
+
 ### Raid
 
 ~~~
@@ -2027,29 +2071,21 @@ Raids another channel
 
 + channel (str): Name of the channel to raid
 
-### Send
+### Unraid
 
 ~~~
-function send(text)
+function unraid()
 ~~~
 
-Sends a message by chat
+Cancels a raid
 
-**Args**:
-
-+ text (str): Message's text
-
-### Send me
+### Requests
 
 ~~~
-function send_me(text)
+function requests()
 ~~~
 
-Sends a message by chat with the color of the channel's name
-
-**Args**:
-
-+ text (str): Message' text
+Opens the reward requests queue
 
 ### Slow
 
@@ -2103,29 +2139,17 @@ Expels a user temporarily
 
 + reason (str, optional): Reason for expulsion
 
-### Unban
+### Untimeout
 
 ~~~
-function unban(username)
+function untimeout(username)
 ~~~
 
-Undoes the ban of a user
+Cancels the timeout of a user
 
 **Args**:
 
-+ username (str): Name of the user to readmit
-
-### Unblock
-
-~~~
-function unblock(username)
-~~~
-
-Unblocks a user
-
-**Args**:
-
-+ username (str): Name of the user to unblock
++ username (str): User to readmit
 
 ### Uniquechat
 
@@ -2143,33 +2167,29 @@ function uniquechat_off()
 
 Disables the "unique" mode
 
-### Unhost
+### User
 
 ~~~
-function unhost()
+function user(username)
 ~~~
 
-Unhosts the hosted channel
+Shows information about a user
 
-### Unmod
+**Args**:
+
++ username (str): User to show information about
+
+### Vip
 
 ~~~
-function unmod(username)
+function vip(username)
 ~~~
 
-Removes the moderator's rank from a user
+Makes a user vip
 
 **Args**:
 
 + username (str): User's name
-
-### Unraid
-
-~~~
-function unraid()
-~~~
-
-Cancels a raid
 
 ### Unvip
 
@@ -2183,17 +2203,105 @@ Removes the vip range from a user
 
 + username (str): User's name
 
-### Vip
+### Block
 
 ~~~
-function vip(username)
+function block(username)
 ~~~
 
-Makes a user vip
+Blocks a user
 
 **Args**:
 
-+ username (str): User's name
++ username (str): User to block
+
+### Unblock
+
+~~~
+function unblock(username)
+~~~
+
+Unblocks a user
+
+**Args**:
+
++ username (str): Name of the user to unblock
+
+### Color
+
+~~~
+function color(color)
+~~~
+
+Changes the color of the channel's name in the chat
+
+**Args**:
+
++ color (str): New color's name
+
+### Help
+
+~~~
+function help(command)
+~~~
+
+Shows detailed information about a command
+
+**Args**:
+
++ command (str): Command to show information about
+
+### Me
+
+~~~
+function me(text)
+~~~
+
+Sends a message by chat with the color of the channel's name
+
+**Args**:
+
++ text (str): Message' text
+
+### Mods
+
+~~~
+function mods()
+~~~
+
+Shows the moderators list of the channel
+
+### Vips
+
+~~~
+function vips()
+~~~
+
+Shows the vips list of the channel
+
+### Vote
+
+~~~
+function vote(index)
+~~~
+
+Votes in the active poll
+
+**Args**:
+
++ index (int): Number of the option
+
+### Commercial
+
+~~~
+function commercial(duration=30)
+~~~
+
+Places advertising in the channel
+
+**Args**:
+
++ duration (int, optional): Duration of advertising
 
 ### Whisper
 
@@ -3838,6 +3946,20 @@ Gets all users in a chat
 
 **Returns**: dict
 
+### Send
+
+~~~
+function send(channel,text)
+~~~
+
+Sends a message by chat
+
+**Args**:
+
++ channel (str): Owner of the chat
+
++ text (str): Message's text
+
 ### Ban
 
 ~~~
@@ -3854,19 +3976,19 @@ Bans a user
 
 + reason (str, optional): Reason of the ban
 
-### Block
+### Unban
 
 ~~~
-function block(channel,user)
+function unban(channel,user)
 ~~~
 
-Blocks a user
+Undoes the ban of a user
 
 **Args**:
 
-+ channel (str): Channel who blocks
++ channel (str): Name of the channel who readmits
 
-+ username (str): User to block
++ user (str): Name of the user to readmit
 
 ### Clear
 
@@ -3880,33 +4002,17 @@ Clears the chat
 
 + channel (str): Channel to clean the chat
 
-### Color
+### Delete poll
 
 ~~~
-function color(channel,color)
+function delete_poll(channel)
 ~~~
 
-Changes the color of the channel's name in the chat
+Eliminates the active poll
 
 **Args**:
 
-+ channel (str): Channel to change color
-
-+ color (str): New color's name
-
-### Commercial
-
-~~~
-function commercial(channel,duration=30)
-~~~
-
-Places advertising in the channel
-
-**Args**:
-
-+ channel (str): Channel on which start the commercial
-
-+ duration (int): Duration of advertising
++ channel (str): Channel in which eliminate the poll
 
 ### Emoteonly
 
@@ -3931,6 +4037,18 @@ Disables "emotes only" mode
 **Args**:
 
 + channel (str): Channel on which disable the mode
+
+### End poll
+
+~~~
+function endpoll(channel)
+~~~
+
+Finish the active poll
+
+**Args**:
+
++ channel (str): Channel in which finish the poll
 
 ### Followers
 
@@ -3970,6 +4088,18 @@ Hosts a channel
 
 + username (str): Name of the channel to host
 
+### Unhost
+
+~~~
+function unhost(channel)
+~~~
+
+Unhosts the hosted channel
+
+**Args**:
+
++ channel (str): Channel who unhosts
+
 ### Marker
 
 ~~~
@@ -3998,6 +4128,44 @@ Makes a user mod
 
 + username (str): Name of the user to be promoted
 
+### Unmod
+
+~~~
+function unmod(channel,username)
+~~~
+
+Removes the moderator's rank from a user
+
+**Args**:
+
++ channel (str): Channel who removes the moderator's rank
+
++ username (str): User's name
+
+### Poll
+
+~~~
+function poll(channel)
+~~~
+
+Opens a configuration menu for creating a poll
+
+**Args**:
+
++ channel (str): Channel in which create the poll
+
+### Prediction
+
+~~~
+function prediction(channel)
+~~~
+
+Opens a configuration menu for creating a prediction
+
+**Args**:
+
++ channel (str): Channel in which create the prediction
+
 ### Raid
 
 ~~~
@@ -4012,33 +4180,29 @@ Raids another channel
 
 + username (str): Name of the channel to raid
 
-### Send
+### Unraid
 
 ~~~
-function send(channel,text)
+function unraid(channel)
 ~~~
 
-Sends a message by chat
+Cancels an raid
 
 **Args**:
 
-+ channel (str): Owner of the chat
++ channel (str): Channel who unraids
 
-+ text (str): Message's text
-
-### Send me
+### Requests
 
 ~~~
-function send_me(channel,text)
+function requests(channel)
 ~~~
 
-Sends a message by chat in italics
+Opens the reward requests queue
 
 **Args**:
 
-+ channel (str): Owner of the chat
-
-+ text (str): Message's text
++ channel (str): Owner of the rewards
 
 ### Slow
 
@@ -4108,33 +4272,19 @@ Expels a user temporarily
 
 + reason (str): Reason for expulsion
 
-### Unban
+### Untimeout
 
 ~~~
-function unban(channel,user)
+function untimeout(channel,username)
 ~~~
 
-Undoes the ban of a user
+Cancels the timeout of a user
 
 **Args**:
 
-+ channel (str): Name of the channel who readmits
++ channel (str): Channel who ejected the user
 
-+ user (str): Name of the user to readmit
-
-### Unblock
-
-~~~
-function unblock(channel,user)
-~~~
-
-Unblocks a user
-
-**Args**:
-
-+ channel (str): Name of the channel who unblocks
-
-+ user (str): Name of the user to unblock
++ username (str): User to readmit
 
 ### Uniquechat
 
@@ -4160,43 +4310,33 @@ Disables the "unique" mode
 
 + channel (str): Channel on which disable the mode
 
-### Unhost
+### User
 
 ~~~
-function unhost(channel)
+function user(channel,username)
 ~~~
 
-Unhosts the hosted channel
+Shows information about a user
 
 **Args**:
 
-+ channel (str): Channel who unhosts
++ channel (str): Channel in which to show the user's information
 
-### Unmod
++ username (str): User to show information about
+
+### Vip
 
 ~~~
-function unmod(channel,username)
+function vip(self,channel,username):
 ~~~
 
-Removes the moderator's rank from a user
+Makes a user vip
 
 **Args**:
 
-+ channel (str): Channel who removes the moderator's rank
++ channel (str): Channel who makes a user vip
 
 + username (str): User's name
-
-### Unraid
-
-~~~
-function unraid(channel)
-~~~
-
-Cancels an raid
-
-**Args**:
-
-+ channel (str): Channel who unraids
 
 ### Unvip
 
@@ -4212,19 +4352,127 @@ Removes the vip range from a user
 
 + username (str): User's name
 
-### Vip
+### Block
 
 ~~~
-function vip(channel,username)
+function block(channel,user)
 ~~~
 
-Makes a user vip
+Blocks a user
 
 **Args**:
 
-+ channel (str): Channel who makes a user vip
++ channel (str): Channel who blocks
 
-+ username (str): User's name
++ username (str): User to block
+
+### Unblock
+
+~~~
+function unblock(channel,user)
+~~~
+
+Unblocks a user
+
+**Args**:
+
++ channel (str): Name of the channel who unblocks
+
++ user (str): Name of the user to unblock
+
+### Color
+
+~~~
+function color(channel,color)
+~~~
+
+Changes the color of the channel's name in the chat
+
+**Args**:
+
++ channel (str): Channel to change color
+
++ color (str): New color's name
+
+### Help
+
+~~~
+function help(channel,command)
+~~~
+
+Shows detailed information about a command
+
+**Args**:
+
++ channel (str): Channel in which show the command's information
+
++ command (str): Command to show information about
+
+### Me
+
+~~~
+function me(channel,text)
+~~~
+
+Sends a message by chat in italics
+
+**Args**:
+
++ channel (str): Owner of the chat
+
++ text (str): Message's text
+
+### Mods
+
+~~~
+function mods(channel)
+~~~
+
+Shows the moderators list of a channel
+
+**Args**:
+
++ channel (str): Channel who owns the moderators
+
+### Vips
+
+~~~
+function vips(channel)
+~~~
+
+Shows the vips list of a channel
+
+**Args**:
+
++ channel (str): Channel who owns the vips
+
+### Vote
+
+~~~
+function vote(channel,index)
+~~~
+
+Votes in the active poll
+
+**Args**:
+
++ channel (str): Owner of the poll
+
++ index (int): Number of the option
+
+### Commercial
+
+~~~
+function commercial(channel,duration=30)
+~~~
+
+Places advertising in the channel
+
+**Args**:
+
++ channel (str): Channel on which start the commercial
+
++ duration (int): Duration of advertising
 
 ### Whisper
 

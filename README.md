@@ -1,8 +1,8 @@
 # TwitchPy
 
-## Instalation
+## Installation
 
-You have to execute this command:
+TwitchPy requires Python 3.6 or higher.
 
 ~~~
 pip install twitchpy
@@ -10,9 +10,10 @@ pip install twitchpy
 
 ## Getting started
 
-There are some tokens and IDs you will require if you want to use TwitchPy:
+TwitchPy uses many endpoints which may require different tokens and IDs.
 
-+ OAuth Token. Log in to Twitch with your account and visit: <https://twitchapps.com/tmi/>
-+ Client ID. Register a Twitch application with your account: <https://dev.twitch.tv/>
-+ Client secret. Get a client secret for your Twitch application.
-+ User Token. For more information: <https://dev.twitch.tv/docs/authentication/getting-tokens-oauth#oauth-authorization-code-flow>
++ IRC endpoints which require an OAuth token. Log in to Twitch with the bot's account and visit: <https://twitchapps.com/tmi/>
+
++ HTTP endpoints which require a client ID. Register a Twitch application with the bot's account: <https://dev.twitch.tv/>
+
++ HTTP endpoints which require an OAuth token and certain scopes. *To be documented.*
