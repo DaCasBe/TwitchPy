@@ -60,7 +60,7 @@ Starts a commercial on a specified channel
 ### Get extension analytics
 
 ~~~
-function get_extension_analytics(extension_id="",first=20,type="")
+function get_extension_analytics(ended_at="",extension_id="",first=20,started_at="",type="")
 ~~~
 
 Gets a URL that Extension developers can use to download analytics reports for their Extensions  
@@ -68,11 +68,17 @@ The URL is valid for 5 minutes
 
 **Args**:
 
++ ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                            If this is provided, started_at also must be specified
+
 + extension_id (str, optional): Client ID value assigned to the extension when it is created
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
+
++ started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                              This must be on or after January 31, 2018  
+                              If this is provided, ended_at also must be specified
 
 + type (str, optional): Type of analytics report that is returned  
                         Valid values: "overview_v2"
@@ -94,11 +100,16 @@ The URL is valid for 5 minutes
 
 **Args**:
 
++ ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                            If this is provided, started_at also must be specified
+
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + game_id (str, optional): Game ID
+
++ started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                              If this is provided, ended_at also must be specified
 
 + type (str, optional): Type of analytics report that is returned  
                         Valid values: "overview_v2"
@@ -112,7 +123,7 @@ The URL is valid for 5 minutes
 ### Get bits leaderboard
 
 ~~~
-function get_bits_leaderboard(count=10,user_id="")
+function get_bits_leaderboard(count=10,period="all",started_at="",user_id="")
 ~~~
 
 Gets a ranked list of Bits leaderboard information for a broadcaster
@@ -122,6 +133,15 @@ Gets a ranked list of Bits leaderboard information for a broadcaster
 + count (int, optional): Number of results to be returned  
                          Maximum: 100  
                          Default: 10
+
++ period (str, optional): Time period over which data is aggregated (PST time zone)  
+                          This parameter interacts with started_at  
+                          Default: "all"  
+                          Valid values: "day", "week", "month", "year", "all"
+
++ started_at (str, optional): Timestamp for the period over which the returned data is aggregated  
+                              Must be in RFC 3339 format  
+                              This value is ignored if period is "all"
 
 + user_id (str, optional): ID of the user whose results are returned  
                            As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
@@ -164,10 +184,10 @@ A transaction is a record of a user exchanging Bits for an in-Extension digital 
 
 + extension_id (str): ID of the extension to list transactions for
 
-+ id (str, optional): Transaction IDs to look up
++ id (list, optional): Transaction IDs to look up  
+                       Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -197,11 +217,11 @@ Gets a channel
 ### Modify channel information
 
 ~~~
-function modify_channel_information(broadcaster_id,game_id="",broadcaster_language="",title="")
+function modify_channel_information(broadcaster_id,game_id="",broadcaster_language="",title="",delay=0)
 ~~~
 
 Modifies channel information for users  
-game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+game_id, broadcaster_language, title and delay parameters are optional, but at least one parameter must be provided
 
 **Args**:
 
@@ -213,6 +233,9 @@ game_id, broadcaster_language and title parameters are optional, but at least on
                                         A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
 
 + title (str, optional): The title of the stream
+
++ delay (int ,optional): Stream delay in seconds  
+                         Stream delay is a Twitch Partner feature
 
 **Raises**:
 
@@ -310,7 +333,7 @@ Any UNFULFILLED Custom Reward Redemptions of the deleted Custom Reward will be u
 ### Get custom reward
 
 ~~~
-function get_custom_reward(broadcaster_id,id="",only_manageable_rewards=False)
+function get_custom_reward(broadcaster_id,id=[],only_manageable_rewards=False)
 ~~~
 
 Returns a list of Custom Reward objects for the Custom Rewards on a channel
@@ -319,7 +342,8 @@ Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
++ id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID  
+                       Maximum: 50
 
 + only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage  
                                             Default: false
@@ -345,7 +369,8 @@ Developers only have access to get and update redemptions for the rewards create
 
 + reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
 
-+ id (str, optional): This param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
++ id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID  
+                       Maximum: 50
 
 + status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status  
                           Can be one of UNFULFILLED, FULFILLED or CANCELED
@@ -355,7 +380,6 @@ Developers only have access to get and update redemptions for the rewards create
                         Default: OLDEST
 
 + first (int, optional): Number of results to be returned when getting the Custom Reward Redemption objects for a reward  
-                         Limit: 50  
                          Default: 20
 
 **Raises**:
@@ -431,8 +455,9 @@ The Custom Reward Redemption specified by id must be for a Custom Reward created
 
 **Args**:
 
-+ id (str): ID of the Custom Reward Redemption to update  
-            Must match a Custom Reward Redemption on broadcaster_id’s channel
++ id (list): ID of the Custom Reward Redemption to update  
+             Must match a Custom Reward Redemption on broadcaster_id’s channel  
+             Maximum: 50
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
 
@@ -492,7 +517,8 @@ Gets all Twitch emotes for one or more specific emote sets
 
 **Args**:
 
-+ emote_set_id (str): ID of the emote set
++ emote_set_id (list): ID(s) of the emote set  
+                       Maximum: 25
 
 **Raises**:
 
@@ -558,7 +584,7 @@ This returns both an ID and an edit URL for a new clip
 ### Get clips
 
 ~~~
-function get_clips(broadcaster_id="",game_id="",id="",first=20)
+function get_clips(broadcaster_id="",game_id="",id=[],ended_at="",first=20,started_at="")
 ~~~
 
 Gets clip information by clip ID, broadcaster ID or game ID (one only)
@@ -569,11 +595,17 @@ Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
 + game_id (str, optional): ID of the game for which clips are returned
 
-+ id (str, optional): ID of the clip being queried
++ id (list, optional): ID of the clip being queried  
+                       Limit: 100
+
++ ended_at (str, optional): Ending date/time for returned clips, in RFC3339 format  
+                            If this is specified, started_at also must be specified; otherwise, the time period is ignored
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
+
++ started_at (str, optional): Starting date/time for returned clips, in RFC3339 format  
+                              If this is specified, ended_at also should be specified; otherwise, the ended_at date/time will be 1 week after the started_at value
 
 **Raises**:
 
@@ -594,7 +626,8 @@ All codes are single-use
 
 **Args**:
 
-+ code (str): The code to get the status of
++ code (list): The code to get the status of
+               Maximum: 20
 
 + user_id (int): ID of the user which is going to receive the entitlement associated with the code
 
@@ -622,7 +655,6 @@ Gets a list of entitlements for a given organization that have been granted to a
 
 + first (int, optional): Maximum number of entitlements to return  
                          Default: 20  
-                         Max: 1000
 
 **Raises**:
 
@@ -641,7 +673,8 @@ All codes are single-use
 
 **Args**:
 
-+ code (str): The code to redeem to the authenticated user’s account
++ code (list): The code to redeem to the authenticated user’s account  
+               Maximum: 20
 
 + user_id (int): The user account which is going to receive the entitlement associated with the code
 
@@ -724,7 +757,6 @@ Gets games sorted by number of current viewers on Twitch, most popular first
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -733,7 +765,7 @@ Gets games sorted by number of current viewers on Twitch, most popular first
 
 **Returns**: list
 
-### Get game
+### Get games
 
 ~~~
 function get_game(id="",name="")
@@ -744,16 +776,18 @@ For a query to be valid, name and/or id must be specified
 
 **Args**:
 
-+ id (str, optional): Game ID
++ id (list, optional): Game ID  
+                          At most 100 id values can be specified
 
-+ name (str, optional): Game name  
-                        The name must be an exact match
++ name (list, optional): Game name  
+                         The name must be an exact match  
+                         At most 100 name values can be specified
 
 **Raises**:
 
 + twitchpy.errors.ClientError
 
-**Returns**: Game
+**Returns**: list
 
 ### Get hype train events
 
@@ -772,7 +806,6 @@ After 5 days, if no Hype Train has been active, the endpoint will return an empt
                         Must match the User ID in the Bearer token if User Token is used
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 1
 
 + id (str, optional): The id of the wanted event
@@ -837,10 +870,10 @@ Returns all user bans and un-bans in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
++ user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id  
+                           Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -861,10 +894,10 @@ Returns all banned and timed-out users in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
++ user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id  
+                           Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -885,10 +918,10 @@ Returns all moderators in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
++ user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id  
+                           Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -909,10 +942,10 @@ Returns a list of moderators or users added and removed as moderators from a cha
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
++ user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id  
+                           Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -935,10 +968,10 @@ Poll information is available for 90 days
 + broadcaster_id (str): The broadcaster running polls  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): ID of a poll
++ id (str, optional): ID of a poll  
+                      Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 20  
                          Default: 20
 
 **Raises**:
@@ -1028,10 +1061,10 @@ Get information about all Channel Points Predictions or specific Channel Points 
 + broadcaster_id (str): The broadcaster running Predictions  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): ID of a Prediction
++ id (str, optional): ID of a Prediction  
+                      Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 20  
                          Default: 20
 
 **Raises**:
@@ -1113,7 +1146,8 @@ Scheduled broadcasts are defined as "stream segments"
 + broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): The ID of the stream segment to return
++ id (str, optional): The ID of the stream segment to return  
+                      Maximum: 100
 
 + start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from  
                               If not specified, the current date and time is used
@@ -1122,7 +1156,6 @@ Scheduled broadcasts are defined as "stream segments"
                               If not specified, "0" is used for GMT
 
 + first (int, optional): Maximum number of stream segments to return  
-                         Maximum: 25  
                          Default: 20
 
 **Raises**:
@@ -1273,7 +1306,6 @@ Returns a list of games or categories that match the query via name either entir
 + query (str): URI encoded search query
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -1295,7 +1327,6 @@ Returns a list of channels (users who have streamed within the past 6 months) th
 + query (str): URI encoded search query
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + live_only (bool, optional): Filter results for live streams only  
@@ -1336,7 +1367,6 @@ Gets active streams
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + game_id (str, optional): Returns streams broadcasting a specified game ID
@@ -1368,7 +1398,6 @@ Gets information about active streams belonging to channels that the authenticat
                  user_id must match the User ID in the bearer token
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 100
 
 **Raises**:
@@ -1403,7 +1432,7 @@ The marker is created at the current timestamp in the live broadcast when the re
 ### Get stream markers
 
 ~~~
-function get_stream_markers(user_id,video_id,first=20)
+function get_stream_markers(user_id="",video_id="",first=20)
 ~~~
 
 Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)  
@@ -1413,12 +1442,11 @@ Only one of user_id and video_id must be specified
 
 **Args**:
 
-+ user_id (str): ID of the broadcaster from whose stream markers are returned
++ user_id (str, optional): ID of the broadcaster from whose stream markers are returned
 
-+ video_id (str): ID of the VOD/video whose stream markers are returned
++ video_id (str, optional): ID of the VOD/video whose stream markers are returned
 
 + first (int, optional): Number of values to be returned when getting videos by user or game ID  
-                         Limit: 100  
                          Default: 20
 
 **Raises**:
@@ -1440,10 +1468,10 @@ Get all of a broadcaster’s subscriptions
 + broadcaster_id (str): User ID of the broadcaster  
                         Must match the User ID in the Bearer token
 
-+ user_id (str, optional): Filters results to only include potential subscriptions made by the provided user ID
++ user_id (list, optional): Filters results to only include potential subscriptions made by the provided user ID
+                            Accepts up to 100 values
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -1475,7 +1503,7 @@ Checks if a specific user (user_id) is subscribed to a specific channel (broadca
 ### Get all stream tags
 
 ~~~
-function get_all_stream_tags(first=20,tag_id="")
+function get_all_stream_tags(first=20,tag_id=[])
 ~~~
 
 Gets the list of all stream tags defined by Twitch
@@ -1483,10 +1511,9 @@ Gets the list of all stream tags defined by Twitch
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
-+ tag_id (str, optional): ID of a tag
++ tag_id (list, optional): ID of a tag
 
 **Raises**:
 
@@ -1546,10 +1573,10 @@ Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a
 
 **Returns**: list
 
-### Get team
+### Get teams
 
 ~~~
-function get_team(name="",id="")
+function get_teams(name="",id="")
 ~~~
 
 Gets information for a specific Twitch Team  
@@ -1567,10 +1594,10 @@ One of the two optional query parameters must be specified to return Team inform
 
 **Returns**: Team
 
-### Get user
+### Get users
 
 ~~~
-function get_user(id="",login="")
+function get_users(id=[],login=[])
 ~~~
 
 Gets an user  
@@ -1579,15 +1606,17 @@ If neither a user ID nor a login name is specified, the user is looked up by Bea
 
 **Args**:
 
-+ id (str, optional): User ID
++ id (list, optional): User ID  
+                       Limit: 100
 
-+ login (str, optional): User login name
++ login (list, optional): User login name  
+                          Limit: 100
 
 **Raises**:
 
 + twitchpy.errors.ClientError
 
-**Returns**: User
+**Returns**: list
 
 ### Update user
 
@@ -1620,7 +1649,6 @@ At minimum, from_id or to_id must be provided for a query to be valid
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + from_id (str, optional): User ID  
@@ -1679,7 +1707,6 @@ Gets a specified user’s block list
 + broadcaster_id (str): User ID for a Twitch user
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Raises**:
@@ -1776,14 +1803,15 @@ Each request must specify one video id, one user_id, or one game_id
 
 **Args**:
 
-+ id (str): ID of the video being queried
++ id (list): ID of the video being queried  
+             Limit: 100  
+             If this is specified, you cannot use first, language, period, sort and type
 
 + user_id (str): ID of the user who owns the video
 
 + game_id (str): ID of the game the video is of
 
 + first (int, optional): Number of values to be returned when getting videos by user or game ID  
-                         Limit: 100  
                          Default: 20
 
 + language (str, optional): Language of the video being queried  
@@ -1817,7 +1845,8 @@ Videos are past broadcasts, Highlights, or uploads
 
 **Args**:
 
-id (str): ID of the video to be deleted
+id (str): ID of the video to be deleted  
+          Limit: 5
 
 ### Get webhook subscriptions
 
@@ -2415,7 +2444,7 @@ Starts a commercial on a specified channel
 ### Get extension analytics
 
 ~~~
-function get_extension_analytics(extension_id="",first=20,type="")
+function get_extension_analytics(ended_at="",extension_id="",first=20,started_at="",type="")
 ~~~
 
 Gets a URL that Extension developers can use to download analytics reports for their Extensions  
@@ -2423,11 +2452,17 @@ The URL is valid for 5 minutes
 
 **Args**:
 
++ ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                            If this is provided, started_at also must be specified
+
 + extension_id (str, optional): Client ID value assigned to the extension when it is created
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
+
++ started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                              This must be on or after January 31, 2018  
+                              If this is provided, ended_at also must be specified
 
 + type (str, optional): Type of analytics report that is returned  
                         Valid values: "overview_v2"
@@ -2437,7 +2472,7 @@ The URL is valid for 5 minutes
 ### Get game analytics
 
 ~~~
-function get_game_analytics(first=20,game_id="",type="")
+function get_game_analytics(ended_at="",first=20,game_id="",started_at="",type="")
 ~~~
 
 Gets a URL that game developers can use to download analytics reports for their games  
@@ -2445,11 +2480,16 @@ The URL is valid for 5 minutes
 
 **Args**:
 
++ ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                            If this is provided, started_at also must be specified
+
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + game_id (str, optional): Game ID
+
++ started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z  
+                              If this is provided, ended_at also must be specified
 
 + type (str, optional): Type of analytics report that is returned  
                         Valid values: "overview_v2"
@@ -2470,8 +2510,18 @@ Gets a ranked list of Bits leaderboard information for a broadcaster
                          Maximum: 100  
                          Default: 10
 
++ period (str, optional): Time period over which data is aggregated (PST time zone)  
+                          This parameter interacts with started_at  
+                          Default: "all"  
+                          Valid values: "day", "week", "month", "year", "all"
+
++ started_at (str, optional): Timestamp for the period over which the returned data is aggregated  
+                              Must be in RFC 3339 format  
+                              This value is ignored if period is "all"
+
 + user_id (str, optional): ID of the user whose results are returned  
                            As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
+
 
 **Returns**: list
 
@@ -2493,7 +2543,7 @@ Cheermotes returned are available throughout Twitch, in all Bits-enabled channel
 ### Get extension transactions
 
 ~~~
-function get_extension_transactions(extension_id,id="",first=20)
+function get_extension_transactions(extension_id,id=[],first=20)
 ~~~
 
 Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch  
@@ -2503,10 +2553,10 @@ A transaction is a record of a user exchanging Bits for an in-Extension digital 
 
 + extension_id (str): ID of the extension to list transactions for
 
-+ id (str, optional): Transaction IDs to look up
++ id (list, optional): Transaction IDs to look up  
+                       Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -2532,7 +2582,7 @@ function modify_channel_information(broadcaster_id,game_id="",broadcaster_langua
 ~~~
 
 Modifies channel information for users  
-game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+game_id, broadcaster_language, title and delay parameters are optional, but at least one parameter must be provided
 
 **Args**:
 
@@ -2544,6 +2594,9 @@ game_id, broadcaster_language and title parameters are optional, but at least on
                                         A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
 
 + title (str, optional): The title of the stream
+
++ delay (int ,optional): Stream delay in seconds  
+                         Stream delay is a Twitch Partner feature
 
 ### Get channel editors
 
@@ -2629,7 +2682,7 @@ Any UNFULFILLED Custom Reward Redemptions of the deleted Custom Reward will be u
 ### Get custom reward
 
 ~~~
-function get_custom_reward(broadcaster_id,id="",only_manageable_rewards=False)
+function get_custom_reward(broadcaster_id,id=[],only_manageable_rewards=False)
 ~~~
 
 Returns a list of Custom Reward objects for the Custom Rewards on a channel
@@ -2638,7 +2691,8 @@ Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
++ id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID  
+                       Maximum: 50
 
 + only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage  
                                             Default: false
@@ -2648,7 +2702,7 @@ Returns a list of Custom Reward objects for the Custom Rewards on a channel
 ### Get custom reward redemption
 
 ~~~
-function get_custom_reward_redemption(broadcaster_id,reward_id,id="",status="",sort="OLDEST",first=20)
+function get_custom_reward_redemption(broadcaster_id,reward_id,id=[],status="",sort="OLDEST",first=20)
 ~~~
 
 Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id  
@@ -2660,7 +2714,8 @@ Developers only have access to get and update redemptions for the rewards create
 
 + reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
 
-+ id (str, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
++ id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID  
+                       Maximum: 50
 
 + status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status  
                           Can be one of UNFULFILLED, FULFILLED or CANCELED
@@ -2670,7 +2725,6 @@ Developers only have access to get and update redemptions for the rewards create
                         Default: OLDEST
 
 + first (int, optional): Number of results to be returned when getting the Custom Reward Redemption objects for a reward  
-                         Limit: 50  
                          Default: 20
 
 **Returns**: list
@@ -2738,8 +2792,9 @@ The Custom Reward Redemption specified by id must be for a Custom Reward created
 
 **Args**:
 
-+ id (str): ID of the Custom Reward Redemption to update  
-            Must match a Custom Reward Redemption on broadcaster_id’s channel
+id (list): ID of the Custom Reward Redemption to update  
+           Must match a Custom Reward Redemption on broadcaster_id’s channel  
+           Maximum: 50
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
 
@@ -2787,7 +2842,8 @@ Gets all Twitch emotes for one or more specific emote sets
 
 **Args**:
 
-+ emote_set_id (str): ID of the emote set
++ emote_set_id (list): ID(s) of the emote set  
+                       Maximum: 25
 
 **Returns**: list
 
@@ -2837,7 +2893,7 @@ This returns both an ID and an edit URL for a new clip
 ### Get clips
 
 ~~~
-function get_clips(broadcaster_id="",game_id="",id="",first=20)
+function get_clips(broadcaster_id="",game_id="",id=[],ended_at="",first=20,started_at="")
 ~~~
 
 Gets clip information by clip ID, broadcaster ID or game ID (one only)
@@ -2848,11 +2904,17 @@ Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
 + game_id (str, optional): ID of the game for which clips are returned
 
-+ id (str, optional): ID of the clip being queried
++ id (list, optional): ID of the clip being queried  
+                       Limit: 100
+
++ ended_at (str, optional): Ending date/time for returned clips, in RFC3339 format  
+                            If this is specified, started_at also must be specified; otherwise, the time period is ignored
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
+
++ started_at (str, optional): Starting date/time for returned clips, in RFC3339 format  
+                              If this is specified, ended_at also should be specified; otherwise, the ended_at date/time will be 1 week after the started_at value
 
 **Returns**: list
 
@@ -2867,7 +2929,8 @@ All codes are single-use
 
 **Args**:
 
-+ code (str): The code to get the status of
++ code (list): The code to get the status of  
+               Maximum: 20
 
 + user_id (int): The user account which is going to receive the entitlement associated with the code
 
@@ -2890,8 +2953,7 @@ Gets a list of entitlements for a given organization that have been granted to a
 + game_id (str, optional): A Twitch Game ID
 
 + first (int, optional): Maximum number of entitlements to return  
-                         Default: 20  
-                         Max: 1000
+                         Default: 20
 
 **Returns**: list
 
@@ -2906,7 +2968,8 @@ All codes are single-use
 
 **Args**:
 
-+ code (str): The code to redeem to the authenticated user’s account
++ code (list): The code to redeem to the authenticated user’s account  
+               Maximum: 20
 
 + user_id (int): The user account which is going to receive the entitlement associated with the code
 
@@ -2977,15 +3040,14 @@ Gets games sorted by number of current viewers on Twitch, most popular first
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
 
-### Get game
+### Get games
 
 ~~~
-function get_game(id="",name="")
+function get_games(self,id=[],name=[])
 ~~~
 
 Gets games by game ID or name  
@@ -2993,12 +3055,14 @@ For a query to be valid, name and/or id must be specified
 
 **Args**:
 
-+ id (str, optional): Game ID
++ id (list, optional): Game ID  
+                       At most 100 id values can be specified
 
-+ name (str, optional): Game name  
-                        The name must be an exact match
++ name (list, optional): Game name  
+                         The name must be an exact match  
+                         At most 100 name values can be specified
 
-**Returns**: Game
+**Returns**: list
 
 ### Get hype train events
 
@@ -3017,7 +3081,6 @@ After 5 days, if no Hype Train has been active, the endpoint will return an empt
                         Must match the User ID in the Bearer token if User Token is used
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 1
 
 + id (str, optional): The id of the wanted event
@@ -3027,7 +3090,7 @@ After 5 days, if no Hype Train has been active, the endpoint will return an empt
 ### Check automod status
 
 ~~~
-function check_automod_status(broadcaster_id,msg_id="",msg_user="",user_id="")
+function check_automod_status(broadcaster_id,msg_id,msg_user,user_id)
 ~~~
 
 Determines whether a string message meets the channel’s AutoMod requirements
@@ -3074,10 +3137,10 @@ Returns all user bans and un-bans in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
++ user_id (list, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id  
+                            Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -3094,10 +3157,10 @@ Returns all banned and timed-out users in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
++ user_id (list, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id  
+                            Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -3114,10 +3177,10 @@ Returns all moderators in a channel
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
++ user_id (list, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id  
+                            Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -3134,10 +3197,10 @@ Returns a list of moderators or users added and removed as moderators from a cha
 
 + broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
-+ user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
++ user_id (list, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id  
+                            Maximum: 100
 
-+ first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
++ first (int, optional): Maximum number of objects to return
                          Default: 20
 
 **Returns**: list
@@ -3145,7 +3208,7 @@ Returns a list of moderators or users added and removed as moderators from a cha
 ### Get polls
 
 ~~~
-function get_polls(broadcaster_id,id="",first=20)
+function get_polls(broadcaster_id,id=[],first=20)
 ~~~
 
 Get information about all polls or specific polls for a Twitch channel  
@@ -3156,10 +3219,10 @@ Poll information is available for 90 days
 + broadcaster_id (str): The broadcaster running polls  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): ID of a poll
++ id (list, optional): ID of a poll  
+                       Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 20  
                          Default: 20
 
 **Returns**: list
@@ -3227,7 +3290,7 @@ End a poll that is currently active
 ### Get predictions
 
 ~~~
-function get_predictions(broadcaster_id,id="",first=20)
+function get_predictions(broadcaster_id,id=[],first=20)
 ~~~
 
 Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
@@ -3237,10 +3300,10 @@ Get information about all Channel Points Predictions or specific Channel Points 
 + broadcaster_id (str): The broadcaster running Predictions  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): ID of a Prediction
++ id (str, optional): ID of a Prediction  
+                      Maximum: 100
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 20  
                          Default: 20
 
 **Returns**: list
@@ -3299,7 +3362,7 @@ Locked Predictions can be updated to be "resolved" or "canceled"
 ### Get channel stream schedule
 
 ~~~
-function get_channel_stream_schedule(broadcaster_id,id="",start_time="",utc_offset="0",first=20)
+function get_channel_stream_schedule(broadcaster_id,id=[],start_time="",utc_offset="0",first=20)
 ~~~
 
 Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule  
@@ -3310,7 +3373,8 @@ Scheduled broadcasts are defined as "stream segments"
 + broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule  
                         Provided broadcaster_id must match the user_id in the user OAuth token
 
-+ id (str, optional): The ID of the stream segment to return
++ id (str, optional): The ID of the stream segment to return  
+                      Maximum: 100
 
 + start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from  
                               If not specified, the current date and time is used
@@ -3319,7 +3383,6 @@ Scheduled broadcasts are defined as "stream segments"
                               If not specified, "0" is used for GMT
 
 + first (int, optional): Maximum number of stream segments to return  
-                         Maximum: 25  
                          Default: 20
 
 **Returns**: list
@@ -3453,8 +3516,7 @@ Returns a list of games or categories that match the query via name either entir
 
 + query (str): URI encoded search query
 
-+ first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
++ first (int, optional): Maximum number of objects to return
                          Default: 20
 
 **Returns**: list
@@ -3472,7 +3534,6 @@ Returns a list of channels (users who have streamed within the past 6 months) th
 + query (str): URI encoded search query
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + live_only (bool, optional): Filter results for live streams only  
@@ -3505,7 +3566,6 @@ Gets active streams
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + game_id (str, optional): Returns streams broadcasting a specified game ID
@@ -3533,7 +3593,6 @@ Gets information about active streams belonging to channels that the authenticat
                  user_id must match the User ID in the bearer token
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 100
 
 **Returns**: list
@@ -3560,7 +3619,7 @@ The marker is created at the current timestamp in the live broadcast when the re
 ### Get stream markers
 
 ~~~
-function get_stream_markers(user_id,video_id,first=20)
+function get_stream_markers(user_id="",video_id="",first=20)
 ~~~
 
 Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)  
@@ -3570,12 +3629,11 @@ Only one of user_id and video_id must be specified
 
 **Args**:
 
-+ user_id (str): ID of the broadcaster from whose stream markers are returned
++ user_id (str, optional): ID of the broadcaster from whose stream markers are returned
 
-+ video_id (str): ID of the VOD/video whose stream markers are returned
++ video_id (str, optional): ID of the VOD/video whose stream markers are returned
 
 + first (int, optional): Number of values to be returned when getting videos by user or game ID  
-                         Limit: 100  
                          Default: 20
 
 **Returns**: list
@@ -3583,7 +3641,7 @@ Only one of user_id and video_id must be specified
 ### Get broadcaster subscriptions
 
 ~~~
-function get_broadcaster_subscriptions(broadcaster_id,user_id="",first=20)
+function get_broadcaster_subscriptions(broadcaster_id,user_id=[],first=20)
 ~~~
 
 Get all of a broadcaster’s subscriptions
@@ -3593,10 +3651,10 @@ Get all of a broadcaster’s subscriptions
 + broadcaster_id (str): User ID of the broadcaster  
                         Must match the User ID in the Bearer token
 
-+ user_id (str, optional): Filters results to only include potential subscriptions made by the provided user ID
++ user_id (list, optional): Filters results to only include potential subscriptions made by the provided user ID  
+                            Accepts up to 100 values
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -3620,18 +3678,17 @@ Checks if a specific user (user_id) is subscribed to a specific channel (broadca
 ### Get all stream tags
 
 ~~~
-function get_all_stream_tags(first=20,tag_id="")
+function get_all_stream_tags(first=20,tag_id=[])
 ~~~
 
 Gets the list of all stream tags defined by Twitch
 
 **Args**:
 
-+ first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
++ first (int, optional): Maximum number of objects to return
                          Default: 20
 
-+ tag_id (str, optional): ID of a tag
++ tag_id (list, optional): ID of a tag
 
 **Returns**: list
 
@@ -3679,10 +3736,10 @@ Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a
 
 **Returns**: list
 
-### Get team
+### Get teams
 
 ~~~
-function get_team(name="",id="")
+function get_teams(name="",id="")
 ~~~
 
 Gets information for a specific Twitch Team  
@@ -3696,10 +3753,10 @@ One of the two optional query parameters must be specified to return Team inform
 
 **Returns**: Team
 
-### Get user
+### Get users
 
 ~~~
-function get_user(id="",login="")
+function get_users(id=[],login=[])
 ~~~
 
 Gets an user  
@@ -3708,11 +3765,13 @@ If neither a user ID nor a login name is specified, the user is looked up by Bea
 
 **Args**:
 
-+ id (str, optional): User ID
++ id (list, optional): User ID  
+                       Limit: 100
 
-+ login (str, optional): User login name
++ login (list, optional): User login name  
+                          Limit: 100
 
-**Returns**: User
+**Returns**: list
 
 ### Update user
 
@@ -3741,7 +3800,6 @@ At minimum, from_id or to_id must be provided for a query to be valid
 **Args**:
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 + from_id (str, optional): User ID  
@@ -3786,7 +3844,7 @@ Deletes a specified user from the followers of a specified channel
 ### Get user block list
 
 ~~~
-function get_user_block_list(broadcaster_id,first=100)
+function get_user_block_list(broadcaster_id,first=20)
 ~~~
 
 Gets a specified user’s block list
@@ -3796,7 +3854,6 @@ Gets a specified user’s block list
 + broadcaster_id (str): User ID for a Twitch user
 
 + first (int, optional): Maximum number of objects to return  
-                         Maximum: 100  
                          Default: 20
 
 **Returns**: list
@@ -3869,7 +3926,7 @@ If you try to activate a given extension under multiple extension types, the las
 ### Get videos
 
 ~~~
-function get_videos(id,user_id,game_id,first=20,language="",period="all",sort="time",type="all")
+function get_videos(id=[],user_id="",game_id="",first=20,language="",period="all",sort="time",type="all")
 ~~~
 
 Gets video information by video ID, user ID, or game ID  
@@ -3877,14 +3934,15 @@ Each request must specify one video id, one user_id, or one game_id
 
 **Args**:
 
-+ id (str): ID of the video being queried
++ id (list): ID of the video being queried  
+             Limit: 100  
+             If this is specified, you cannot use first, language, period, sort and type
 
 + user_id (str): ID of the user who owns the video
 
 + game_id (str): ID of the game the video is of
 
 + first (int, optional): Number of values to be returned when getting videos by user or game ID  
-                         Limit: 100  
                          Default: 20
 
 + language (str, optional): Language of the video being queried  
@@ -3914,7 +3972,8 @@ Videos are past broadcasts, Highlights, or uploads
 
 **Args**:
 
-+ id (str): ID of the video to be deleted
++ id (str): ID of the video(s) to be deleted
+            Limit: 5
 
 ### Get webhook subscriptions
 
@@ -3927,7 +3986,6 @@ Gets the Webhook subscriptions of an application identified by a Bearer token, i
 **Args**:
 
 + first (int, optional): Number of values to be returned  
-                         Limit: 100  
                          Default: 20
 
 **Returns**: list

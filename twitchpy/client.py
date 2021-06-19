@@ -7,6 +7,7 @@ import os
 from twitchpy.reward import Reward
 from twitchpy.redemption import Redemption
 import twitchpy.errors
+import math
 
 class Client:
     """
@@ -138,16 +139,20 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_extension_analytics(self,extension_id="",first=20,type=""):
+    def get_extension_analytics(self,ended_at="",extension_id="",first=20,started_at="",type=""):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
 
         Args:
+            ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                      If this is provided, started_at also must be specified
             extension_id (str, optional): Client ID value assigned to the extension when it is created
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
+            started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                        This must be on or after January 31, 2018
+                                        If this is provided, ended_at also must be specified
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
@@ -160,44 +165,69 @@ class Client:
 
         url="https://api.twitch.tv/helix/analytics/extensions"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={}
 
-        if extension_id=="" and first==20 and type=="":
-            response=requests.get(url,headers=headers).json()
+        if ended_at!="":
+            params["ended_at"]=ended_at
 
-        else:
-            params={}
+        if extension_id!="":
+            params["extension_id"]=extension_id
 
-            if extension_id!="":
-                params["extension_id"]=extension_id
+        if first!=20:
+            params["first"]=first
 
-            if first!=20:
-                params["first"]=first
+        if started_at!="":
+            params["started_at"]=started_at
 
-            if type!="":
-                params["type"]=type
+        if type!="":
+            params["type"]=type
+
+        after=""
+
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
 
-    def get_game_analytics(self,first=20,game_id="",type=""):
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_game_analytics(self,ended_at="",first=20,game_id="",started_at="",type=""):
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
 
         Args:
+            ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                      If this is provided, started_at also must be specified
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             game_id (str, optional): Game ID
+            started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                        If this is provided, ended_at also must be specified
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
@@ -210,35 +240,57 @@ class Client:
 
         url="https://api.twitch.tv/helix/analytics/games"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={}
 
-        if first==20 and game_id=="" and type=="":
-            response=requests.get(url,headers=headers).json()
+        if ended_at!="":
+            params["ended_at"]=ended_at
 
-        else:
-            params={}
+        if first!=20:
+            params["first"]=first
 
-            if first!=20:
-                params["first"]=first
+        if game_id!="":
+            params["game_id"]=game_id
 
-            if game_id!="":
-                params["game_id"]=game_id
+        if started_at!="":
+            params["started_at"]=started_at
 
-            if type!="":
-                params["type"]=type
+        if type!="":
+            params["type"]=type
+
+        after=""
+
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
 
-    def get_bits_leaderboard(self,count=10,user_id=""):
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_bits_leaderboard(self,count=10,period="all",started_at="",user_id=""):
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -246,6 +298,13 @@ class Client:
             count (int, optional): Number of results to be returned
                                    Maximum: 100
                                    Default: 10
+            period (str, optional): Time period over which data is aggregated (PST time zone)
+                                    This parameter interacts with started_at
+                                    Default: "all"
+                                    Valid values: "day", "week", "month", "year", "all"
+            started_at (str, optional): Timestamp for the period over which the returned data is aggregated
+                                        Must be in RFC 3339 format
+                                        This value is ignored if period is "all"
             user_id (str, optional): ID of the user whose results are returned
                                      As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
@@ -258,30 +317,52 @@ class Client:
 
         url="https://api.twitch.tv/helix/bits/leaderboard"
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={}
 
-        if count==10 and user_id=="":
-            response=requests.get(url,headers=headers).json()
+        if count!=10:
+            params["count"]=count
 
-        else:
-            params={}
+        if period!="all":
+            params["period"]=period
 
-            if count!=10:
-                params["count"]=count
+        if started_at!="":
+            params["started_at"]=started_at
 
-            if user_id!="":
-                params["user_id"]=user_id
+        if user_id!="":
+            params["user_id"]=user_id
+
+        after=""
+
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_cheermotes(self,broadcaster_id=""):
         """
@@ -318,16 +399,16 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
         
-    def get_extension_transactions(self,extension_id,id="",first=20):
+    def get_extension_transactions(self,extension_id,id=[],first=20):
         """
         Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
             extension_id (str): ID of the extension to list transactions for
-            id (str, optional): Transaction IDs to look up
+            id (list, optional): Transaction IDs to look up
+                                 Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -341,23 +422,44 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"extension_id":extension_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_channel(self,broadcaster_id):
         """
@@ -392,10 +494,10 @@ class Client:
         except:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title="",delay=0):
         """
         Modifies channel information for users
-        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+        game_id, broadcaster_language, title and delay parameters are optional, but at least one parameter must be provided
 
         Args:
             broadcaster_id (str): ID of the channel to be updated
@@ -403,6 +505,8 @@ class Client:
             broadcaster_language (str, optional): The language of the channel
                                                   A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
             title (str, optional): The title of the stream
+            delay (int ,optional): Stream delay in seconds
+                                   Stream delay is a Twitch Partner feature
 
         Raises:
             twitchpy.errors.FewArgumentsError
@@ -412,8 +516,8 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
         data={"broadcaster_id":broadcaster_id}
 
-        if (game_id!="" and broadcaster_language!="") or (game_id!="" and title!="") or (broadcaster_language!="" and title!=""):
-            raise twitchpy.errors.FewArgumentsError("game_id, broadcaster_language or title must be provided")
+        if game_id=="" and broadcaster_language=="" and title=="" and delay==0:
+            raise twitchpy.errors.FewArgumentsError("game_id, broadcaster_language, title or delay must be provided")
 
         if game_id!="":
             data["game_id"]=game_id
@@ -423,6 +527,9 @@ class Client:
 
         if title!="":
             data["title"]=title
+
+        if delay!=0:
+            data["delay"]=delay
 
         response=requests.patch(url,headers=headers,data=data)
 
@@ -570,13 +677,14 @@ class Client:
 
         response=requests.delete(url,headers=headers,data=data)
 
-    def get_custom_reward(self,broadcaster_id,id="",only_manageable_rewards=False):
+    def get_custom_reward(self,broadcaster_id,id=[],only_manageable_rewards=False):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+            id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+                                Maximum: 50
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
                                                       Default: false
 
@@ -591,7 +699,7 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if only_manageable_rewards!=False:
@@ -614,7 +722,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id="",status="",sort="OLDEST",first=20):
+    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id=[],status="",sort="OLDEST",first=20):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
         Developers only have access to get and update redemptions for the rewards created programmatically by the same client_id
@@ -622,14 +730,14 @@ class Client:
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
-            id (str, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+            id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+                                Maximum: 50
             status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                                     Can be one of UNFULFILLED, FULFILLED or CANCELED
             sort (str, optional): Sort order of redemptions returned when getting the Custom Reward Redemption objects for a reward
                                   One of: OLDEST, NEWEST
                                   Default: OLDEST
             first (int, optional): Number of results to be returned when getting the Custom Reward Redemption objects for a reward
-                                   Limit: 50
                                    Default: 20
 
         Raises:
@@ -643,7 +751,7 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id,"reward_id":reward_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if status!="":
@@ -655,22 +763,36 @@ class Client:
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                redemptions=[]
+        calls=math.ceil(first/50)
 
-                for redemption in response["data"]:
-                    redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],redemption["reward"]))
-                
-                return redemptions
+        redemptions=[]
 
+        for call in range(calls):
+            if first-(50*call)>50:
+                params["first"]=50
+            
             else:
-                return None
+                params["first"]=first-(50*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for redemption in response["data"]:
+                        redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],redemption["reward"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+        
+        return redemptions
 
     def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
         """
@@ -778,8 +900,9 @@ class Client:
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
 
         Args:
-            id (str): ID of the Custom Reward Redemption to update
+            id (list): ID of the Custom Reward Redemption to update
                       Must match a Custom Reward Redemption on broadcaster_id’s channel
+                      Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward the redemptions to be updated are for
             status (str, optional): The new status to set redemptions to
@@ -871,7 +994,8 @@ class Client:
         Gets all Twitch emotes for one or more specific emote sets
 
         Args:
-            emote_set_id (str): ID of the emote set
+            emote_set_id (list): ID(s) of the emote set
+                                 Maximum: 25
 
         Raises:
             twitchpy.errors.ClientError
@@ -910,7 +1034,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/chat/badges"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
         response=requests.get(url,headers=headers,params=params).json()
@@ -986,17 +1110,21 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_clips(self,broadcaster_id="",game_id="",id="",first=20):
+    def get_clips(self,broadcaster_id="",game_id="",id=[],ended_at="",first=20,started_at=""):
         """
         Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
         Args:
             broadcaster_id (str, optional): ID of the broadcaster for whom clips are returned
             game_id (str, optional): ID of the game for which clips are returned
-            id (str, optional): ID of the clip being queried
+            id (list, optional): ID of the clip being queried
+                                 Limit: 100
+            ended_at (str, optional): Ending date/time for returned clips, in RFC3339 format
+                                      If this is specified, started_at also must be specified; otherwise, the time period is ignored
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
+            started_at (str, optional): Starting date/time for returned clips, in RFC3339 format
+                                        If this is specified, ended_at also should be specified; otherwise, the ended_at date/time will be 1 week after the started_at value
 
         Raises:
             twitchpy.errors.TooManyArgumentsError
@@ -1008,39 +1136,58 @@ class Client:
 
         url="https://api.twitch.tv/helix/clips"
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
 
-        if broadcaster_id=="" and game_id=="" and id=="" and first==20:
-            response=requests.get(url,headers=headers).json()
+        if broadcaster_id!="":
+            params["broadcaster_id"]=broadcaster_id
 
-        else:
-            if (broadcaster_id!="" and game_id!="") or (broadcaster_id!="" and id!="") or (game_id!="" and id!="") or (broadcaster_id!="" and game_id!="" and id!=""):
-                raise twitchpy.errors.TooManyArgumentsError("Too many arguments have been given")
+        if game_id!="":
+            params["game_id"]=game_id
 
-            params={}
+        if len(id)>0:
+            params["id"]=id
 
-            if broadcaster_id!="":
-                params["broadcaster_id"]=broadcaster_id
+        if ended_at!="":
+            params["ended_at"]=ended_at
 
-            if game_id!="":
-                params["game_id"]=game_id
+        if first!=20:
+            params["first"]=first
 
-            if id!="":
-                params["id"]=id
+        if started_at!="":
+            params["started_at"]=started_at
 
-            if first!=20:
-                params["first"]=first
+        after=""
+
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_code_status(self,code,user_id):
         """
@@ -1048,7 +1195,8 @@ class Client:
         All codes are single-use
 
         Args:
-            code (str): The code to get the status of
+            code (list): The code to get the status of
+                         Maximum: 20
             user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Raises:
@@ -1084,7 +1232,6 @@ class Client:
             game_id (str, optional): A Twitch Game ID
             first (int, optional): Maximum number of entitlements to return
                                    Default: 20
-                                   Max: 1000
 
         Raises:
             twitchpy.errors.ClientError
@@ -1109,17 +1256,38 @@ class Client:
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/1000)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(1000*call)>1000:
+                params["first"]=1000
+            
             else:
-                return None
+                params["first"]=first-(1000*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def redeem_code(self,code,user_id):
         """
@@ -1127,7 +1295,8 @@ class Client:
         All codes are single-use
 
         Args:
-            code (str): The code to redeem to the authenticated user’s account
+            code (list): The code to redeem to the authenticated user’s account
+                         Maximum: 20
             user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Raises:
@@ -1249,7 +1418,6 @@ class Client:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -1261,65 +1429,83 @@ class Client:
 
         url=f"https://api.twitch.tv/helix/games/top"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
 
         if first!=20:
             params={"first":first}
-            response=requests.get(url,headers=headers,params=params).json()
 
-        else:
-            response=requests.get(url,headers=headers).json()
+        after=""
+
+        calls=math.ceil(first/100)
 
         games=[]
-        
-        try:
-            for game in response["data"]:
-                games.append(self.get_game(id=game["id"])[0])
 
-            return games
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_game(self,id="",name=""):
+            response=requests.get(url,headers=headers,params=params).json()
+            
+            try:
+                for game in response["data"]:
+                    games.append(self.get_game(id=game["id"]))
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return games
+
+    def get_games(self,id=[],name=[]):
         """
         Gets games by game ID or name
         For a query to be valid, name and/or id must be specified
 
         Args:
-            id (str, optional): Game ID
-            name (str, optional): Game name
-                                  The name must be an exact match
+            id (list, optional): Game ID
+                                 At most 100 id values can be specified
+            name (list, optional): Game name
+                                   The name must be an exact match
+                                   At most 100 name values can be specified
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            Game
+            list
         """
 
         url="https://api.twitch.tv/helix/games"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
-        if name!="":
+        if len(name)>0:
             params["name"]=name
 
         response=requests.get(url,headers=headers,params=params).json()
 
         try:
             if len(response["data"])>0:
-                game=Game(response["data"][0]["id"],response["data"][0]["name"],response["data"][0]["box_art_url"])
+                games=[]
 
-                return game
+                for game in response["data"]:
+                    games.append(Game(game["id"],game["name"],game["box_art_url"]))
 
             else:
                 return None
 
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
+
+        return games
 
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
@@ -1332,7 +1518,6 @@ class Client:
             broadcaster_id (str): User ID of the broadcaster
                                   Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 1
             id (str, optional): The id of the wanted event
 
@@ -1352,18 +1537,39 @@ class Client:
 
         if id!="":
             params["id"]=id
+        
+        cursor=""
 
-        response=requests.get(url,headers=headers,params=params).json()
+        calls=math.ceil(first/100)
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        output=[]
 
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["cursor"]=cursor
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        cursor=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
@@ -1416,15 +1622,15 @@ class Client:
 
         response=requests.post(url,headers=headers,json=payload)
 
-    def get_banned_events(self,broadcaster_id,user_id="",first=20):
+    def get_banned_events(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all user bans and un-bans in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -1438,33 +1644,51 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if user_id!="":
+        if len(user_id)>0:
             params["user_id"]=user_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_banned_users(self,broadcaster_id,user_id="",first=20):
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    return response["data"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_banned_users(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all banned and timed-out users in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
+                                     Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -1478,33 +1702,54 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if user_id!="":
+        if len(user_id)>0:
             params["user_id"]=user_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_moderators(self,broadcaster_id,user_id="",first=20):
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_moderators(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all moderators in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -1518,38 +1763,52 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if user_id!="":
+        if len(user_id)>0:
             params["user_id"]=user_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                users=[]
+        calls=math.ceil(first/100)
 
-                for user in response["data"]:
-                    users.append(self.get_user(id=user["user_id"]))
+        users=[]
 
-                return users
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_moderator_events(self,broadcaster_id,user_id="",first=20):
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for user in response["data"]:
+                        users.append(self.get_user(id=user["user_id"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return users
+
+    def get_moderator_events(self,broadcaster_id,user_id=[],first=20):
         """
         Returns a list of moderators or users added and removed as moderators from a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -1563,25 +1822,46 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if user_id!="":
+        if len(user_id)>0:
             params["user_id"]=user_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_polls(self,broadcaster_id,id="",first=20):
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
         Poll information is available for 90 days
@@ -1589,9 +1869,9 @@ class Client:
         Args:
             broadcaster_id (str): The broadcaster running polls
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): ID of a poll
+            id (list, optional): ID of a poll
+                                 Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 20
                                    Default: 20
 
         Raises:
@@ -1605,23 +1885,44 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/20)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(20*call)>20:
+                params["first"]=20
+            
             else:
-                return None
+                params["first"]=first-(20*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
         """
@@ -1718,7 +2019,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_predictions(self,broadcaster_id,id="",first=20):
+    def get_predictions(self,broadcaster_id,id=[],first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
@@ -1726,8 +2027,8 @@ class Client:
             broadcaster_id (str): The broadcaster running Predictions
                                   Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): ID of a Prediction
+                                Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 20
                                    Default: 20
 
         Raises:
@@ -1741,23 +2042,44 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/20)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(20*call)>20:
+                params["first"]=20
+            
             else:
-                return None
+                params["first"]=first-(20*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def create_prediction(self,broadcaster_id,title,outcomes,prediction_window):
         """
@@ -1839,7 +2161,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_channel_stream_schedule(self,broadcaster_id,id="",start_time="",utc_offset="0",first=20):
+    def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
         Scheduled broadcasts are defined as "stream segments"
@@ -1848,12 +2170,12 @@ class Client:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): The ID of the stream segment to return
+                                Maximum: 100
             start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
                                         If not specified, the current date and time is used
             utc_offset (str, optional): A timezone offset for the requester specified in minutes
                                         If not specified, "0" is used for GMT
             first (int, optional): Maximum number of stream segments to return
-                                   Maximum: 25
                                    Default: 20
 
         Raises:
@@ -1867,7 +2189,7 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
         if start_time!="":
@@ -1879,17 +2201,38 @@ class Client:
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/25)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(25*call)>25:
+                params["first"]=25
+            
             else:
-                return None
+                params["first"]=first-(25*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_channel_iCalendar(self,broadcaster_id):
         """
@@ -2082,7 +2425,6 @@ class Client:
         Args:
             query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -2099,22 +2441,36 @@ class Client:
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                games=[]
+        calls=math.ceil(first/100)
 
-                for game in response["data"]:
-                    games.append(self.get_game(id=game["id"]))
+        games=[]
 
-                return games
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for game in response["data"]:
+                        games.append(self.get_games(id=game["id"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return games
 
     def search_channels(self,query,first=20,live_only=False):
         """
@@ -2123,7 +2479,6 @@ class Client:
         Args:
             query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             live_only (bool, optional): Filter results for live streams only
                                         Default: false
@@ -2145,22 +2500,36 @@ class Client:
         if live_only!=False:
             params["live_only"]=live_only
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                channels=[]
+        calls=math.ceil(first/100)
 
-                for channel in response["data"]:
-                    channels.append(self.get_channel(channel["id"]))
+        channels=[]
 
-                return channels
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for channel in response["data"]:
+                        channels.append(self.get_channel(channel["id"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return channels
 
     def get_stream_key(self,broadcaster_id):
         """
@@ -2198,7 +2567,6 @@ class Client:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             game_id (str, optional): Returns streams broadcasting a specified game ID
             language (str, optional): Stream language
@@ -2232,22 +2600,36 @@ class Client:
         if user_login!="":
             params["user_login"]=user_login
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                streams=[]
+        calls=math.ceil(first/100)
 
-                for stream in response["data"]:
-                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+        streams=[]
 
-                return streams
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for stream in response["data"]:
+                        streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return streams
 
     def get_followed_streams(self,user_id,first=100):
         """
@@ -2257,7 +2639,6 @@ class Client:
             user_id (str): Results will only include active streams from the channels that this Twitch user follows
                            user_id must match the User ID in the bearer token
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 100
 
         Raises:
@@ -2274,19 +2655,33 @@ class Client:
         if first!=100:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                streams=[]
+        calls=math.ceil(first/100)
 
-                for stream in response["data"]:
-                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+        streams=[]
 
-                return streams
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for stream in response["data"]:
+                        streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return streams
 
     def create_stream_marker(self,user_id,description=""):
         """
@@ -2325,7 +2720,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_stream_markers(self,user_id,video_id,first=20):
+    def get_stream_markers(self,user_id="",video_id="",first=20):
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -2333,10 +2728,9 @@ class Client:
         Only one of user_id and video_id must be specified
 
         Args:
-            user_id (str): ID of the broadcaster from whose stream markers are returned
-            video_id (str): ID of the VOD/video whose stream markers are returned
+            user_id (str, optional): ID of the broadcaster from whose stream markers are returned
+            video_id (str, optional): ID of the VOD/video whose stream markers are returned
             first (int, optional): Number of values to be returned when getting videos by user or game ID
-                                   Limit: 100
                                    Default: 20
 
         Raises:
@@ -2347,34 +2741,61 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/streams/markers"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"user_id":user_id,"video_id":video_id}
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={}
+
+        if user_id!="":
+            params["user_id"]=user_id
+
+        if video_id!="":
+            params["video_id"]=video_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
 
-    def get_broadcaster_subscriptions(self,broadcaster_id,user_id="",first=20):
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
+
+    def get_broadcaster_subscriptions(self,broadcaster_id,user_id=[],first=20):
         """
         Get all of a broadcaster’s subscriptions
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
                                   Must match the User ID in the Bearer token
-            user_id (str, optional): Filters results to only include potential subscriptions made by the provided user ID
+            user_id (list, optional): Filters results to only include potential subscriptions made by the provided user ID
+                                      Accepts up to 100 values
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -2388,23 +2809,44 @@ class Client:
         headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if user_id!="":
+        if len(user_id)>0:
             params["user_id"]=user_id
 
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def check_user_subscription(self,broadcaster_id,user_id):
         """
@@ -2437,15 +2879,14 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_all_stream_tags(self,first=20,tag_id=""):
+    def get_all_stream_tags(self,first=20,tag_id=[]):
         """
         Gets the list of all stream tags defined by Twitch
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
-            tag_id (str, optional): ID of a tag
+            tag_id (list, optional): ID of a tag
 
         Raises:
             twitchpy.errors.ClientError
@@ -2456,30 +2897,46 @@ class Client:
 
         url="https://api.twitch.tv/helix/tags/streams"
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
 
-        if first==20 and tag_id=="":
-            response=requests.get(url,headers=headers).json()
+        if first!=20:
+            params["first"]=first
 
-        else:
-            params={}
+        if len(tag_id)>0:
+            params["tag_id"]=tag_id
 
-            if first!=20:
-                params["first"]=first
+        after=""
 
-            if tag_id!="":
-                params["tag_id"]=tag_id
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_stream_tags(self,broadcaster_id):
         """
@@ -2566,7 +3023,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_team(self,name="",id=""):
+    def get_teams(self,name="",id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
@@ -2607,31 +3064,33 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_user(self,id="",login=""):
+    def get_users(self,id=[],login=[]):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
         If neither a user ID nor a login name is specified, the user is looked up by Bearer token
 
         Args:
-            id (str, optional): User ID
-            login (str, optional): User login name
+            id (list, optional): User ID
+                                 Limit: 100
+            login (list, optional): User login name
+                                    Limit: 100
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            User
+            list
         """
 
         url="https://api.twitch.tv/helix/users"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
-        if id!="":
+        if len(id)>0:
             params["id"]=id
 
-        if login!="":
+        if len(login)>0:
             login=login.replace("@","").lower()
             params["login"]=login
 
@@ -2639,10 +3098,12 @@ class Client:
 
         try:
             if len(response["data"])>0:
-                user=response["data"][0]
-                user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
+                users=[]
+
+                for user in response["data"]:
+                    users.append(User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"]))
                 
-                return user
+                return users
 
             else:
                 return None
@@ -2695,7 +3156,6 @@ class Client:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             from_id (str, optional): User ID
                                      The request returns information about users who are being followed by the from_id user
@@ -2722,17 +3182,38 @@ class Client:
         if to_id!="":
             params["to_id"]=to_id
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+        calls=math.ceil(first/100)
 
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def create_user_follows(self,from_id,to_id,allow_notifications=False):
         """
@@ -2776,7 +3257,6 @@ class Client:
         Args:
             broadcaster_id (str): User ID for a Twitch user
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Raises:
@@ -2793,22 +3273,36 @@ class Client:
         if first!=20:
             params["first"]=first
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                users=[]
+        calls=math.ceil(first/100)
 
-                for user in response["data"]:
-                    users.append(self.get_user(id=user["user_id"]))
+        users=[]
 
-                return users
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for user in response["data"]:
+                        users.append(self.get_user(id=user["user_id"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return users
 
     def block_user(self,target_user_id,source_context="",reason=""):
         """
@@ -2936,17 +3430,18 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_videos(self,id,user_id,game_id,first=20,language="",period="all",sort="time",type="all"):
+    def get_videos(self,id=[],user_id="",game_id="",first=20,language="",period="all",sort="time",type="all"):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
 
         Args:
-            id (str): ID of the video being queried
+            id (list): ID of the video being queried
+                       Limit: 100
+                       If this is specified, you cannot use first, language, period, sort and type
             user_id (str): ID of the user who owns the video
             game_id (str): ID of the game the video is of
             first (int, optional): Number of values to be returned when getting videos by user or game ID
-                                   Limit: 100
                                    Default: 20
             language (str, optional): Language of the video being queried
                                       A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
@@ -2968,7 +3463,16 @@ class Client:
 
         url="https://api.twitch.tv/helix/videos"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"id":id,"user_id":user_id,"game_id":game_id}
+        params={}
+
+        if len(id)>0:
+            params["id"]=id
+
+        if user_id!="":
+            params["user_id"]=user_id
+
+        if game_id!="":
+            params["game_id"]=game_id
 
         if first!=20:
             params["first"]=first
@@ -2985,22 +3489,36 @@ class Client:
         if type!="all":
             params["type"]=type
 
-        response=requests.get(url,headers=headers,params=params).json()
+        after=""
 
-        try:
-            if len(response["data"])>0:
-                videos=[]
+        calls=math.ceil(first/100)
 
-                for video in response["data"]:
-                    videos.append(Video(video["id"],video["user_id"],video["user_name"],video["title"],video["description"],video["created_at"],video["published_at"],video["url"],video["thumbnail_url"],video["viewable"],video["view_count"],video["language"],video["type"],video["duration"]))
+        videos=[]
 
-                return videos
-
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
             else:
-                return None
+                params["first"]=first-(100*call)
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params).json()
+
+            try:
+                if len(response["data"])>0:
+                    for video in response["data"]:
+                        videos.append(Video(video["id"],video["user_id"],video["user_name"],video["title"],video["description"],video["created_at"],video["published_at"],video["url"],video["thumbnail_url"],video["viewable"],video["view_count"],video["language"],video["type"],video["duration"]))
+
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return videos
 
     def delete_video(self,id):
         """
@@ -3008,7 +3526,8 @@ class Client:
         Videos are past broadcasts, Highlights, or uploads
 
         Args:
-            id (str): ID of the video to be deleted
+            id (str): ID of the video(s) to be deleted
+                      Limit: 5
         """
 
         url="https://api.twitch.tv/helix/videos"
@@ -3023,7 +3542,6 @@ class Client:
 
         Args:
             first (int, optional): Number of values to be returned
-                                   Limit: 100
                                    Default: 20
 
         Raises:
@@ -3035,24 +3553,43 @@ class Client:
 
         url="https://api.twitch.tv/helix/webhooks/subscriptions"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={}
 
-        if first==20:
-            response=requests.get(url,headers=headers).json()
-
-        else:
+        if first!=20:
             params={"first":first}
+
+        after=""
+
+        calls=math.ceil(first/100)
+
+        output=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
 
             response=requests.get(url,headers=headers,params=params).json()
 
-        try:
-            if len(response["data"])>0:
-                return response["data"]
+            try:
+                if len(response["data"])>0:
+                    output.extend(response["data"])
 
-            else:
-                return None
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+                else:
+                    return None
+
+            except KeyError:
+                raise twitchpy.errors.ClientError(response["message"])
+
+        return output
 
     def get_chatters(self,channel_name):
         """

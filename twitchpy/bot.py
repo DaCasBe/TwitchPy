@@ -240,16 +240,20 @@ class Bot:
 
         return self.__client.start_commercial(broadcaster_id,length)
 
-    def get_extension_analytics(self,extension_id="",first=20,type=""):
+    def get_extension_analytics(self,ended_at="",extension_id="",first=20,started_at="",type=""):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
 
         Args:
+            ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                      If this is provided, started_at also must be specified
             extension_id (str, optional): Client ID value assigned to the extension when it is created
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
+            started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                        This must be on or after January 31, 2018
+                                        If this is provided, ended_at also must be specified
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
@@ -257,18 +261,21 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_analytics(extension_id,first,type)
+        return self.__client.get_extension_analytics(ended_at,extension_id,first,started_at,type)
 
-    def get_game_analytics(self,first=20,game_id="",type=""):
+    def get_game_analytics(self,ended_at="",first=20,game_id="",started_at="",type=""):
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
 
         Args:
+            ended_at (str, optional): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                      If this is provided, started_at also must be specified
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             game_id (str, optional): Game ID
+            started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                                        If this is provided, ended_at also must be specified
             type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
@@ -276,9 +283,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_game_analytics(first,game_id,type)
+        return self.__client.get_game_analytics(ended_at,first,game_id,started_at,type)
 
-    def get_bits_leaderboard(self,count=10,user_id=""):
+    def get_bits_leaderboard(self,count=10,period="all",started_at="",user_id=""):
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -286,6 +293,13 @@ class Bot:
             count (int, optional): Number of results to be returned
                                    Maximum: 100
                                    Default: 10
+            period (str, optional): Time period over which data is aggregated (PST time zone)
+                                    This parameter interacts with started_at
+                                    Default: "all"
+                                    Valid values: "day", "week", "month", "year", "all"
+            started_at (str, optional): Timestamp for the period over which the returned data is aggregated
+                                        Must be in RFC 3339 format
+                                        This value is ignored if period is "all"
             user_id (str, optional): ID of the user whose results are returned
                                      As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
@@ -293,7 +307,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_bits_leaderboard(count,user_id)
+        return self.__client.get_bits_leaderboard(count,period,started_at,user_id)
 
     def get_cheermotes(self,broadcaster_id=""):
         """
@@ -309,16 +323,16 @@ class Bot:
 
         return self.__client.get_cheermotes(broadcaster_id)
 
-    def get_extension_transactions(self,extension_id,id="",first=20):
+    def get_extension_transactions(self,extension_id,id=[],first=20):
         """
         Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
             extension_id (str): ID of the extension to list transactions for
-            id (str, optional): Transaction IDs to look up
+            id (list, optional): Transaction IDs to look up
+                                 Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -340,10 +354,10 @@ class Bot:
 
         return self.__client.get_channel(broadcaster_id)
 
-    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title=""):
+    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title="",delay=0):
         """
         Modifies channel information for users
-        game_id, broadcaster_language and title parameters are optional, but at least one parameter must be provided
+        game_id, broadcaster_language, title and delay parameters are optional, but at least one parameter must be provided
 
         Args:
             broadcaster_id (str): ID of the channel to be updated
@@ -351,9 +365,11 @@ class Bot:
             broadcaster_language (str, optional): The language of the channel
                                                   A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
             title (str, optional): The title of the stream
+            delay (int ,optional): Stream delay in seconds
+                                   Stream delay is a Twitch Partner feature
         """
 
-        self.__client.modify_channel_information(broadcaster_id,game_id,broadcaster_language,title)
+        self.__client.modify_channel_information(broadcaster_id,game_id,broadcaster_language,title,delay)
 
     def get_channel_editors(self,broadcaster_id):
         """
@@ -418,13 +434,14 @@ class Bot:
 
         self.__client.delete_custom_reward(broadcaster_id,id)
 
-    def get_custom_reward(self,broadcaster_id,id="",only_manageable_rewards=False):
+    def get_custom_reward(self,broadcaster_id,id=[],only_manageable_rewards=False):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+            id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+                                Maximum: 50
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
                                                       Default: false
 
@@ -434,7 +451,7 @@ class Bot:
 
         return self.__client.get_custom_reward(broadcaster_id,id,only_manageable_rewards)
 
-    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id="",status="",sort="OLDEST",first=20):
+    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id=[],status="",sort="OLDEST",first=20):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
         Developers only have access to get and update redemptions for the rewards created programmatically by the same client_id
@@ -442,14 +459,14 @@ class Bot:
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
-            id (str, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+            id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+                                Maximum: 50
             status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                                     Can be one of UNFULFILLED, FULFILLED or CANCELED
             sort (str, optional): Sort order of redemptions returned when getting the Custom Reward Redemption objects for a reward
                                   One of: OLDEST, NEWEST
                                   Default: OLDEST
             first (int, optional): Number of results to be returned when getting the Custom Reward Redemption objects for a reward
-                                   Limit: 50
                                    Default: 20
 
         Returns:
@@ -500,8 +517,9 @@ class Bot:
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
 
         Args:
-            id (str): ID of the Custom Reward Redemption to update
+            id (list): ID of the Custom Reward Redemption to update
                       Must match a Custom Reward Redemption on broadcaster_id’s channel
+                      Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward the redemptions to be updated are for
             status (str, optional): The new status to set redemptions to
@@ -544,7 +562,8 @@ class Bot:
         Gets all Twitch emotes for one or more specific emote sets
 
         Args:
-            emote_set_id (str): ID of the emote set
+            emote_set_id (list): ID(s) of the emote set
+                                 Maximum: 25
 
         Returns:
             list
@@ -592,23 +611,27 @@ class Bot:
 
         return self.__client.create_clip(broadcaster_id,has_delay)
 
-    def get_clips(self,broadcaster_id="",game_id="",id="",first=20):
+    def get_clips(self,broadcaster_id="",game_id="",id=[],ended_at="",first=20,started_at=""):
         """
         Gets clip information by clip ID, broadcaster ID or game ID (one only)
 
         Args:
             broadcaster_id (str, optional): ID of the broadcaster for whom clips are returned
             game_id (str, optional): ID of the game for which clips are returned
-            id (str, optional): ID of the clip being queried
+            id (list, optional): ID of the clip being queried
+                                 Limit: 100
+            ended_at (str, optional): Ending date/time for returned clips, in RFC3339 format
+                                      If this is specified, started_at also must be specified; otherwise, the time period is ignored
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
+            started_at (str, optional): Starting date/time for returned clips, in RFC3339 format
+                                        If this is specified, ended_at also should be specified; otherwise, the ended_at date/time will be 1 week after the started_at value
 
         Returns:
             list
         """
 
-        return self.__client.get_clips(broadcaster_id,game_id,id,first)
+        return self.__client.get_clips(broadcaster_id,game_id,id,ended_at,first,started_at)
 
     def get_code_status(self,code,user_id):
         """
@@ -616,7 +639,8 @@ class Bot:
         All codes are single-use
 
         Args:
-            code (str): The code to get the status of
+            code (list): The code to get the status of
+                         Maximum: 20
             user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Returns:
@@ -635,7 +659,6 @@ class Bot:
             game_id (str, optional): A Twitch Game ID
             first (int, optional): Maximum number of entitlements to return
                                    Default: 20
-                                   Max: 1000
 
         Returns:
             list
@@ -649,7 +672,8 @@ class Bot:
         All codes are single-use
 
         Args:
-            code (str): The code to redeem to the authenticated user’s account
+            code (list): The code to redeem to the authenticated user’s account
+                         Maximum: 20
             user_id (int): The user account which is going to receive the entitlement associated with the code
 
         Returns:
@@ -710,7 +734,6 @@ class Bot:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -719,21 +742,23 @@ class Bot:
 
         return self.__client.get_top_games(first)
 
-    def get_game(self,id="",name=""):
+    def get_games(self,id=[],name=[]):
         """
         Gets games by game ID or name
         For a query to be valid, name and/or id must be specified
 
         Args:
-            id (str, optional): Game ID
-            name (str, optional): Game name
-                                  The name must be an exact match
+            id (list, optional): Game ID
+                                 At most 100 id values can be specified
+            name (list, optional): Game name
+                                   The name must be an exact match
+                                   At most 100 name values can be specified
 
         Returns:
-            Game
+            list
         """
 
-        return self.__client.get_game(id,name)
+        return self.__client.get_games(id,name)
 
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
@@ -746,7 +771,6 @@ class Bot:
             broadcaster_id (str): User ID of the broadcaster
                                   Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 1
             id (str, optional): The id of the wanted event
 
@@ -756,7 +780,7 @@ class Bot:
 
         return self.__client.get_hype_train_events(broadcaster_id,first,id)
 
-    def check_automod_status(self,broadcaster_id,msg_id="",msg_user="",user_id=""):
+    def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
@@ -786,15 +810,15 @@ class Bot:
 
         self.manage_held_automod_messages(user_id,msg_id,action)
 
-    def get_banned_events(self,broadcaster_id,user_id="",first=20):
+    def get_banned_events(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all user bans and un-bans in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -803,15 +827,15 @@ class Bot:
 
         return self.__client.get_banned_events(broadcaster_id,user_id,first)
 
-    def get_banned_users(self,broadcaster_id,user_id="",first=20):
+    def get_banned_users(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all banned and timed-out users in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who are banned in this channel and have a matching user_id
+                                     Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -820,15 +844,15 @@ class Bot:
 
         return self.__client.get_banned_users(broadcaster_id,user_id,first)
 
-    def get_moderators(self,broadcaster_id,user_id="",first=20):
+    def get_moderators(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all moderators in a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who are moderators in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -837,15 +861,15 @@ class Bot:
 
         return self.__client.get_moderators(broadcaster_id,user_id,first)
 
-    def get_moderator_events(self,broadcaster_id,user_id="",first=20):
+    def get_moderator_events(self,broadcaster_id,user_id=[],first=20):
         """
         Returns a list of moderators or users added and removed as moderators from a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (str, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
+            user_id (list, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
+                                      Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -854,7 +878,7 @@ class Bot:
 
         return self.__client.get_moderator_events(broadcaster_id,user_id,first)
 
-    def get_polls(self,broadcaster_id,id="",first=20):
+    def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
         Poll information is available for 90 days
@@ -862,9 +886,9 @@ class Bot:
         Args:
             broadcaster_id (str): The broadcaster running polls
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): ID of a poll
+            id (list, optional): ID of a poll
+                                 Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 20
                                    Default: 20
 
         Returns:
@@ -922,7 +946,7 @@ class Bot:
 
         return self.__client.end_poll(broadcaster_id,id,status)
 
-    def get_predictions(self,broadcaster_id,id="",first=20):
+    def get_predictions(self,broadcaster_id,id=[],first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
@@ -930,8 +954,8 @@ class Bot:
             broadcaster_id (str): The broadcaster running Predictions
                                   Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): ID of a Prediction
+                                Maximum: 100
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 20
                                    Default: 20
 
         Returns:
@@ -983,7 +1007,7 @@ class Bot:
 
         return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
 
-    def get_channel_stream_schedule(self,broadcaster_id,id="",start_time="",utc_offset="0",first=20):
+    def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
         Scheduled broadcasts are defined as "stream segments"
@@ -992,12 +1016,12 @@ class Bot:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
             id (str, optional): The ID of the stream segment to return
+                                Maximum: 100
             start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
                                         If not specified, the current date and time is used
             utc_offset (str, optional): A timezone offset for the requester specified in minutes
                                         If not specified, "0" is used for GMT
             first (int, optional): Maximum number of stream segments to return
-                                   Maximum: 25
                                    Default: 20
 
         Returns:
@@ -1106,7 +1130,6 @@ class Bot:
         Args:
             query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -1122,7 +1145,6 @@ class Bot:
         Args:
             query (str): URI encoded search query
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             live_only (bool, optional): Filter results for live streams only
                                         Default: false
@@ -1152,7 +1174,6 @@ class Bot:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             game_id (str, optional): Returns streams broadcasting a specified game ID
             language (str, optional): Stream language
@@ -1174,7 +1195,6 @@ class Bot:
             user_id (str): Results will only include active streams from the channels that this Twitch user follows
                            user_id must match the User ID in the bearer token
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 100
 
         Returns:
@@ -1200,7 +1220,7 @@ class Bot:
 
         return self.__client.create_stream_marker(user_id,description)
 
-    def get_stream_markers(self,user_id,video_id,first=20):
+    def get_stream_markers(self,user_id="",video_id="",first=20):
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -1208,10 +1228,9 @@ class Bot:
         Only one of user_id and video_id must be specified
 
         Args:
-            user_id (str): ID of the broadcaster from whose stream markers are returned
-            video_id (str): ID of the VOD/video whose stream markers are returned
+            user_id (str, optional): ID of the broadcaster from whose stream markers are returned
+            video_id (str, optional): ID of the VOD/video whose stream markers are returned
             first (int, optional): Number of values to be returned when getting videos by user or game ID
-                                   Limit: 100
                                    Default: 20
 
         Returns:
@@ -1220,16 +1239,16 @@ class Bot:
 
         return self.__client.get_stream_markers(user_id,video_id,first)
 
-    def get_broadcaster_subscriptions(self,broadcaster_id,user_id="",first=20):
+    def get_broadcaster_subscriptions(self,broadcaster_id,user_id=[],first=20):
         """
         Get all of a broadcaster’s subscriptions
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
                                   Must match the User ID in the Bearer token
-            user_id (str, optional): Filters results to only include potential subscriptions made by the provided user ID
+            user_id (list, optional): Filters results to only include potential subscriptions made by the provided user ID
+                                      Accepts up to 100 values
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -1252,15 +1271,14 @@ class Bot:
 
         return self.__client.check_user_subscription(broadcaster_id,user_id)
 
-    def get_all_stream_tags(self,first=20,tag_id=""):
+    def get_all_stream_tags(self,first=20,tag_id=[]):
         """
         Gets the list of all stream tags defined by Twitch
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
-            tag_id (str, optional): ID of a tag
+            tag_id (list, optional): ID of a tag
 
         Returns:
             list
@@ -1307,7 +1325,7 @@ class Bot:
 
         return self.__client.get_channel_teams(broadcaster_id)
 
-    def get_team(self,name="",id=""):
+    def get_teams(self,name="",id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
@@ -1320,23 +1338,25 @@ class Bot:
             Team
         """
 
-        return self.__client.get_team(name,id)
+        return self.__client.get_teams(name,id)
 
-    def get_user(self,id="",login=""):
+    def get_users(self,id=[],login=[]):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
         If neither a user ID nor a login name is specified, the user is looked up by Bearer token
 
         Args:
-            id (str, optional): User ID
-            login (str, optional): User login name
+            id (list, optional): User ID
+                                 Limit: 100
+            login (list, optional): User login name
+                                    Limit: 100
 
         Returns:
-            User
+            list
         """
 
-        return self.__client.get_user(id,login)
+        return self.__client.get_users(id,login)
 
     def update_user(self,description=""):
         """
@@ -1359,7 +1379,6 @@ class Bot:
 
         Args:
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
             from_id (str, optional): User ID
                                      The request returns information about users who are being followed by the from_id user
@@ -1396,14 +1415,13 @@ class Bot:
 
         self.__client.delete_user_follows(from_id,to_id)
 
-    def get_user_block_list(self,broadcaster_id,first=100):
+    def get_user_block_list(self,broadcaster_id,first=20):
         """
         Gets a specified user’s block list
 
         Args:
             broadcaster_id (str): User ID for a Twitch user
             first (int, optional): Maximum number of objects to return
-                                   Maximum: 100
                                    Default: 20
 
         Returns:
@@ -1470,17 +1488,18 @@ class Bot:
 
         return self.__client.update_user_extensions()
 
-    def get_videos(self,id,user_id,game_id,first=20,language="",period="all",sort="time",type="all"):
+    def get_videos(self,id=[],user_id="",game_id="",first=20,language="",period="all",sort="time",type="all"):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
 
         Args:
-            id (str): ID of the video being queried
+            id (list): ID of the video being queried
+                       Limit: 100
+                       If this is specified, you cannot use first, language, period, sort and type
             user_id (str): ID of the user who owns the video
             game_id (str): ID of the game the video is of
             first (int, optional): Number of values to be returned when getting videos by user or game ID
-                                   Limit: 100
                                    Default: 20
             language (str, optional): Language of the video being queried
                                       A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
@@ -1505,7 +1524,8 @@ class Bot:
         Videos are past broadcasts, Highlights, or uploads
 
         Args:
-            id (str): ID of the video to be deleted
+            id (str): ID of the video(s) to be deleted
+                      Limit: 5
         """
 
         self.__client.delete_videos(id)
@@ -1516,7 +1536,6 @@ class Bot:
 
         Args:
             first (int, optional): Number of values to be returned
-                                   Limit: 100
                                    Default: 20
 
         Returns:
