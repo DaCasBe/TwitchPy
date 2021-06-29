@@ -21,14 +21,14 @@ TwitchPy uses many endpoints which may require different tokens and IDs.
 ## Client
 
 ~~~
-class Client(app_token,client_id,client_secret,code="")
+class Client(oauth_token,client_id,client_secret,code="")
 ~~~
 
 Represents a client connection to the Twitch API
 
 **Args**:
 
-+ app_token (str): OAuth Token
++ oauth_token (str): OAuth Token
 
 + client_id (str): Client ID
 
@@ -1662,37 +1662,6 @@ At minimum, from_id or to_id must be provided for a query to be valid
 + twitchpy.errors.ClientError
 
 **Returns**: list
-
-### Create user follows
-
-~~~
-function create_user_follows(from_id,to_id,allow_notifications=False)
-~~~
-
-Adds a specified user to the followers of a specified channel
-
-**Args**:
-
-+ from_id (str): User ID of the follower
-
-+ to_id (str): ID of the channel to be followed by the user
-
-+ allow_notifications (bool, optional): If true, the user gets email or push notifications (depending on the user’s notification settings) when the channel goes live  
-                                        Default value is false
-
-### Delete user follows
-
-~~~
-function delete_user_follows(from_id,to_id)
-~~~
-
-Deletes a specified user from the followers of a specified channel
-
-**Args**:
-
-+ from_id (str): User ID of the follower
-
-+ to_id (str): Channel to be unfollowed by the user
 
 ### Get user block list
 
@@ -3809,37 +3778,6 @@ At minimum, from_id or to_id must be provided for a query to be valid
                          The request returns information about users who are following the to_id user
 
 **Returns**: list
-
-### Create user follows
-
-~~~
-function create_user_follows(from_id,to_id,allow_notifications=False)
-~~~
-
-Adds a specified user to the followers of a specified channel
-
-**Args**:
-
-+ from_id (str): User ID of the follower
-
-+ to_id (str): ID of the channel to be followed by the user
-
-+ allow_notifications (bool, optional): If true, the user gets email or push notifications (depending on the user’s notification settings) when the channel goes live  
-                                        Default value is false
-
-### Delete user follows
-
-~~~
-function delete_user_follows(from_id,to_id)
-~~~
-
-Deletes a specified user from the followers of a specified channel
-
-**Args**:
-
-+ from_id (str): User ID of the follower
-
-+ to_id (str): Channel to be unfollowed by the user
 
 ### Get user block list
 

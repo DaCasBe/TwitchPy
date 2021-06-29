@@ -14,16 +14,16 @@ class Client:
     Represents a client connection to the Twitch API
     """
 
-    def __init__(self,app_token,client_id,client_secret,code=""):
+    def __init__(self,oauth_token,client_id,client_secret,code=""):
         """
         Args:
-            app_token (str): OAuth Token
+            oauth_token (str): OAuth Token
             client_id (str): Client ID
             client_secret (str): Client secret
             code (str, optional): Authorization code
         """
         
-        self.app_token=app_token
+        self.oauth_token=app_token
         self.client_id=client_id
         self.client_secret=client_secret
         self.__app_token=self.__get_app_token()
@@ -484,7 +484,7 @@ class Client:
         try:
             if len(response["data"])>0:
                 channel=response["data"][0]
-                channel=Channel(self.app_token,self.client_id,self.client_secret,self.get_users(id=[channel["broadcaster_id"]])[0].login,channel["game_name"],channel["broadcaster_language"],channel["title"])
+                channel=Channel(self.oauth_token,self.client_id,self.client_secret,self.get_users(id=[channel["broadcaster_id"]])[0].login,channel["game_name"],channel["broadcaster_language"],channel["title"])
                 
                 return channel
 
@@ -3222,41 +3222,6 @@ class Client:
                 raise twitchpy.errors.ClientError(response["message"])
 
         return output
-
-    def create_user_follows(self,from_id,to_id,allow_notifications=False):
-        """
-        Adds a specified user to the followers of a specified channel
-
-        Args:
-            from_id (str): User ID of the follower
-            to_id (str): ID of the channel to be followed by the user
-            allow_notifications (bool, optional): If true, the user gets email or push notifications (depending on the user’s notification settings) when the channel goes live
-                                                  Default value is false
-        """
-
-        url="https://api.twitch.tv/helix/users/follows"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
-        payload={"from_id":from_id,"to_id":to_id}
-
-        if allow_notifications!=False:
-            payload["allow_notifications"]=allow_notifications
-
-        response=requests.post(url,headers=headers,json=payload)
-
-    def delete_user_follows(self,from_id,to_id):
-        """
-        Deletes a specified user from the followers of a specified channel
-
-        Args:
-            from_id (str): User ID of the follower
-            to_id (str): Channel to be unfollowed by the user
-        """
-
-        url="https://api.twitch.tv/helix/users/follows"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"from_id":from_id,"to_id":to_id}
-
-        response=requests.delete(url,headers=headers,data=data)
 
     def get_user_block_list(self,broadcaster_id,first=20):
         """

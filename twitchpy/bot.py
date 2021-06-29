@@ -1391,30 +1391,6 @@ class Bot:
 
         return self.__client.get_user_follows(first,from_id,to_id)
 
-    def create_user_follows(self,from_id,to_id,allow_notifications=False):
-        """
-        Adds a specified user to the followers of a specified channel
-
-        Args:
-            from_id (str): User ID of the follower
-            to_id (str): ID of the channel to be followed by the user
-            allow_notifications (bool, optional): If true, the user gets email or push notifications (depending on the user’s notification settings) when the channel goes live
-                                                  Default value is false
-        """
-
-        self.__client.create_user_follows(from_id,to_id,allow_notifications)
-
-    def delete_user_follows(self,from_id,to_id):
-        """
-        Deletes a specified user from the followers of a specified channel
-
-        Args:
-            from_id (str): User ID of the follower
-            to_id (str): Channel to be unfollowed by the user
-        """
-
-        self.__client.delete_user_follows(from_id,to_id)
-
     def get_user_block_list(self,broadcaster_id,first=20):
         """
         Gets a specified user’s block list
