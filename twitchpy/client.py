@@ -484,14 +484,14 @@ class Client:
         try:
             if len(response["data"])>0:
                 channel=response["data"][0]
-                channel=Channel(self.app_token,self.client_id,self.client_secret,self.get_user(id=channel["broadcaster_id"]).login,channel["game_name"],channel["broadcaster_language"],channel["title"])
+                channel=Channel(self.app_token,self.client_id,self.client_secret,self.get_users(id=[channel["broadcaster_id"]])[0].login,channel["game_name"],channel["broadcaster_language"],channel["title"])
                 
                 return channel
 
             else:
                 return None
 
-        except:
+        except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
     def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title="",delay=0):
@@ -555,10 +555,12 @@ class Client:
 
         try:
             if len(response["data"])>0:
-                users=[]
+                ids=[]
 
                 for user in response["data"]:
-                    users.append(self.get_user(id=user["user_id"]))
+                    ids.append(user["user_id"])
+
+                users=self.get_users(id=ids)
 
                 return users
 
@@ -1773,8 +1775,6 @@ class Client:
 
         calls=math.ceil(first/100)
 
-        users=[]
-
         for call in range(calls):
             if first-(100*call)>100:
                 params["first"]=100
@@ -1789,8 +1789,12 @@ class Client:
 
             try:
                 if len(response["data"])>0:
+                    ids=[]
+
                     for user in response["data"]:
-                        users.append(self.get_user(id=user["user_id"]))
+                        ids.append(user["user_id"])
+                    
+                    users=self.get_users(id=ids)
 
                 else:
                     return None
@@ -3091,8 +3095,12 @@ class Client:
             params["id"]=id
 
         if len(login)>0:
-            login=login.replace("@","").lower()
-            params["login"]=login
+            aux=[]
+
+            for i in range(len(login)):
+                aux.append(login[i].replace("@","").lower())
+
+            params["login"]=aux
 
         response=requests.get(url,headers=headers,params=params).json()
 
@@ -3139,7 +3147,7 @@ class Client:
 
         try:
             if len(response["data"])>0:
-                user=get_user(id=response["data"][0]["id"])
+                user=self.get_users(id=[response["data"][0]["id"]])
 
                 return user
 
@@ -3277,8 +3285,6 @@ class Client:
 
         calls=math.ceil(first/100)
 
-        users=[]
-
         for call in range(calls):
             if first-(100*call)>100:
                 params["first"]=100
@@ -3293,8 +3299,12 @@ class Client:
 
             try:
                 if len(response["data"])>0:
+                    ids=[]
+
                     for user in response["data"]:
-                        users.append(self.get_user(id=user["user_id"]))
+                        ids.append(user["user_id"])
+
+                    users=self.get_users(id=ids)
 
                 else:
                     return None
