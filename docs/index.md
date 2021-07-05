@@ -665,6 +665,28 @@ Gets a list of entitlements for a given organization that have been granted to a
 
 **Returns**: list
 
+### Update drops entitlements
+
+~~~
+function update_drops_entitlements(entitlement_ids=[],fulfillment_status="")
+~~~
+
+Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
+
+**Args**:
+
++ entitlement_ids (list, optional): An array of unique identifiers of the entitlements to update  
+                                    Maximum: 100
+
++ fulfillment_status (str, optional): A fulfillment status  
+                                      Valid values are "CLAIMED" or "FULFILLED"
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
 ### Redeem code
 
 ~~~
@@ -2929,6 +2951,24 @@ Gets a list of entitlements for a given organization that have been granted to a
 
 + first (int, optional): Maximum number of entitlements to return  
                          Default: 20
+
+**Returns**: list
+
+### Update drops entitlements
+
+~~~
+function update_drops_entitlements(entitlement_ids=[],fulfillment_status="")
+~~~
+
+Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
+
+**Args**:
+
++ entitlement_ids (list, optional): An array of unique identifiers of the entitlements to update  
+                                    Maximum: 100
+
++ fulfillment_status (str, optional): A fulfillment status  
+                                      Valid values are "CLAIMED" or "FULFILLED"
 
 **Returns**: list
 

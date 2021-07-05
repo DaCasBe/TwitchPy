@@ -668,6 +668,22 @@ class Bot:
 
         return self.__client.get_drops_entitlements(id,user_id,game_id,fulfillment_status,first)
 
+    def update_drops_entitlements(self,entitlement_ids=[],fulfillment_status=""):
+        """
+        Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
+
+        Args:
+            entitlement_ids (list, optional): An array of unique identifiers of the entitlements to update
+                                              Maximum: 100
+            fulfillment_status (str, optional): A fulfillment status
+                                                Valid values are "CLAIMED" or "FULFILLED"
+
+        Returns:
+            list
+        """
+
+        return self.__client.update_drops_entitlements(entitlement_ids,fulfillment_status)
+
     def redeem_code(self,code,user_id):
         """
         Redeems one or more provided codes

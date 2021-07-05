@@ -1296,6 +1296,45 @@ class Client:
 
         return output
 
+    def update_drops_entitlements(self,entitlement_ids=[],fulfillment_status=""):
+        """
+        Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
+
+        Args:
+            entitlement_ids (list, optional): An array of unique identifiers of the entitlements to update
+                                              Maximum: 100
+            fulfillment_status (str, optional): A fulfillment status
+                                                Valid values are "CLAIMED" or "FULFILLED"
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/entitlements/drops"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        data={}
+
+        if len(entitlement_ids)>0:
+            data["entitlement_ids"]=entitlement_ids
+
+        if fulfillment_status!="":
+            data["fulfillment_status"]=fulfillment_status
+
+        response=requests.patch(url,headers=headers,data=data).json()
+
+        try:
+            if len(response["data"])>0:
+                return response["data"]
+
+            else:
+                return None
+
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
+
     def redeem_code(self,code,user_id):
         """
         Redeems one or more provided codes
