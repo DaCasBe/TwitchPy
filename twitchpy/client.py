@@ -1224,7 +1224,7 @@ class Client:
         except KeyError:
             raise twitchpy.errors.ClientError(response["message"])
 
-    def get_drops_entitlements(self,id="",user_id="",game_id="",first=20):
+    def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
@@ -1232,6 +1232,8 @@ class Client:
             id (str, optional): ID of the entitlement
             user_id (str, optional): A Twitch User ID
             game_id (str, optional): A Twitch Game ID
+            fulfillment_status (str, optional): An optional fulfillment status used to filter entitlements
+                                                Valid values are "CLAIMED" or "FULFILLED"
             first (int, optional): Maximum number of entitlements to return
                                    Default: 20
 
@@ -1254,6 +1256,9 @@ class Client:
 
         if game_id!="":
             params["game_id"]=game_id
+
+        if fulfillment_status!="":
+            params["fulfullment_status"]=fulfillment_status
 
         if first!=20:
             params["first"]=first
