@@ -7,7 +7,7 @@ class Channel():
     Represents a channel
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,name,game_name,broadcaster_language,title):
+    def __init__(self,oauth_token,client_id,client_secret,name,game_name=None,broadcaster_language=None,title=None):
         """
         Args:
             oauth_token (str): OAuth token to identify the application
