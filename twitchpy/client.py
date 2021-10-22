@@ -8,6 +8,8 @@ from twitchpy.reward import Reward
 from twitchpy.redemption import Redemption
 import twitchpy.errors
 import math
+from twitchpy.video import Video
+from twitchpy.team import Team
 
 class Client:
     """
@@ -28,7 +30,7 @@ class Client:
         self.client_secret=client_secret
         self.__app_token=self.__get_app_token()
 
-        if code!="":
+        if code!="" or os.path.isfile(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret"):
             self.__user_token,self.__refresh_user_token=self.__get_user_token(code)
 
         else:
@@ -331,38 +333,17 @@ class Client:
         if user_id!="":
             params["user_id"]=user_id
 
-        after=""
+        response=requests.get(url,headers=headers,params=params).json()
 
-        calls=math.ceil(first/100)
+        try:
+            if len(response["data"])>0:
+                return response["data"]
 
-        output=[]
-
-        for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
             else:
-                params["first"]=first-(100*call)
+                return None
 
-            if after!="":
-                params["after"]=after
-
-            response=requests.get(url,headers=headers,params=params).json()
-
-            try:
-                if len(response["data"])>0:
-                    output.extend(response["data"])
-
-                    if bool(response["pagination"])==True:
-                        after=response["pagination"]["cursor"]
-
-                else:
-                    return None
-
-            except KeyError:
-                raise twitchpy.errors.ClientError(response["message"])
-
-        return output
+        except KeyError:
+            raise twitchpy.errors.ClientError(response["message"])
 
     def get_cheermotes(self,broadcaster_id=""):
         """
@@ -401,7 +382,7 @@ class Client:
         
     def get_extension_transactions(self,extension_id,id=[],first=20):
         """
-        Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
+        Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
@@ -484,7 +465,7 @@ class Client:
         try:
             if len(response["data"])>0:
                 channel=response["data"][0]
-                channel=Channel(self.oauth_token,self.client_id,self.client_secret,self.get_users(id=[channel["broadcaster_id"]])[0].login,channel["game_name"],channel["broadcaster_language"],channel["title"])
+                channel=Channel(self.oauth_token,self.client_id,self.client_secret,"",channel["broadcaster_login"],channel["game_name"],channel["broadcaster_language"],channel["title"])
                 
                 return channel
 
@@ -513,7 +494,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/channels"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id}
 
         if game_id=="" and broadcaster_language=="" and title=="" and delay==0:
@@ -786,7 +767,7 @@ class Client:
             try:
                 if len(response["data"])>0:
                     for redemption in response["data"]:
-                        redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],redemption["reward"]))
+                        redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],self.get_custom_reward(redemption["broadcaster_id"],[redemption["reward"]["id"]])[0]))
 
                 else:
                     return None
@@ -796,7 +777,7 @@ class Client:
         
         return redemptions
 
-    def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
+    def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=None,max_per_user_per_stream=None,is_global_cooldown_enabled=None,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
         """
         Updates a Custom Reward created on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the user OAuth token
@@ -834,7 +815,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/channel_points/custom_rewards"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id}
 
         if title!="":
@@ -867,7 +848,7 @@ class Client:
         if max_per_user_per_stream!=None:
             data["max_per_user_per_stream"]=max_per_user_per_stream
 
-        if is_global_cooldown_enabled!=False:
+        if is_global_cooldown_enabled!=None:
             data["is_global_cooldown_enabled"]=is_global_cooldown_enabled
 
         if global_cooldown_seconds!=None:
@@ -979,7 +960,7 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/emotes"
+        url="https://api.twitch.tv/helix/chat/emotes/global"
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
 
         response=requests.get(url,headers=headers).json()
@@ -1500,7 +1481,7 @@ class Client:
             
             try:
                 for game in response["data"]:
-                    games.append(self.get_game(id=game["id"]))
+                    games.append(self.get_games(id=game["id"])[0])
 
             except KeyError:
                 raise twitchpy.errors.ClientError(response["message"])
@@ -1597,7 +1578,7 @@ class Client:
             else:
                 params["first"]=first-(100*call)
 
-            if after!="":
+            if cursor!="":
                 params["cursor"]=cursor
 
             response=requests.get(url,headers=headers,params=params).json()
@@ -1716,7 +1697,10 @@ class Client:
 
             try:
                 if len(response["data"])>0:
-                    return response["data"]
+                    output.extend(response["data"])
+
+                    if bool(response["pagination"])==True:
+                        after=response["pagination"]["cursor"]
 
                 else:
                     return None
@@ -1958,7 +1942,7 @@ class Client:
             response=requests.get(url,headers=headers,params=params).json()
 
             try:
-                if len(response["data"])>0:
+                if response["data"]!=None and len(response["data"])>0:
                     output.extend(response["data"])
 
                     if bool(response["pagination"])==True:
@@ -2052,7 +2036,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/polls"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
 
         response=requests.patch(url,headers=headers,data=data).json()
@@ -2115,7 +2099,7 @@ class Client:
             response=requests.get(url,headers=headers,params=params).json()
 
             try:
-                if len(response["data"])>0:
+                if response["data"]!=None and len(response["data"])>0:
                     output.extend(response["data"])
 
                     if bool(response["pagination"])==True:
@@ -2191,7 +2175,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/predictions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
 
         if winning_outcome_id!="":
@@ -2332,17 +2316,7 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id}
 
-        response=requests.patch(url,headers=headers,data=data).json()
-
-        try:
-            if len(response["data"])>0:
-                return response["data"][0]
-
-            else:
-                return None
-
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])
+        response=requests.patch(url,headers=headers,data=data)
 
     def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
         """
@@ -2510,7 +2484,7 @@ class Client:
             try:
                 if len(response["data"])>0:
                     for game in response["data"]:
-                        games.append(self.get_games(id=game["id"]))
+                        games.append(self.get_games(id=game["id"])[0])
 
                 else:
                     return None
@@ -3000,7 +2974,7 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/tags/streams"
+        url="https://api.twitch.tv/helix/streams/tags"
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
@@ -3057,11 +3031,11 @@ class Client:
         response=requests.get(url,headers=headers,params=params).json()
 
         try:
-            if len(response["data"])>0:
+            if response["data"]!=None and len(response["data"])>0:
                 teams=[]
 
-                for team in response["data"]:
-                    teams.append(Team(team["users"],team["background_image_url"],team["banner"],team["created_at"],team["updated_at"],team["info"],team["thumbnail_url"],team["team_name"],team["team_display_name"],team["id"]))
+                for user in response["data"]:
+                    teams.append(self.get_teams(id=user["id"]))
 
                 return teams
 
@@ -3609,30 +3583,3 @@ class Client:
                 raise twitchpy.errors.ClientError(response["message"])
 
         return output
-
-    def get_chatters(self,channel_name):
-        """
-        Gets all users in a chat
-
-        Args:
-            channel_name (str): Name of the user who is owner of the chat
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        channel_name=channel_name.replace("@","").lower()
-
-        url=f"https://tmi.twitch.tv/group/user/{channel_name}/chatters"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-
-        response=requests.post(url,headers=headers).json()
-
-        try:
-            return response["chatters"]
-
-        except KeyError:
-            raise twitchpy.errors.ClientError(response["message"])

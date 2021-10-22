@@ -177,7 +177,7 @@ Cheermotes returned are available throughout Twitch, in all Bits-enabled channel
 function get_extension_transactions(extension_id,id="",first=20)
 ~~~
 
-Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch  
+Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch  
 A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
 **Args**:
@@ -1883,7 +1883,7 @@ Gets all users in a chat
 ## Channel
 
 ~~~
-class Channel(oauth_token,client_id,client_secret,name,game_name,broadcaster_language,title)
+class Channel(oauth_token,client_id,client_secret,user,name,game_name,broadcaster_language,title)
 ~~~
 
 Represents a channel
@@ -1895,6 +1895,8 @@ Represents a channel
 + client_id (str): Client ID to identify the application
 
 + client_secret (str): Client secret to identify the application
+
++ user (str): Name of the user connecting to the channel
 
 + name (str): Channel's name
 
@@ -2393,7 +2395,7 @@ Checks work permanently
 function add_listener(name,listener)
 ~~~
 
-Adds a command to the bot  
+Adds a listener to the bot  
 Listeners work only when a message is received
 Listeners must receive as a parameter the last message in the chat
 
@@ -2540,7 +2542,7 @@ Cheermotes returned are available throughout Twitch, in all Bits-enabled channel
 function get_extension_transactions(extension_id,id=[],first=20)
 ~~~
 
-Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch  
+Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch  
 A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
 **Args**:
@@ -4706,7 +4708,7 @@ Represents a message
 
 **Args**:
 
-+ prefix (str): Message's refix
++ prefix (str): Message's prefix
 
 + user (str): User who has sent the message
 

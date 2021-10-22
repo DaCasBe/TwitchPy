@@ -7,12 +7,13 @@ class Channel():
     Represents a channel
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,name,game_name,broadcaster_language,title):
+    def __init__(self,oauth_token,client_id,client_secret,user,name,game_name,broadcaster_language,title):
         """
         Args:
             oauth_token (str): OAuth token to identify the application
             client_id (str): Client ID to identify the application
             client_secret (str): Client secret to identify the application
+            user (str): Name of the user connecting to the channel
             name (str): Channel's name
             game_name (str): Channel's category's name
             broadcaster_language (str): Channel's language
@@ -25,6 +26,7 @@ class Channel():
         self.__access_token=self.__get_access_token()
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
+        self.user=user.replace("@","").lower()
         self.name=name.replace("@","").lower()
         self.game_name=game_name
         self.broadcaster_language=broadcaster_language
@@ -47,7 +49,7 @@ class Channel():
         self.irc.connect((self.__irc_server,self.__irc_port))
         
         self.__send_command(f"PASS {self.__oauth_token}")
-        self.__send_command(f"NICK {self.name}")
+        self.__send_command(f"NICK {self.user}")
 
         self.__send_command(f"JOIN #{self.name}")
 

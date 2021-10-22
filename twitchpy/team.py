@@ -17,6 +17,7 @@ class Team:
             team_display_name (str): Team display name
             id (str): Team ID
         """
+        
         self.users=users
         self.background_image_url=background_image_url
         self.banner=banner

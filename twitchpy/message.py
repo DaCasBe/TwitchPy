@@ -6,7 +6,7 @@ class Message:
     def __init__(self,prefix,user,channel,irc_command,irc_args,text,text_command,text_args):
         """
         Args:
-            prefix (str): Message's refix
+            prefix (str): Message's prefix
             user (str): User who has sent the message
             channel (str): Channel on which the message was sent
             irc_command (str): IRC command related to the message

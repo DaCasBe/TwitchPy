@@ -49,7 +49,7 @@ class Bot:
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
     def __send_command(self,command):
-        if "PASS" not in command:
+        if "PASS" not in command and "PONG" not in command:
             print(f"< {command}")
 
         self.irc.send((command+"\r\n").encode())
@@ -147,32 +147,33 @@ class Bot:
         if message.irc_command=="PING":
             self.__send_command("PONG :tmi.twitch.tv")
 
-        for listener in self.custom_listeners.values():
-            listener(message)
+        else:
+            for listener in self.custom_listeners.values():
+                listener(message)
 
-        for listener in self.listeners_to_remove:
-            if listener in self.custom_listeners.keys():
-                self.custom_listeners.pop(listener)
+            for listener in self.listeners_to_remove:
+                if listener in self.custom_listeners.keys():
+                    self.custom_listeners.pop(listener)
 
-        self.listeners_to_remove=[]
+            self.listeners_to_remove=[]
 
-        if message.irc_command=="PRIVMSG":
-            if message.text_command in self.custom_commands:
-                for before in self.custom_methods_before_commands.values():
-                    before(message)
+            if message.irc_command=="PRIVMSG":
+                if message.text_command in self.custom_commands:
+                    for before in self.custom_methods_before_commands.values():
+                        before(message)
 
-                for method in self.methods_before_commands_to_remove:
-                    if method in self.custom_methods_before_commands.keys():
-                        self.custom_methods_before_commands.pop(method)
+                    for method in self.methods_before_commands_to_remove:
+                        if method in self.custom_methods_before_commands.keys():
+                            self.custom_methods_before_commands.pop(method)
 
-                self.custom_commands[message.text_command](message)
+                    self.custom_commands[message.text_command](message)
 
-                for after in self.custom_methods_after_commands.values():
-                    after(message)
+                    for after in self.custom_methods_after_commands.values():
+                        after(message)
 
-                for method in self.methods_after_commands_to_remove:
-                    if method in self.custom_methods_after_commands.keys():
-                        self.custom_methods_after_commands.pop(method)
+                    for method in self.methods_after_commands_to_remove:
+                        if method in self.custom_methods_after_commands.keys():
+                            self.custom_methods_after_commands.pop(method)
 
     def __loop(self):
         while True:
@@ -204,8 +205,9 @@ class Bot:
 
     def add_listener(self,name,listener):
         """
-        Adds a command to the bot
+        Adds a listener to the bot
         Listeners work only when a message is received
+        Listeners must receive as a parameter the last message in the chat
 
         Args:
             name (str): Command's name
@@ -217,6 +219,7 @@ class Bot:
     def add_command(self,name,command):
         """
         Adds a command to the bot
+        Commands must receive as a parameter the messages which call them
 
         Args:
             name (str): Command's name
@@ -325,7 +328,7 @@ class Bot:
 
     def get_extension_transactions(self,extension_id,id=[],first=20):
         """
-        Allows extension back end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
+        Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
@@ -1538,19 +1541,6 @@ class Bot:
 
         return self.__client.get_webhook_subscriptions(first)
 
-    def get_chatters(self,username):
-        """
-        Gets all users in a chat
-
-        Args:
-            channel_name (str): Name of the user who is owner of the chat
-
-        Returns:
-            dict
-        """
-        
-        return self.__client.get_chatters(username)
-
     def send(self,channel,text):
         """
         Sends a message by chat
@@ -2036,6 +2026,8 @@ class Bot:
         Args:
             name (str): Command's name
         """
+
+        self.commands_to_remove.append(name)
 
     def remove_method_after_commands(self,name):
         """
