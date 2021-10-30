@@ -2,19 +2,19 @@ from twitchpy.client import Client
 import ssl
 import socket
 from twitchpy.message import Message
-from twitchpy.channel import Channel
 
 class Bot:
     """
     Represents a bot
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,username,channels,command_prefix,code="",ready_message=""):
+    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",ready_message=""):
         """
         Args:
             oauth_token (str): OAuth token
             client_id (str): Client ID
             client_secret (str): Client secret
+            redirect_uri (str): Redirect URI
             username (str): Name of the bot
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
@@ -24,7 +24,7 @@ class Bot:
 
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.__client=Client(oauth_token,client_id,client_secret,code)
+        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,code)
         self.__oauth_token=oauth_token
         self.username=username
 
@@ -45,31 +45,39 @@ class Bot:
         self.custom_methods_before_commands={}
         self.methods_before_commands_to_remove=[]
 
-    def __send_privmsg(self,channel,text):
-        self.__send_command(f"PRIVMSG #{channel} :{text}")
-
     def __send_command(self,command):
         if "PASS" not in command and "PONG" not in command:
             print(f"< {command}")
 
         self.irc.send((command+"\r\n").encode())
 
+    def __send_privmsg(self,channel,text):
+        self.__send_command(f"PRIVMSG #{channel} :{text}")
+
+    def __login(self):
+        self.__send_command(f"PASS {self.__oauth_token}")
+        self.__send_command(f"NICK {self.username}")
+
+    def __join(self,channel):
+        self.__send_command(f"JOIN #{channel}")
+        self.__send_privmsg(channel,self.ready_message)
+
+    def __connect(self):
+        self.irc=ssl.wrap_socket(socket.socket())
+        self.irc.settimeout(1)
+        self.irc.connect((self.__irc_server,self.__irc_port))
+
+        self.__login()
+
+        for channel in self.channels:
+            self.__join(channel)
+
     def run(self):
         """
         Runs the bot
         """
 
-        self.irc=ssl.wrap_socket(socket.socket())
-        self.irc.settimeout(1)
-        self.irc.connect((self.__irc_server,self.__irc_port))
-        
-        self.__send_command(f"PASS {self.__oauth_token}")
-        self.__send_command(f"NICK {self.username}")
-
-        for channel in self.channels:
-            self.__send_command(f"JOIN #{channel}")
-            self.__send_privmsg(channel,self.ready_message)
-
+        self.__connect()
         self.__loop()
 
     def __get_user_from_prefix(self,prefix):
@@ -106,10 +114,7 @@ class Bot:
             user=self.__get_user_from_prefix(prefix)
             parts=parts[1:]
 
-        text_start=next(
-            (idx for idx,part in enumerate(parts) if part.startswith(":")),
-            None
-        )
+        text_start=next((idx for idx,part in enumerate(parts) if part.startswith(":")),None)
 
         if text_start is not None:
             text_parts=parts[text_start:]
@@ -125,10 +130,7 @@ class Bot:
         irc_command=parts[0]
         irc_args=parts[1:]
 
-        hash_start=next(
-            (idx for idx,part in enumerate(irc_args) if part.startswith("#")),
-            None
-        )
+        hash_start=next((idx for idx,part in enumerate(irc_args) if part.startswith("#")),None)
 
         if hash_start is not None:
             channel=irc_args[hash_start][1:]
@@ -418,7 +420,7 @@ class Bot:
                                                                     Default: false
 
         Returns:
-            list
+            Reward
         """
 
         return self.__client.create_custom_reward(broadcaster_id,title,cost,prompt,is_enabled,background_color,is_user_input_required,is_max_per_stream_enabled,max_per_stream,is_max_per_user_per_stream_enabled,max_per_user_per_stream,is_global_cooldown_enabled,global_cooldown_seconds,should_redemptions_skip_request_queue)
@@ -509,7 +511,7 @@ class Bot:
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
 
         Returns:
-            list
+            Reward
         """
 
         return self.__client.update_custom_reward(broadcaster_id,id,title,prompt,cost,background_color,is_enabled,is_user_input_required,is_max_per_stream_enabled,max_per_stream,is_max_per_user_per_stream_enabled,max_per_user_per_stream,is_global_cooldown_enabled,global_cooldown_seconds,is_paused,should_redemptions_skip_request_queue)
@@ -530,7 +532,7 @@ class Bot:
                                     Updating to CANCELED will refund the user their Channel Points
 
         Returns:
-            list
+            Redemption
         """
 
         return self.__client.update_redemption_status(id,broadcaster_id,reward_id,status)
@@ -1525,7 +1527,7 @@ class Bot:
                       Limit: 5
         """
 
-        self.__client.delete_videos(id)
+        self.__client.delete_video(id)
 
     def get_webhook_subscriptions(self,first=20):
         """

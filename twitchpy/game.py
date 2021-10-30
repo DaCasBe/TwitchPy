@@ -3,7 +3,7 @@ class Game:
     Represents a Twitch category
     """
 
-    def __init__(self,id,name,box_art_url):
+    def __init__(self,id,name,box_art_url=""):
         """
         Args:
             id (int): Category's ID

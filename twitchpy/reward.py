@@ -3,7 +3,7 @@ class Reward:
     Represents a reward
     """
     
-    def __init__(self,broadcaster_name,broadcaster_id,id,image,background_color,is_enabled,cost,title,prompt,is_user_input_required,max_per_stream_setting,max_per_user_per_stream_setting,global_cooldown_setting,is_paused,is_in_stock,default_image,should_redemptions_skip_request_queue,redemptions_redeemed_current_stream,cooldown_expires_at):
+    def __init__(self,broadcaster_name,broadcaster_id,id,image="",background_color="",is_enabled=True,cost=0,title="",prompt="",is_user_input_required=False,max_per_stream_setting={},max_per_user_per_stream_setting={},global_cooldown_setting={},is_paused=False,is_in_stock=True,default_image={},should_redemptions_skip_request_queue=False,redemptions_redeemed_current_stream=0,cooldown_expires_at=None):
         """
         Args:
             broadcaster_name (str): Name of the channel owner of the reward

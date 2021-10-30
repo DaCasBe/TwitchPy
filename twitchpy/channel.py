@@ -1,13 +1,12 @@
 import ssl
 import socket
-import requests
 
 class Channel():
     """
     Represents a channel
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,user,name,game_name,broadcaster_language,title):
+    def __init__(self,oauth_token="",user="",name="",game_name="",broadcaster_language="",title=""):
         """
         Args:
             oauth_token (str): OAuth token to identify the application
@@ -21,24 +20,20 @@ class Channel():
         """
 
         self.__oauth_token=oauth_token
-        self.__client_id=client_id
-        self.__client_secret=client_secret
-        self.__access_token=self.__get_access_token()
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.user=user.replace("@","").lower()
+        self.username=user.replace("@","").lower()
         self.name=name.replace("@","").lower()
         self.game_name=game_name
         self.broadcaster_language=broadcaster_language
         self.title=title
 
-    def __get_access_token(self):
-        url="https://id.twitch.tv/oauth2/token"
-        payload={"client_id":self.__client_id,"client_secret":self.__client_secret,"grant_type":"client_credentials"}
+    def __login(self):
+        self.__send_command(f"PASS {self.__oauth_token}")
+        self.__send_command(f"NICK {self.username}")
 
-        response=requests.post(url,json=payload).json()
-
-        return response["access_token"]
+    def __join(self):
+        self.__send_command(f"JOIN #{self.name}")
 
     def connect(self):
         """
@@ -46,12 +41,11 @@ class Channel():
         """
 
         self.irc=ssl.wrap_socket(socket.socket())
+        self.irc.settimeout(1)
         self.irc.connect((self.__irc_server,self.__irc_port))
-        
-        self.__send_command(f"PASS {self.__oauth_token}")
-        self.__send_command(f"NICK {self.user}")
 
-        self.__send_command(f"JOIN #{self.name}")
+        self.__login()
+        self.__join()
 
     def __send_command(self,command):
         self.irc.send((command+"\r\n").encode())

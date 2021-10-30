@@ -3,7 +3,7 @@ class User:
     Represents an user
     """
 
-    def __init__(self,id,login,display_name,type,broadcaster_type,description,profile_image_url,offline_image_url,view_count):
+    def __init__(self,id,login,display_name,type="",broadcaster_type="",description="",profile_image_url="",offline_image_url="",view_count=0):
         """
         Args:
             id (int): User's ID

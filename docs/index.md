@@ -21,7 +21,7 @@ TwitchPy uses many endpoints which may require different tokens and IDs.
 ## Client
 
 ~~~
-class Client(oauth_token,client_id,client_secret,code="")
+class Client(oauth_token,client_id,client_secret,redirect_uri,code="")
 ~~~
 
 Represents a client connection to the Twitch API
@@ -33,6 +33,8 @@ Represents a client connection to the Twitch API
 + client_id (str): Client ID
 
 + client_secret (str): Client secret
+
++ redirect_uri (str): Redirect URI
 
 + code (str, optional): Authorization code
 
@@ -311,7 +313,7 @@ Creates a Custom Reward on a channel
 
 + twitchpy.errors.ClientError
 
-**Returns**: list
+**Returns**: Reward
 
 ### Delete custom reward
 
@@ -442,7 +444,7 @@ The Custom Reward specified by id must have been created by the client_id attach
 
 + twitchpy.errors.ClientError
 
-**Returns**: list
+**Returns**: Reward
 
 ### Update redemption status
 
@@ -471,7 +473,7 @@ The Custom Reward Redemption specified by id must be for a Custom Reward created
 
 + twitchpy.errors.ClientError
 
-**Returns**: list
+**Returns**: Redemption
 
 ### Get channel emotes
 
@@ -1883,7 +1885,7 @@ Gets all users in a chat
 ## Channel
 
 ~~~
-class Channel(oauth_token,client_id,client_secret,user,name,game_name,broadcaster_language,title)
+class Channel(oauth_token="",user="",name="",game_name="",broadcaster_language="",title="")
 ~~~
 
 Represents a channel
@@ -1892,11 +1894,7 @@ Represents a channel
 
 + oauth_token (str): OAuth token to identify the application
 
-+ client_id (str): Client ID to identify the application
-
-+ client_secret (str): Client secret to identify the application
-
-+ user (str): Name of the user connecting to the channel
++ username (str): Name of the user connecting to the channel
 
 + name (str): Channel's name
 
@@ -2345,7 +2343,7 @@ Whispers to a user
 ## Bot
 
 ~~~
-class Bot(oauth_token,client_id,client_secret,username,channels,command_prefix,code="",ready_message="")
+class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",ready_message="")
 ~~~
 
 **Args**:
@@ -2355,6 +2353,8 @@ class Bot(oauth_token,client_id,client_secret,username,channels,command_prefix,c
 + client_id (str): Client ID
 
 + client_secret (str): Client secret
+
++ redirect_uri (str): Redirect URI
 
 + username (str): Name of the bot
 
@@ -2656,7 +2656,7 @@ Creates a Custom Reward on a channel
 + should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status  
                                                           Default: false
 
-**Returns**: list
+**Returns**: Reward
 
 ### Delete custom reward
 
@@ -2775,7 +2775,7 @@ The Custom Reward specified by id must have been created by the client_id attach
 
 + should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
 
-**Returns**: list
+**Returns**: Reward
 
 ### Update redemption status
 
@@ -2800,7 +2800,7 @@ id (list): ID of the Custom Reward Redemption to update
                           Can be either FULFILLED or CANCELED  
                           Updating to CANCELED will refund the user their Channel Points
 
-**Returns**: list
+**Returns**: Redemption
 
 ### Get channel emotes
 
@@ -4625,7 +4625,7 @@ Removes a method that is executed before each command
 ## User
 
 ~~~
-class User(id,login,display_name,type,broadcaster_type,description,profile_image_url,offline_image_url,view_count)
+class User(id,login,display_name,type="",broadcaster_type="",description="",profile_image_url="",offline_image_url="",view_count=0)
 ~~~
 
 Represents an user
@@ -4653,7 +4653,7 @@ Represents an user
 ## Game
 
 ~~~
-class Game(id,name,box_art_url)
+class Game(id,name,box_art_url="")
 ~~~
 
 Represents a Twitch category
@@ -4727,7 +4727,7 @@ Represents a message
 ## Reward
 
 ~~~
-class Reward(broadcaster_name,broadcaster_id,id,image,background_color,is_enabled,cost,title,prompt,is_user_input_required,max_per_stream_setting,max_per_user_per_stream_setting,global_cooldown_setting,is_paused,is_in_stock,default_image,should_redemptions_skip_request_queue,redemptions_redeemed_current_stream,cooldown_expires_at)
+class Reward(broadcaster_name,broadcaster_id,id,image="",background_color="",is_enabled=True,cost=0,title="",prompt="",is_user_input_required=False,max_per_stream_setting={},max_per_user_per_stream_setting={},global_cooldown_setting={},is_paused=False,is_in_stock=True,default_image={},should_redemptions_skip_request_queue=False,redemptions_redeemed_current_stream=0,cooldown_expires_at=None)
 ~~~
 
 Represents a reward

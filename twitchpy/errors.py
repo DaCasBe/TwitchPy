@@ -6,9 +6,9 @@ class TwitchPyBException(Exception):
     def __init__(self,message):
         super().__init__(message)
 
-class InvalidCodeError(TwitchPyBException):
+class AppTokenError(TwitchPyBException):
     """
-    Exception raised when an invalid code for getting a user token is specified
+    Exception raised when an error trying to get an app token happens
     """
 
     def __init__(self,message):
@@ -23,13 +23,8 @@ class UserTokenError(TwitchPyBException):
         super().__init__(message)
 
 class ClientError(TwitchPyBException):
-    def __init__(self,message):
-        super().__init__(message)
-
-class TooManyArgumentsError(TwitchPyBException):
-    def __init__(self,message):
-        super().__init__(message)
-
-class FewArgumentsError(TwitchPyBException):
+    """
+    Exception raised when a bad request is made by a client
+    """
     def __init__(self,message):
         super().__init__(message)
