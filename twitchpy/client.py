@@ -16,7 +16,7 @@ class Client:
     Represents a client connection to the Twitch API
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,code=""):
+    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,code="",jwt_token=""):
         """
         Args:
             oauth_token (str): OAuth Token
@@ -24,6 +24,7 @@ class Client:
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
             code (str, optional): Authorization code
+            jwt_token (str, optional): JWT Token
         """
         
         self.oauth_token=oauth_token
@@ -37,6 +38,8 @@ class Client:
 
         else:
             self.__user_token=""
+
+        self.__jwt_token=jwt_token
 
     def __get_app_token(self):
         url="https://id.twitch.tv/oauth2/token"
@@ -1258,6 +1261,377 @@ class Client:
         
         if response.ok:
             return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_extension_configuration_segment(self,broadcaster_id,extension_id,segment):
+        """
+        Gets the specified configuration segment from the specified extension
+        You can retrieve each segment a maximum of 20 times per minute
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster for the configuration returned
+                                  This parameter is required if you set the segment parameter to "broadcaster" or "developer"
+                                  Do not specify this parameter if you set segment to "global"
+            extension_id (str): The ID of the extension that contains the configuration segment you want to get
+            segment (list): The type of configuration segment to get
+                           Valid values are: "broadcaster", "developer", "global"
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/extensions/configurations"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id,"extension_id":extension_id,"segment":segment}
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def set_extension_configuration_segment(self,extension_id,segment,broadcaster_id="",content="",version=""):
+        """
+        Sets a single configuration segment of any type
+        Each segment is limited to 5 KB and can be set at most 20 times per minute
+        Updates to this data are not delivered to Extensions that have already been rendered
+
+        Args:
+            extension_id (str): ID for the Extension which the configuration is for
+            segment (str): Configuration type
+                           Valid values are "global", "developer", or "broadcaster"
+            broadcaster_id (str, optional): User ID of the broadcaster
+                                            Required if the segment type is "developer" or "broadcaster"
+            content (str, optional): Configuration in a string-encoded format
+            version (str, optional): Configuration version with the segment type
+        """
+
+        url="https://api.twitch.tv/helix/extensions/configurations"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        data={"extension_id":extension_id,"segment":segment}
+
+        if broadcaster_id!="":
+            data["broadcaster_id"]=broadcaster_id
+
+        if content!="":
+            data["content"]=content
+
+        if version!="":
+            data["version"]=version
+
+        requests.put(url,headers=headers,data=data)
+
+    def set_extension_required_configuration(self,broadcaster_id,extension_id,extension_version,configuration_version):
+        """
+        Enable activation of a specified Extension, after any required broadcaster configuration is correct
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who has activated the specified Extension on their channel
+            extension_id (str): ID for the Extension to activate
+            extension_version (str): The version fo the Extension to release
+            configuration_version (str): The version of the configuration to use with the Extension
+        """
+
+        url="https://api.twitch.tv/helix/extensions/required_configuration"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"extension_id":extension_id,"extension_version":extension_version,"configuration_version":configuration_version}
+
+        requests.put(url,headers=headers,data=data)
+
+    def send_extension_pubsub_message(self,target,broadcaster_id,is_global_broadcast,message):
+        """
+        A message can be sent to either a specified channel or globally (all channels on which your extension is active)
+        Extension PubSub has a rate limit of 100 requests per minute for a combination of Extension client ID and broadcaster ID
+
+        Args:
+            target (list): Array of strings for valid PubSub targets
+                           Valid values: "broadcast", "global", "whisper-<user-id>"
+            broadcaster_id (str): ID of the broadcaster receiving the payload
+            is_global_broadcast (bool): Indicates if the message should be sent to all channels where your Extension is active
+            message (str): String-encoded JSON message to be sent
+        """
+
+        url="https://api.twitch.tv/helix/extensions/pubsub"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        data={"target":target,"broadcaster_id":broadcaster_id,"is_global_broadcast":is_global_broadcast,"message":message}
+
+        requests.post(url,headers=headers,data=data)
+
+    def get_extension_live_channels(self,extension_id,first=20):
+        """
+        Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
+        A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
+
+        Args:
+            extension_id (str): ID of the Extension to search for
+            first (int, optional): Maximum number of objects to return
+                                   Default: 20
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/extensions/live"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":{self.client_id}}
+        params={"extension_id":extension_id}
+
+        if first!=20:
+            params["first"]=first
+
+        after=""
+        calls=math.ceil(first/100)
+        channels=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params)
+            
+            if response.ok:
+                response=response.json()
+
+                for channel in response["data"]:
+                    channels.append(channel)
+
+                if "pagination" in response:
+                    after=response["pagination"]["cursor"]
+
+            else:
+                raise twitchpy.errors.ClientError(response.json()["message"])
+
+        return channels
+
+    def get_extension_secrets(self):
+        """
+        Retrieves a specified Extension’s secret data consisting of a version and an array of secret objects
+        Each secret object contains a base64-encoded secret, a UTC timestamp when the secret becomes active, and a timestamp when the secret expires
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/extensions/jwt/secrets"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        
+        response=requests.get(url,headers=headers)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def create_extension_secret(self,delay=300):
+        """
+        Creates a JWT signing secret for a specific Extension
+        Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
+
+        Args:
+            delay (int, optional): JWT signing activation delay for the newly created secret in seconds
+                                   Minimum: 300
+                                   Default: 300
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/extensions/jwt/secrets"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        payload={}
+
+        if delay!=300:
+            payload["delay"]=delay
+
+        response=requests.post(url,headers=headers,json=payload)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def send_extension_chat_message(self,broadcaster_id,text,extension_id,extension_version):
+        """
+        Sends a specified chat message to a specified channel
+        The message will appear in the channel’s chat as a normal message
+        The "username" of the message is the Extension name
+        There is a limit of 12 messages per minute, per channel
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster whose channel has the Extension activated
+            text (str): Message for Twitch chat
+                        Maximum: 280 characters
+            extension_id (str): Client ID associated with the Extension
+            extension_version (str): Version of the Extension sending this message
+        """
+
+        url="https://api.twitch.tv/helix/extensions/chat"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        payload={"broadcaster_id":broadcaster_id,"text":text,"extension_id":extension_id,"extension_version":extension_version}
+
+        requests.post(url,headers=headers,json=payload)
+
+    def get_extensions(self,extension_id,extension_version=""):
+        """
+        Gets information about your Extensions; either the current version or a specified version
+
+        Args:
+            extension_id (str): ID of the Extension
+            extension_version (str, optional): The specific version of the Extension to return
+                                               If not provided, the current version is returned
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/extensions"
+        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
+        params={"extension_id":extension_id}
+
+        if extension_version!="":
+            params["extension_version"]=extension_version
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_released_extensions(self,extension_id,extension_version=""):
+        """
+        Gets information about a released Extension; either the current version or a specified version
+
+        Args:
+            extension_id (str): ID of the Extension
+            extension_version (str, optional): The specific version of the Extension to return
+                                               If not provided, the current version is returned
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/extensions/released"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"extension_id":extension_id}
+
+        if extension_version!="":
+            params["extension_version"]=extension_version
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_extension_bits_products(self,extension_client_id,should_include_all=False):
+        """
+        Gets a list of Bits products that belongs to an Extension
+
+        Args:
+            extension_client_id (str): Extension client ID
+            should_include_all (bool, optional): Whether Bits products that are disabled/expired should be included in the response
+                                                 Default: false
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/bits/extensions"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":extension_client_id}
+        params={}
+
+        if should_include_all!=False:
+            params["should_include_all"]=should_include_all
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def update_extension_bits_product(self,extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False):
+        """
+        Add or update a Bits products that belongs to an Extension
+
+        Args:
+            extension_client_id (str): Extension client ID
+            sku (str): SKU of the Bits product
+                       This must be unique across all products that belong to an Extension
+                       The SKU cannot be changed after saving
+                       Maximum: 255 characters, no white spaces
+            cost (dict): Object containing cost information
+            display_name (str): Name of the product to be displayed in the Extension
+                                Maximum: 255 characters
+            in_development (bool, optional): Set to true if the product is in development and not yet released for public use
+                                             Default: false
+            expiration (str, optional): Expiration time for the product in RFC3339 format
+                                        If not provided, the Bits product will not have an expiration date
+                                        Setting an expiration in the past will disable the product
+            is_broadcast (bool, optional): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback
+                                           Default: false
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/bits/extensions"
+        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":extension_client_id}
+        data={"sku":sku,"cost":cost,"display_name":display_name}
+
+        if in_development!=False:
+            data["in_development"]=in_development
+
+        if expiration!="":
+            data["expiration"]=expiration
+
+        if is_broadcast!=False:
+            data["is_broadcast"]=is_broadcast
+
+        response=requests.put(url,headers=headers,data=data)
+
+        if response.ok:
+            return response.json()["data"][0]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])

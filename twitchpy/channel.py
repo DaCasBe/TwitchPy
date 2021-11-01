@@ -10,8 +10,6 @@ class Channel():
         """
         Args:
             oauth_token (str): OAuth token to identify the application
-            client_id (str): Client ID to identify the application
-            client_secret (str): Client secret to identify the application
             user (str): Name of the user connecting to the channel
             name (str): Channel's name
             game_name (str): Channel's category's name

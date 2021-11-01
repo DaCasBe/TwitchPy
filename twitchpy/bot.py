@@ -8,7 +8,7 @@ class Bot:
     Represents a bot
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",ready_message=""):
+    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",jwt_token="",ready_message=""):
         """
         Args:
             oauth_token (str): OAuth token
@@ -19,12 +19,13 @@ class Bot:
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
             code (str, optional): Authorization code
+            jwt_token (str, optional): JWT Token
             ready_message (str, optional): Message that the bot will send through the chats of the channels it access
         """
 
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,code)
+        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,code,jwt_token)
         self.__oauth_token=oauth_token
         self.username=username
 
@@ -704,6 +705,203 @@ class Bot:
         """
 
         return self.__client.redeem_code(code,user_id)
+
+    def get_extension_configuration_segment(self,broadcaster_id,extension_id,segment):
+        """
+        Gets the specified configuration segment from the specified extension
+        You can retrieve each segment a maximum of 20 times per minute
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster for the configuration returned
+                                  This parameter is required if you set the segment parameter to "broadcaster" or "developer"
+                                  Do not specify this parameter if you set segment to "global"
+            extension_id (str): The ID of the extension that contains the configuration segment you want to get
+            segment (list): The type of configuration segment to get
+                           Valid values are: "broadcaster", "developer", "global"
+
+        Returns:
+            dict
+        """
+
+        return self.__client.get_extension_configuration_segment(broadcaster_id,extension_id,segment)
+
+    def set_extension_configuration_segment(self,extension_id,segment,broadcaster_id="",content="",version=""):
+        """
+        Sets a single configuration segment of any type
+        Each segment is limited to 5 KB and can be set at most 20 times per minute
+        Updates to this data are not delivered to Extensions that have already been rendered
+
+        Args:
+            extension_id (str): ID for the Extension which the configuration is for
+            segment (str): Configuration type
+                           Valid values are "global", "developer", or "broadcaster"
+            broadcaster_id (str, optional): User ID of the broadcaster
+                                            Required if the segment type is "developer" or "broadcaster"
+            content (str, optional): Configuration in a string-encoded format
+            version (str, optional): Configuration version with the segment type
+        """
+
+        self.__client.set_extension_configuration_segment(extension_id,segment,broadcaster_id,content,version)
+
+    def set_extension_required_configuration(self,broadcaster_id,extension_id,extension_version,configuration_version):
+        """
+        Enable activation of a specified Extension, after any required broadcaster configuration is correct
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster who has activated the specified Extension on their channel
+            extension_id (str): ID for the Extension to activate
+            extension_version (str): The version fo the Extension to release
+            configuration_version (str): The version of the configuration to use with the Extension
+        """
+
+        self.__client.set_extension_required_configuration(broadcaster_id,extension_id,extension_version,configuration_version)
+
+    def send_extension_pubsub_message(self,target,broadcaster_id,is_global_broadcast,message):
+        """
+        A message can be sent to either a specified channel or globally (all channels on which your extension is active)
+        Extension PubSub has a rate limit of 100 requests per minute for a combination of Extension client ID and broadcaster ID
+
+        Args:
+            target (list): Array of strings for valid PubSub targets
+                           Valid values: "broadcast", "global", "whisper-<user-id>"
+            broadcaster_id (str): ID of the broadcaster receiving the payload
+            is_global_broadcast (bool): Indicates if the message should be sent to all channels where your Extension is active
+            message (str): String-encoded JSON message to be sent
+        """
+
+        self.__client.send_extension_pubsub_message(target,broadcaster_id,is_global_broadcast,message)
+
+    def get_extension_live_channels(self,extension_id,first=20):
+        """
+        Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
+        A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
+
+        Args:
+            extension_id (str): ID of the Extension to search for
+            first (int, optional): Maximum number of objects to return
+                                   Default: 20
+
+        Returns:
+            dict
+        """
+
+        return self.__client.get_extension_live_channels(extension_id,first)
+
+    def get_extension_secrets(self):
+        """
+        Retrieves a specified Extension’s secret data consisting of a version and an array of secret objects
+        Each secret object contains a base64-encoded secret, a UTC timestamp when the secret becomes active, and a timestamp when the secret expires
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_extension_secrets()
+
+    def create_extension_secret(self,delay=300):
+        """
+        Creates a JWT signing secret for a specific Extension
+        Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
+
+        Args:
+            delay (int, optional): JWT signing activation delay for the newly created secret in seconds
+                                   Minimum: 300
+                                   Default: 300
+
+        Returns:
+            list
+        """
+
+        return self.__client.create_extension_secret(delay)
+
+    def send_extension_chat_message(self,broadcaster_id,text,extension_id,extension_version):
+        """
+        Sends a specified chat message to a specified channel
+        The message will appear in the channel’s chat as a normal message
+        The "username" of the message is the Extension name
+        There is a limit of 12 messages per minute, per channel
+
+        Args:
+            broadcaster_id (str): User ID of the broadcaster whose channel has the Extension activated
+            text (str): Message for Twitch chat
+                        Maximum: 280 characters
+            extension_id (str): Client ID associated with the Extension
+            extension_version (str): Version of the Extension sending this message
+        """
+
+        self.__client.send_extension_chat_message(broadcaster_id,text,extension_id,extension_version)
+
+    def get_extensions(self,extension_id,extension_version=""):
+        """
+        Gets information about your Extensions; either the current version or a specified version
+
+        Args:
+            extension_id (str): ID of the Extension
+            extension_version (str, optional): The specific version of the Extension to return
+                                               If not provided, the current version is returned
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_extensions(extension_id,extension_version)
+
+    def get_released_extensions(self,extension_id,extension_version=""):
+        """
+        Gets information about a released Extension; either the current version or a specified version
+
+        Args:
+            extension_id (str): ID of the Extension
+            extension_version (str, optional): The specific version of the Extension to return
+                                               If not provided, the current version is returned
+
+        Returns:
+            dict
+        """
+
+        return self.__client.get_released_extensions(extension_id,extension_version)
+
+    def get_extension_bits_products(self,extension_client_id,should_include_all=False):
+        """
+        Gets a list of Bits products that belongs to an Extension
+
+        Args:
+            extension_client_id (str): Extension client ID
+            should_include_all (bool, optional): Whether Bits products that are disabled/expired should be included in the response
+                                                 Default: false
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_extension_bits_products(extension_client_id,should_include_all)
+
+    def update_extension_bits_product(self,extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False):
+        """
+        Add or update a Bits products that belongs to an Extension
+
+        Args:
+            extension_client_id (str): Extension client ID
+            sku (str): SKU of the Bits product
+                       This must be unique across all products that belong to an Extension
+                       The SKU cannot be changed after saving
+                       Maximum: 255 characters, no white spaces
+            cost (dict): Object containing cost information
+            display_name (str): Name of the product to be displayed in the Extension
+                                Maximum: 255 characters
+            in_development (bool, optional): Set to true if the product is in development and not yet released for public use
+                                             Default: false
+            expiration (str, optional): Expiration time for the product in RFC3339 format
+                                        If not provided, the Bits product will not have an expiration date
+                                        Setting an expiration in the past will disable the product
+            is_broadcast (bool, optional): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback.
+                                           Default: false
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_extension_bits_product(extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False)
 
     def create_eventsub_subscription(self,type,version,condition,transport):
         """
