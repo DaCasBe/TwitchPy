@@ -1812,6 +1812,33 @@ class Client:
 
         return games
 
+    def get_creator_goals(self,broadcaster_id):
+        """
+        Gets the broadcaster’s list of active goals
+        Use this to get the current progress of each goal
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that created the goals
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+        
+        url="https://api.twitch.tv/helix/goals"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params)
+        
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
         Gets the information of the most recent Hype Train of the given channel ID

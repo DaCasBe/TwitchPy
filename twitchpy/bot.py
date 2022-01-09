@@ -981,6 +981,20 @@ class Bot:
 
         return self.__client.get_games(id,name)
 
+    def get_creator_goals(self,broadcaster_id):
+        """
+        Gets the broadcaster’s list of active goals
+        Use this to get the current progress of each goal
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that created the goals
+
+        Returns:
+            list
+        """
+
+        return self.__client.get_creator_goals(broadcaster_id)
+
     def get_hype_train_events(self,broadcaster_id,first=1,id=""):
         """
         Gets the information of the most recent Hype Train of the given channel ID

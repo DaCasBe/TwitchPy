@@ -1085,6 +1085,25 @@ For a query to be valid, name and/or id must be specified
 
 **Returns**: list
 
+### Get creator goals
+
+~~~
+function get_creator_goals(broadcaster_id)
+~~~
+
+Gets the broadcaster’s list of active goals  
+Use this to get the current progress of each goal
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that created the goals
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
 ### Get hype train events
 
 ~~~
@@ -3584,6 +3603,21 @@ For a query to be valid, name and/or id must be specified
 + name (list, optional): Game name  
                          The name must be an exact match  
                          At most 100 name values can be specified
+
+**Returns**: list
+
+### Get creator goals
+
+~~~
+function get_creator_goals(broadcaster_id)
+~~~
+
+Gets the broadcaster’s list of active goals  
+Use this to get the current progress of each goal
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that created the goals
 
 **Returns**: list
 
