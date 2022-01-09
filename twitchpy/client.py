@@ -1000,6 +1000,120 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
+    def get_chat_settings(self,broadcaster_id,moderator_id=""):
+        """
+        Gets the broadcaster’s chat settings
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose chat settings you want to get
+            moderator_id (str, optional): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings
+                                          The ID of a user that has permission to moderate the broadcaster’s chat room
+                                          This ID must match the user ID associated with the user OAuth token
+                                          If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/chat/settings"
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def update_chat_settings(self,broadcaster_id,moderator_id,emote_mode=None,follower_mode=None,follower_mode_duration=0,non_moderator_chat_delay=None,non_moderator_chat_delay_duration=0,slow_mode=None,slow_mode_wait_time=30,subscriber_mode=None,unique_chat_mode=None):
+        """
+        Updates the broadcaster’s chat settings
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose chat settings you want to update
+                                  This ID must match the user ID associated with the user OAuth token
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to update their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            emote_mode (bool, optional): A Boolean value that determines whether chat messages must contain only emotes
+                                         Set to true, if only messages that are 100% emotes are allowed; otherwise, false
+                                         Default is false
+            follower_mode (bool, optional): A Boolean value that determines whether the broadcaster restricts the chat room to followers only, based on how long they’ve followed
+                                            Set to true, if the broadcaster restricts the chat room to followers only; otherwise, false
+                                            Default is false
+            follower_mode_duration (int, optional): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room
+                                                    You may specify a value in the range: 0 (no restriction) through 129600 (3 months)
+                                                    The default is 0
+            non_moderator_chat_delay (bool, optional): A Boolean value that determines whether the broadcaster adds a short delay before chat messages appear in the chat room
+                                                       This gives chat moderators and bots a chance to remove them before viewers can see the message
+                                                       Set to true, if the broadcaster applies a delay; otherwise, false
+                                                       Default is false
+            non_moderator_chat_delay_duration (int, optional): The amount of time, in seconds, that messages are delayed from appearing in chat
+                                                               Possible values are: 2, 4, 6
+            slow_mode (bool, optional): A Boolean value that determines whether the broadcaster limits how often users in the chat room are allowed to send messages
+                                        Set to true, if the broadcaster applies a wait period messages; otherwise, false
+                                        Default is false
+            slow_mode_wait_time (int, optional): The amount of time, in seconds, that users need to wait between sending messages
+                                                 You may specify a value in the range: 3 (3 second delay) through 120 (2 minute delay)
+                                                 The default is 30 seconds
+            subscriber_mode (bool, optional): A Boolean value that determines whether only users that subscribe to the broadcaster’s channel can talk in the chat room
+                                              Set to true, if the broadcaster restricts the chat room to subscribers only; otherwise, false
+                                              Default is false
+            unique_chat_mode (bool, optional): A Boolean value that determines whether the broadcaster requires users to post only unique messages in the chat room
+                                               Set to true, if the broadcaster requires unique messages only; otherwise, false
+                                               Default is false
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/chat/settings"
+        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        if emote_mode!=None:
+            data["emote_mode"]=emote_mode
+        
+        if follower_mode!=None:
+            data["follower_mode"]=follower_mode
+        
+        if follower_mode_duration!=0:
+            data["follower_mode_duration"]=follower_mode_duration
+
+        if non_moderator_chat_delay!=None:
+            data["non_moderator_chat_delay"]=non_moderator_chat_delay
+
+        if non_moderator_chat_delay_duration!=0:
+            data["non_moderator_chat_delay_duration"]=non_moderator_chat_delay_duration
+
+        if slow_mode!=None:
+            data["slow_mode"]=slow_mode
+
+        if slow_mode_wait_time!=30:
+            data["slow_mode_wait_time"]=slow_mode_wait_time
+
+        if subscriber_mode!=None:
+            data["subscriber_mode"]=subscriber_mode
+
+        if unique_chat_mode!=None:
+            data["unique_chat_mode"]=unique_chat_mode
+
+        response=requests.patch(url,headers=headers,data=data)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
@@ -1945,6 +2059,100 @@ class Client:
 
         requests.post(url,headers=headers,json=payload)
 
+    def get_automod_settings(self,broadcaster_id,moderator_id):
+        """
+        Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to get
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to get their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/moderation/automod/settings"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def update_automod_settings(self,broadcaster_id,moderator_id,aggression=None,bullying=None,disability=None,misogyny=None,overall_level=None,race_ethnicity_or_religion=None,sex_based_terms=None,sexuality_sex_or_gender=None,swearing=None):
+        """
+        Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to update
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to update their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            aggression (int, optional): The Automod level for hostility involving aggression
+            bullying (int, optional): The Automod level for hostility involving name calling or insults
+            disability (int, optional): The Automod level for discrimination against disability
+            misogyny (int, optional): The Automod level for discrimination against women
+            overall_level (int, optional): The default AutoMod level for the broadcaster
+            race_ethnicity_or_religion (int, optional): The Automod level for racial discrimination
+            sex_based_terms (int, optional): The Automod level for sexual content
+            sexuality_sex_or_gender (int, optional): The AutoMod level for discrimination based on sexuality, sex, or gender
+            swearing (int, optional): The Automod level for profanity
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+        
+        url="https://api.twitch.tv/helix/moderation/automod/settings"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        if aggression!=None:
+            data["aggression"]=aggression
+
+        if bullying!=None:
+            data["bullying"]=bullying
+
+        if disability!=None:
+            data["disability"]=disability
+        
+        if misogyny!=None:
+            data["misogyny"]=misogyny
+        
+        if overall_level!=None:
+            data["overall_level"]=overall_level
+
+        if race_ethnicity_or_religion!=None:
+            data["race_ethnicity_or_religion"]=race_ethnicity_or_religion
+
+        if sex_based_terms!=None:
+            data["sex_based_terms"]=sex_based_terms
+
+        if sexuality_sex_or_gender!=None:
+            data["sexuality_sex_or_gender"]=sexuality_sex_or_gender
+
+        if swearing!=None:
+            data["swearing"]=swearing
+
+        response=requests.put(url,headers=headers,json=data)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
     def get_banned_events(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all user bans and un-bans in a channel
@@ -2056,6 +2264,180 @@ class Client:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return output
+
+    def ban_user(self,broadcaster_id,moderator_id,reason,user_id,duration=None):
+        """
+        Bans a user from participating in a broadcaster’s chat room, or puts them in a timeout
+        If the user is currently in a timeout, you can use this method to change the duration of the timeout or ban them altogether
+        If the user is currently banned, you cannot call this method to put them in a timeout instead
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose chat room the user is being banned from
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to ban the user (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            reason (reason): The reason the user is being banned or put in a timeout
+                             The text is user defined and limited to a maximum of 500 characters
+            user_id (str): The ID of the user to ban or put in a timeout
+            duration (int, optional): To ban a user indefinitely, don’t include this field
+                                      To put a user in a timeout, include this field and specify the timeout period, in seconds
+                                      The minimum timeout is 1 second and the maximum is 1,209,600 seconds (2 weeks)
+                                      To end a user’s timeout early, set this field to 1
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/moderation/bans"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        payload={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        data={"reason":reason,"user_id":user_id}
+
+        if duration!=None:
+            data["duration"]=duration
+
+        payload["data"]=data
+        
+        response=requests.post(url,headers=headers,json=payload)
+
+        if response.ok:
+            return response.json()["data"]
+        
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def unban_user(self,broadcaster_id,moderator_id,user_id):
+        """
+        Removes the ban or timeout that was placed on the specified user
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose chat room the user is banned from chatting in
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to remove the ban (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            user_id (str): The ID of the user to remove the ban or timeout from
+
+        Raises:
+            twitchpy.errors.ClientError
+        """
+
+        url="https://api.twitch.tv/helix/moderation/bans"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id,"user_id":user_id}
+
+        requests.delete(url,headers=headers,data=data)
+
+    def get_blocked_terms(self,broadcaster_id,moderator_id,first=20):
+        """
+        Gets the broadcaster’s list of non-private, blocked words or phrases
+        These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose blocked terms you’re getting
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to get their own block terms (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            first (int, optional): The maximum number of blocked terms to return per page in the response
+                                   The minimum page size is 1 blocked term per page and the maximum is 100
+                                   The default is 20
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+        
+        url="https://api.twitch.tv/helix/moderation/blocked_terms"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+
+        if first!=20:
+            params["first"]=first
+        
+        after=""
+        calls=math.ceil(first/100)
+        blocked_terms=[]
+
+        for call in range(calls):
+            if first-(100*call)>100:
+                params["first"]=100
+            
+            else:
+                params["first"]=first-(100*call)
+
+            if after!="":
+                params["after"]=after
+
+            response=requests.get(url,headers=headers,params=params)
+            
+            if response.ok:
+                response=response.json()
+                blocked_terms.extend(response["data"])
+
+                if "pagination" in response and "cursor" in response["pagination"]:
+                    after=response["pagination"]["cursor"]
+
+            else:
+                raise twitchpy.errors.ClientError(response.json()["message"])
+        
+        return blocked_terms
+
+    def add_blocked_term(self,broadcaster_id,moderator_id,text):
+        """
+        Adds a word or phrase to the broadcaster’s list of blocked terms
+        These are the terms that broadcasters don’t want used in their chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to add the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+            text (str): The word or phrase to block from being used in the broadcaster’s chat room
+                        The term must contain a minimum of 2 characters and may contain up to a maximum of 500 characters
+                        Terms can use a wildcard character (*)
+                        The wildcard character must appear at the beginning or end of a word, or set of characters
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/moderation/blocked_terms"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        payload={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id,"text":text}
+
+        response=requests.post(url,headers=headers,json=payload)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def remove_blocked_term(self,broadcaster_id,id,moderator_id):
+        """
+        Removes the word or phrase that the broadcaster is blocking users from using in their chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+            id (str): The ID of the blocked term you want to delete
+            moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
+                                This ID must match the user ID associated with the user OAuth token
+                                If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+        """
+
+        url="https://api.twitch.tv/helix/moderation/blocked_terms"
+        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data={"broadcaster_id":broadcaster_id,"id":id,"moderator_id":moderator_id}
+
+        requests.delete(url,headers=headers,data=data)
 
     def get_moderators(self,broadcaster_id,user_id=[],first=20):
         """

@@ -562,6 +562,88 @@ Gets a list of chat badges that can be used in chat for any channel
 
 **Returns**: list
 
+### Get chat settings
+
+~~~
+function get_chat_settings(broadcaster_id,moderator_id="")
+~~~
+
+Gets the broadcaster’s chat settings
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat settings you want to get
+
++ moderator_id (str, optional): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings  
+                                The ID of a user that has permission to moderate the broadcaster’s chat room  
+                                This ID must match the user ID associated with the user OAuth token  
+                                If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Update chat settings
+
+~~~
+function update_chat_settings(broadcaster_id,moderator_id,emote_mode=None,follower_mode=None,follower_mode_duration=0,non_moderator_chat_delay=None,non_moderator_chat_delay_duration=0,slow_mode=None,slow_mode_wait_time=30,subscriber_mode=None,unique_chat_mode=None)
+~~~
+
+Updates the broadcaster’s chat settings
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat settings you want to update  
+                        This ID must match the user ID associated with the user OAuth token
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to update their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ emote_mode (bool, optional): A Boolean value that determines whether chat messages must contain only emotes  
+                               Set to true, if only messages that are 100% emotes are allowed; otherwise, false  
+                               Default is false
+
++ follower_mode (bool, optional): A Boolean value that determines whether the broadcaster restricts the chat room to followers only, based on how long they’ve followed  
+                                  Set to true, if the broadcaster restricts the chat room to followers only; otherwise, false  
+                                  Default is false
+
++ follower_mode_duration (int, optional): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room  
+                                          You may specify a value in the range: 0 (no restriction) through 129600 (3 months)  
+                                          The default is 0
+
++ non_moderator_chat_delay (bool, optional): A Boolean value that determines whether the broadcaster adds a short delay before chat messages appear in the chat room  
+                                             This gives chat moderators and bots a chance to remove them before viewers can see the message  
+                                             Set to true, if the broadcaster applies a delay; otherwise, false  
+                                             Default is false
+
++ non_moderator_chat_delay_duration (int, optional): The amount of time, in seconds, that messages are delayed from appearing in chat  
+                                                     Possible values are: 2, 4, 6
+
++ slow_mode (bool, optional): A Boolean value that determines whether the broadcaster limits how often users in the chat room are allowed to send messages  
+                              Set to true, if the broadcaster applies a wait period messages; otherwise, false  
+                              Default is false
+
++ slow_mode_wait_time (int, optional): The amount of time, in seconds, that users need to wait between sending messages  
+                                       You may specify a value in the range: 3 (3 second delay) through 120 (2 minute delay)  
+                                       The default is 30 seconds
+
++ subscriber_mode (bool, optional): A Boolean value that determines whether only users that subscribe to the broadcaster’s channel can talk in the chat room  
+                                    Set to true, if the broadcaster restricts the chat room to subscribers only; otherwise, false  
+                                    Default is false
+
++ unique_chat_mode (bool, optional): A Boolean value that determines whether the broadcaster requires users to post only unique messages in the chat room  
+                                     Set to true, if the broadcaster requires unique messages only; otherwise, false  
+                                     Default is false
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
 ### Create clip
 
 ~~~
@@ -1173,6 +1255,87 @@ Allow or deny a message that was held for review by AutoMod
 + action (str): The action to take for the message  
                 Must be "ALLOW" or "DENY"
 
+### Get AutoMod settings
+
+~~~
+function get_automod_settings(broadcaster_id,moderator_id,aggression=0,bullying=0,disability=0,misogyny=0,overall_level=0,race_ethnicity_or_religion=0,sex_based_terms=0,sexuality_sex_or_gender=0,swearing=0)
+~~~
+
+Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to get
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to get their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ aggression (int, optional): The Automod level for hostility involving aggression
+
++ bullying (int, optional): The Automod level for hostility involving name calling or insults
+
++ disability (int, optional): The Automod level for discrimination against disability
+
++ misogyny (int, optional): The Automod level for discrimination against women
+
++ overall_level (int, optional): The default AutoMod level for the broadcaster  
+                                 This field is null if the broadcaster has set one or more of the individual settings
+
++ race_ethnicity_or_religion (int, optional): The Automod level for racial discrimination
+
++ sex_based_terms (int, optional): The Automod level for sexual content
+
++ sexuality_sex_or_gender (int, optional): The AutoMod level for discrimination based on sexuality, sex, or gender
+
++ swearing (int, optional): The Automod level for profanity
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Update AutoMod settings
+
+~~~
+function update_automod_settings(broadcaster_id,moderator_id,aggresion=0,bullying=0,disability=0,misogyny=0,overall_level=0,race_ethnicity_or_religion=0,sex_based_terms=0,sexuality_sex_or_gender=0,swearing=0)
+~~~
+
+Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to update
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to update their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ aggresion (int, optional): The Automod level for hostility involving aggression
+
++ bullying (int, optional): The Automod level for hostility involving name calling or insults
+
++ disability (int, optional): The Automod level for discrimination against disability
+
++ misogyny (int, optional): The Automod level for discrimination against women
+
++ overall_level (int, optional): The default AutoMod level for the broadcaster
+
++ race_ethnicity_or_religion (int, optional): The Automod level for racial discrimination
+
++ sex_based_terms (int, optional): The Automod level for sexual content
+
++ sexuality_sex_or_gender (int, optional): The AutoMod level for discrimination based on sexuality, sex, or gender
+
++ swearing (int, optional): The Automod level for profanity
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
 ### Get banned events
 
 ~~~
@@ -1220,6 +1383,135 @@ Returns all banned and timed-out users in a channel
 + twitchpy.errors.ClientError
 
 **Returns**: list
+
+### Ban user
+
+~~~
+function ban_user(broadcaster_id,moderator_id,reason,user_id,duration=None)
+~~~
+
+Bans a user from participating in a broadcaster’s chat room, or puts them in a timeout  
+If the user is currently in a timeout, you can use this method to change the duration of the timeout or ban them altogether  
+If the user is currently banned, you cannot call this method to put them in a timeout instead
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat room the user is being banned from
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to ban the user (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ reason (reason): The reason the user is being banned or put in a timeout  
+                   The text is user defined and limited to a maximum of 500 characters
+
++ user_id (str): The ID of the user to ban or put in a timeout
+
++ duration (int, optional): To ban a user indefinitely, don’t include this field  
+                            To put a user in a timeout, include this field and specify the timeout period, in seconds  
+                            The minimum timeout is 1 second and the maximum is 1,209,600 seconds (2 weeks)  
+                            To end a user’s timeout early, set this field to 1
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Unban user
+
+~~~
+function unban_user(broadcaster_id,moderator_id,user_id)
+~~~
+
+Removes the ban or timeout that was placed on the specified user
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat room the user is banned from chatting in
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to remove the ban (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ user_id (str): The ID of the user to remove the ban or timeout from
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+### Get blocked terms
+
+~~~
+function get_blocked_terms(broadcaster_id,moderator_id,first=20)
+~~~
+
+Gets the broadcaster’s list of non-private, blocked words or phrases  
+These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose blocked terms you’re getting  
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to get their own block terms (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ first (int, optional): The maximum number of blocked terms to return per page in the response  
+                         The minimum page size is 1 blocked term per page and the maximum is 100  
+                         The default is 20
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
+### Add blocked terms
+
+~~~
+function add_blocked_term(broadcaster_id,moderator_id,text)
+~~~
+
+Adds a word or phrase to the broadcaster’s list of blocked terms  
+These are the terms that broadcasters don’t want used in their chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to add the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ text (str): The word or phrase to block from being used in the broadcaster’s chat room  
+              The term must contain a minimum of 2 characters and may contain up to a maximum of 500 characters  
+              Terms can use a wildcard character (*)  
+              The wildcard character must appear at the beginning or end of a word, or set of characters  
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Remove blocked terms
+
+~~~
+function remove_blocked_term(broadcaster_id,id,moderator_id)
+~~~
+
+Removes the word or phrase that the broadcaster is blocking users from using in their chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+
++ id (str): The ID of the blocked term you want to delete
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
 
 ### Get moderators
 
@@ -3157,6 +3449,82 @@ Gets a list of chat badges that can be used in chat for any channel
 
 **Returns**: list
 
+~~~
+function get_chat_settings(broadcaster_id,moderator_id="")
+~~~
+
+Gets the broadcaster’s chat settings
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat settings you want to get
+
++ moderator_id (str, optional): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings  
+                                The ID of a user that has permission to moderate the broadcaster’s chat room  
+                                This ID must match the user ID associated with the user OAuth token  
+                                If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
+**Returns**: dict
+
+### Update chat settings
+
+~~~
+function update_chat_settings(broadcaster_id,moderator_id,emote_mode=None,follower_mode=None,follower_mode_duration=0,non_moderator_chat_delay=None,non_moderator_chat_delay_duration=0,slow_mode=None,slow_mode_wait_time=30,subscriber_mode=None,unique_chat_mode=None)
+~~~
+
+Updates the broadcaster’s chat settings
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat settings you want to update  
+                        This ID must match the user ID associated with the user OAuth token
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to update their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ emote_mode (bool, optional): A Boolean value that determines whether chat messages must contain only emotes  
+                               Set to true, if only messages that are 100% emotes are allowed; otherwise, false  
+                               Default is false
+
++ follower_mode (bool, optional): A Boolean value that determines whether the broadcaster restricts the chat room to followers only, based on how long they’ve followed  
+                                  Set to true, if the broadcaster restricts the chat room to followers only; otherwise, false  
+                                  Default is false
+
++ follower_mode_duration (int, optional): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room  
+                                          You may specify a value in the range: 0 (no restriction) through 129600 (3 months)  
+                                          The default is 0
+
++ non_moderator_chat_delay (bool, optional): A Boolean value that determines whether the broadcaster adds a short delay before chat messages appear in the chat room  
+                                             This gives chat moderators and bots a chance to remove them before viewers can see the message  
+                                             Set to true, if the broadcaster applies a delay; otherwise, false  
+                                             Default is false
+
++ non_moderator_chat_delay_duration (int, optional): The amount of time, in seconds, that messages are delayed from appearing in chat  
+                                                     Possible values are: 2, 4, 6
+
++ slow_mode (bool, optional): A Boolean value that determines whether the broadcaster limits how often users in the chat room are allowed to send messages  
+                              Set to true, if the broadcaster applies a wait period messages; otherwise, false  
+                              Default is false
+
++ slow_mode_wait_time (int, optional): The amount of time, in seconds, that users need to wait between sending messages  
+                                       You may specify a value in the range: 3 (3 second delay) through 120 (2 minute delay)  
+                                       The default is 30 seconds
+
++ subscriber_mode (bool, optional): A Boolean value that determines whether only users that subscribe to the broadcaster’s channel can talk in the chat room  
+                                    Set to true, if the broadcaster restricts the chat room to subscribers only; otherwise, false  
+                                    Default is false
+
++ unique_chat_mode (bool, optional): A Boolean value that determines whether the broadcaster requires users to post only unique messages in the chat room  
+                                     Set to true, if the broadcaster requires unique messages only; otherwise, false  
+                                     Default is false
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
 ### Create clip
 
 ~~~
@@ -3682,6 +4050,79 @@ Allow or deny a message that was held for review by AutoMod
 + action (str): The action to take for the message  
                 Must be "ALLOW" or "DENY"
 
+### Get AutoMod settings
+
+~~~
+function get_automod_settings(broadcaster_id,moderator_id,aggression=0,bullying=0,disability=0,misogyny=0,overall_level=0,race_ethnicity_or_religion=0,sex_based_terms=0,sexuality_sex_or_gender=0,swearing=0)
+~~~
+
+Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to get
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to get their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ aggression (int, optional): The Automod level for hostility involving aggression
+
++ bullying (int, optional): The Automod level for hostility involving name calling or insults
+
++ disability (int, optional): The Automod level for discrimination against disability
+
++ misogyny (int, optional): The Automod level for discrimination against women
+
++ overall_level (int, optional): The default AutoMod level for the broadcaster  
+                                 This field is null if the broadcaster has set one or more of the individual settings
+
++ race_ethnicity_or_religion (int, optional): The Automod level for racial discrimination
+
++ sex_based_terms (int, optional): The Automod level for sexual content
+
++ sexuality_sex_or_gender (int, optional): The AutoMod level for discrimination based on sexuality, sex, or gender
+
++ swearing (int, optional): The Automod level for profanity
+
+**Returns**: dict
+
+### Update AutoMod settings
+
+~~~
+function update_automod_settings(broadcaster_id,moderator_id,aggresion=0,bullying=0,disability=0,misogyny=0,overall_level=0,race_ethnicity_or_religion=0,sex_based_terms=0,sexuality_sex_or_gender=0,swearing=0)
+~~~
+
+Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose AutoMod settings you want to update
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to update their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ aggresion (int, optional): The Automod level for hostility involving aggression
+
++ bullying (int, optional): The Automod level for hostility involving name calling or insults
+
++ disability (int, optional): The Automod level for discrimination against disability
+
++ misogyny (int, optional): The Automod level for discrimination against women
+
++ overall_level (int, optional): The default AutoMod level for the broadcaster
+
++ race_ethnicity_or_religion (int, optional): The Automod level for racial discrimination
+
++ sex_based_terms (int, optional): The Automod level for sexual content
+
++ sexuality_sex_or_gender (int, optional): The AutoMod level for discrimination based on sexuality, sex, or gender
+
++ swearing (int, optional): The Automod level for profanity
+
+**Returns**: dict
+
 ### Get banned events
 
 ~~~
@@ -3721,6 +4162,119 @@ Returns all banned and timed-out users in a channel
                          Default: 20
 
 **Returns**: list
+
+### Ban user
+
+~~~
+function ban_user(broadcaster_id,moderator_id,reason,user_id,duration=None)
+~~~
+
+Bans a user from participating in a broadcaster’s chat room, or puts them in a timeout  
+If the user is currently in a timeout, you can use this method to change the duration of the timeout or ban them altogether  
+If the user is currently banned, you cannot call this method to put them in a timeout instead
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat room the user is being banned from
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to ban the user (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ reason (reason): The reason the user is being banned or put in a timeout  
+                   The text is user defined and limited to a maximum of 500 characters
+
++ user_id (str): The ID of the user to ban or put in a timeout
+
++ duration (int, optional): To ban a user indefinitely, don’t include this field  
+                            To put a user in a timeout, include this field and specify the timeout period, in seconds  
+                            The minimum timeout is 1 second and the maximum is 1,209,600 seconds (2 weeks)  
+                            To end a user’s timeout early, set this field to 1
+
+**Returns**: dict
+
+### Unban user
+
+~~~
+function unban_user(broadcaster_id,moderator_id,user_id)
+~~~
+
+Removes the ban or timeout that was placed on the specified user
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose chat room the user is banned from chatting in
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to remove the ban (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ user_id (str): The ID of the user to remove the ban or timeout from
+
+### Get blocked terms
+
+~~~
+function get_blocked_terms(broadcaster_id,moderator_id,first=20)
+~~~
+
+Gets the broadcaster’s list of non-private, blocked words or phrases  
+These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster whose blocked terms you’re getting
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to get their own block terms (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ first (int, optional): The maximum number of blocked terms to return per page in the response  
+                         The minimum page size is 1 blocked term per page and the maximum is 100  
+                         The default is 20
+
+**Returns**: list
+
+### Add blocked terms
+
+~~~
+function add_blocked_term(broadcaster_id,moderator_id,text)
+~~~
+
+Adds a word or phrase to the broadcaster’s list of blocked terms  
+These are the terms that broadcasters don’t want used in their chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to add the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
+
++ text (str): The word or phrase to block from being used in the broadcaster’s chat room  
+              The term must contain a minimum of 2 characters and may contain up to a maximum of 500 characters  
+              Terms can use a wildcard character (*)  
+              The wildcard character must appear at the beginning or end of a word, or set of characters
+
+**Returns**: dict
+
+### Remove blocked terms
+
+~~~
+function remove_blocked_term(broadcaster_id,id,moderator_id)
+~~~
+
+Removes the word or phrase that the broadcaster is blocking users from using in their chat room
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
+
++ id (str): The ID of the blocked term you want to delete
+
++ moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room  
+                      This ID must match the user ID associated with the user OAuth token  
+                      If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
 
 ### Get moderators
 
