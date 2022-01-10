@@ -16,13 +16,14 @@ class Client:
     Represents a client connection to the Twitch API
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,code="",jwt_token=""):
+    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,tokens_path,code="",jwt_token=""):
         """
         Args:
             oauth_token (str): OAuth Token
             client_id (str): Client ID
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
+            tokens_path (str): Path of tokens file (file included)
             code (str, optional): Authorization code
             jwt_token (str, optional): JWT Token
         """
@@ -31,9 +32,10 @@ class Client:
         self.client_id=client_id
         self.client_secret=client_secret
         self.redirect_uri=redirect_uri
+        self.tokens_path=tokens_path
         self.__app_token=self.__get_app_token()
 
-        if code!="" or os.path.isfile(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret"):
+        if code!="" or os.path.isfile(self.tokens_path):
             self.__user_token=self.__get_user_token(code)
 
         else:
@@ -54,7 +56,7 @@ class Client:
             raise twitchpy.errors.AppTokenError("Error obtaining app token")
 
     def __is_last_code_used(self,code):
-        tokens_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
+        tokens_file=open(self.tokens_path)
         tokens=tokens_file.readlines()
         tokens_file.close()
 
@@ -126,13 +128,13 @@ class Client:
             raise twitchpy.errors.UserTokenError("Error obtaining user token")
 
     def __get_user_token(self,code):
-        if os.path.isfile(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret") and not self.__is_last_code_used(code):
-            user_token,refresh_user_token=self.__read_user_tokens_from_file(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
+        if os.path.isfile(self.tokens_path) and not self.__is_last_code_used(code):
+            user_token,refresh_user_token=self.__read_user_tokens_from_file(self.tokens_path)
             user_token,refresh_user_token=self.__refresh_user_tokens(refresh_user_token)
-            self.__save_user_tokens_in_file(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret",user_token,refresh_user_token,code)
+            self.__save_user_tokens_in_file(self.tokens_path,user_token,refresh_user_token,code)
 
         else:
-            user_token,refresh_user_token=self.__generate_user_tokens(code,os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
+            user_token,refresh_user_token=self.__generate_user_tokens(code,self.tokens_path)
 
         return user_token
 
