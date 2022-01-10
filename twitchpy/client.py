@@ -53,6 +53,20 @@ class Client:
         else:
             raise twitchpy.errors.AppTokenError("Error obtaining app token")
 
+    def __is_last_code_used(self,code):
+        tokens_file=open(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
+        tokens=tokens_file.readlines()
+        tokens_file.close()
+
+        for token in tokens:
+            token=token.replace(" ","").replace("\n","")
+            token=token.split("=")
+
+            if token[0]=="CODE" and token[1]==code:
+                return True
+
+        return False
+
     def __read_user_tokens_from_file(self,file):
         try:
             secret_file=open(file,"rt")
@@ -76,8 +90,8 @@ class Client:
 
         return user_token,refresh_user_token
 
-    def __save_user_tokens_in_file(self,file,user_token,user_refresh_token):
-        data=f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}"
+    def __save_user_tokens_in_file(self,file,user_token,user_refresh_token,code):
+        data=f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={code}"
 
         secret_file=open(file,"wt")
         secret_file.write(data)
@@ -91,7 +105,7 @@ class Client:
 
         if response.ok:
             response=response.json()
-            self.__save_user_tokens_in_file(file,response["access_token"],response["refresh_token"])
+            self.__save_user_tokens_in_file(file,response["access_token"],response["refresh_token"],code)
 
             return response["access_token"],response["refresh_token"]
 
@@ -112,10 +126,10 @@ class Client:
             raise twitchpy.errors.UserTokenError("Error obtaining user token")
 
     def __get_user_token(self,code):
-        if os.path.isfile(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret"):
+        if os.path.isfile(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret") and not self.__is_last_code_used(code):
             user_token,refresh_user_token=self.__read_user_tokens_from_file(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
             user_token,refresh_user_token=self.__refresh_user_tokens(refresh_user_token)
-            self.__save_user_tokens_in_file(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret",user_token,refresh_user_token)
+            self.__save_user_tokens_in_file(os.path.dirname(os.path.realpath(__file__))+"/tokens.secret",user_token,refresh_user_token,code)
 
         else:
             user_token,refresh_user_token=self.__generate_user_tokens(code,os.path.dirname(os.path.realpath(__file__))+"/tokens.secret")
