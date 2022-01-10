@@ -27,6 +27,7 @@ class Bot:
         self.__irc_port=6697
         self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,code,jwt_token)
         self.__oauth_token=oauth_token
+        self.__finish=False
         self.username=username
 
         self.channels=[]
@@ -80,6 +81,13 @@ class Bot:
 
         self.__connect()
         self.__loop()
+
+    def stop(self):
+        """
+        Stops the bot
+        """
+
+        self.__finish=True
 
     def __get_user_from_prefix(self,prefix):
         domain=prefix.split("!")[0]
@@ -179,7 +187,7 @@ class Bot:
                             self.custom_methods_after_commands.pop(method)
 
     def __loop(self):
-        while True:
+        while not self.__finish:
             try:
                 received_msgs=self.irc.recv(2048).decode()
 
