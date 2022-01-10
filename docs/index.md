@@ -21,7 +21,7 @@ TwitchPy uses many endpoints which may require different tokens and IDs.
 ## Client
 
 ~~~
-class Client(oauth_token,client_id,client_secret,redirect_uri,code="")
+class Client(oauth_token,client_id,client_secret,redirect_uri,tokens_path,code="",jwt_token="")
 ~~~
 
 Represents a client connection to the Twitch API
@@ -36,7 +36,11 @@ Represents a client connection to the Twitch API
 
 + redirect_uri (str): Redirect URI
 
++ tokens_path (str): Path of tokens file (file included)
+
 + code (str, optional): Authorization code
+
++ jwt_token (str, optional): JWT Token
 
 ### Start commercial
 
@@ -318,7 +322,7 @@ Creates a Custom Reward on a channel
 ### Delete custom reward
 
 ~~~
-function delete_custom_reward(broadcaster_id,id):
+function delete_custom_reward(broadcaster_id,id)
 ~~~
 
 Deletes a Custom Reward on a channel  
@@ -2324,7 +2328,7 @@ Unblocks the specified user on behalf of the authenticated user
 ### Get user extensions
 
 ~~~
-function get_user_extensions():
+function get_user_extensions()
 ~~~
 
 Gets a list of all extensions (both active and inactive) for a specified user, identified by a Bearer token
@@ -2465,24 +2469,29 @@ Gets all users in a chat
 ## Channel
 
 ~~~
-class Channel(oauth_token="",user="",name="",game_name="",broadcaster_language="",title="")
+class Channel(broadcaster_id,broadcaster_login,broadcaster_name,game_id,game_name,title,broadcaster_language="",delay="")
 ~~~
 
 Represents a channel
 
 **Args**:
 
-+ oauth_token (str): OAuth token to identify the application
++ broadcaster_id (str): Twitch User ID of this channel owner
 
-+ username (str): Name of the user connecting to the channel
++ broadcaster_login (str): Twitch user login of this channel owner
 
-+ name (str): Channel's name
++ broadcaster_name (str): Twitch user display name of this channel owner
 
-+ game_name (str): Channel's category's name
++ game_id (str): Current game ID being played on the channel
 
-+ broadcaster_language (str): Channel's language
++ game_name (str): Name of the game being played on the channel
 
-+ title (str): Title in the channel
++ title (str): Title of the stream
+
++ broadcaster_language (str, optional): Language of the channel  
+                                        A language value is either the ISO 639-1 two-letter code for a supported stream language or "other"
+
++ delay (int, optional): Stream delay in seconds
 
 ### Connect
 
@@ -2953,6 +2962,14 @@ function run()
 ~~~
 
 Runs the bot
+
+### Stop
+
+~~~
+function stop()
+~~~
+
+Stops the bot
 
 ### Add check
 
@@ -5465,7 +5482,7 @@ Shows information about a user
 ### Vip
 
 ~~~
-function vip(self,channel,username):
+function vip(self,channel,username)
 ~~~
 
 Makes a user vip

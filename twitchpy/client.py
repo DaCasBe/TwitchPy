@@ -466,7 +466,7 @@ class Client:
 
         if response.ok:
             channel=response.json()["data"][0]
-            channel=Channel(name=channel["broadcaster_login"],game_name=channel["game_name"],broadcaster_language=channel["broadcaster_language"],title=channel["title"])
+            channel=Channel(channel["broadcaster_id"],channel["broadcaster_login"],channel["broadcaster_name"],channel["game_id"],channel["game_name"],channel["title"],channel["broadcaster_language"],channel["delay"])
             
             return channel
 
@@ -3178,7 +3178,7 @@ class Client:
                 response=response.json()
 
                 for channel in response["data"]:
-                    channels.append(Channel(name=channel["broadcaster_login"],game_name=channel["game_name"],broadcaster_language=channel["broadcaster_language"],title=channel["title"]))
+                    channels.append(Channel(channel["id"],channel["broadcaster_login"],channel["display_name"],channel["game_id"],channel["game_name"],channel["title"],broadcaster_language=channel["broadcaster_language"]))
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
