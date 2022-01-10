@@ -35,7 +35,7 @@ class Client:
         self.tokens_path=tokens_path
         self.__app_token=self.__get_app_token()
 
-        if code!="" or os.path.isfile(self.tokens_path):
+        if code!="" and not self.__is_last_code_used(code):
             self.__user_token=self.__get_user_token(code)
 
         else:
@@ -128,7 +128,7 @@ class Client:
             raise twitchpy.errors.UserTokenError("Error obtaining user token")
 
     def __get_user_token(self,code):
-        if os.path.isfile(self.tokens_path) and not self.__is_last_code_used(code):
+        if os.path.isfile(self.tokens_path):
             user_token,refresh_user_token=self.__read_user_tokens_from_file(self.tokens_path)
             user_token,refresh_user_token=self.__refresh_user_tokens(refresh_user_token)
             self.__save_user_tokens_in_file(self.tokens_path,user_token,refresh_user_token,code)
@@ -3187,6 +3187,80 @@ class Client:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return channels
+
+    def get_soundtrack_current_track(self,broadcaster_id):
+        """
+        Gets the Soundtrack track that the broadcaster is playing
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/soundtrack/current_track"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"broadcaster_id":broadcaster_id}
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+        
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_soundtrack_playlist(self,id):
+        """
+        Gets a Soundtrack playlist, which includes its list of tracks
+
+        Args:
+            id (str): The ID of the Soundtrack playlist to get
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url="https://api.twitch.tv/helix/soundtrack/playlist"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        params={"id":id}
+
+        response=requests.get(url,headers=headers,params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_soundtrack_playlists(self):
+        """
+        Gets a list of Soundtrack playlists
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list
+        """
+
+        url="https://api.twitch.tv/helix/soundtrack/playlists"
+        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
+
+        response=requests.get(url,headers=headers)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
 
     def get_stream_key(self,broadcaster_id):
         """

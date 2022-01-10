@@ -1949,6 +1949,56 @@ Returns a list of channels (users who have streamed within the past 6 months) th
 
 **Returns**: list
 
+### Get soundtrack current track
+
+~~~
+function get_soundtrack_current_track(broadcaster_id)
+~~~
+
+Gets the Soundtrack track that the broadcaster is playing
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Get soundtrack playlist
+
+~~~
+function get_soundtrack_playlist(id)
+~~~
+
+Gets a Soundtrack playlist, which includes its list of tracks
+
+**Args**:
+
++ id (str): The ID of the Soundtrack playlist to get
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: dict
+
+### Get soundtrack playlists
+
+~~~
+function get_soundtrack_playlists()
+~~~
+
+Gets a list of Soundtrack playlists
+
+**Raises**:
+
++ twitchpy.errors.ClientError
+
+**Returns**: list
+
 ### Get stream key
 
 ~~~
@@ -4666,6 +4716,44 @@ Returns a list of channels (users who have streamed within the past 6 months) th
 
 + live_only (bool, optional): Filter results for live streams only  
                               Default: false
+
+**Returns**: list
+
+### Get soundtrack current track
+
+~~~
+function get_soundtrack_current_track(broadcaster_id)
+~~~
+
+Gets the Soundtrack track that the broadcaster is playing
+
+**Args**:
+
++ broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
+
+**Returns**: dict
+
+### Get soundtrack playlist
+
+~~~
+function get_soundtrack_playlist(id)
+~~~
+
+Gets a Soundtrack playlist, which includes its list of tracks
+
+**Args**:
+
++ id (str): The ID of the Soundtrack playlist to get
+
+**Returns**: dict
+
+### Get soundtrack playlists
+
+~~~
+function get_soundtrack_playlists()
+~~~
+
+Gets a list of Soundtrack playlists
 
 **Returns**: list
 
