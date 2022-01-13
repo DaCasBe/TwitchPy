@@ -17,3 +17,7 @@ TwitchPy uses many endpoints which may require different tokens and IDs.
 + HTTP endpoints which require a client ID. Register a Twitch application with the bot's account: <https://dev.twitch.tv/>
 
 + HTTP endpoints which require an OAuth token and certain scopes. *To be documented.*
+
+## Contact
+
+You can contact me through my [e-mail](mailto:dacasbe97@gmail.com).

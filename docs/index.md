@@ -38,7 +38,7 @@ Represents a client connection to the Twitch API
 
 + tokens_path (str): Path of tokens file (file included)
 
-+ code (str, optional): Authorization code
++ code (str, optional): Authorization code for getting an user token
 
 + jwt_token (str, optional): JWT Token
 
@@ -61,7 +61,7 @@ Starts a commercial on a specified channel
 
 + twitchpy.errors.ClientError
 
-**Returns**: list
+**Returns**: dict
 
 ### Get extension analytics
 
@@ -905,7 +905,7 @@ A channel that recently went live may take a few minutes to appear in this list,
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: list
 
 ### Get extension secrets
 
@@ -1092,7 +1092,7 @@ Creates an EventSub subscription
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: EventSubSubscription
 
 ### Delete eventsub subscription
 
@@ -1633,7 +1633,7 @@ Create a poll for a specific Twitch channel
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: Poll
 
 ### End poll
 
@@ -1657,7 +1657,7 @@ End a poll that is currently active
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: Poll
 
 ### Get predictions
 
@@ -1712,7 +1712,7 @@ Create a Channel Points Prediction for a specific Twitch channel
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: Prediction
 
 ### End prediction
 
@@ -1741,7 +1741,7 @@ Locked Predictions can be updated to be "resolved" or "canceled"
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: Prediction
 
 ### Get channel stream schedule
 
@@ -1819,7 +1819,7 @@ This can be used for setting vacation details
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Create channel stream schedule segment
 
@@ -1852,7 +1852,7 @@ Create a single scheduled broadcast or a recurring scheduled broadcast for a cha
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Update channel stream schedule segment
 
@@ -1887,7 +1887,7 @@ Update a single scheduled broadcast or a recurring scheduled broadcast for a cha
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Delete channel stream schedule segment
 
@@ -1965,7 +1965,7 @@ Gets the Soundtrack track that the broadcaster is playing
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: SoundtrackTrack
 
 ### Get soundtrack playlist
 
@@ -1983,7 +1983,7 @@ Gets a Soundtrack playlist, which includes its list of tracks
 
 + twitchpy.errors.ClientError
 
-**Returns**: dict
+**Returns**: SoundtrackPlaylist
 
 ### Get soundtrack playlists
 
@@ -2982,7 +2982,7 @@ Whispers to a user
 ## Bot
 
 ~~~
-class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",ready_message="")
+class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",jwt_token="",ready_message="")
 ~~~
 
 **Args**:
@@ -3001,7 +3001,9 @@ class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,com
 
 + command_prefix (str): Prefix of the commands the bot will recognize
 
-+ code (str, optional): Authorization code
++ code (str, optional): Authorization code for getting an user token
+
++ jwt_token (str, optional): JWT Token
 
 + ready_message (str, optional): Message that the bot will send through the chats of the channels it access
 
@@ -3082,7 +3084,7 @@ Starts a commercial on a specified channel
 + length (int): Desired length of the commercial in seconds  
                 Valid options are 30, 60, 90, 120, 150 and 180
 
-**Returns**: list
+**Returns**: dict
 
 ### Get extension analytics
 
@@ -3516,6 +3518,8 @@ Gets a list of chat badges that can be used in chat for any channel
 
 **Returns**: list
 
+### Get chat settings
+
 ~~~
 function get_chat_settings(broadcaster_id,moderator_id="")
 ~~~
@@ -3815,7 +3819,7 @@ A channel that recently went live may take a few minutes to appear in this list,
 + first (int, optional): Maximum number of objects to return  
                          Default: 20
 
-**Returns**: dict
+**Returns**: list
 
 ### Get extension secrets
 
@@ -3974,7 +3978,7 @@ Creates an EventSub subscription
                     Valid transport methods include: webhook  
                     In addition to the method string, a webhook transport must include the callback and secret information
 
-**Returns**: dict
+**Returns**: EventSubSubscription
 
 ### Delete eventsub subscription
 
@@ -4443,7 +4447,7 @@ Create a poll for a specific Twitch channel
                                            Minimum: 0  
                                            Maximum: 1000000
 
-**Returns**: dict
+**Returns**: Poll
 
 ### End poll
 
@@ -4463,7 +4467,7 @@ End a poll that is currently active
 + status (str): The poll status to be set  
                 Valid values: "TERMINATED", "ARCHIVED"
 
-**Returns**: dict
+**Returns**: Poll
 
 ### Get predictions
 
@@ -4510,7 +4514,7 @@ Create a Channel Points Prediction for a specific Twitch channel
                            Minimum: 1  
                            Maximum: 1800
 
-**Returns**: dict
+**Returns**: Prediction
 
 ### End prediction
 
@@ -4535,7 +4539,7 @@ Locked Predictions can be updated to be "resolved" or "canceled"
 + winning_outcome_id (str, optional): ID of the winning outcome for the Prediction  
                                       This parameter is required if status is being set to RESOLVED
 
-**Returns**: dict
+**Returns**: Prediction
 
 ### Get channel stream schedule
 
@@ -4605,7 +4609,7 @@ This can be used for setting vacation details
 + timezone (str, optional): The timezone for when the vacation is being scheduled using the IANA time zone database format  
                             Required if is_vacation_enabled is set to true
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Create channel stream schedule segment
 
@@ -4634,7 +4638,7 @@ Create a single scheduled broadcast or a recurring scheduled broadcast for a cha
 + title (str, optional): Title for the scheduled broadcast  
                          Maximum: 140 characters
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Update channel stream schedule segment
 
@@ -4665,7 +4669,7 @@ Update a single scheduled broadcast or a recurring scheduled broadcast for a cha
 
 + timezone (str, optional): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
 
-**Returns**: dict
+**Returns**: StreamSchedule
 
 ### Delete channel stream schedule segment
 
@@ -4731,7 +4735,7 @@ Gets the Soundtrack track that the broadcaster is playing
 
 + broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
 
-**Returns**: dict
+**Returns**: SoundtrackTrack
 
 ### Get soundtrack playlist
 
@@ -4745,7 +4749,7 @@ Gets a Soundtrack playlist, which includes its list of tracks
 
 + id (str): The ID of the Soundtrack playlist to get
 
-**Returns**: dict
+**Returns**: SoundtrackPlaylist
 
 ### Get soundtrack playlists
 
@@ -5174,20 +5178,6 @@ Gets the Webhook subscriptions of an application identified by a Bearer token, i
                          Default: 20
 
 **Returns**: list
-
-### Get chatters
-
-~~~
-function get_chatters(username)
-~~~
-
-Gets all users in a chat
-
-**Args**:
-
-+ channel_name (str): Name of the user who is owner of the chat
-
-**Returns**: dict
 
 ### Send
 
@@ -6066,3 +6056,350 @@ Represents a team
 + team_display_name (str): Team display name
 
 + id (str): Team ID
+
+## Badge
+
+~~~
+class Badge(set_id,versions)
+~~~
+
+Represents a chat badge
+
+**Args**:
+
++ set_id (str): ID for the chat badge set
+
++ versions (list): Chat badge versions for the set
+
+## Clip
+
+~~~
+class Clip(id,url,embed_url,broadcaster_id,broadcaster_name,creator_id,creator_name,video_id,game_id,language,title,view_count,created_at,thumbnail_url,duration)
+~~~
+
+Represents a clip
+
+**Args**:
+
++ id (str): ID of the clip being queried
+
++ url (str): URL where the clip can be viewed
+
++ embed_url (str): URL to embed the clip
+
++ broadcaster_id (str): User ID of the stream from which the clip was created
+
++ broadcaster_name (str): Display name corresponding to broadcaster_id
+
++ creator_id (str): ID of the user who created the clip
+
++ creator_name (str): Display name corresponding to creator_id
+
++ video_id (str): ID of the video from which the clip was created
+
++ game_id (str): ID of the game assigned to the stream when the clip was created
+
++ language (str): Language of the stream from which the clip was created  
+                  A language value is either the ISO 639-1 two-letter code for a supported stream language or “other”
+
++ title (str): Title of the clip
+
++ view_count (int): Number of times the clip has been viewed
+
++ created_at (str): Date when the clip was created
+
++ thumbnail_url (str): URL of the clip thumbnail
+
++ duration (float): Duration of the clip in seconds (up to 0.1 precision)
+
+## Emote
+
+~~~
+class Emote(id,name,images,format,scale,theme_mode,tier="",emote_type="",emote_set_id="")
+~~~
+
+Represents an emote
+
+**Args**:
+
++ id (str): An ID that identifies the emote
+
++ name (str): The name of the emote  
+              This is the name that viewers type in the chat window to get the emote to appear
+
++ images (dict): Contains the image URLs for the emote  
+                 These image URLs will always provide a static (i.e., non-animated) emote image with a light background
+
++ format (list): The formats that the emote is available in  
+                 The possible formats are: animated, static
+
++ scale (list): The sizes that the emote is available in  
+                Possible sizes are: 1.0, 2.0, 3.0
+
++ theme_mode (list): The background themes that the emote is available in  
+                     Possible themes are: dark, light
+
++ tier (str, optional): The subscriber tier at which the emote is unlocked  
+                        This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
+
++ emote_type (str, optional): The type of emote  
+                              The possible values are: bitstier, follower, subscriptions
+
++ emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
+
+## EventSub subscription
+
+~~~
+class EventSubSubscription(id,status,type,version,condition,created_at,transport,cost)
+~~~
+
+Represents an EventSub subscription
+
+**Args**:
+
++ id (str): An ID that identifies the subscription
+
++ status (str): The subscription’s status  
+                Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
+
++ type (str): The subscription’s type
+
++ version (str): The version of the subscription type
+
++ condition (dict): The subscription’s parameter values
+
++ created_at (str): The RFC 3339 timestamp indicating when the subscription was created
+
++ transport (dict): The transport details used to send you notifications
+
++ cost (int): The amount that the subscription counts against your limit
+
+## Extension
+
+~~~
+class Extension(author_name,bits_enabled,can_install,configuration_location,description,eula_tos_url,has_chat_support,icon_url,icon_urls,id,name,privacy_policy_url,request_identity_link,screenshot_urls,state,subscriptions_support_level,summary,support_email,version,viewer_summary,views,allowlisted_config_urls,allowlisted_panel_urls)
+~~~
+
+Represents an extension
+
+**Args**:
+
++ author_name (str): Name of the individual or organization that owns the Extension
+
++ bits_enabled (bool): Whether the Extension has features that use Bits
+
++ can_install (bool): Indicates if a user can install the Extension on their channel  
+                      They may not be allowed if the Extension is currently in testing mode and the user is not on the allow list
+
++ configuration_location (str): Whether the Extension configuration is hosted by the EBS or the Extensions Configuration Service
+
++ description (str): The description of the Extension
+
++ eula_tos_url (str): URL to the Extension’s Terms of Service
+
++ has_chat_support (bool): Indicates if the Extension can communicate with the installed channel’s chat
+
++ icon_url (str): The default icon to be displayed in the Extensions directory
+
++ icon_urls (dict): The default icon in a variety of sizes
+
++ id (str): The autogenerated ID of the Extension
+
++ name (str): The name of the Extension
+
++ privacy_policy_url (str): URL to the Extension’s privacy policy
+
++ request_identity_link (bool): Indicates if the Extension wants to explicitly ask viewers to link their Twitch identity
+
++ screenshot_urls (list): Screenshots to be shown in the Extensions marketplace
+
++ state (str): The current state of the Extension  
+               Valid values are "InTest", "InReview", "Rejected", "Approved", "Released", "Deprecated", "PendingAction", "AssetsUploaded", "Deleted"
+
++ subscriptions_support_level (str): Indicates if the Extension can determine a user’s subscription level on the channel the Extension is installed on
+
++ summary (str): A brief description of the Extension
+
++ support_email (str): The email users can use to receive Extension support
+
++ version (str): The version of the Extension
+
++ viewer_summary (str): A brief description displayed on the channel to explain how the Extension works
+
++ views (dict): All configurations related to views such as: mobile, panel, video_overlay, and component
+
++ allowlisted_config_urls (list): Allow-listed configuration URLs for displaying the Extension
+
++ allowlisted_panel_urls (list): Allow-listed panel URLs for displaying the Extension
+
+## Hype Train event
+
+~~~
+class HypeTrainEvent(id,event_type,event_timestamp,version,event_data)
+~~~
+
+Represents a Hype Train event
+
+**Args**:
+
++ id (str): The distinct ID of the event
+
++ event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
+
++ event_timestamp (str): RFC3339 formatted timestamp of event
+
++ version (str): Returns the version of the endpoint
+
++ event_data (dict): The event data
+
+## Poll
+
+~~~
+class Poll(id,broadcaster_id,broadcaster_name,broadcaster_login,title,choices,bits_voting_enabled,bits_per_vote,channel_points_voting_enabled,channel_points_per_vote,status,duration,started_at,ended_at="")
+~~~
+
+Represents a poll
+
+**Args**:
+
++ id (str): ID of the poll
+
++ broadcaster_id (str): ID of the broadcaster
+
++ broadcaster_name (str): Name of the broadcaster
+
++ broadcaster_login (str): Login of the broadcaster
+
++ title (str): Question displayed for the poll
+
++ choices (list): The poll choices
+
++ bits_voting_enabled (bool): Indicates if Bits can be used for voting
+
++ bits_per_vote (int): Number of Bits required to vote once with Bits
+
++ channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
+
++ channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
+
++ status (str): Poll status  
+                Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
+
++ duration (int): Total duration for the poll (in seconds)
+
++ started_at (str): UTC timestamp for the poll’s start time
+
++ ended_at (str): UTC timestamp for the poll’s end time
+
+## Prediction
+
+~~~
+class Prediction(id,broadcaster_id,broadcaster_name,broadcaster_login,title,winning_outcome_id,outcomes,prediction_window,status,created_at,ended_at,locked_at)
+~~~
+
+Represents a prediction
+
+**Args**:
+
++ id (str): ID of the Prediction
+
++ broadcaster_id (str): ID of the broadcaster
+
++ broadcaster_name (str): Name of the broadcaster
+
++ broadcaster_login (str): Login of the broadcaster
+
++ title (str): Title for the Prediction
+
++ winning_outcome_id (str): ID of the winning outcome  
+                            If the status is ACTIVE, this is set to null
+
++ outcomes (list): Possible outcomes for the Prediction
+
++ prediction_window (int): Total duration for the Prediction (in seconds)
+
++ status (str): Status of the Prediction  
+                Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
+
++ created_at (str): UTC timestamp for the Prediction’s start time
+
++ ended_at (str): UTC timestamp for when the Prediction ended  
+                  If the status is ACTIVE, this is set to null
+
++ locked_at (str): UTC timestamp for when the Prediction was locked  
+                   If the status is not LOCKED, this is set to null
+
+## Soundtrack track
+
+~~~
+class SoundtrackTrack(track,source)
+~~~
+
+Represents a track of a soundtrack
+
+**Args**:
+
++ track (dict): The track information
+
++ source (dict): The source of the track
+
+## Soundtrack playlist
+
+~~~
+class SoundtrackPlaylist(title,id,image_url,description,tracks=[])
+~~~
+
+Represents a playlist
+
+**Args**:
+
++ title (str): The playlist’s title
+
++ id (str): The playlist’s ASIN (Amazon Standard Identification Number)
+
++ image_url (str): A URL to the playlist’s image art
+
++ description (str): A short description about the music that the playlist includes
+
++ tracks (list): The list of tracks in the playlist
+
+## Stream schedule
+
+~~~
+class StreamSchedule(segments,broadcaster_id,broadcaster_name,broadcaster_login,vacation)
+~~~
+
+Represents a stream schedule
+
+**Args**:
+
++ segments (list): Scheduled broadcasts for this stream schedule
+
++ broadcaster_id (str): User ID of the broadcaster
+
++ broadcaster_name (str): Display name of the broadcaster
+
++ broadcaster_login (str): Login of the broadcaster
+
++ vacation (dict): If Vacation Mode is enabled, this includes start and end dates for the vacation  
+                   If Vacation Mode is disabled, value is set to null
+
+## Tag
+
+~~~
+class Tag(tag_id,is_auto,localization_names,localization_descriptions)
+~~~
+
+Represents a stream tag
+
+**Args**:
+
++ tag_id (str): An ID that identifies the tag
+
++ is_auto (bool): A Boolean value that determines whether the tag is an automatic tag  
+                  You cannot add or remove automatic tags  
+                  The value is true if the tag is an automatic tag; otherwise, false
+
++ localization_names (dict): The localized names of the tag
+
++ localization_descriptions (dict): The localized descriptions of the tag

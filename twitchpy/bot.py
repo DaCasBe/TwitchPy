@@ -18,7 +18,7 @@ class Bot:
             username (str): Name of the bot
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
-            code (str, optional): Authorization code
+            code (str, optional): Authorization code for getting an user token
             jwt_token (str, optional): JWT Token
             ready_message (str, optional): Message that the bot will send through the chats of the channels it access
         """
@@ -249,7 +249,7 @@ class Bot:
                           Valid options are 30, 60, 90, 120, 150 and 180
 
         Returns:
-            list
+            dict
         """
 
         return self.__client.start_commercial(broadcaster_id,length)
@@ -851,7 +851,7 @@ class Bot:
                                    Default: 20
 
         Returns:
-            dict
+            list
         """
 
         return self.__client.get_extension_live_channels(extension_id,first)
@@ -987,7 +987,7 @@ class Bot:
                               In addition to the method string, a webhook transport must include the callback and secret information
 
         Returns:
-            dict
+            EventSubSubscription
         """
 
         return self.__client.create_eventsub_subscription(type,version,condition,transport)
@@ -1363,7 +1363,7 @@ class Bot:
                                                      Maximum: 1000000
 
         Returns:
-            dict
+            Poll
         """
 
         return self.__client.create_poll(broadcaster_id,title,choices,duration,bits_voting_enabled,bits_per_vote,channel_points_voting_enabled,channel_points_per_vote)
@@ -1420,7 +1420,7 @@ class Bot:
                                      Maximum: 1800
 
         Returns:
-            dict
+            Prediction
         """
 
         return self.__client.create_prediction(broadcaster_id,title,outcomes,prediction_window)
@@ -1441,7 +1441,7 @@ class Bot:
                                                 This parameter is required if status is being set to RESOLVED
 
         Returns:
-            dict
+            Prediction
         """
 
         return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
@@ -1498,12 +1498,9 @@ class Bot:
                                                Required if is_vacation_enabled is set to true
             timezone (str, optional): The timezone for when the vacation is being scheduled using the IANA time zone database format
                                       Required if is_vacation_enabled is set to true
-
-        Returns:
-            dict
         """
 
-        return self.__client.update_channel_stream_schedule(broadcaster_id,is_vacation_enabled,vacation_start_time,vacation_end_time,timezone)
+        self.__client.update_channel_stream_schedule(broadcaster_id,is_vacation_enabled,vacation_start_time,vacation_end_time,timezone)
 
     def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
         """
@@ -1522,7 +1519,7 @@ class Bot:
                                    Maximum: 140 characters
 
         Returns:
-            dict
+            StreamSchedule
         """
 
         return self.__client.create_channel_stream_schedule_segment(broadcaster_id,start_time,timezone,is_recurring,duration,category_id,title)
@@ -1545,7 +1542,7 @@ class Bot:
             timezone (str, optional): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
 
         Returns:
-            dict
+            StreamSchedule
         """
 
         return self.__client.update_channel_stream_schedule_segment(broadcaster_id,id,start_time,duration,category_id,title,is_canceled,timezone)
@@ -1602,7 +1599,7 @@ class Bot:
             broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
 
         Returns:
-            dict
+            SoundtrackTrack
         """
 
         return self.__client.get_soundtrack_current_track(broadcaster_id)
@@ -1615,7 +1612,7 @@ class Bot:
             id (str): The ID of the Soundtrack playlist to get
 
         Returns:
-            dict
+            SoundtrackPlaylist
         """
 
         return self.__client.get_soundtrack_playlist(id)

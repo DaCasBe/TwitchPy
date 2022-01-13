@@ -1,4 +1,14 @@
 import requests
+from twitchpy.badge import Badge
+from twitchpy.clip import Clip
+from twitchpy.eventsub_subscription import EventSubSubscription
+from twitchpy.extension import Extension
+from twitchpy.hypetrain_event import HypeTrainEvent
+from twitchpy.poll import Poll
+from twitchpy.soundtrack_playlist import SoundtrackPlaylist
+from twitchpy.soundtrack_track import SoundtrackTrack
+from twitchpy.stream_schedule import StreamSchedule
+from twitchpy.tag import Tag
 from twitchpy.user import User
 from twitchpy.game import Game
 from twitchpy.stream import Stream
@@ -10,6 +20,8 @@ import twitchpy.errors
 import math
 from twitchpy.video import Video
 from twitchpy.team import Team
+from twitchpy.emote import Emote
+from twitchpy.prediction import Prediction
 
 class Client:
     """
@@ -24,7 +36,7 @@ class Client:
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
             tokens_path (str): Path of tokens file (file included)
-            code (str, optional): Authorization code
+            code (str, optional): Authorization code for getting an user token
             jwt_token (str, optional): JWT Token
         """
         
@@ -35,7 +47,7 @@ class Client:
         self.tokens_path=tokens_path
         self.__app_token=self.__get_app_token()
 
-        if code!="" and not self.__is_last_code_used(code):
+        if code!="":
             self.__user_token=self.__get_user_token(code)
 
         else:
@@ -56,9 +68,13 @@ class Client:
             raise twitchpy.errors.AppTokenError("Error obtaining app token")
 
     def __is_last_code_used(self,code):
-        tokens_file=open(self.tokens_path)
-        tokens=tokens_file.readlines()
-        tokens_file.close()
+        try:
+            tokens_file=open(self.tokens_path)
+            tokens=tokens_file.readlines()
+            tokens_file.close()
+        
+        except Exception:
+            return False
 
         for token in tokens:
             token=token.replace(" ","").replace("\n","")
@@ -128,7 +144,7 @@ class Client:
             raise twitchpy.errors.UserTokenError("Error obtaining user token")
 
     def __get_user_token(self,code):
-        if os.path.isfile(self.tokens_path):
+        if self.__is_last_code_used(code) or (not self.__is_last_code_used(code) and os.path.isfile(self.tokens_path)):
             user_token,refresh_user_token=self.__read_user_tokens_from_file(self.tokens_path)
             user_token,refresh_user_token=self.__refresh_user_tokens(refresh_user_token)
             self.__save_user_tokens_in_file(self.tokens_path,user_token,refresh_user_token,code)
@@ -151,7 +167,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            dict
         """
 
         url="https://api.twitch.tv/helix/channels/commercial"
@@ -162,7 +178,7 @@ class Client:
 
         if response.ok:
             response=response.json()
-            return response["data"]
+            return response["data"][0]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -212,7 +228,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        extension_analytics=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -228,7 +244,7 @@ class Client:
 
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                extension_analytics.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -236,7 +252,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return extension_analytics
 
     def get_game_analytics(self,ended_at="",first=20,game_id="",started_at="",type=""):
         """
@@ -282,7 +298,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        game_analytics=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -298,7 +314,7 @@ class Client:
 
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                game_analytics.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -306,7 +322,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return game_analytics
 
     def get_bits_leaderboard(self,count=10,period="all",started_at="",user_id=""):
         """
@@ -418,7 +434,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        extension_transactions=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -434,7 +450,7 @@ class Client:
 
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                extension_transactions.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -442,7 +458,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return extension_transactions
 
     def get_channel(self,broadcaster_id):
         """
@@ -911,7 +927,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"]
+            emotes=[]
+
+            for emote in response.json()["data"]:
+                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"],emote["tier"],emote["emote_type"],emote["emote_set_id"]))
+
+            return emotes
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -934,7 +955,12 @@ class Client:
         response=requests.get(url,headers=headers)
 
         if response.ok:
-            return response.json()["data"]
+            emotes=[]
+
+            for emote in response.json()["data"]:
+                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"]))
+
+            return emotes
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -961,7 +987,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"]
+            emotes=[]
+
+            for emote in response.json()["data"]:
+                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"],emote_type=emote["emote_type"],emote_set_id=emote["emote_set_id"]))
+
+            return emotes
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -989,7 +1020,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
         
         if response.ok:
-            return response.json()["data"]
+            badges=[]
+
+            for badge in response.json()["data"]:
+                badges.append(Badge(badge["set_id"],badge["versions"]))
+
+            return badges
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1011,7 +1047,12 @@ class Client:
         response=requests.get(url,headers=headers)
         
         if response.ok:
-            return response.json()["data"]
+            badges=[]
+
+            for badge in response.json()["data"]:
+                badges.append(Badge(badge["set_id"],badge["versions"]))
+
+            return badges
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1209,7 +1250,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        clips=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -1225,15 +1266,17 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
 
-                if "pagination" in response:
+                for clip in response["data"]:
+                    clips.append(Clip(clip["id"],clip["url"],clip["embed_url"],clip["broadcaster_id"],clip["broadcaster_name"],clip["creator_id"],clip["creator_name"],clip["video_id"],clip["game_id"],clip["language"],clip["title"],clip["view_count"],clip["created_at"],clip["thumbnail_url"],clip["duration"]))
+
+                if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return clips
 
     def get_code_status(self,code,user_id):
         """
@@ -1305,7 +1348,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/1000)
-        output=[]
+        drops_entitlements=[]
 
         for call in range(calls):
             if first-(1000*call)>1000:
@@ -1321,7 +1364,7 @@ class Client:
 
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                drops_entitlements.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -1329,7 +1372,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return drops_entitlements
 
     def update_drops_entitlements(self,entitlement_ids=[],fulfillment_status=""):
         """
@@ -1508,7 +1551,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            list
         """
 
         url="https://api.twitch.tv/helix/extensions/live"
@@ -1650,7 +1693,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"]
+            extensions=[]
+
+            for extension in response.json()["data"]:
+                extensions.append(Extension(extension["author_name"],extension["bits_enables"],extension["can_install"],extension["configuration_location"],extension["description"],extension["eula_tos_url"],extension["has_chat_support"],extension["icon_url"],extension["icon_urls"],extension["id"],extension["name"],extension["privacy_policy_url"],extension["request_identity_link"],extension["screenshot_urls"],extension["state"],extension["subscriptions_support_level"],extension["summary"],extension["support_email"],extension["version"],extension["viewer_summary"],extension["views"],extension["allowlisted_config_urls"],extension["allowlisted_panel_urls"]))
+
+            return extensions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1681,7 +1729,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"]
+            extensions=[]
+
+            for extension in response.json()["data"]:
+                extensions.append(Extension(extension["author_name"],extension["bits_enables"],extension["can_install"],extension["configuration_location"],extension["description"],extension["eula_tos_url"],extension["has_chat_support"],extension["icon_url"],extension["icon_urls"],extension["id"],extension["name"],extension["privacy_policy_url"],extension["request_identity_link"],extension["screenshot_urls"],extension["state"],extension["subscriptions_support_level"],extension["summary"],extension["support_email"],extension["version"],extension["viewer_summary"],extension["views"],extension["allowlisted_config_urls"],extension["allowlisted_panel_urls"]))
+
+            return extensions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1784,7 +1837,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            EventSubSubscription
         """
 
         url="https://api.twitch.tv/helix/eventsub/subscriptions"
@@ -1794,7 +1847,10 @@ class Client:
         response=requests.post(url,headers=headers,json=payload)
         
         if response.ok:
-            return response.json()["data"][0]
+            subscription=response.json()["data"][0]
+            subscription=EventSubSubscription(subscription["id"],subscription["status"],subscription["type"],subscription["version"],subscription["condition"],subscription["created_at"],subscription["transport"],subscription["cost"])
+
+            return subscription
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1843,7 +1899,12 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
         
         if response.ok:
-            return response.json()["data"]
+            subscriptions=[]
+
+            for subscription in response.json()["data"]:
+                subscriptions.append(EventSubSubscription(subscription["id"],subscription["status"],subscription["type"],subscription["version"],subscription["condition"],subscription["created_at"],subscription["transport"],subscription["cost"]))
+
+            return subscriptions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -2002,7 +2063,7 @@ class Client:
         
         cursor=""
         calls=math.ceil(first/100)
-        output=[]
+        events=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -2018,7 +2079,9 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+
+                for event in response["data"]:
+                    events.append(HypeTrainEvent(event["id"],event["event_type"],event["event_timestamp"],event["version"],event["event_data"]))
 
                 if "pagination" in response and response["pagination"]!=None:
                     cursor=response["pagination"]["cursor"]
@@ -2026,7 +2089,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return events
 
     def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
@@ -2199,7 +2262,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        events=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -2215,7 +2278,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                events.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -2223,7 +2286,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return events
 
     def get_banned_users(self,broadcaster_id,user_id=[],first=20):
         """
@@ -2255,7 +2318,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        users=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -2271,7 +2334,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                users.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -2279,7 +2342,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return users
 
     def ban_user(self,broadcaster_id,moderator_id,reason,user_id,duration=None):
         """
@@ -2543,7 +2606,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        events=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -2559,7 +2622,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                events.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -2567,7 +2630,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return events
 
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
@@ -2601,7 +2664,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/20)
-        output=[]
+        polls=[]
 
         for call in range(calls):
             if first-(20*call)>20:
@@ -2617,7 +2680,10 @@ class Client:
 
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                
+                if response["data"]!=None:
+                    for poll in response["data"]:
+                        polls.append(Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"]))
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -2625,7 +2691,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return polls
 
     def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
         """
@@ -2657,7 +2723,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            Poll
         """
         
         url="https://api.twitch.tv/helix/polls"
@@ -2679,7 +2745,10 @@ class Client:
         response=requests.post(url,headers=headers,json=payload)
         
         if response.ok:
-            return response.json()["data"][0]
+            poll=response.json()["data"][0]
+            poll=Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"])
+
+            return poll
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -2699,7 +2768,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            Poll
         """
 
         url="https://api.twitch.tv/helix/polls"
@@ -2709,7 +2778,10 @@ class Client:
         response=requests.patch(url,headers=headers,data=data)
 
         if response.ok:
-            return response.json()["data"][0]
+            poll=response.json()["data"][0]
+            poll=Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"])
+
+            return poll
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -2745,7 +2817,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/20)
-        output=[]
+        predictions=[]
 
         for call in range(calls):
             if first-(20*call)>20:
@@ -2761,7 +2833,9 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+
+                for prediction in response["data"]:
+                    predictions.append(Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"]))
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -2769,7 +2843,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return predictions
 
     def create_prediction(self,broadcaster_id,title,outcomes,prediction_window):
         """
@@ -2791,7 +2865,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            Prediction
         """
 
         url="https://api.twitch.tv/helix/predictions"
@@ -2801,7 +2875,10 @@ class Client:
         response=requests.post(url,headers=headers,json=payload)
         
         if response.ok:
-            return response.json()["data"][0]
+            prediction=response.json()["data"][0]
+            prediction=Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"])
+
+            return prediction
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -2825,7 +2902,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            Prediction
         """
 
         url="https://api.twitch.tv/helix/predictions"
@@ -2838,7 +2915,10 @@ class Client:
         response=requests.patch(url,headers=headers,data=data)
         
         if response.ok:
-            return response.json()["data"][0]
+            prediction=response.json()["data"][0]
+            prediction=Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"])
+
+            return prediction
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -2885,7 +2965,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/25)
-        output=[]
+        schedules=[]
 
         for call in range(calls):
             if first-(25*call)>25:
@@ -2901,7 +2981,9 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+
+                for schedule in response["data"]:
+                    schedules.append(StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"]))
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -2909,7 +2991,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return schedules
 
     def get_channel_iCalendar(self,broadcaster_id):
         """
@@ -2952,9 +3034,6 @@ class Client:
 
         Raises:
             twitchpy.errors.ClientError
-
-        Returns:
-            dict
         """
         
         url="https://api.twitch.tv/helix/schedule/settings"
@@ -2983,7 +3062,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            StreamSchedule
         """
         
         url="https://api.twitch.tv/helix/schedule/segment"
@@ -3002,7 +3081,10 @@ class Client:
         response=requests.post(url,headers=headers,json=payload)
         
         if response.ok:
-            return response.json()["data"][0]
+            schedule=response.json()["data"][0]
+            schedule=StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"])
+
+            return schedule
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3028,7 +3110,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            StreamSchedule
         """
         
         url="https://api.twitch.tv/helix/schedule/segment"
@@ -3056,7 +3138,10 @@ class Client:
         response=requests.patch(url,headers=headers,data=data)
         
         if response.ok:
-            return response.json()["data"][0]
+            schedule=response.json()["data"][0]
+            schedule=StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"])
+
+            return schedule
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3199,7 +3284,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            SoundtrackTrack
         """
 
         url="https://api.twitch.tv/helix/soundtrack/current_track"
@@ -3209,7 +3294,10 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"][0]
+            track=response.json()["data"][0]
+            track=SoundtrackTrack(track["track"],track["source"])
+
+            return track
         
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3225,7 +3313,7 @@ class Client:
             twitchpy.errors.ClientError
 
         Returns:
-            dict
+            SoundtrackPlaylist
         """
 
         url="https://api.twitch.tv/helix/soundtrack/playlist"
@@ -3235,7 +3323,10 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
 
         if response.ok:
-            return response.json()["data"][0]
+            playlist=response.json()["data"][0]
+            playlist=SoundtrackPlaylist(playlist["title"],playlist["id"],playlist["image_url"],playlist["description"],playlist["tracks"])
+
+            return playlist
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3257,7 +3348,12 @@ class Client:
         response=requests.get(url,headers=headers)
 
         if response.ok:
-            return response.json()["data"]
+            playlists=[]
+            
+            for playlist in response.json()["data"]:
+                playlists.append(SoundtrackPlaylist(playlist["title"],playlist["id"],playlist["image_url"],playlist["description"]))
+
+            return playlists
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3479,7 +3575,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        markers=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -3495,7 +3591,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                markers.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -3503,7 +3599,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return markers
 
     def get_broadcaster_subscriptions(self,broadcaster_id,user_id=[],first=20):
         """
@@ -3536,7 +3632,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        subscriptions=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -3552,7 +3648,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                subscriptions.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -3560,7 +3656,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return subscriptions
 
     def check_user_subscription(self,broadcaster_id,user_id):
         """
@@ -3617,7 +3713,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        tags=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -3633,7 +3729,9 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+
+                for tag in response["data"]:
+                    tags.append(Tag(tag["tag_id"],tag["is_auto"],tag["localization_names"],tag["localization_descriptions"]))
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -3641,7 +3739,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return tags
 
     def get_stream_tags(self,broadcaster_id):
         """
@@ -3664,7 +3762,13 @@ class Client:
         response=requests.get(url,headers=headers,params=params)
         
         if response.ok:
-            return response.json()["data"]
+            response=response.json()
+            tags=[]
+
+            for tag in response["data"]:
+                tags.append(Tag(tag["tag_id"],tag["is_auto"],tag["localization_names"],tag["localization_descriptions"]))
+
+            return tags
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3877,7 +3981,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        follow=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -3893,7 +3997,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                follow.extend(response["data"])
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -3901,7 +4005,7 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return follow
 
     def get_user_block_list(self,broadcaster_id,first=20):
         """
@@ -4192,7 +4296,7 @@ class Client:
 
         after=""
         calls=math.ceil(first/100)
-        output=[]
+        subscriptions=[]
 
         for call in range(calls):
             if first-(100*call)>100:
@@ -4208,7 +4312,7 @@ class Client:
             
             if response.ok:
                 response=response.json()
-                output.extend(response["data"])
+                subscriptions.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after=response["pagination"]["cursor"]
@@ -4216,4 +4320,4 @@ class Client:
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
-        return output
+        return subscriptions
