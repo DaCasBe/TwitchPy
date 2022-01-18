@@ -2982,7 +2982,7 @@ Whispers to a user
 ## Bot
 
 ~~~
-class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",jwt_token="",ready_message="")
+class Bot(oauth_token,client_id,client_secret,redirect_uri,tokens_path,username,channels,command_prefix,code="",jwt_token="",ready_message="")
 ~~~
 
 **Args**:
@@ -2994,6 +2994,8 @@ class Bot(oauth_token,client_id,client_secret,redirect_uri,username,channels,com
 + client_secret (str): Client secret
 
 + redirect_uri (str): Redirect URI
+
++ tokens_path (str): Path of tokens file (file included)
 
 + username (str): Name of the bot
 

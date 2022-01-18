@@ -8,13 +8,14 @@ class Bot:
     Represents a bot
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,username,channels,command_prefix,code="",jwt_token="",ready_message=""):
+    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,tokens_path,username,channels,command_prefix,code="",jwt_token="",ready_message=""):
         """
         Args:
             oauth_token (str): OAuth token
             client_id (str): Client ID
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
+            tokens_path (str): Path of tokens file (file included)
             username (str): Name of the bot
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
@@ -25,7 +26,7 @@ class Bot:
 
         self.__irc_server="irc.chat.twitch.tv"
         self.__irc_port=6697
-        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,code,jwt_token)
+        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,tokens_path,code,jwt_token)
         self.__oauth_token=oauth_token
         self.__finish=False
         self.username=username
