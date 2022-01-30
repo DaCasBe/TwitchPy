@@ -1,5 +1,0 @@
-site_name: TwitchPy documentation
-theme: readthedocs
-
-nav:
-    - TwitchPy: 'index.md'
