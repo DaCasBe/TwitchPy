@@ -1,6 +1,3 @@
-import ssl
-import socket
-
 class Channel():
     """
     Represents a channel

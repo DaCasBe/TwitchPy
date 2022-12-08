@@ -149,43 +149,60 @@ class Bot:
 
         return message
 
-    def __handle_message(self,received_msg):
-        if len(received_msg)==0:
+    def __execute_listeners(self, message: Message) -> None:
+        for listener in self.custom_listeners.values():
+            listener(message)
+
+    def __remove_listeners(self) -> None:
+        for listener in self.listeners_to_remove:
+            if listener in self.custom_listeners.keys():
+                self.custom_listeners.pop(listener)
+
+        self.listeners_to_remove=[]
+
+    def __execute_methods_before_commands(self, message: Message) -> None:
+        for before in self.custom_methods_before_commands.values():
+            before(message)
+
+    def __remove_methods_before_commands(self) -> None:
+        for method in self.methods_before_commands_to_remove:
+            if method in self.custom_methods_before_commands.keys():
+                self.custom_methods_before_commands.pop(method)
+
+    def __execute_commands(self, message: Message) -> None:
+        self.custom_commands[message.text_command](message)
+        self.__remove_methods_after_commands()
+
+    def __execute_methods_after_commands(self, message: Message) -> None:
+        for after in self.custom_methods_after_commands.values():
+            after(message)
+
+    def __remove_methods_after_commands(self) -> None:
+        for method in self.methods_after_commands_to_remove:
+            if method in self.custom_methods_after_commands.keys():
+                self.custom_methods_after_commands.pop(method)
+
+    def __handle_message(self, received_msg):
+        if len(received_msg) == 0:
             return
 
-        message=self.__parse_message(received_msg)
+        message = self.__parse_message(received_msg)
         print(f"[{message.channel}] {message.user}: {message.text}")
 
-        if message.irc_command=="PING":
+        if message.irc_command == "PING":
             self.__send_command("PONG :tmi.twitch.tv")
 
         else:
-            for listener in self.custom_listeners.values():
-                listener(message)
+            self.__execute_listeners(message)
+            self.__remove_listeners()
 
-            for listener in self.listeners_to_remove:
-                if listener in self.custom_listeners.keys():
-                    self.custom_listeners.pop(listener)
-
-            self.listeners_to_remove=[]
-
-            if message.irc_command=="PRIVMSG":
+            if message.irc_command == "PRIVMSG":
                 if message.text_command in self.custom_commands:
-                    for before in self.custom_methods_before_commands.values():
-                        before(message)
-
-                    for method in self.methods_before_commands_to_remove:
-                        if method in self.custom_methods_before_commands.keys():
-                            self.custom_methods_before_commands.pop(method)
-
-                    self.custom_commands[message.text_command](message)
-
-                    for after in self.custom_methods_after_commands.values():
-                        after(message)
-
-                    for method in self.methods_after_commands_to_remove:
-                        if method in self.custom_methods_after_commands.keys():
-                            self.custom_methods_after_commands.pop(method)
+                    self.__execute_methods_before_commands(message)
+                    self.__remove_methods_before_commands()
+                    self.__execute_commands(message)
+                    self.__execute_methods_after_commands(message)
+                    self.__remove_methods_after_commands()
 
     def __loop(self):
         while not self.__finish:
@@ -971,7 +988,7 @@ class Bot:
             dict
         """
 
-        return self.__client.update_extension_bits_product(extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False)
+        return self.__client.update_extension_bits_product(extension_client_id, sku, cost, display_name, in_development, expiration, is_broadcast)
 
     def create_eventsub_subscription(self,type,version,condition,transport):
         """
@@ -1470,7 +1487,7 @@ class Bot:
 
         return self.__client.get_channel_stream_schedule(broadcaster_id,id,start_time,utc_offset,first)
 
-    def get_channel_iCalendar(self,broadcaster_id):
+    def get_channel_icalendar(self, broadcaster_id):
         """
         Gets all scheduled broadcasts from a channel’s stream schedule as an iCalendar
 
@@ -1481,7 +1498,7 @@ class Bot:
             str
         """
 
-        return self.__client.get_channel_iCalendar(broadcaster_id)
+        return self.__client.get_channel_icalendar(broadcaster_id)
 
     def update_channel_stream_schedule(self,broadcaster_id,is_vacation_enabled=False,vacation_start_time="",vacation_end_time="",timezone=""):
         """
