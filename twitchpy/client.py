@@ -1,3 +1,4 @@
+import logging
 import requests
 from twitchpy.badge import Badge
 from twitchpy.clip import Clip
@@ -22,6 +23,15 @@ from twitchpy.video import Video
 from twitchpy.team import Team
 from twitchpy.emote import Emote
 from twitchpy.prediction import Prediction
+
+CONTENT_TYPE_APPLICATION_JSON = "application/json"
+ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
+ENDPOINT_EVENTSUB_SUBSCRIPTION = "https://api.twitch.tv/helix/eventsub/subscriptions"
+ENDPOINT_MODERATION_BLOCKED_TERMS = "https://api.twitch.tv/helix/moderation/blocked_terms"
+ENDPOINT_POLLS = "https://api.twitch.tv/helix/polls"
+ENDPOINT_PREDICTIONS = "https://api.twitch.tv/helix/predictions"
+ENDPOINT_SCHEDULE_SEGMENT = "https://api.twitch.tv/helix/schedule/segment"
+ENDPOINT_USER_BLOCKS = "https://api.twitch.tv/helix/users/blocks"
 
 class Client:
     """
@@ -92,6 +102,7 @@ class Client:
             secret_file.close()
 
         except Exception as error:
+            logging.exception("Error reading tokens")
             raise error
 
         user_token=""
@@ -171,7 +182,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/channels/commercial"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"broadcaster_id":broadcaster_id,"length":length}
 
         response=requests.post(url,headers=headers,json=payload)
@@ -217,9 +228,6 @@ class Client:
         if extension_id!="":
             params["extension_id"]=extension_id
 
-        if first!=20:
-            params["first"]=first
-
         if started_at!="":
             params["started_at"]=started_at
 
@@ -231,11 +239,7 @@ class Client:
         extension_analytics=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -284,9 +288,6 @@ class Client:
         if ended_at!="":
             params["ended_at"]=ended_at
 
-        if first!=20:
-            params["first"]=first
-
         if game_id!="":
             params["game_id"]=game_id
 
@@ -301,11 +302,7 @@ class Client:
         game_analytics=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -595,7 +592,7 @@ class Client:
             Reward
         """
 
-        url="https://api.twitch.tv/helix/channel_points/custom_rewards"
+        url = ENDPOINT_CUSTOM_REWARDS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id,"title":title,"cost":cost}
 
@@ -655,7 +652,7 @@ class Client:
                       Must match a Custom Reward on broadcaster_id’s channel
         """
 
-        url="https://api.twitch.tv/helix/channel_points/custom_rewards"
+        url = ENDPOINT_CUSTOM_REWARDS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id}
 
@@ -740,19 +737,12 @@ class Client:
         if sort!="OLDEST":
             params["sort"]=sort
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/50)
         redemptions=[]
 
         for call in range(calls):
-            if first-(50*call)>50:
-                params["first"]=50
-            
-            else:
-                params["first"]=first-(50*call)
+            params["first"] = min(50, first-(50*call))
 
             if after!="":
                 params["after"]=after
@@ -807,7 +797,7 @@ class Client:
             Reward
         """
 
-        url="https://api.twitch.tv/helix/channel_points/custom_rewards"
+        url = ENDPOINT_CUSTOM_REWARDS
         headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id}
 
@@ -1242,9 +1232,6 @@ class Client:
         if ended_at!="":
             params["ended_at"]=ended_at
 
-        if first!=20:
-            params["first"]=first
-
         if started_at!="":
             params["started_at"]=started_at
 
@@ -1253,11 +1240,7 @@ class Client:
         clips=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -1343,19 +1326,12 @@ class Client:
         if fulfillment_status!="":
             params["fulfillment_status"]=fulfillment_status
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/1000)
         drops_entitlements=[]
 
         for call in range(calls):
-            if first-(1000*call)>1000:
-                params["first"]=1000
-            
-            else:
-                params["first"]=first-(1000*call)
+            params["first"] = min(1000, first-(1000*call))
 
             if after!="":
                 params["after"]=after
@@ -1392,7 +1368,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/entitlements/drops"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         data={}
 
         if len(entitlement_ids)>0:
@@ -1558,19 +1534,12 @@ class Client:
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":{self.client_id}}
         params={"extension_id":extension_id}
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/100)
         channels=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -1840,8 +1809,8 @@ class Client:
             EventSubSubscription
         """
 
-        url="https://api.twitch.tv/helix/eventsub/subscriptions"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        url = ENDPOINT_EVENTSUB_SUBSCRIPTION
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"type":type,"version":version,"condition":condition,"transport":transport}
 
         response=requests.post(url,headers=headers,json=payload)
@@ -1863,7 +1832,7 @@ class Client:
             id (str): The subscription ID for the subscription to delete
         """
 
-        url="https://api.twitch.tv/helix/eventsub/subscriptions"
+        url = ENDPOINT_EVENTSUB_SUBSCRIPTION
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
         data={"id":id}
 
@@ -1886,7 +1855,7 @@ class Client:
             list
         """
         
-        url="https://api.twitch.tv/helix/eventsub/subscriptions"
+        url = ENDPOINT_EVENTSUB_SUBSCRIPTION
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
@@ -1928,19 +1897,12 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
-        if first!=20:
-            params={"first":first}
-
         after=""
         calls=math.ceil(first/100)
         games=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -2055,9 +2017,6 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
-        if first!=1:
-            params["first"]=first
-
         if id!="":
             params["id"]=id
         
@@ -2066,11 +2025,7 @@ class Client:
         events=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if cursor!="":
                 params["cursor"]=cursor
@@ -2194,7 +2149,7 @@ class Client:
         """
         
         url="https://api.twitch.tv/helix/moderation/automod/settings"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
 
         if aggression!=None:
@@ -2431,7 +2386,7 @@ class Client:
             list
         """
         
-        url="https://api.twitch.tv/helix/moderation/blocked_terms"
+        url = ENDPOINT_MODERATION_BLOCKED_TERMS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
 
@@ -2488,8 +2443,8 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/moderation/blocked_terms"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        url = ENDPOINT_MODERATION_BLOCKED_TERMS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id,"text":text}
 
         response=requests.post(url,headers=headers,json=payload)
@@ -2512,7 +2467,7 @@ class Client:
                                 If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
         """
 
-        url="https://api.twitch.tv/helix/moderation/blocked_terms"
+        url = ENDPOINT_MODERATION_BLOCKED_TERMS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id,"moderator_id":moderator_id}
 
@@ -2543,19 +2498,12 @@ class Client:
         if len(user_id)>0:
             params["user_id"]=user_id
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/100)
         ids=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -2652,26 +2600,19 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/polls"
+        url = ENDPOINT_POLLS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
         if len(id)>0:
             params["id"]=id
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/20)
         polls=[]
 
         for call in range(calls):
-            if first-(20*call)>20:
-                params["first"]=20
-            
-            else:
-                params["first"]=first-(20*call)
+            params["first"] = min(20, first-(20*call))
 
             if after!="":
                 params["after"]=after
@@ -2726,8 +2667,8 @@ class Client:
             Poll
         """
         
-        url="https://api.twitch.tv/helix/polls"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        url = ENDPOINT_POLLS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"broadcaster_id":broadcaster_id,"title":title,"choices":choices,"duration":duration}
 
         if bits_voting_enabled!=False:
@@ -2771,7 +2712,7 @@ class Client:
             Poll
         """
 
-        url="https://api.twitch.tv/helix/polls"
+        url = ENDPOINT_POLLS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
 
@@ -2805,26 +2746,19 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/predictions"
+        url = ENDPOINT_PREDICTIONS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
         if len(id)>0:
             params["id"]=id
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/20)
         predictions=[]
 
         for call in range(calls):
-            if first-(20*call)>20:
-                params["first"]=20
-            
-            else:
-                params["first"]=first-(20*call)
+            params["first"] = min(20, first-(20*call))
 
             if after!="":
                 params["after"]=after
@@ -2868,8 +2802,8 @@ class Client:
             Prediction
         """
 
-        url="https://api.twitch.tv/helix/predictions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        url = ENDPOINT_PREDICTIONS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"broadcaster_id":broadcaster_id,"title":title,"outcomes":outcomes,"prediction_window":prediction_window}
 
         response=requests.post(url,headers=headers,json=payload)
@@ -2905,7 +2839,7 @@ class Client:
             Prediction
         """
 
-        url="https://api.twitch.tv/helix/predictions"
+        url = ENDPOINT_PREDICTIONS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
 
@@ -2960,19 +2894,12 @@ class Client:
         if utc_offset!="0":
             params["utc_offset"]=utc_offset
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/25)
         schedules=[]
 
         for call in range(calls):
-            if first-(25*call)>25:
-                params["first"]=25
-            
-            else:
-                params["first"]=first-(25*call)
+            params["first"] = min(25, first-(25*call))
 
             if after!="":
                 params["after"]=after
@@ -2993,7 +2920,7 @@ class Client:
 
         return schedules
 
-    def get_channel_iCalendar(self,broadcaster_id):
+    def get_channel_icalendar(self, broadcaster_id):
         """
         Gets all scheduled broadcasts from a channel’s stream schedule as an iCalendar
 
@@ -3040,6 +2967,18 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id}
 
+        if is_vacation_enabled:
+            data["is_vacation_enabled"] = True
+
+        if vacation_start_time != "":
+            data["vacation_start_time"] = vacation_start_time
+
+        if vacation_end_time != "":
+            data["vacation_end_time"] = vacation_end_time
+
+        if timezone != "":
+            data["timezone"] = timezone
+
         requests.patch(url,headers=headers,data=data)
 
     def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
@@ -3065,7 +3004,7 @@ class Client:
             StreamSchedule
         """
         
-        url="https://api.twitch.tv/helix/schedule/segment"
+        url = ENDPOINT_SCHEDULE_SEGMENT
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         payload={"broadcaster_id":broadcaster_id,"start_time":start_time,"timezone":timezone,"is_recurring":is_recurring}
 
@@ -3113,7 +3052,7 @@ class Client:
             StreamSchedule
         """
         
-        url="https://api.twitch.tv/helix/schedule/segment"
+        url = ENDPOINT_SCHEDULE_SEGMENT
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id}
 
@@ -3156,7 +3095,7 @@ class Client:
             id (str): The ID of the streaming segment to delete
         """
 
-        url="https://api.twitch.tv/helix/schedule/segment"
+        url = ENDPOINT_SCHEDULE_SEGMENT
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"broadcaster_id":broadcaster_id,"id":id}
 
@@ -3182,19 +3121,12 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"query":query}
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/100)
         games=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3237,9 +3169,6 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={"query":query}
 
-        if first!=20:
-            params["first"]=first
-
         if live_only!=False:
             params["live_only"]=live_only
 
@@ -3248,11 +3177,7 @@ class Client:
         channels=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3408,9 +3333,6 @@ class Client:
         headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
-        if first!=20:
-            params["first"]=first
-
         if game_id!="":
             params["game_id"]=game_id
 
@@ -3428,11 +3350,7 @@ class Client:
         streams=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3474,19 +3392,12 @@ class Client:
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"user_id":user_id}
 
-        if first!=100:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/100)
         streams=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3526,7 +3437,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/streams/markers"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         payload={"user_id":user_id}
 
         if description!="":
@@ -3570,19 +3481,12 @@ class Client:
         if video_id!="":
             params["video_id"]=video_id
 
-        if first!=20:
-            params["first"]=first
-
         after=""
         calls=math.ceil(first/100)
         markers=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3705,9 +3609,6 @@ class Client:
         headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
         params={}
 
-        if first!=20:
-            params["first"]=first
-
         if len(tag_id)>0:
             params["tag_id"]=tag_id
 
@@ -3716,11 +3617,7 @@ class Client:
         tags=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
@@ -3785,7 +3682,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/streams/tags"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
         data={"broadcaster_id":broadcaster_id}
 
         if len(tag_ids)>0:
@@ -4023,7 +3920,7 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/users/blocks"
+        url = ENDPOINT_USER_BLOCKS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         params={"broadcaster_id":broadcaster_id}
 
@@ -4067,7 +3964,7 @@ class Client:
                                     Valid values: "spam", "harassment", or "other"
         """
 
-        url="https://api.twitch.tv/helix/users/blocks"
+        url = ENDPOINT_USER_BLOCKS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"target_user_id":target_user_id}
 
@@ -4087,7 +3984,7 @@ class Client:
             target_user_id (str): User ID of the user to be unblocked
         """
 
-        url="https://api.twitch.tv/helix/users/blocks"
+        url = ENDPOINT_USER_BLOCKS
         headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
         data={"target_user_id":target_user_id}
 
@@ -4157,7 +4054,7 @@ class Client:
         """
 
         url="https://api.twitch.tv/helix/users/extensions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id,"Content-Type":"application/json"}
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
 
         response=requests.put(url,headers=headers)
         
@@ -4211,9 +4108,6 @@ class Client:
         if game_id!="":
             params["game_id"]=game_id
 
-        if first!=20:
-            params["first"]=first
-
         if language!="":
             params["language"]=language
 
@@ -4231,11 +4125,7 @@ class Client:
         videos=[]
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
+            params["first"] = min(100, first-(100*call))
 
             if after!="":
                 params["after"]=after
