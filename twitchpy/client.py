@@ -2188,62 +2188,6 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_banned_events(self,broadcaster_id,user_id=[],first=20):
-        """
-        Returns all user bans and un-bans in a channel
-
-        Args:
-            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (list, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
-                                      Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        url="https://api.twitch.tv/helix/moderation/banned/events"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
-
-        if len(user_id)>0:
-            params["user_id"]=user_id
-
-        if first!=20:
-            params["first"]=first
-
-        after=""
-        calls=math.ceil(first/100)
-        events=[]
-
-        for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
-
-            if after!="":
-                params["after"]=after
-
-            response=requests.get(url,headers=headers,params=params)
-            
-            if response.ok:
-                response=response.json()
-                events.extend(response["data"])
-
-                if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
-
-            else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
-
-        return events
-
     def get_banned_users(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all banned and timed-out users in a channel
@@ -2524,62 +2468,6 @@ class Client:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return self.get_users(id=ids)
-
-    def get_moderator_events(self,broadcaster_id,user_id=[],first=20):
-        """
-        Returns a list of moderators or users added and removed as moderators from a channel
-
-        Args:
-            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (list, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
-                                      Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        url="https://api.twitch.tv/helix/moderation/moderators/events"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
-
-        if len(user_id)>0:
-            params["user_id"]=user_id
-
-        if first!=20:
-            params["first"]=first
-
-        after=""
-        calls=math.ceil(first/100)
-        events=[]
-
-        for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
-
-            if after!="":
-                params["after"]=after
-
-            response=requests.get(url,headers=headers,params=params)
-            
-            if response.ok:
-                response=response.json()
-                events.extend(response["data"])
-
-                if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
-
-            else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
-
-        return events
 
     def get_polls(self,broadcaster_id,id=[],first=20):
         """

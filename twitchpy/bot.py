@@ -1175,23 +1175,6 @@ class Bot:
 
         return self.__client.update_automod_settings(broadcaster_id,moderator_id,aggression,bullying,disability,misogyny,overall_level,race_ethnicity_or_religion,sex_based_terms,sexuality_sex_or_gender,swearing)
 
-    def get_banned_events(self,broadcaster_id,user_id=[],first=20):
-        """
-        Returns all user bans and un-bans in a channel
-
-        Args:
-            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (list, optional): Filters the results and only returns a status object for ban events that include users being banned or un-banned in this channel and have a matching user_id
-                                      Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-
-        Returns:
-            list
-        """
-
-        return self.__client.get_banned_events(broadcaster_id,user_id,first)
-
     def get_banned_users(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all banned and timed-out users in a channel
@@ -1319,23 +1302,6 @@ class Bot:
         """
 
         return self.__client.get_moderators(broadcaster_id,user_id,first)
-
-    def get_moderator_events(self,broadcaster_id,user_id=[],first=20):
-        """
-        Returns a list of moderators or users added and removed as moderators from a channel
-
-        Args:
-            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            user_id (list, optional): Filters the results and only returns a status object for users who have been added or removed as moderators in this channel and have a matching user_id
-                                      Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-
-        Returns:
-            list
-        """
-
-        return self.__client.get_moderator_events(broadcaster_id,user_id,first)
 
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
