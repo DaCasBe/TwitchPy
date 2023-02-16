@@ -1084,7 +1084,7 @@ class Bot:
 
         return self.__client.get_creator_goals(broadcaster_id)
 
-    def get_hype_train_events(self,broadcaster_id,first=1,id=""):
+    def get_hype_train_events(self, broadcaster_id, first=1):
         """
         Gets the information of the most recent Hype Train of the given channel ID
         When there is currently an active Hype Train, it returns information about that Hype Train
@@ -1096,13 +1096,12 @@ class Bot:
                                   Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
                                    Default: 1
-            id (str, optional): The id of the wanted event
 
         Returns:
             list
         """
 
-        return self.__client.get_hype_train_events(broadcaster_id,first,id)
+        return self.__client.get_hype_train_events(broadcaster_id, first)
 
     def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
         """
