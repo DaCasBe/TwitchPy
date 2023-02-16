@@ -457,12 +457,13 @@ class Client:
 
         return extension_transactions
 
-    def get_channel(self,broadcaster_id):
+    def get_channel(self, broadcaster_id: str | list[str]) -> Channel:
         """
         Gets a channel
 
         Args:
-            broadcaster_id (str): ID of the channel to be updated
+            broadcaster_id (str | list[str]): ID of the channel to be updated
+                Maximum: 100
 
         Raises:
             twitchpy.errors.ClientError

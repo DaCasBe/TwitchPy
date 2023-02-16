@@ -1,3 +1,4 @@
+from twitchpy.channel import Channel
 from twitchpy.client import Client
 import ssl
 import socket
@@ -373,12 +374,13 @@ class Bot:
 
         return self.__client.get_extension_transactions(extension_id,id,first)
 
-    def get_channel(self,broadcaster_id):
+    def get_channel(self, broadcaster_id: str | list[str]) -> Channel:
         """
         Gets a channel
 
         Args:
-            broadcaster_id (str): ID of the channel to be updated
+            broadcaster_id (str | list[str]): ID of the channel to be updated
+                Maximum: 100
 
         Returns:
             Channel
