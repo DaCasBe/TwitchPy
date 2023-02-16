@@ -1993,7 +1993,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_hype_train_events(self, broadcaster_id, first=1):
+    def get_hype_train_events(self, broadcaster_id: str, first: int=1) -> list[HypeTrainEvent]:
         """
         Gets the information of the most recent Hype Train of the given channel ID
         When there is currently an active Hype Train, it returns information about that Hype Train
@@ -2002,15 +2002,15 @@ class Client:
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
-                                  Must match the User ID in the Bearer token if User Token is used
+                Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
-                                   Default: 1
+                Default: 1
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[HypeTrainEvent]
         """
 
         url="https://api.twitch.tv/helix/hypetrain/events"

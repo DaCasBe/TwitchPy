@@ -2,6 +2,7 @@ from twitchpy.channel import Channel
 from twitchpy.client import Client
 import ssl
 import socket
+from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
 
 class Bot:
@@ -1084,7 +1085,7 @@ class Bot:
 
         return self.__client.get_creator_goals(broadcaster_id)
 
-    def get_hype_train_events(self, broadcaster_id, first=1):
+    def get_hype_train_events(self, broadcaster_id: str, first: int=1) -> list[HypeTrainEvent]:
         """
         Gets the information of the most recent Hype Train of the given channel ID
         When there is currently an active Hype Train, it returns information about that Hype Train
@@ -1093,12 +1094,12 @@ class Bot:
 
         Args:
             broadcaster_id (str): User ID of the broadcaster
-                                  Must match the User ID in the Bearer token if User Token is used
+                Must match the User ID in the Bearer token if User Token is used
             first (int, optional): Maximum number of objects to return
-                                   Default: 1
+                Default: 1
 
         Returns:
-            list
+            list[HypeTrainEvent]
         """
 
         return self.__client.get_hype_train_events(broadcaster_id, first)
