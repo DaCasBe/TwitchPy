@@ -2742,6 +2742,46 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
+    def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
+        """
+        Raid another channel by sending the broadcaster’s viewers to the targeted channel
+        
+        Args:
+            from_broadcaster_id (str): The ID of the broadcaster that’s sending the raiding party
+                This ID must match the user ID in the user access token
+            to_broadcaster_id (str): The ID of the broadcaster to raid
+        
+        Returns:
+            dict
+        """
+
+        url = "https://api.twitch.tv/helix/raids"
+        headers = {"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        payload = {"from_broadcaster_id": from_broadcaster_id, "to_broadcaster_id": to_broadcaster_id}
+
+        response = requests.post(url, headers = headers, json = payload)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def cancel_raid(self, broadcaster_id: str) -> None:
+        """
+        Cancel a pending raid
+        
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that initiated the raid
+                This ID must match the user ID in the user access token
+        """
+
+        url = "https://api.twitch.tv/helix/raids"
+        headers = {"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        data = {"broadcaster_id": broadcaster_id}
+
+        requests.delete(url, headers = headers, data = data)
+
     def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
