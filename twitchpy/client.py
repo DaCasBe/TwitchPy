@@ -2664,7 +2664,7 @@ class Client:
 
         return predictions
 
-    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[dict[str, str]], prediction_window: int) -> Prediction:
+    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) -> Prediction:
         """
         Create a Channel Points Prediction for a specific Twitch channel
 
@@ -2673,7 +2673,7 @@ class Client:
                 Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Title for the Prediction
                 Maximum: 45 characters
-            outcomes (list[dict[str, str]]): The list of possible outcomes that the viewers may choose from
+            outcomes (list[str]): The list of possible outcomes that the viewers may choose from
                 Minimum: 2
                 Maximum: 10
             prediction_window (int): Total duration for the Prediction (in seconds)
@@ -2689,7 +2689,14 @@ class Client:
 
         url = ENDPOINT_PREDICTIONS
         headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"broadcaster_id":broadcaster_id,"title":title,"outcomes":outcomes,"prediction_window":prediction_window}
+        payload={"broadcaster_id":broadcaster_id,"title":title,"prediction_window":prediction_window}
+
+        outcomes_payload = []
+
+        for outcome in outcomes:
+            outcomes_payload.append({"title": outcome})
+
+        payload["outcomes"] = outcomes_payload
 
         response=requests.post(url,headers=headers,json=payload)
         
