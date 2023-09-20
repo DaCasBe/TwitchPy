@@ -1433,6 +1433,32 @@ class Bot:
 
         return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
 
+    def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
+        """
+        Raid another channel by sending the broadcaster’s viewers to the targeted channel
+        
+        Args:
+            from_broadcaster_id (str): The ID of the broadcaster that’s sending the raiding party
+                This ID must match the user ID in the user access token
+            to_broadcaster_id (str): The ID of the broadcaster to raid
+        
+        Returns:
+            dict
+        """
+
+        return self.__client.start_raid(from_broadcaster_id, to_broadcaster_id)
+
+    def cancel_raid(self, broadcaster_id: str) -> None:
+        """
+        Cancel a pending raid
+        
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that initiated the raid
+                This ID must match the user ID in the user access token
+        """
+
+        self.__client.cancel_raid(broadcaster_id)
+
     def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
