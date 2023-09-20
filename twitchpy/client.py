@@ -2043,28 +2043,27 @@ class Client:
 
         return events
 
-    def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
+    def check_automod_status(self, broadcaster_id: str, msg_id: str, msg_user: str) -> list[dict]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            msg_id (str, optional): Developer-generated identifier for mapping messages to results
-            msg_user (str, optional): Message text
-            user_id (str, optional): User ID of the sender
+            msg_id (str): Developer-generated identifier for mapping messages to results
+            msg_user (str): Message text
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[dict]
         """
 
-        url="https://api.twitch.tv/helix/moderation/enforcements/status"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id,"data":[{"msg_id":msg_id,"msg_user":msg_user,"user_id":user_id}]}
+        url = "https://api.twitch.tv/helix/moderation/enforcements/status"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        payload = {"broadcaster_id": broadcaster_id, "data": [{"msg_id": msg_id, "msg_user": msg_user}]}
 
-        response=requests.post(url,headers=headers,json=payload)
+        response = requests.post(url, headers = headers, json = payload)
         
         if response.ok:
             return response.json()["data"]

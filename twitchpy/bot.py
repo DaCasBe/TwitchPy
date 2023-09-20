@@ -1105,21 +1105,20 @@ class Bot:
 
         return self.__client.get_hype_train_events(broadcaster_id, first)
 
-    def check_automod_status(self,broadcaster_id,msg_id,msg_user,user_id):
+    def check_automod_status(self, broadcaster_id: str, msg_id: str, msg_user: str) -> list[dict]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            msg_id (str, optional): Developer-generated identifier for mapping messages to results
-            msg_user (str, optional): Message text
-            user_id (str, optional): User ID of the sender
+            msg_id (str): Developer-generated identifier for mapping messages to results
+            msg_user (str): Message text
 
         Returns:
-            list
+            list[dict]
         """
 
-        return self.__client.check_automod_status(broadcaster_id,msg_id,msg_user,user_id)
+        return self.__client.check_automod_status(broadcaster_id, msg_id, msg_user)
 
     def manage_held_automod_messages(self,user_id,msg_id,action):
         """
