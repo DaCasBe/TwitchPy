@@ -2664,21 +2664,21 @@ class Client:
 
         return predictions
 
-    def create_prediction(self,broadcaster_id,title,outcomes,prediction_window):
+    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[dict[str, str]], prediction_window: int) -> Prediction:
         """
         Create a Channel Points Prediction for a specific Twitch channel
 
         Args:
             broadcaster_id (str): The broadcaster running Predictions
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
+                Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Title for the Prediction
-                         Maximum: 45 characters
-            outcomes (list): Array of outcome objects with titles for the Prediction
-                             Array size must be 2
-                             The first outcome object is the "blue" outcome and the second outcome object is the "pink" outcome when viewing the Prediction on Twitch
+                Maximum: 45 characters
+            outcomes (list[dict[str, str]]): The list of possible outcomes that the viewers may choose from
+                Minimum: 2
+                Maximum: 10
             prediction_window (int): Total duration for the Prediction (in seconds)
-                                     Minimum: 1
-                                     Maximum: 1800
+                Minimum: 1
+                Maximum: 1800
 
         Raises:
             twitchpy.errors.ClientError
