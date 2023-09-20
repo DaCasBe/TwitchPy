@@ -1390,7 +1390,7 @@ class Bot:
 
         return self.__client.get_predictions(broadcaster_id,id,first)
 
-    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[dict[str, str]], prediction_window: int) -> Prediction:
+    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) -> Prediction:
         """
         Create a Channel Points Prediction for a specific Twitch channel
 
@@ -1399,7 +1399,7 @@ class Bot:
                 Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Title for the Prediction
                 Maximum: 45 characters
-            outcomes (list[dict[str, str]]): The list of possible outcomes that the viewers may choose from
+            outcomes (list[str]): The list of possible outcomes that the viewers may choose from
                 Minimum: 2
                 Maximum: 10
             prediction_window (int): Total duration for the Prediction (in seconds)
