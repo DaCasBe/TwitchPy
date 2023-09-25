@@ -1024,21 +1024,22 @@ class Bot:
 
         self.__client.delete_eventsub_subscription(id)
 
-    def get_eventsub_subscriptions(self,status="",type=""):
+    def get_eventsub_subscriptions(self, status: str = "", type: str = "", user_id: str = "") -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
         Only include one filter query parameter
 
         Args:
             status (str, optional): Filters subscriptions by one status type
-                                    Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "user_removed"
+                Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "user_removed"
             type (str, optional): Filters subscriptions by subscription type name
+            user_id (str, optional): Filter subscriptions by user ID
 
         Returns:
-            list
+            list[EventSubSubscription]
         """
 
-        return self.__client.get_eventsub_subscriptions(status,type)
+        return self.__client.get_eventsub_subscriptions(status, type, user_id)
 
     def get_top_games(self,first=20):
         """
