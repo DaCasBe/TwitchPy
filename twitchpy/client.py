@@ -2441,6 +2441,27 @@ class Client:
 
         requests.delete(url,headers=headers,data=data)
 
+    def delete_chat_messages(self, broadcaster_id: str, moderator_id: str, message_id: str = "") -> None:
+        """
+        Removes a single chat message or all chat messages from the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room to remove messages from
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user ID in the user access token
+            message_id (str, optional): The ID of the message to remove
+                If not specified, the request removes all messages in the broadcaster’s chat room
+        """
+
+        url = "https://api.twitch.tv/helix/moderation/chat"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
+
+        if message_id != "":
+            data["message_id"] = message_id
+
+        requests.delete(url, headers=headers, data=data)
+
     def get_moderators(self,broadcaster_id,user_id=[],first=20):
         """
         Returns all moderators in a channel
