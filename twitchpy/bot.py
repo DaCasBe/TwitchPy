@@ -693,6 +693,23 @@ class Bot:
 
         return self.__client.update_chat_settings(broadcaster_id,moderator_id,emote_mode,follower_mode,follower_mode_duration,non_moderator_chat_delay,non_moderator_chat_delay_duration,slow_mode,slow_mode_wait_time,subscriber_mode,unique_chat_mode)
 
+    def send_chat_announcement(self, broadcaster_id: str, moderator_id: str, message: str, color: str = "") -> None:
+        """
+        Sends an announcement to the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room to send the announcement to
+            moderator_id (str): The ID of a user who has permission to moderate the broadcaster’s chat room, or the broadcaster’s ID if they’re sending the announcement
+                This ID must match the user ID in the user access token
+            message (str): The announcement to make in the broadcaster’s chat
+                Announcements are limited to a maximum of 500 characters
+            color (str): Announcements are limited to a maximum of 500 characters
+                Possible case-sensitive values are: blue, green, orange, purple, primary (default)
+                If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement
+        """
+
+        self.__client.send_chat_announcement(broadcaster_id, moderator_id, message, color)
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
