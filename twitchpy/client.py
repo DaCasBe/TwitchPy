@@ -1162,6 +1162,30 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
+    def send_chat_announcement(self, broadcaster_id: str, moderator_id: str, message: str, color: str = "") -> None:
+        """
+        Sends an announcement to the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room to send the announcement to
+            moderator_id (str): The ID of a user who has permission to moderate the broadcaster’s chat room, or the broadcaster’s ID if they’re sending the announcement
+                This ID must match the user ID in the user access token
+            message (str): The announcement to make in the broadcaster’s chat
+                Announcements are limited to a maximum of 500 characters
+            color (str): Announcements are limited to a maximum of 500 characters
+                Possible case-sensitive values are: blue, green, orange, purple, primary (default)
+                If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement
+        """
+
+        url = "https://api.twitch.tv/helix/chat/announcements"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": "application/json"}
+        payload = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "message": message}
+
+        if color != "":
+            payload["color"] = color
+
+        requests.post(url, headers=headers, json=payload)
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
