@@ -1186,6 +1186,51 @@ class Client:
 
         requests.post(url, headers=headers, json=payload)
 
+    def get_user_chat_color(self, user_id: str | list[str]) -> list[dict]:
+        """
+        Gets the color used for the user’s name in chat
+
+        Args:
+            user_id (str | list[str]): The ID of the user whose username color you want to get
+                Maximum: 100
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        url = "https://api.twitch.tv/helix/chat/color"
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        params = {"user_id": user_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def update_user_chat_color(self, user_id: str, color: str) -> None:
+        """
+        Updates the color used for the user’s name in chat
+
+        Args:
+            user_id (str): The ID of the user whose chat color you want to update
+                This ID must match the user ID in the access token
+            color (str): The color to use for the user’s name in chat
+                All users may specify one of the following named color values: blue, blue_violet, cadet_blue, chocolate, coral, dodger_blue, firebrick, golden_rod, green, hot_pink, orange_red, red, sea_green, spring_green, yellow_green
+                Turbo and Prime users may specify a named color or a Hex color code
+        """
+
+        url = "https://api.twitch.tv/helix/chat/color"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        data = {"user_id": user_id, "color": color}
+
+        requests.put(url, headers=headers, data=data)
+
     def create_clip(self,broadcaster_id,has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
