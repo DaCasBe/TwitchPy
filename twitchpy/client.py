@@ -2114,7 +2114,7 @@ class Client:
                 response=response.json()
 
                 for game in response["data"]:
-                    games.append(Game(game["id"],game["name"],box_art_url=game["box_art_url"]))
+                    games.append(Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"]))
 
                 if "pagination" in response:
                     after=response["pagination"]["cursor"]
@@ -2124,42 +2124,45 @@ class Client:
 
         return games
 
-    def get_games(self,id=[],name=[]):
+    def get_games(self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) -> list[Game]:
         """
-        Gets games by game ID or name
-        For a query to be valid, name and/or id must be specified
+        Gets information about specified categories or games
 
         Args:
-            id (list, optional): Game ID
-                                 At most 100 id values can be specified
-            name (list, optional): Game name
-                                   The name must be an exact match
-                                   At most 100 name values can be specified
+            id (list[str]): The ID of the category or game to get
+                Maximum: 100
+            name (list[str]): The name of the category or game to get
+                Maximum: 100
+            igdb_id (list[str]): The IGDB ID of the game to get
+                Maximum: 100
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[Game]
         """
 
-        url="https://api.twitch.tv/helix/games"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/games"
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        params = {}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if len(name)>0:
-            params["name"]=name
+        if len(name) > 0:
+            params["name"] = name
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        if len(igdb_id) > 0:
+            params["igdb_id"] = igdb_id
+
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            games=[]
+            games = []
 
             for game in response.json()["data"]:
-                games.append(Game(game["id"],game["name"],box_art_url=game["box_art_url"]))
+                games.append(Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"]))
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])

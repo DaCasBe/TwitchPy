@@ -4,6 +4,7 @@ from twitchpy.charity_campaign_donation import CharityCampaignDonation
 from twitchpy.client import Client
 import ssl
 import socket
+from twitchpy.game import Game
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
 from twitchpy.prediction import Prediction
@@ -1153,23 +1154,23 @@ class Bot:
 
         return self.__client.get_top_games(first)
 
-    def get_games(self,id=[],name=[]):
+    def get_games(self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) -> list[Game]:
         """
-        Gets games by game ID or name
-        For a query to be valid, name and/or id must be specified
+        Gets information about specified categories or games
 
         Args:
-            id (list, optional): Game ID
-                                 At most 100 id values can be specified
-            name (list, optional): Game name
-                                   The name must be an exact match
-                                   At most 100 name values can be specified
+            id (list[str]): The ID of the category or game to get
+                Maximum: 100
+            name (list[str]): The name of the category or game to get
+                Maximum: 100
+            igdb_id (list[str]): The IGDB ID of the game to get
+                Maximum: 100
 
         Returns:
-            list
+            list[Game]
         """
 
-        return self.__client.get_games(id,name)
+        return self.__client.get_games(id, name, igdb_id)
 
     def get_creator_goals(self,broadcaster_id):
         """
