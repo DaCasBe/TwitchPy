@@ -2757,31 +2757,26 @@ class Client:
 
         return polls
 
-    def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
+    def create_poll(self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool=False, channel_points_per_vote: int=0) -> Poll:
         """
         Create a poll for a specific Twitch channel
 
         Args:
             broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
+                Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Question displayed for the poll
-                         Maximum: 60 characters
+                Maximum: 60 characters
             choices (list): Array of the poll choices
-                            Minimum: 2 choices
-                            Maximum: 5 choices
+                Minimum: 2 choices
+                Maximum: 5 choices
             duration (int): Total duration for the poll (in seconds)
-                            Minimum: 15
-                            Maximum: 1800
-            bits_voting_enabled (bool, optional): Indicates if Bits can be used for voting
-                                                  Default: false
-            bits_per_vote (int, optional): Number of Bits required to vote once with Bits
-                                           Minimum: 0
-                                           Maximum: 10000
+                Minimum: 15
+                Maximum: 1800
             channel_points_voting_enabled (bool, optional): Indicates if Channel Points can be used for voting
-                                                            Default: false
+                Default: false
             channel_points_per_vote (int, optional): Number of Channel Points required to vote once with Channel Points
-                                                     Minimum: 0
-                                                     Maximum: 1000000
+                Minimum: 0
+                Maximum: 1000000
 
         Raises:
             twitchpy.errors.ClientError
@@ -2789,28 +2784,28 @@ class Client:
         Returns:
             Poll
         """
-        
+
         url = ENDPOINT_POLLS
         headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"broadcaster_id":broadcaster_id,"title":title,"choices":choices,"duration":duration}
 
-        if bits_voting_enabled!=False:
-            payload["bits_voting_enabled"]=bits_voting_enabled
+        choices_dicts = []
 
-        if bits_per_vote!=0:
-            payload["bits_per_vote"]=bits_per_vote
+        for choice in choices:
+            choices_dicts.append({"title": choice})
 
-        if channel_points_voting_enabled!=False:
-            payload["channel_points_voting_enabled"]=channel_points_voting_enabled
+        payload = {"broadcaster_id": broadcaster_id, "title": title, "choices": choices_dicts, "duration": duration}
 
-        if channel_points_per_vote!=0:
-            payload["channel_points_per_vote"]=channel_points_per_vote
+        if channel_points_voting_enabled is not False:
+            payload["channel_points_voting_enabled"] = channel_points_voting_enabled
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        if channel_points_per_vote != 0:
+            payload["channel_points_per_vote"] = channel_points_per_vote
+
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
-            poll=response.json()["data"][0]
-            poll=Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"])
+            poll = response.json()["data"][0]
+            poll = Poll(poll["id"], poll["broadcaster_id"], poll["broadcaster_name"], poll["broadcaster_login"], poll["title"], poll["choices"], poll["channel_points_voting_enabled"], poll["channel_points_per_vote"], poll["status"], poll["duration"], poll["started_at"])
 
             return poll
 
