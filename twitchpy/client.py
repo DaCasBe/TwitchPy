@@ -490,41 +490,45 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def modify_channel_information(self,broadcaster_id,game_id="",broadcaster_language="",title="",delay=0):
+    def modify_channel_information(self, broadcaster_id: str, game_id: str = "", broadcaster_language: str = "", title: str = "", delay: int = 0, tags: list[str] = []):
         """
-        Modifies channel information for users
-        game_id, broadcaster_language, title and delay parameters are optional, but at least one parameter must be provided
+        Updates a channel’s properties
 
         Args:
-            broadcaster_id (str): ID of the channel to be updated
-            game_id (str, optional): The current game ID being played on the channel
-            broadcaster_language (str, optional): The language of the channel
-                                                  A language value must be either the ISO 639-1 two-letter code for a supported stream language or “other”
-            title (str, optional): The title of the stream
-            delay (int ,optional): Stream delay in seconds
-                                   Stream delay is a Twitch Partner feature
-
-        Raises:
-            twitchpy.errors.FewArgumentsError
+            broadcaster_id (str): The ID of the broadcaster whose channel you want to update
+                ID must match the user ID in the user access token
+            game_id (str): The ID of the game that the user plays
+            broadcaster_language (str): The user’s preferred language
+                Set the value to an ISO 639-1 two-letter language code
+                Set to “other” if the user’s preferred language is not a Twitch supported language
+            title (str): The title of the user’s stream
+            delay (int): The number of seconds you want your broadcast buffered before streaming it live
+                Only users with Partner status may set this field
+                Maximum: 900 seconds
+            tags (list[str]): A list of channel-defined tags to apply to the channel
+                Maximum: 10
         """
 
-        url="https://api.twitch.tv/helix/channels"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        data = {"broadcaster_id": broadcaster_id}
 
-        if game_id!="":
-            data["game_id"]=game_id
+        if game_id != "":
+            data["game_id"] = game_id
 
-        if broadcaster_language!="":
-            data["broadcaster_language"]=broadcaster_language
+        if broadcaster_language != "":
+            data["broadcaster_language"] = broadcaster_language
 
-        if title!="":
-            data["title"]=title
+        if title != "":
+            data["title"] = title
 
-        if delay!=0:
-            data["delay"]=delay
+        if delay != 0:
+            data["delay"] = delay
 
-        requests.patch(url,headers=headers,data=data)
+        if len(tags) > 0:
+            data["tags"] = tags
+
+        requests.patch(url, headers=headers, data=data)
 
     def get_channel_editors(self,broadcaster_id):
         """
