@@ -1,4 +1,5 @@
 from twitchpy.channel import Channel
+from twitchpy.charity_campaign import CharityCampaign
 from twitchpy.client import Client
 import ssl
 import socket
@@ -567,6 +568,20 @@ class Bot:
         """
 
         return self.__client.update_redemption_status(id,broadcaster_id,reward_id,status)
+
+    def get_charity_campaign(self, broadcaster_id: str) -> CharityCampaign:
+        """
+        Gets information about the charity campaign that a broadcaster is running
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that’s currently running a charity campaign
+                This ID must match the user ID in the access token
+
+        Returns:
+            CharityCampaign
+        """
+
+        return self.__client.get_charity_campaign(broadcaster_id)
 
     def get_channel_emotes(self,broadcaster_id):
         """
