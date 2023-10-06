@@ -429,6 +429,46 @@ class Bot:
 
         return self.__client.get_channel_editors(broadcaster_id)
 
+    def get_followed_channels(self, user_id: str, broadcaster_id: str = "", first: int = 20) -> list[Channel]:
+        """
+        Gets a list of broadcasters that the specified user follows
+
+        Args:
+            user_id (str): A user’s ID
+                Returns the list of broadcasters that this user follows
+                This ID must match the user ID in the user OAuth token
+            broadcaster_id (str): A broadcaster’s ID
+                Use this parameter to see whether the user follows this broadcaster
+            first (int): The maximum number of items to return
+                Default: 20
+                Minimum: 1
+
+        Returns:
+            list[Channel]
+        """
+
+        return self.__client.get_followed_channels(user_id, broadcaster_id, first)
+
+    def get_channel_followers(self, broadcaster_id: str, user_id: str = "", first: int = 20) -> list[Channel]:
+        """
+        The function `get_channel_followers` retrieves a list of channels that are following a specific
+        broadcaster on Twitch.
+
+        Args:
+            broadcaster_id (str): The broadcaster’s ID
+                Returns the list of users that follow this broadcaster
+            user_id (str): A user’s ID
+                Use this parameter to see whether the user follows this broadcaster
+            first (int): The maximum number of items to return
+                Default: 20
+                Minimum: 1
+
+        Returns:
+            list[Channel]
+        """
+
+        return self.__client.get_channel_followers(broadcaster_id, user_id, first)
+
     def create_custom_reward(self,broadcaster_id,title,cost,prompt="",is_enabled=True,background_color="",is_user_input_required=False,is_max_per_stream_enabled=False,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,should_redemptions_skip_request_queue=False):
         """
         Creates a Custom Reward on a channel
