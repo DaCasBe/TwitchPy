@@ -2558,6 +2558,38 @@ class Client:
 
         return self.get_users(id=ids)
 
+    def add_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
+        """
+        Adds a moderator to the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room
+                This ID must match the user ID in the access token
+            user_id (str): The ID of the user to add as a moderator in the broadcaster’s chat room
+        """
+
+        url = "https://api.twitch.tv/helix/moderation/moderators"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        payload = {"broadcaster_id": broadcaster_id, "user_id": user_id}
+
+        requests.post(url, headers=headers, json=payload)
+
+    def remove_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
+        """
+        Removes a moderator from the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room
+                This ID must match the user ID in the access token
+            user_id (str): The ID of the user to remove as a moderator from the broadcaster’s chat room
+        """
+
+        url = "https://api.twitch.tv/helix/moderation/moderators"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        data = {"broadcaster_id": broadcaster_id, "user_id": user_id}
+
+        requests.delete(url, headers=headers, data=data)
+
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel

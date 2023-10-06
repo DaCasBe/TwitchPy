@@ -1363,6 +1363,30 @@ class Bot:
 
         return self.__client.get_moderators(broadcaster_id,user_id,first)
 
+    def add_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
+        """
+        Adds a moderator to the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room
+                This ID must match the user ID in the access token
+            user_id (str): The ID of the user to add as a moderator in the broadcaster’s chat room
+        """
+
+        self.__client.add_channel_moderator(broadcaster_id, user_id)
+
+    def remove_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
+        """
+        Removes a moderator from the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that owns the chat room
+                This ID must match the user ID in the access token
+            user_id (str): The ID of the user to remove as a moderator from the broadcaster’s chat room
+        """
+
+        self.__client.remove_channel_moderator(broadcaster_id, user_id)
+
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
