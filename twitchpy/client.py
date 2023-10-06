@@ -4304,6 +4304,25 @@ class Client:
 
         requests.delete(url,headers=headers,data=data)
 
+    def send_whisper(self, from_user_id: str, to_user_id: str, message: str) -> None:
+        """
+        Sends a whisper message to the specified use
+
+        Args:
+            from_user_id (str): The ID of the user sending the whisper
+                This user must have a verified phone number
+                This ID must match the user ID in the user access token
+            to_user_id (str): The ID of the user to receive the whisper
+            message (str): The whisper message to send
+                Maximum length: 500 characters if the user you're sending the message to hasn't whispered you before or 10,000 characters if the user you're sending the message to has whispered you before
+        """
+
+        url = "https://api.twitch.tv/helix/whispers"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": "application/json"}
+        payload = {"from_user_id": from_user_id, "to_user_id": to_user_id, "message": message}
+
+        requests.post(url, headers=headers, json=payload)
+
     def get_webhook_subscriptions(self,first=20):
         """
         Gets the Webhook subscriptions of an application identified by a Bearer token, in order of expiration

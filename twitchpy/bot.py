@@ -2117,6 +2117,21 @@ class Bot:
 
         self.__client.delete_video(id)
 
+    def send_whisper(self, from_user_id: str, to_user_id: str, message: str) -> None:
+        """
+        Sends a whisper message to the specified use
+
+        Args:
+            from_user_id (str): The ID of the user sending the whisper
+                This user must have a verified phone number
+                This ID must match the user ID in the user access token
+            to_user_id (str): The ID of the user to receive the whisper
+            message (str): The whisper message to send
+                Maximum length: 500 characters if the user you're sending the message to hasn't whispered you before or 10,000 characters if the user you're sending the message to has whispered you before
+        """
+
+        self.__client.send_whisper(from_user_id, to_user_id, message)
+
     def get_webhook_subscriptions(self,first=20):
         """
         Gets the Webhook subscriptions of an application identified by a Bearer token, in order of expiration
