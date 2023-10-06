@@ -6,6 +6,7 @@ import socket
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
 from twitchpy.prediction import Prediction
+from twitchpy.user import User
 
 class Bot:
     """
@@ -582,6 +583,25 @@ class Bot:
         """
 
         return self.__client.get_charity_campaign(broadcaster_id)
+
+    def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
+        """
+        Gets the list of users that are connected to the broadcaster’s chat session
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose list of chatters you want to get
+            moderator_id (str): The ID of the broadcaster or one of the broadcaster’s moderators
+                This ID must match the user ID in the user access token
+            first (int): The maximum number of items to return
+                Default: 100
+                Minimum: 1
+                Maximum: 1000
+
+        Returns:
+            list[User]
+        """
+
+        return self.__client.get_chatters(broadcaster_id, moderator_id, first)
 
     def get_channel_emotes(self,broadcaster_id):
         """

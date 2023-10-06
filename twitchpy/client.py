@@ -925,6 +925,55 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
+    def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
+        """
+        Gets the list of users that are connected to the broadcaster’s chat session
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose list of chatters you want to get
+            moderator_id (str): The ID of the broadcaster or one of the broadcaster’s moderators
+                This ID must match the user ID in the user access token
+            first (int): The maximum number of items to return
+                Default: 100
+                Minimum: 1
+                Maximum: 1000
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[User]
+        """
+
+        url = "https://api.twitch.tv/helix/chat/chatters"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
+
+        after = ""
+        calls = math.ceil(first / 100)
+        users = []
+
+        for call in range(calls):
+            params["first"] = min(100, first - (100 * call))
+
+            if after != "":
+                params["after"] = after
+
+            response = requests.get(url, headers=headers, params=params)
+
+            if response.ok:
+                response = response.json()
+
+                users.extend(self.get_users([user["user_id"] for user in response["data"]]))
+
+                if "pagination" in response and "cursor" in response["pagination"]:
+                    after = response["pagination"]["cursor"]
+
+            else:
+                raise twitchpy.errors.ClientError(response.json()["message"])
+
+        return users
+
     def get_channel_emotes(self,broadcaster_id):
         """
         Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes
