@@ -4,6 +4,7 @@ from twitchpy.charity_campaign_donation import CharityCampaignDonation
 from twitchpy.client import Client
 import ssl
 import socket
+from twitchpy.eventsub_subscription import EventSubSubscription
 from twitchpy.game import Game
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
@@ -1130,7 +1131,7 @@ class Bot:
 
         Args:
             status (str, optional): Filters subscriptions by one status type
-                Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "user_removed"
+                Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "moderator_removed", "user_removed", "version_removed", "websocket_disconnected", "websocket_failed_ping_pong", "websocket_received_inbound_traffic", "websocket_connection_unused", "websocket_internal_error", "websocket_network_timeout", "websocket_network_error"
             type (str, optional): Filters subscriptions by subscription type name
             user_id (str, optional): Filter subscriptions by user ID
 
