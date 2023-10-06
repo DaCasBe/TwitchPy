@@ -1484,6 +1484,37 @@ class Bot:
 
         self.__client.remove_channel_vip(user_id, broadcaster_id)
 
+    def update_shield_mode_status(self, broadcaster_id: str, moderator_id: str, is_active: bool) -> dict:
+        """
+        Activates or deactivates the broadcaster’s Shield Mode
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose Shield Mode you want to activate or deactivate
+            moderator_id (str): The ID of the broadcaster or a user that is one of the broadcaster’s moderators
+                This ID must match the user ID in the access token
+            is_active (bool): A Boolean value that determines whether to activate Shield Mode
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_shield_mode_status(broadcaster_id, moderator_id, is_active)
+
+    def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
+        """
+        Gets the broadcaster’s Shield Mode activation status
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose Shield Mode activation status you want to get
+            moderator_id (str): The ID of the broadcaster or a user that is one of the broadcaster’s moderators
+                This ID must match the user ID in the access token
+
+        Returns:
+            dict
+        """
+
+        return self.__client.get_shield_mode_status(broadcaster_id, moderator_id)
+
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
