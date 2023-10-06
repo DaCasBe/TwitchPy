@@ -462,10 +462,10 @@ class Client:
 
     def get_channel(self, broadcaster_id: str | list[str]) -> Channel:
         """
-        Gets a channel
+        Gets one or more channels
 
         Args:
-            broadcaster_id (str | list[str]): ID of the channel to be updated
+            broadcaster_id (str | list[str]): The ID of the broadcaster whose channel you want to get
                 Maximum: 100
 
         Raises:
@@ -475,16 +475,16 @@ class Client:
             Channel
         """
 
-        url="https://api.twitch.tv/helix/channels"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/channels"
+        headers = {"Authorization": f"Bearer {self.__user_token if self.__user_token != '' else self.__app_token}", "Client-Id": self.client_id}
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            channel=response.json()["data"][0]
-            channel=Channel(channel["broadcaster_id"],channel["broadcaster_login"],channel["broadcaster_name"],channel["game_id"],channel["game_name"],channel["title"],channel["broadcaster_language"],channel["delay"])
-            
+            channel = response.json()["data"][0]
+            channel = Channel(channel["broadcaster_id"], channel["broadcaster_login"], channel["broadcaster_name"], channel["game_id"], channel["game_name"], channel["title"], channel["broadcaster_language"], channel["delay"])
+
             return channel
 
         else:
