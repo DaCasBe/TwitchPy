@@ -1464,37 +1464,32 @@ class Bot:
         
         return self.__client.get_polls(broadcaster_id,id,first)
 
-    def create_poll(self,broadcaster_id,title,choices,duration,bits_voting_enabled=False,bits_per_vote=0,channel_points_voting_enabled=False,channel_points_per_vote=0):
+    def create_poll(self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool=False, channel_points_per_vote: int=0) -> Poll:
         """
         Create a poll for a specific Twitch channel
 
         Args:
             broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
+                Provided broadcaster_id must match the user_id in the user OAuth token
             title (str): Question displayed for the poll
-                         Maximum: 60 characters
+                Maximum: 60 characters
             choices (list): Array of the poll choices
-                            Minimum: 2 choices
-                            Maximum: 5 choices
+                Minimum: 2 choices
+                Maximum: 5 choices
             duration (int): Total duration for the poll (in seconds)
-                            Minimum: 15
-                            Maximum: 1800
-            bits_voting_enabled (bool, optional): Indicates if Bits can be used for voting
-                                                  Default: false
-            bits_per_vote (int, optional): Number of Bits required to vote once with Bits
-                                           Minimum: 0
-                                           Maximum: 10000
+                Minimum: 15
+                Maximum: 1800
             channel_points_voting_enabled (bool, optional): Indicates if Channel Points can be used for voting
-                                                            Default: false
+                Default: false
             channel_points_per_vote (int, optional): Number of Channel Points required to vote once with Channel Points
-                                                     Minimum: 0
-                                                     Maximum: 1000000
+                Minimum: 0
+                Maximum: 1000000
 
         Returns:
             Poll
         """
 
-        return self.__client.create_poll(broadcaster_id,title,choices,duration,bits_voting_enabled,bits_per_vote,channel_points_voting_enabled,channel_points_per_vote)
+        return self.__client.create_poll(broadcaster_id, title, choices, duration, channel_points_voting_enabled, channel_points_per_vote)
 
     def end_poll(self,broadcaster_id,id,status):
         """
