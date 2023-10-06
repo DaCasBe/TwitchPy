@@ -32,6 +32,7 @@ ENDPOINT_POLLS = "https://api.twitch.tv/helix/polls"
 ENDPOINT_PREDICTIONS = "https://api.twitch.tv/helix/predictions"
 ENDPOINT_SCHEDULE_SEGMENT = "https://api.twitch.tv/helix/schedule/segment"
 ENDPOINT_USER_BLOCKS = "https://api.twitch.tv/helix/users/blocks"
+ENDPOINT_VIPS = "https://api.twitch.tv/helix/channels/vips"
 
 class Client:
     """
@@ -2587,6 +2588,90 @@ class Client:
         url = "https://api.twitch.tv/helix/moderation/moderators"
         headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
         data = {"broadcaster_id": broadcaster_id, "user_id": user_id}
+
+        requests.delete(url, headers=headers, data=data)
+
+    def get_vips(self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) -> list[User]:
+        """
+        Gets a list of the broadcaster’s VIPs
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose list of VIPs you want to get
+                This ID must match the user ID in the access token
+            user_id (list[str]): Filters the list for specific VIPs
+                Maximum: 100
+            first (int): The number of items to return
+                Minimum: 1
+                Maximum: 100
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[User]
+        """
+
+        url = ENDPOINT_VIPS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        params = {"broadcaster_id": broadcaster_id}
+
+        if len(user_id) > 0:
+            params["user_id"] = user_id
+
+        after = ""
+        calls = math.ceil(first / 20)
+        users = []
+
+        for call in range(calls):
+            params["first"] = min(20, first - (20 * call))
+
+            if after != "":
+                params["after"] = after
+
+            response = requests.get(url, headers=headers, params=params)
+
+            if response.ok:
+                response = response.json()
+
+                if response["data"] is not None:
+                    users.append(self.get_users(id=[user["user_id"] for user in response["data"]]))
+
+                if "pagination" in response and "cursor" in response["pagination"]:
+                    after = response["pagination"]["cursor"]
+
+            else:
+                raise twitchpy.errors.ClientError(response.json()["message"])
+
+        return users
+
+    def add_channel_vip(self, user_id: str, broadcaster_id: str) -> None:
+        """
+        Adds the specified user as a VIP in the broadcaster’s channel
+
+        Args:
+            user_id (str): The ID of the user to give VIP status to
+            broadcaster_id (str): The ID of the broadcaster that’s adding the user as a VIP
+                This ID must match the user ID in the access token
+        """
+
+        url = ENDPOINT_VIPS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        payload = {"user_id": user_id, "broadcaster_id": broadcaster_id}
+
+        requests.post(url, headers=headers, json=payload)
+
+    def remove_channel_vip(self, user_id: str, broadcaster_id: str) -> None:
+        """
+        Removes the specified user as a VIP in the broadcaster’s channel
+
+        Args:
+            user_id (str): The ID of the user to remove VIP status from
+            broadcaster_id (str): The ID of the user to remove VIP status from
+        """
+
+        url = ENDPOINT_VIPS
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        data = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
         requests.delete(url, headers=headers, data=data)
 

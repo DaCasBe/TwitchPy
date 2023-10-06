@@ -1387,6 +1387,49 @@ class Bot:
 
         self.__client.remove_channel_moderator(broadcaster_id, user_id)
 
+    def get_vips(self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) -> list[User]:
+        """
+        Gets a list of the broadcaster’s VIPs
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose list of VIPs you want to get
+                This ID must match the user ID in the access token
+            user_id (list[str]): Filters the list for specific VIPs
+                Maximum: 100
+            first (int): The number of items to return
+                Default: 20
+                Minimum: 1
+                Maximum: 100
+
+        Returns:
+            list[User]
+        """
+
+        return self.__client.get_vips(broadcaster_id, user_id, first)
+
+    def add_channel_vip(self, user_id: str, broadcaster_id: str) -> None:
+        """
+        Adds the specified user as a VIP in the broadcaster’s channel
+
+        Args:
+            user_id (str): The ID of the user to give VIP status to
+            broadcaster_id (str): The ID of the broadcaster that’s adding the user as a VIP
+                This ID must match the user ID in the access token
+        """
+
+        self.__client.add_channel_vip(user_id, broadcaster_id)
+
+    def remove_channel_vip(self, user_id: str, broadcaster_id: str) -> None:
+        """
+        Removes the specified user as a VIP in the broadcaster’s channel
+
+        Args:
+            user_id (str): The ID of the user to remove VIP status from
+            broadcaster_id (str): The ID of the user to remove VIP status from
+        """
+
+        self.__client.remove_channel_vip(user_id, broadcaster_id)
+
     def get_polls(self,broadcaster_id,id=[],first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
