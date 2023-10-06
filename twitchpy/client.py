@@ -24,6 +24,7 @@ from twitchpy.team import Team
 from twitchpy.emote import Emote
 from twitchpy.prediction import Prediction
 from twitchpy.charity_campaign import CharityCampaign
+from twitchpy.charity_campaign_donation import CharityCampaignDonation
 
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
@@ -924,6 +925,54 @@ class Client:
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_charity_campaign_donations(self, broadcaster_id: str, first: int = 20) -> list[CharityCampaignDonation]:
+        """
+        Gets the list of donations that users have made to the broadcaster’s active charity campaign
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that’s currently running a charity campaign
+                This ID must match the user ID in the access token
+            first (int): The maximum number of items to return
+                Default: 20
+                Minimum: 1
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[CharityCampaignDonation]
+        """
+
+        url = "https://api.twitch.tv/helix/charity/donations"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        params = {"broadcaster_id": broadcaster_id}
+
+        after = ""
+        calls = math.ceil(first / 20)
+        donations = []
+
+        for call in range(calls):
+            params["first"] = min(20, first - (20 * call))
+
+            if after != "":
+                params["after"] = after
+
+            response = requests.get(url, headers=headers, params=params)
+
+            if response.ok:
+                response = response.json()
+
+                for donation in response["data"]:
+                    donations.append(CharityCampaignDonation(donation["id"], donation["campaign_id"], donation["user_id"], donation["user_login"], donation["user_name"], donation["amount"]))
+
+                if "pagination" in response and "cursor" in response["pagination"]:
+                    after = response["pagination"]["cursor"]
+
+            else:
+                raise twitchpy.errors.ClientError(response.json()["message"])
+
+        return donations
 
     def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
         """

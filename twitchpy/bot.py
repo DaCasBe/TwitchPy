@@ -1,5 +1,6 @@
 from twitchpy.channel import Channel
 from twitchpy.charity_campaign import CharityCampaign
+from twitchpy.charity_campaign_donation import CharityCampaignDonation
 from twitchpy.client import Client
 import ssl
 import socket
@@ -583,6 +584,23 @@ class Bot:
         """
 
         return self.__client.get_charity_campaign(broadcaster_id)
+
+    def get_charity_campaign_donations(self, broadcaster_id: str, first: int = 20) -> list[CharityCampaignDonation]:
+        """
+        Gets the list of donations that users have made to the broadcaster’s active charity campaign
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that’s currently running a charity campaign
+                This ID must match the user ID in the access token
+            first (int): The maximum number of items to return
+                Default: 20
+                Minimum: 1
+
+        Returns:
+            list[CharityCampaignDonation]
+        """
+
+        return self.__client.get_charity_campaign_donations(broadcaster_id, first)
 
     def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
         """
