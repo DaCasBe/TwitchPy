@@ -23,6 +23,7 @@ from twitchpy.video import Video
 from twitchpy.team import Team
 from twitchpy.emote import Emote
 from twitchpy.prediction import Prediction
+from twitchpy.charity_campaign import CharityCampaign
 
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
@@ -893,6 +894,33 @@ class Client:
             redemption=Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],reward)
             
             return redemption
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_charity_campaign(self, broadcaster_id: str) -> CharityCampaign:
+        """
+        Gets information about the charity campaign that a broadcaster is running
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster that’s currently running a charity campaign
+                This ID must match the user ID in the access token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            CharityCampaign
+        """
+
+        url = "https://api.twitch.tv/helix/charity/campaigns"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        params = {"broadcaster_id": broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.ok:
+            return CharityCampaign(response.json()["data"][0]["id"], response.json()["data"][0]["broadcaster_id"], response.json()["data"][0]["broadcaster_name"], response.json()["data"][0]["broadcaster_login"], response.json()["data"][0]["charity_name"], response.json()["data"][0]["charity_description"], response.json()["data"][0]["charity_logo"], response.json()["data"][0]["charity_website"], response.json()["data"][0]["current_amount"], response.json()["data"][0]["target_amount"])
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
