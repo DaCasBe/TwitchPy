@@ -769,6 +769,19 @@ class Bot:
 
         self.__client.send_chat_announcement(broadcaster_id, moderator_id, message, color)
 
+    def send_a_shoutout(self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str) -> None:
+        """
+        Sends a Shoutout to the specified broadcaster
+
+        Args:
+            from_broadcaster_id (str): The ID of the broadcaster that’s sending the Shoutout
+            to_broadcaster_id (str): The ID of the broadcaster that’s receiving the Shoutout
+            moderator_id (str): The ID of the broadcaster or a user that is one of the broadcaster’s moderators
+                This ID must match the user ID in the access token
+        """
+
+        self.__client.send_a_shoutout(from_broadcaster_id, to_broadcaster_id, moderator_id)
+
     def get_user_chat_color(self, user_id: str | list[str]) -> list[dict]:
         """
         Gets the color used for the user’s name in chat
