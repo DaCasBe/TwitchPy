@@ -2121,25 +2121,6 @@ class Bot:
 
         return self.__client.update_user(description)
 
-    def get_user_follows(self,first=20,from_id="",to_id=""):
-        """
-        Gets information on follow relationships between two Twitch users
-        At minimum, from_id or to_id must be provided for a query to be valid
-
-        Args:
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            from_id (str, optional): User ID
-                                     The request returns information about users who are being followed by the from_id user
-            to_id (str, optional): User ID
-                                   The request returns information about users who are following the to_id user
-
-        Returns:
-            list
-        """
-
-        return self.__client.get_user_follows(first,from_id,to_id)
-
     def get_user_block_list(self,broadcaster_id,first=20):
         """
         Gets a specified user’s block list
