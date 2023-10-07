@@ -9,6 +9,7 @@ from twitchpy.game import Game
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
 from twitchpy.prediction import Prediction
+from twitchpy.stream import Stream
 from twitchpy.user import User
 
 class Bot:
@@ -1819,22 +1820,22 @@ class Bot:
 
         return self.__client.search_categories(query,first)
 
-    def search_channels(self,query,first=20,live_only=False):
+    def search_channels(self, query: str, first: int=20, live_only: bool=False) -> list[Channel]:
         """
-        Returns a list of channels (users who have streamed within the past 6 months) that match the query via channel name or description either entirely or partially
-
+        Gets the channels that match the specified query and have streamed content within the past 6 months
+        To match, the beginning of the broadcaster’s name or category must match the query string
+        
         Args:
-            query (str): URI encoded search query
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            live_only (bool, optional): Filter results for live streams only
-                                        Default: false
-
+            query (str): The URI-encoded search string
+            first (int): The maximum number of items to return
+                Minimum: 1
+            live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
+        
         Returns:
-            list
+            list[Channel]
         """
 
-        return self.__client.search_channels(query,first,live_only)
+        return self.__client.search_channels(query, first, live_only)
 
     def get_soundtrack_current_track(self,broadcaster_id):
         """
@@ -1885,40 +1886,46 @@ class Bot:
 
         return self.__client.get_stream_key(broadcaster_id)
 
-    def get_streams(self,first=20,game_id="",language="",user_id="",user_login=""):
+    def get_streams(self, user_id: str | list[str]="", user_login: str | list[str]="", game_id: str | list[str]="", type: str="all", language: str | list[str]="", first: int=20) -> list[Stream]:
         """
-        Gets active streams
+        Gets a list of all streams
+        The list is in descending order by the number of viewers watching the stream
 
         Args:
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            game_id (str, optional): Returns streams broadcasting a specified game ID
-            language (str, optional): Stream language
-                                      A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
-            user_id (str, optional): Returns streams broadcast by a specified user ID
-            user_login (str, optional): Returns streams broadcast by a specified user login name
+            user_id (str | list[str]): A user ID used to filter the list of streams
+                Maximum: 100
+            user_login (str | list[str]): A user login name used to filter the list of streams
+                Maximum: 100
+            game_id (str | list[str]): A game (category) ID used to filter the list of streams
+                Maximum: 100
+            type (str): The type of stream to filter the list of streams by
+                Possible values: all, live
+            language (str | list[str]): A language code used to filter the list of streams
+                Maximum: 100
+            first (int): The maximum number of items to return
+                Minimum: 1
 
         Returns:
-            list
+            list[Stream]
         """
 
-        return self.__client.get_streams(first,game_id,language,user_id,user_login)
+        return self.__client.get_streams(user_id, user_login, game_id, type, language, first)
 
-    def get_followed_streams(self,user_id,first=100):
+    def get_followed_streams(self, user_id: str, first: int=100) -> list[Stream]:
         """
-        Gets information about active streams belonging to channels that the authenticated user follows
+        Gets the list of broadcasters that the user follows and that are streaming live
 
         Args:
-            user_id (str): Results will only include active streams from the channels that this Twitch user follows
-                           user_id must match the User ID in the bearer token
-            first (int, optional): Maximum number of objects to return
-                                   Default: 100
+            user_id (str): The ID of the user whose list of followed streams you want to get
+                This ID must match the user ID in the access token
+            first (int): The maximum number of items to return
+                Minimum: 1
 
         Returns:
-            list
+            list[Stream]
         """
 
-        return self.__client.get_followed_streams(user_id,first)
+        return self.__client.get_followed_streams(user_id, first)
 
     def create_stream_marker(self,user_id,description=""):
         """
