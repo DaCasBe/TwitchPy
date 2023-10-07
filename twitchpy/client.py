@@ -1585,35 +1585,6 @@ class Client:
 
         return clips
 
-    def get_code_status(self,code,user_id):
-        """
-        Gets the status of one or more provided codes
-        All codes are single-use
-
-        Args:
-            code (list): The code to get the status of
-                         Maximum: 20
-            user_id (int): The user account which is going to receive the entitlement associated with the code
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        url="https://api.twitch.tv/helix/entitlements/codes"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"code":code,"user_id":user_id}
-
-        response=requests.get(url,headers=headers,params=params)
-        
-        if response.ok:
-            return response.json()["data"]
-
-        else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
-
     def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
@@ -1702,35 +1673,6 @@ class Client:
             data["fulfillment_status"]=fulfillment_status
 
         response=requests.patch(url,headers=headers,data=data)
-        
-        if response.ok:
-            return response.json()["data"]
-
-        else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
-
-    def redeem_code(self,code,user_id):
-        """
-        Redeems one or more provided codes
-        All codes are single-use
-
-        Args:
-            code (list): The code to redeem to the authenticated user’s account
-                         Maximum: 20
-            user_id (int): The user account which is going to receive the entitlement associated with the code
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        url="https://api.twitch.tv/helix/entitlements/code"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        payload={"code":code,"user_id":user_id}
-
-        response=requests.post(url,headers=headers,json=payload)
         
         if response.ok:
             return response.json()["data"]

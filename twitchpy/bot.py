@@ -887,22 +887,6 @@ class Bot:
 
         return self.__client.get_clips(broadcaster_id,game_id,id,ended_at,first,started_at)
 
-    def get_code_status(self,code,user_id):
-        """
-        Gets the status of one or more provided codes
-        All codes are single-use
-
-        Args:
-            code (list): The code to get the status of
-                         Maximum: 20
-            user_id (int): The user account which is going to receive the entitlement associated with the code
-
-        Returns:
-            list
-        """
-
-        return self.__client.get_code_status(code,user_id)
-
     def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
@@ -937,22 +921,6 @@ class Bot:
         """
 
         return self.__client.update_drops_entitlements(entitlement_ids,fulfillment_status)
-
-    def redeem_code(self,code,user_id):
-        """
-        Redeems one or more provided codes
-        All codes are single-use
-
-        Args:
-            code (list): The code to redeem to the authenticated user’s account
-                         Maximum: 20
-            user_id (int): The user account which is going to receive the entitlement associated with the code
-
-        Returns:
-            list
-        """
-
-        return self.__client.redeem_code(code,user_id)
 
     def get_extension_configuration_segment(self,broadcaster_id,extension_id,segment):
         """
