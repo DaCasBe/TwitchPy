@@ -4293,67 +4293,6 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_user_follows(self,first=20,from_id="",to_id=""):
-        """
-        Gets information on follow relationships between two Twitch users
-        At minimum, from_id or to_id must be provided for a query to be valid
-
-        Args:
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            from_id (str, optional): User ID
-                                     The request returns information about users who are being followed by the from_id user
-            to_id (str, optional): User ID
-                                   The request returns information about users who are following the to_id user
-
-        Raises:
-            twitchpy.errors.ClientError
-
-        Returns:
-            list
-        """
-
-        url="https://api.twitch.tv/helix/users/follows"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
-
-        if first!=20:
-            params["first"]=first
-
-        if from_id!="":
-            params["from_id"]=from_id
-
-        if to_id!="":
-            params["to_id"]=to_id
-
-        after=""
-        calls=math.ceil(first/100)
-        follow=[]
-
-        for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
-            else:
-                params["first"]=first-(100*call)
-
-            if after!="":
-                params["after"]=after
-
-            response=requests.get(url,headers=headers,params=params)
-            
-            if response.ok:
-                response=response.json()
-                follow.extend(response["data"])
-
-                if "pagination" in response:
-                    after=response["pagination"]["cursor"]
-
-            else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
-
-        return follow
-
     def get_user_block_list(self,broadcaster_id,first=20):
         """
         Gets a specified user’s block list
