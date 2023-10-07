@@ -3539,51 +3539,51 @@ class Client:
 
         return games
 
-    def search_channels(self,query,first=20,live_only=False):
+    def search_channels(self, query: str, first: int=20, live_only: bool=False) -> list[Channel]:
         """
-        Returns a list of channels (users who have streamed within the past 6 months) that match the query via channel name or description either entirely or partially
+        Gets the channels that match the specified query and have streamed content within the past 6 months
+        To match, the beginning of the broadcaster’s name or category must match the query string
 
         Args:
-            query (str): URI encoded search query
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            live_only (bool, optional): Filter results for live streams only
-                                        Default: false
+            query (str): The URI-encoded search string
+            first (int): The maximum number of items to return
+                Minimum: 1
+            live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[Channel]
         """
 
-        url="https://api.twitch.tv/helix/search/channels"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"query":query}
+        url = "https://api.twitch.tv/helix/search/channels"
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        params = {"query": query}
 
-        if live_only!=False:
-            params["live_only"]=live_only
+        if live_only is not False:
+            params["live_only"] = live_only
 
-        after=""
-        calls=math.ceil(first/100)
-        channels=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        channels = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
             
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for channel in response["data"]:
-                    channels.append(Channel(channel["id"],channel["broadcaster_login"],channel["display_name"],channel["game_id"],channel["game_name"],channel["title"],broadcaster_language=channel["broadcaster_language"]))
+                    channels.append(Channel(channel["id"], channel["broadcaster_login"], channel["display_name"], channel["game_id"], channel["game_name"], channel["title"], broadcaster_language=channel["broadcaster_language"]))
 
-                if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                if "pagination" in response and "cursor" in response["pagination"]:
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3701,109 +3701,118 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_streams(self,first=20,game_id="",language="",user_id="",user_login=""):
+    def get_streams(self, user_id: str | list[str]="", user_login: str | list[str]="", game_id: str | list[str]="", type: str="all", language: str | list[str]="", first: int=20) -> list[Stream]:
         """
-        Gets active streams
+        Gets a list of all streams
+        The list is in descending order by the number of viewers watching the stream
 
         Args:
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            game_id (str, optional): Returns streams broadcasting a specified game ID
-            language (str, optional): Stream language
-                                      A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
-            user_id (str, optional): Returns streams broadcast by a specified user ID
-            user_login (str, optional): Returns streams broadcast by a specified user login name
+            user_id (str | list[str]): A user ID used to filter the list of streams
+                Maximum: 100
+            user_login (str | list[str]): A user login name used to filter the list of streams
+                Maximum: 100
+            game_id (str | list[str]): A game (category) ID used to filter the list of streams
+                Maximum: 100
+            type (str): The type of stream to filter the list of streams by
+                Possible values: all, live
+            language (str | list[str]): A language code used to filter the list of streams
+                Maximum: 100
+            first (int): The maximum number of items to return
+                Minimum: 1
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[Stream]
         """
 
-        url="https://api.twitch.tv/helix/streams"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/streams"
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        params = {}
 
-        if game_id!="":
-            params["game_id"]=game_id
+        if user_id != "":
+            params["user_id"] = user_id
 
-        if language!="":
-            params["language"]=language
+        if user_login != "":
+            params["user_login"] = user_login
 
-        if user_id!="":
-            params["user_id"]=user_id
+        if game_id != "":
+            params["game_id"] = game_id
 
-        if user_login!="":
-            params["user_login"]=user_login
+        if type != "all":
+            params["type"] = type
 
-        after=""
-        calls=math.ceil(first/100)
-        streams=[]
+        if language != "":
+            params["language"] = language
+
+        after = ""
+        calls = math.ceil(first / 100)
+        streams = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for stream in response["data"]:
-                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+                    streams.append(Stream(stream["id"], stream["user_id"], stream["user_login"], stream["user_name"], stream["game_id"], stream["game_name"], stream["type"], stream["title"], stream["tags"], stream["viewer_count"], stream["started_at"], stream["language"], stream["thumbnail_url"], stream["is_mature"]))
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return streams
 
-    def get_followed_streams(self,user_id,first=100):
+    def get_followed_streams(self, user_id: str, first: int=100) -> list[Stream]:
         """
-        Gets information about active streams belonging to channels that the authenticated user follows
+        Gets the list of broadcasters that the user follows and that are streaming live
 
         Args:
-            user_id (str): Results will only include active streams from the channels that this Twitch user follows
-                           user_id must match the User ID in the bearer token
-            first (int, optional): Maximum number of objects to return
-                                   Default: 100
+            user_id (str): The ID of the user whose list of followed streams you want to get
+                This ID must match the user ID in the access token
+            first (int): The maximum number of items to return
+                Minimum: 1
 
         Raises:
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[Stream]
         """
 
-        url="https://api.twitch.tv/helix/streams/followed"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"user_id":user_id}
+        url = "https://api.twitch.tv/helix/streams/followed"
+        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        params = {"user_id": user_id}
 
-        after=""
-        calls=math.ceil(first/100)
-        streams=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        streams = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
             
             if response.ok:
-                response=response.json()
+                response = response.json()
                 
                 for stream in response["data"]:
-                    streams.append(Stream(stream["id"],stream["user_id"],stream["user_name"],stream["game_id"],stream["type"],stream["title"],stream["viewer_count"],stream["started_at"],stream["language"],stream["thumbnail_url"],stream["tag_ids"]))
+                    streams.append(Stream(stream["id"], stream["user_id"], stream["user_login"], stream["user_name"], stream["game_id"], stream["game_name"], stream["type"], stream["title"], stream["tags"], stream["viewer_count"], stream["started_at"], stream["language"], stream["thumbnail_url"], stream["is_mature"]))
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
