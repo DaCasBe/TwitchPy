@@ -2023,19 +2023,6 @@ class Bot:
 
         return self.__client.get_stream_tags(broadcaster_id)
 
-    def replace_stream_tags(self,broadcaster_id,tag_ids=[]):
-        """
-        Applies specified tags to a specified stream (channel), overwriting any existing tags applied to that stream
-        If no tags are specified, all tags previously applied to the stream are removed
-        Automated tags are not affected by this operation
-
-        Args:
-            broadcaster_id (str): ID of the stream for which tags are to be replaced
-            tag_ids (list, optional): IDs of tags to be applied to the stream
-        """
-
-        self.__client.replace_stream_tags(broadcaster_id,tag_ids)
-
     def get_channel_teams(self,broadcaster_id):
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member

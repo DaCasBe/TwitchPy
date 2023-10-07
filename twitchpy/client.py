@@ -4071,26 +4071,6 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def replace_stream_tags(self,broadcaster_id,tag_ids=[]):
-        """
-        Applies specified tags to a specified stream (channel), overwriting any existing tags applied to that stream
-        If no tags are specified, all tags previously applied to the stream are removed
-        Automated tags are not affected by this operation
-
-        Args:
-            broadcaster_id (str): ID of the stream for which tags are to be replaced
-            tag_ids (list, optional): IDs of tags to be applied to the stream
-        """
-
-        url="https://api.twitch.tv/helix/streams/tags"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        data={"broadcaster_id":broadcaster_id}
-
-        if len(tag_ids)>0:
-            data["tag_ids"]=tag_ids
-
-        requests.put(url,headers=headers,data=data)
-
     def get_channel_teams(self,broadcaster_id):
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
