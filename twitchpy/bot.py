@@ -2040,42 +2040,6 @@ class Bot:
 
         return self.__client.search_channels(query, first, live_only)
 
-    def get_soundtrack_current_track(self,broadcaster_id):
-        """
-        Gets the Soundtrack track that the broadcaster is playing
-
-        Args:
-            broadcaster_id (str): The ID of the broadcaster that’s playing a Soundtrack track
-
-        Returns:
-            SoundtrackTrack
-        """
-
-        return self.__client.get_soundtrack_current_track(broadcaster_id)
-
-    def get_soundtrack_playlist(self,id):
-        """
-        Gets a Soundtrack playlist, which includes its list of tracks
-
-        Args:
-            id (str): The ID of the Soundtrack playlist to get
-
-        Returns:
-            SoundtrackPlaylist
-        """
-
-        return self.__client.get_soundtrack_playlist(id)
-
-    def get_soundtrack_playlists(self):
-        """
-        Gets a list of Soundtrack playlists
-
-        Returns:
-            list
-        """
-
-        return self.__client.get_soundtrack_playlists()
-
     def get_stream_key(self,broadcaster_id):
         """
         Gets the channel stream key for a user
