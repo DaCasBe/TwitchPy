@@ -891,6 +891,20 @@ class Bot:
 
         return self.__client.get_clips(broadcaster_id,game_id,id,ended_at,first,started_at)
 
+    def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
+        """
+        Gets information about Twitch content classification labels
+
+        Args:
+            locale (str): Locale for the Content Classification Labels
+                Possible values: "bg-BG", "cs-CZ", "da-DK", "da-DK", "de-DE", "el-GR", "en-GB", "en-US", "es-ES", "es-MX", "fi-FI", "fr-FR", "hu-HU", "it-IT", "ja-JP", "ko-KR", "nl-NL", "no-NO", "pl-PL", "pt-BT", "pt-PT", "ro-RO", "ru-RU", "sk-SK", "sv-SE", "th-TH", "tr-TR", "vi-VN", "zh-CN", "zh-TW"
+
+        Returns:
+            list[dict]
+        """
+
+        return self.__client.get_content_classification_labels(locale)
+
     def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
