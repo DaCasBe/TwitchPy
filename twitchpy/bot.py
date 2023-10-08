@@ -6,6 +6,7 @@ import ssl
 import socket
 from twitchpy.eventsub_subscription import EventSubSubscription
 from twitchpy.game import Game
+from twitchpy.guest_star_session import GuestStarSession
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
 from twitchpy.prediction import Prediction
@@ -1212,6 +1213,192 @@ class Bot:
         """
 
         return self.__client.get_creator_goals(broadcaster_id)
+
+    def get_channel_guest_star_settings(self, broadcaster_id: str, moderator_id: str) -> dict:
+        """
+        Gets the channel settings for configuration of the Guest Star feature for a particular host
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster you want to get guest star settings for
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user ID in the user access token
+
+        Returns:
+            dict
+        """
+
+        return self.__client.get_channel_guest_star_settings(broadcaster_id, moderator_id)
+
+    def update_channel_guest_star_settings(self, broadcaster_id: str, is_moderator_send_live_enabled: bool=None, slot_count: int=None, is_browser_source_audio_enabled: bool=None, group_layout: str="", regenerate_browser_sources: bool=None) -> None:
+        """
+        Mutates the channel settings for configuration of the Guest Star feature for a particular host
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster you want to update Guest Star settings for
+            is_moderator_send_live_enabled (bool): Flag determining if Guest Star moderators have access to control whether a guest is live once assigned to a slot
+            slot_count (int): Number of slots the Guest Star call interface will allow the host to add to a call.
+                Required to be between 1 and 6
+            is_browser_source_audio_enabled (bool): Flag determining if Browser Sources subscribed to sessions on this channel should output audio
+            group_layout (str): This setting determines how the guests within a session should be laid out within the browser source
+                Possible values: TILED_LAYOUT, SCREENSHARE_LAYOUT, HORIZONTAL_LAYOUT, VERTICAL_LAYOUT
+            regenerate_browser_sources (bool): Flag determining if Guest Star should regenerate the auth token associated with the channel’s browser sources
+        """
+
+        self.__client.update_channel_guest_star_settings(broadcaster_id, is_moderator_send_live_enabled, slot_count, is_browser_source_audio_enabled, group_layout, regenerate_browser_sources)
+
+    def get_guest_star_session(self, broadcaster_id: str, moderator_id: str) -> GuestStarSession:
+        """
+        Gets information about an ongoing Guest Star session for a particular channel
+
+        Args:
+            broadcaster_id (str): ID for the user hosting the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user ID in the user access token
+
+        Returns:
+            GuestStarSession
+        """
+
+        return self.__client.get_guest_star_session(broadcaster_id, moderator_id)
+
+    def create_guest_star_session(self, broadcaster_id: str) -> GuestStarSession:
+        """
+        Programmatically creates a Guest Star session on behalf of the broadcaster
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster you want to create a Guest Star session for
+                Provided broadcaster_id must match the user_id in the auth token
+
+        Returns:
+            GuestStarSession
+        """
+
+        return self.__client.create_guest_star_session(broadcaster_id)
+
+    def end_guest_star_session(self, broadcaster_id: str, session_id: str) -> GuestStarSession:
+        """
+        Programmatically ends a Guest Star session on behalf of the broadcaster
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster you want to end a Guest Star session for
+                Provided broadcaster_id must match the user_id in the auth token
+            session_id (str): ID for the session to end on behalf of the broadcaster
+
+        Returns:
+            GuestStarSession
+        """
+
+        return self.__client.end_guest_star_session(broadcaster_id, session_id)
+
+    def get_guest_star_invites(self, broadcaster_id: str, moderator_id: str, session_id: str) -> list[dict]:
+        """
+        Provides a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user_id in the user access token
+            session_id (str): The session ID to query for invite status
+
+        Returns:
+            list[dict]
+        """
+
+        return self.__client.get_guest_star_invites(broadcaster_id, moderator_id, session_id)
+
+    def send_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+        """
+        Sends an invite to a specified guest on behalf of the broadcaster for a Guest Star session in progress
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user_id in the user access token
+            session_id (str): The session ID for the invite to be sent on behalf of the broadcaster
+            guest_id (str): Twitch User ID for the guest to invite to the Guest Star session
+        """
+
+        self.__client.send_guest_star_invite(broadcaster_id, moderator_id, session_id, guest_id)
+
+    def delete_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+        """
+        Revokes a previously sent invite for a Guest Star session
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user_id in the user access token
+            session_id (str): The ID of the session for the invite to be revoked on behalf of the broadcaster
+            guest_id (str): Twitch User ID for the guest to revoke the Guest Star session invite from
+        """
+
+        self.__client.delete_guest_star_invite(broadcaster_id, moderator_id, session_id, guest_id)
+
+    def assign_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str) -> None:
+        """
+        Allows a previously invited user to be assigned a slot within the active Guest Star session, once that guest has indicated they are ready to join
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user_id in the user access token
+            session_id (str): The ID of the Guest Star session in which to assign the slot
+            guest_id (str): The Twitch User ID corresponding to the guest to assign a slot in the session
+                This user must already have an invite to this session, and have indicated that they are ready to join
+            slot_id (str): The slot assignment to give to the user
+        """
+
+        self.__client.assign_guest_star_slot(broadcaster_id, moderator_id, session_id, guest_id, slot_id)
+
+    def update_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, source_slot_id: str, destination_slot_id: str="") -> None:
+        """
+        Allows a user to update the assigned slot for a particular user within the active Guest Star session
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user_id in the user access token
+            session_id (str): The ID of the Guest Star session in which to update slot settings
+            source_slot_id (str): The slot assignment previously assigned to a user
+            destination_slot_id (str): The slot to move this user assignment to
+                If the destination slot is occupied, the user assigned will be swapped into source_slot_id
+        """
+
+        self.__client.update_guest_star_slot(broadcaster_id, moderator_id, session_id, source_slot_id, destination_slot_id)
+
+    def delete_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str, should_reinvite_guest: str="") -> None:
+        """
+        Allows a caller to remove a slot assignment from a user participating in an active Guest Star session
+        
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user ID in the user access token
+            session_id (str): The ID of the Guest Star session in which to remove the slot assignment
+            guest_id (str): The Twitch User ID corresponding to the guest to remove from the session
+            slot_id (str): The slot ID representing the slot assignment to remove from the session
+            should_reinvite_guest (str): Flag signaling that the guest should be reinvited to the session, sending them back to the invite queue
+        """
+
+        self.__client.delete_guest_star_slot(broadcaster_id, moderator_id, session_id, guest_id, slot_id, should_reinvite_guest)
+
+    def update_guest_star_slot_settings(self, broadcaster_id: str, moderator_id: str, session_id: str, slot_id: str, is_audio_enabled: bool=None, is_video_enabled: bool=None, is_live: bool=None, volume: int=None) -> None:
+        """
+        Allows a user to update slot settings for a particular guest within a Guest Star session, such as allowing the user to share audio or video within the call as a host
+        
+        Args:
+            broadcaster_id (str): The ID of the broadcaster running the Guest Star session
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
+                This ID must match the user ID in the user access token
+            session_id (str): The ID of the Guest Star session in which to update a slot’s settings
+            slot_id (str): The slot assignment that has previously been assigned to a user
+            is_audio_enabled (bool): Flag indicating whether the slot is allowed to share their audio with the rest of the session
+            is_video_enabled (bool): Flag indicating whether the slot is allowed to share their video with the rest of the session
+            is_live (bool): Flag indicating whether the user assigned to this slot is visible/can be heard from any public subscriptions
+            volume (int): Value from 0-100 that controls the audio volume for shared views containing the slot
+        """
+
+        self.__client.update_guest_star_slot_settings(broadcaster_id, moderator_id, session_id, slot_id, is_audio_enabled, is_video_enabled, is_live, volume)
 
     def get_hype_train_events(self, broadcaster_id: str, first: int=1) -> list[HypeTrainEvent]:
         """
