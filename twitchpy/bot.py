@@ -397,7 +397,7 @@ class Bot:
 
         return self.__client.get_channel(broadcaster_id)
 
-    def modify_channel_information(self, broadcaster_id: str, game_id: str = "", broadcaster_language: str = "", title: str = "", delay: int = 0, tags: list[str] = []):
+    def modify_channel_information(self, broadcaster_id: str, game_id: str = None, broadcaster_language: str = None, title: str = None, delay: int = None, tags: list[str] = [], content_classification_labels: list[dict] = [], is_branded_content: bool = None):
         """
         Updates a channel’s properties
 
@@ -414,9 +414,11 @@ class Bot:
                 Maximum: 900 seconds
             tags (list[str]): A list of channel-defined tags to apply to the channel
                 Maximum: 10
+            content_classification_labels (list[dict]): List of labels that should be set as the Channel’s CCLs
+            is_branded_content (bool): Boolean flag indicating if the channel has branded content
         """
 
-        self.__client.modify_channel_information(broadcaster_id, game_id, broadcaster_language, title, delay, tags)
+        self.__client.modify_channel_information(broadcaster_id, game_id, broadcaster_language, title, delay, tags, content_classification_labels, is_branded_content)
 
     def get_channel_editors(self,broadcaster_id):
         """

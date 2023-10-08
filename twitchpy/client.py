@@ -487,14 +487,14 @@ class Client:
 
         if response.ok:
             channel = response.json()["data"][0]
-            channel = Channel(channel["broadcaster_id"], channel["broadcaster_login"], channel["broadcaster_name"], channel["game_id"], channel["game_name"], channel["title"], channel["broadcaster_language"], channel["delay"])
+            channel = Channel(channel["broadcaster_id"], channel["broadcaster_login"], channel["broadcaster_name"], channel["broadcaster_language"], channel["game_name"], channel["game_id"], channel["title"], channel["delay"], channel["tags"], channel["content_classification_labels"], channel["is_branded_content"])
 
             return channel
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def modify_channel_information(self, broadcaster_id: str, game_id: str = "", broadcaster_language: str = "", title: str = "", delay: int = 0, tags: list[str] = []):
+    def modify_channel_information(self, broadcaster_id: str, game_id: str = None, broadcaster_language: str = None, title: str = None, delay: int = None, tags: list[str] = [], content_classification_labels: list[dict] = [], is_branded_content: bool = None):
         """
         Updates a channel’s properties
 
@@ -511,26 +511,34 @@ class Client:
                 Maximum: 900 seconds
             tags (list[str]): A list of channel-defined tags to apply to the channel
                 Maximum: 10
+            content_classification_labels (list[dict]): List of labels that should be set as the Channel’s CCLs
+            is_branded_content (bool): Boolean flag indicating if the channel has branded content
         """
 
         url = "https://api.twitch.tv/helix/channels"
         headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
         data = {"broadcaster_id": broadcaster_id}
 
-        if game_id != "":
+        if game_id is not None:
             data["game_id"] = game_id
 
-        if broadcaster_language != "":
+        if broadcaster_language is not None:
             data["broadcaster_language"] = broadcaster_language
 
-        if title != "":
+        if title is not None:
             data["title"] = title
 
-        if delay != 0:
+        if delay is not None:
             data["delay"] = delay
 
         if len(tags) > 0:
             data["tags"] = tags
+
+        if len(content_classification_labels) > 0:
+            data["content_classification_labels"] = content_classification_labels
+
+        if is_branded_content is not None:
+            data["is_branded_content"] = is_branded_content
 
         requests.patch(url, headers=headers, data=data)
 
