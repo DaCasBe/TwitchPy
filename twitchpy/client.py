@@ -1528,69 +1528,70 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_clips(self,broadcaster_id="",game_id="",id=[],ended_at="",first=20,started_at=""):
+    def get_clips(self, broadcaster_id: str = "", game_id: str = "", id: list[str] = [], started_at: str = "", ended_at: str = "", first: int = 20, is_featured: bool = False) -> list[Clip]:
         """
-        Gets clip information by clip ID, broadcaster ID or game ID (one only)
+        Gets one or more video clips that were captured from streams
+        The id, game_id, and broadcaster_id query parameters are mutually exclusive
 
         Args:
-            broadcaster_id (str, optional): ID of the broadcaster for whom clips are returned
-            game_id (str, optional): ID of the game for which clips are returned
-            id (list, optional): ID of the clip being queried
-                                 Limit: 100
-            ended_at (str, optional): Ending date/time for returned clips, in RFC3339 format
-                                      If this is specified, started_at also must be specified; otherwise, the time period is ignored
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
-            started_at (str, optional): Starting date/time for returned clips, in RFC3339 format
-                                        If this is specified, ended_at also should be specified; otherwise, the ended_at date/time will be 1 week after the started_at value
+            broadcaster_id (str): An ID that identifies the broadcaster whose video clips you want to get
+            game_id (str): An ID that identifies the game whose clips you want to get
+            id (list[str]): An ID that identifies the clip to get
+            started_at (str): The start date used to filter clips
+            ended_at (str): The end date used to filter clips
+            first (int): The maximum number of clips to return
+                Minimum: 1
+            is_featured (bool): A Boolean value that determines whether the response includes featured clips
 
         Raises:
-            twitchpy.errors.TooManyArgumentsError
             twitchpy.errors.ClientError
 
         Returns:
-            list
+            list[Clip]
         """
 
-        url="https://api.twitch.tv/helix/clips"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/clips"
+        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        params = {}
 
-        if broadcaster_id!="":
-            params["broadcaster_id"]=broadcaster_id
+        if broadcaster_id != "":
+            params["broadcaster_id"] = broadcaster_id
 
-        if game_id!="":
-            params["game_id"]=game_id
+        if game_id != "":
+            params["game_id"] = game_id
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if ended_at!="":
-            params["ended_at"]=ended_at
+        if started_at != "":
+            params["started_at"] = started_at
 
-        if started_at!="":
-            params["started_at"]=started_at
+        if ended_at != "":
+            params["ended_at"] = ended_at
 
-        after=""
-        calls=math.ceil(first/100)
-        clips=[]
+        if is_featured is not False:
+            params["is_featured"] = is_featured
+
+        after = ""
+        calls = math.ceil(first / 100)
+        clips = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
             
             if response.ok:
                 response=response.json()
 
                 for clip in response["data"]:
-                    clips.append(Clip(clip["id"],clip["url"],clip["embed_url"],clip["broadcaster_id"],clip["broadcaster_name"],clip["creator_id"],clip["creator_name"],clip["video_id"],clip["game_id"],clip["language"],clip["title"],clip["view_count"],clip["created_at"],clip["thumbnail_url"],clip["duration"]))
+                    clips.append(Clip(clip["id"], clip["url"], clip["embed_url"], clip["broadcaster_id"], clip["broadcaster_name"], clip["creator_id"], clip["creator_name"], clip["video_id"], clip["game_id"], clip["language"], clip["title"], clip["view_count"], clip["created_at"], clip["thumbnail_url"], clip["duration"], clip["vod_offset"], clip["is_featured"]))
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
