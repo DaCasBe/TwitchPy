@@ -2,8 +2,10 @@ class StreamSchedule:
     """
     Represents a stream schedule
     """
-    
-    def __init__(self,segments,broadcaster_id,broadcaster_name,broadcaster_login,vacation):
+
+    def __init__(
+        self, segments, broadcaster_id, broadcaster_name, broadcaster_login, vacation
+    ):
         """
         Args:
             segments (list): Scheduled broadcasts for this stream schedule
@@ -14,8 +16,8 @@ class StreamSchedule:
                              If Vacation Mode is disabled, value is set to null
         """
 
-        self.segments=segments
-        self.broadcaster_id=broadcaster_id
-        self.broadcaster_name=broadcaster_name
-        self.broadcaster_login=broadcaster_login
-        self.vacation=vacation
+        self.segments = segments
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.vacation = vacation

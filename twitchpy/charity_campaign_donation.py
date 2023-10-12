@@ -3,8 +3,15 @@ class CharityCampaignDonation:
     Represents a donation made to a charity campaign
     """
 
-    def __init__(self, id: str, campaign_id: str, user_id: str,
-                 user_login: str, user_name: str, amount: dict):
+    def __init__(
+        self,
+        id: str,
+        campaign_id: str,
+        user_id: str,
+        user_login: str,
+        user_name: str,
+        amount: dict,
+    ):
         """
         The function initializes an object with the given parameters.
 

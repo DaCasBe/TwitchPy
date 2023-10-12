@@ -2,8 +2,8 @@ class HypeTrainEvent:
     """
     Represents a Hype Train event
     """
-    
-    def __init__(self,id,event_type,event_timestamp,version,event_data):
+
+    def __init__(self, id, event_type, event_timestamp, version, event_data):
         """
         Args:
             id (str): The distinct ID of the event
@@ -13,8 +13,8 @@ class HypeTrainEvent:
             event_data (dict): The event data
         """
 
-        self.id=id
-        self.event_type=event_type
-        self.event_timestamp=event_timestamp
-        self.version=version
-        self.event_data=event_data
+        self.id = id
+        self.event_type = event_type
+        self.event_timestamp = event_timestamp
+        self.version = version
+        self.event_data = event_data

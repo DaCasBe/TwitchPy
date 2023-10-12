@@ -2,8 +2,10 @@ class EventSubSubscription:
     """
     Represents an EventSub subscription
     """
-    
-    def __init__(self,id,status,type,version,condition,created_at,transport,cost):
+
+    def __init__(
+        self, id, status, type, version, condition, created_at, transport, cost
+    ):
         """
         Args:
             id (str): An ID that identifies the subscription
@@ -17,11 +19,11 @@ class EventSubSubscription:
             cost (int): The amount that the subscription counts against your limit
         """
 
-        self.id=id
-        self.status=status
-        self.type=type
-        self.version=version
-        self.condition=condition
-        self.created_at=created_at
-        self.transport=transport
-        self.cost=cost
+        self.id = id
+        self.status = status
+        self.type = type
+        self.version = version
+        self.condition = condition
+        self.created_at = created_at
+        self.transport = transport
+        self.cost = cost

@@ -3,11 +3,21 @@ class Poll:
     Represents a poll
     """
 
-    def __init__(self, id: str, broadcaster_id: str, broadcaster_name: str,
-                 broadcaster_login: str, title: str, choices: list[dict],
-                 channel_points_voting_enabled: bool,
-                 channel_points_per_vote: int, status: str, duration: int,
-                 started_at: str, ended_at: str = ""):
+    def __init__(
+        self,
+        id: str,
+        broadcaster_id: str,
+        broadcaster_name: str,
+        broadcaster_login: str,
+        title: str,
+        choices: list[dict],
+        channel_points_voting_enabled: bool,
+        channel_points_per_vote: int,
+        status: str,
+        duration: int,
+        started_at: str,
+        ended_at: str = "",
+    ):
         """
         Args:
             id (str): ID of the poll

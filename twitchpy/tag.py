@@ -2,8 +2,8 @@ class Tag:
     """
     Represents a stream tag
     """
-    
-    def __init__(self,tag_id,is_auto,localization_names,localization_descriptions):
+
+    def __init__(self, tag_id, is_auto, localization_names, localization_descriptions):
         """
         Args:
             tag_id (str): An ID that identifies the tag
@@ -14,7 +14,7 @@ class Tag:
             localization_descriptions (dict): The localized descriptions of the tag
         """
 
-        self.tag_id=tag_id
-        self.is_auto=is_auto
-        self.localization_names=localization_names
-        self.localization_descriptions=localization_descriptions
+        self.tag_id = tag_id
+        self.is_auto = is_auto
+        self.localization_names = localization_names
+        self.localization_descriptions = localization_descriptions

@@ -1,24 +1,40 @@
+import socket
+import ssl
+
 from twitchpy.channel import Channel
 from twitchpy.charity_campaign import CharityCampaign
 from twitchpy.charity_campaign_donation import CharityCampaignDonation
 from twitchpy.client import Client
-import ssl
-import socket
 from twitchpy.eventsub_subscription import EventSubSubscription
 from twitchpy.game import Game
 from twitchpy.guest_star_session import GuestStarSession
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.message import Message
+from twitchpy.poll import Poll
 from twitchpy.prediction import Prediction
 from twitchpy.stream import Stream
 from twitchpy.user import User
+
 
 class Bot:
     """
     Represents a bot
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,tokens_path,username,channels,command_prefix,code="",jwt_token="",ready_message=""):
+    def __init__(
+        self,
+        oauth_token,
+        client_id,
+        client_secret,
+        redirect_uri,
+        tokens_path,
+        username,
+        channels,
+        command_prefix,
+        code="",
+        jwt_token="",
+        ready_message="",
+    ):
         """
         Args:
             oauth_token (str): OAuth token
@@ -34,51 +50,59 @@ class Bot:
             ready_message (str, optional): Message that the bot will send through the chats of the channels it access
         """
 
-        self.__irc_server="irc.chat.twitch.tv"
-        self.__irc_port=6697
-        self.__client=Client(oauth_token,client_id,client_secret,redirect_uri,tokens_path,code,jwt_token)
-        self.__oauth_token=oauth_token
-        self.__finish=False
-        self.username=username
+        self.__irc_server = "irc.chat.twitch.tv"
+        self.__irc_port = 6697
+        self.__client = Client(
+            oauth_token,
+            client_id,
+            client_secret,
+            redirect_uri,
+            tokens_path,
+            code,
+            jwt_token,
+        )
+        self.__oauth_token = oauth_token
+        self.__finish = False
+        self.username = username
 
-        self.channels=[]
+        self.channels = []
 
         for channel in channels:
-            self.channels.append(channel.replace("@","").lower())
+            self.channels.append(channel.replace("@", "").lower())
 
-        self.command_prefix=command_prefix
-        self.ready_message=ready_message
-        self.custom_checks={}
-        self.custom_listeners={}
-        self.listeners_to_remove=[]
-        self.custom_commands={}
-        self.commands_to_remove=[]
-        self.custom_methods_after_commands={}
-        self.methods_after_commands_to_remove=[]
-        self.custom_methods_before_commands={}
-        self.methods_before_commands_to_remove=[]
+        self.command_prefix = command_prefix
+        self.ready_message = ready_message
+        self.custom_checks = {}
+        self.custom_listeners = {}
+        self.listeners_to_remove = []
+        self.custom_commands = {}
+        self.commands_to_remove = []
+        self.custom_methods_after_commands = {}
+        self.methods_after_commands_to_remove = []
+        self.custom_methods_before_commands = {}
+        self.methods_before_commands_to_remove = []
 
-    def __send_command(self,command):
+    def __send_command(self, command):
         if "PASS" not in command and "PONG" not in command:
             print(f"< {command}")
 
-        self.irc.send((command+"\r\n").encode())
+        self.irc.send((command + "\r\n").encode())
 
-    def __send_privmsg(self,channel,text):
+    def __send_privmsg(self, channel, text):
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
     def __login(self):
         self.__send_command(f"PASS {self.__oauth_token}")
         self.__send_command(f"NICK {self.username}")
 
-    def __join(self,channel):
+    def __join(self, channel):
         self.__send_command(f"JOIN #{channel}")
-        self.__send_privmsg(channel,self.ready_message)
+        self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self):
-        self.irc=ssl.wrap_socket(socket.socket())
+        self.irc = ssl.wrap_socket(socket.socket())
         self.irc.settimeout(1)
-        self.irc.connect((self.__irc_server,self.__irc_port))
+        self.irc.connect((self.__irc_server, self.__irc_port))
 
         self.__login()
 
@@ -98,64 +122,77 @@ class Bot:
         Stops the bot
         """
 
-        self.__finish=True
+        self.__finish = True
 
-    def __get_user_from_prefix(self,prefix):
-        domain=prefix.split("!")[0]
+    def __get_user_from_prefix(self, prefix):
+        domain = prefix.split("!")[0]
 
         if domain.endswith(".tmi.twitch.tv"):
-            return domain.replace(".tmi.twitch.tv","")
+            return domain.replace(".tmi.twitch.tv", "")
 
         if "tmi.twitch.tv" not in domain:
             return domain
 
         return None
 
-    def __remove_prefix(self,string,prefix):
+    def __remove_prefix(self, string, prefix):
         if not string.startswith(prefix):
             return string
 
         return string[len(prefix):]
 
-    def __parse_message(self,received_msg):
-        parts=received_msg.split(" ")
+    def __parse_message(self, received_msg):
+        parts = received_msg.split(" ")
 
-        prefix=None
-        user=None
-        channel=None
-        irc_command=None
-        irc_args=None
-        text=None
-        text_command=None
-        text_args=None
+        prefix = None
+        user = None
+        channel = None
+        irc_command = None
+        irc_args = None
+        text = None
+        text_command = None
+        text_args = None
 
         if parts[0].startswith(":"):
-            prefix=self.__remove_prefix(parts[0],":")
-            user=self.__get_user_from_prefix(prefix)
-            parts=parts[1:]
+            prefix = self.__remove_prefix(parts[0], ":")
+            user = self.__get_user_from_prefix(prefix)
+            parts = parts[1:]
 
-        text_start=next((idx for idx,part in enumerate(parts) if part.startswith(":")),None)
+        text_start = next(
+            (idx for idx, part in enumerate(parts) if part.startswith(":")), None
+        )
 
         if text_start is not None:
-            text_parts=parts[text_start:]
-            text_parts[0]=text_parts[0][1:]
-            text=" ".join(text_parts)
+            text_parts = parts[text_start:]
+            text_parts[0] = text_parts[0][1:]
+            text = " ".join(text_parts)
 
             if text_parts[0].startswith(self.command_prefix):
-                text_command=self.__remove_prefix(text_parts[0],self.command_prefix)
-                text_args=text_parts[1:]
+                text_command = self.__remove_prefix(text_parts[0], self.command_prefix)
+                text_args = text_parts[1:]
 
-            parts=parts[:text_start]
+            parts = parts[:text_start]
 
-        irc_command=parts[0]
-        irc_args=parts[1:]
+        irc_command = parts[0]
+        irc_args = parts[1:]
 
-        hash_start=next((idx for idx,part in enumerate(irc_args) if part.startswith("#")),None)
+        hash_start = next(
+            (idx for idx, part in enumerate(irc_args) if part.startswith("#")), None
+        )
 
         if hash_start is not None:
-            channel=irc_args[hash_start][1:]
+            channel = irc_args[hash_start][1:]
 
-        message=Message(prefix=prefix,user=user,channel=channel,irc_command=irc_command,irc_args=irc_args,text=text,text_command=text_command,text_args=text_args)
+        message = Message(
+            prefix=prefix,
+            user=user,
+            channel=channel,
+            irc_command=irc_command,
+            irc_args=irc_args,
+            text=text,
+            text_command=text_command,
+            text_args=text_args,
+        )
 
         return message
 
@@ -168,7 +205,7 @@ class Bot:
             if listener in self.custom_listeners.keys():
                 self.custom_listeners.pop(listener)
 
-        self.listeners_to_remove=[]
+        self.listeners_to_remove = []
 
     def __execute_methods_before_commands(self, message: Message) -> None:
         for before in self.custom_methods_before_commands.values():
@@ -217,7 +254,7 @@ class Bot:
     def __loop(self):
         while not self.__finish:
             try:
-                received_msgs=self.irc.recv(2048).decode()
+                received_msgs = self.irc.recv(2048).decode()
 
                 for received_msg in received_msgs.split("\r\n"):
                     self.__handle_message(received_msg)
@@ -230,7 +267,7 @@ class Bot:
                 for check in self.custom_checks.values():
                     check()
 
-    def add_check(self,name,check):
+    def add_check(self, name, check):
         """
         Adds a check to the bot
         Checks work permanently
@@ -240,9 +277,9 @@ class Bot:
             check (func): Method that will act as a check
         """
 
-        self.custom_checks[name]=check
+        self.custom_checks[name] = check
 
-    def add_listener(self,name,listener):
+    def add_listener(self, name, listener):
         """
         Adds a listener to the bot
         Listeners work only when a message is received
@@ -253,9 +290,9 @@ class Bot:
             listener (str): Method that will be executed when the command is invoked
         """
 
-        self.custom_listeners[name]=listener
+        self.custom_listeners[name] = listener
 
-    def add_command(self,name,command):
+    def add_command(self, name, command):
         """
         Adds a command to the bot
         Commands must receive as a parameter the messages which call them
@@ -265,9 +302,9 @@ class Bot:
             command (func): Method that will be executed when the command is invoked
         """
 
-        self.custom_commands[name]=command
+        self.custom_commands[name] = command
 
-    def start_commercial(self,broadcaster_id,length):
+    def start_commercial(self, broadcaster_id, length):
         """
         Starts a commercial on a specified channel
 
@@ -280,9 +317,11 @@ class Bot:
             dict
         """
 
-        return self.__client.start_commercial(broadcaster_id,length)
+        return self.__client.start_commercial(broadcaster_id, length)
 
-    def get_extension_analytics(self,ended_at="",extension_id="",first=20,started_at="",type=""):
+    def get_extension_analytics(
+        self, ended_at="", extension_id="", first=20, started_at="", type=""
+    ):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
@@ -303,9 +342,13 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_analytics(ended_at,extension_id,first,started_at,type)
+        return self.__client.get_extension_analytics(
+            ended_at, extension_id, first, started_at, type
+        )
 
-    def get_game_analytics(self,ended_at="",first=20,game_id="",started_at="",type=""):
+    def get_game_analytics(
+        self, ended_at="", first=20, game_id="", started_at="", type=""
+    ):
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
@@ -325,9 +368,11 @@ class Bot:
             list
         """
 
-        return self.__client.get_game_analytics(ended_at,first,game_id,started_at,type)
+        return self.__client.get_game_analytics(
+            ended_at, first, game_id, started_at, type
+        )
 
-    def get_bits_leaderboard(self,count=10,period="all",started_at="",user_id=""):
+    def get_bits_leaderboard(self, count=10, period="all", started_at="", user_id=""):
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -349,9 +394,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_bits_leaderboard(count,period,started_at,user_id)
+        return self.__client.get_bits_leaderboard(count, period, started_at, user_id)
 
-    def get_cheermotes(self,broadcaster_id=""):
+    def get_cheermotes(self, broadcaster_id=""):
         """
         Retrieves the list of available Cheermotes
         Cheermotes returned are available throughout Twitch, in all Bits-enabled channels
@@ -365,7 +410,7 @@ class Bot:
 
         return self.__client.get_cheermotes(broadcaster_id)
 
-    def get_extension_transactions(self,extension_id,id=[],first=20):
+    def get_extension_transactions(self, extension_id, id=[], first=20):
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
@@ -381,7 +426,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_transactions(extension_id,id,first)
+        return self.__client.get_extension_transactions(extension_id, id, first)
 
     def get_channel(self, broadcaster_id: str | list[str]) -> Channel:
         """
@@ -397,7 +442,17 @@ class Bot:
 
         return self.__client.get_channel(broadcaster_id)
 
-    def modify_channel_information(self, broadcaster_id: str, game_id: str = None, broadcaster_language: str = None, title: str = None, delay: int = None, tags: list[str] = [], content_classification_labels: list[dict] = [], is_branded_content: bool = None):
+    def modify_channel_information(
+        self,
+        broadcaster_id: str,
+        game_id: str = None,
+        broadcaster_language: str = None,
+        title: str = None,
+        delay: int = None,
+        tags: list[str] = [],
+        content_classification_labels: list[dict] = [],
+        is_branded_content: bool = None,
+    ):
         """
         Updates a channel’s properties
 
@@ -418,9 +473,18 @@ class Bot:
             is_branded_content (bool): Boolean flag indicating if the channel has branded content
         """
 
-        self.__client.modify_channel_information(broadcaster_id, game_id, broadcaster_language, title, delay, tags, content_classification_labels, is_branded_content)
+        self.__client.modify_channel_information(
+            broadcaster_id,
+            game_id,
+            broadcaster_language,
+            title,
+            delay,
+            tags,
+            content_classification_labels,
+            is_branded_content,
+        )
 
-    def get_channel_editors(self,broadcaster_id):
+    def get_channel_editors(self, broadcaster_id):
         """
         Gets a list of users who have editor permissions for a specific channel
 
@@ -433,7 +497,9 @@ class Bot:
 
         return self.__client.get_channel_editors(broadcaster_id)
 
-    def get_followed_channels(self, user_id: str, broadcaster_id: str = "", first: int = 20) -> list[Channel]:
+    def get_followed_channels(
+        self, user_id: str, broadcaster_id: str = "", first: int = 20
+    ) -> list[Channel]:
         """
         Gets a list of broadcasters that the specified user follows
 
@@ -453,7 +519,9 @@ class Bot:
 
         return self.__client.get_followed_channels(user_id, broadcaster_id, first)
 
-    def get_channel_followers(self, broadcaster_id: str, user_id: str = "", first: int = 20) -> list[Channel]:
+    def get_channel_followers(
+        self, broadcaster_id: str, user_id: str = "", first: int = 20
+    ) -> list[Channel]:
         """
         The function `get_channel_followers` retrieves a list of channels that are following a specific
         broadcaster on Twitch.
@@ -473,7 +541,23 @@ class Bot:
 
         return self.__client.get_channel_followers(broadcaster_id, user_id, first)
 
-    def create_custom_reward(self,broadcaster_id,title,cost,prompt="",is_enabled=True,background_color="",is_user_input_required=False,is_max_per_stream_enabled=False,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,should_redemptions_skip_request_queue=False):
+    def create_custom_reward(
+        self,
+        broadcaster_id,
+        title,
+        cost,
+        prompt="",
+        is_enabled=True,
+        background_color="",
+        is_user_input_required=False,
+        is_max_per_stream_enabled=False,
+        max_per_stream=None,
+        is_max_per_user_per_stream_enabled=False,
+        max_per_user_per_stream=None,
+        is_global_cooldown_enabled=False,
+        global_cooldown_seconds=None,
+        should_redemptions_skip_request_queue=False,
+    ):
         """
         Creates a Custom Reward on a channel
 
@@ -507,9 +591,24 @@ class Bot:
             Reward
         """
 
-        return self.__client.create_custom_reward(broadcaster_id,title,cost,prompt,is_enabled,background_color,is_user_input_required,is_max_per_stream_enabled,max_per_stream,is_max_per_user_per_stream_enabled,max_per_user_per_stream,is_global_cooldown_enabled,global_cooldown_seconds,should_redemptions_skip_request_queue)
+        return self.__client.create_custom_reward(
+            broadcaster_id,
+            title,
+            cost,
+            prompt,
+            is_enabled,
+            background_color,
+            is_user_input_required,
+            is_max_per_stream_enabled,
+            max_per_stream,
+            is_max_per_user_per_stream_enabled,
+            max_per_user_per_stream,
+            is_global_cooldown_enabled,
+            global_cooldown_seconds,
+            should_redemptions_skip_request_queue,
+        )
 
-    def delete_custom_reward(self,broadcaster_id,id):
+    def delete_custom_reward(self, broadcaster_id, id):
         """
         Deletes a Custom Reward on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the OAuth token in order to be deleted
@@ -521,9 +620,9 @@ class Bot:
                       Must match a Custom Reward on broadcaster_id’s channel
         """
 
-        self.__client.delete_custom_reward(broadcaster_id,id)
+        self.__client.delete_custom_reward(broadcaster_id, id)
 
-    def get_custom_reward(self,broadcaster_id,id=[],only_manageable_rewards=False):
+    def get_custom_reward(self, broadcaster_id, id=[], only_manageable_rewards=False):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
@@ -538,9 +637,13 @@ class Bot:
             list
         """
 
-        return self.__client.get_custom_reward(broadcaster_id,id,only_manageable_rewards)
+        return self.__client.get_custom_reward(
+            broadcaster_id, id, only_manageable_rewards
+        )
 
-    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id=[],status="",sort="OLDEST",first=20):
+    def get_custom_reward_redemption(
+        self, broadcaster_id, reward_id, id=[], status="", sort="OLDEST", first=20
+    ):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
         Developers only have access to get and update redemptions for the rewards created programmatically by the same client_id
@@ -562,9 +665,29 @@ class Bot:
             list
         """
 
-        return self.__client.get_custom_reward_redemption(broadcaster_id,reward_id,id,status,sort,first)
+        return self.__client.get_custom_reward_redemption(
+            broadcaster_id, reward_id, id, status, sort, first
+        )
 
-    def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
+    def update_custom_reward(
+        self,
+        broadcaster_id,
+        id,
+        title="",
+        prompt="",
+        cost=None,
+        background_color="",
+        is_enabled=None,
+        is_user_input_required=None,
+        is_max_per_stream_enabled=None,
+        max_per_stream=None,
+        is_max_per_user_per_stream_enabled=False,
+        max_per_user_per_stream=None,
+        is_global_cooldown_enabled=False,
+        global_cooldown_seconds=None,
+        is_paused=None,
+        should_redemptions_skip_request_queue=None,
+    ):
         """
         Updates a Custom Reward created on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the user OAuth token
@@ -598,9 +721,26 @@ class Bot:
             Reward
         """
 
-        return self.__client.update_custom_reward(broadcaster_id,id,title,prompt,cost,background_color,is_enabled,is_user_input_required,is_max_per_stream_enabled,max_per_stream,is_max_per_user_per_stream_enabled,max_per_user_per_stream,is_global_cooldown_enabled,global_cooldown_seconds,is_paused,should_redemptions_skip_request_queue)
+        return self.__client.update_custom_reward(
+            broadcaster_id,
+            id,
+            title,
+            prompt,
+            cost,
+            background_color,
+            is_enabled,
+            is_user_input_required,
+            is_max_per_stream_enabled,
+            max_per_stream,
+            is_max_per_user_per_stream_enabled,
+            max_per_user_per_stream,
+            is_global_cooldown_enabled,
+            global_cooldown_seconds,
+            is_paused,
+            should_redemptions_skip_request_queue,
+        )
 
-    def update_redemption_status(self,id,broadcaster_id,reward_id,status=""):
+    def update_redemption_status(self, id, broadcaster_id, reward_id, status=""):
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
@@ -619,7 +759,9 @@ class Bot:
             Redemption
         """
 
-        return self.__client.update_redemption_status(id,broadcaster_id,reward_id,status)
+        return self.__client.update_redemption_status(
+            id, broadcaster_id, reward_id, status
+        )
 
     def get_charity_campaign(self, broadcaster_id: str) -> CharityCampaign:
         """
@@ -635,7 +777,9 @@ class Bot:
 
         return self.__client.get_charity_campaign(broadcaster_id)
 
-    def get_charity_campaign_donations(self, broadcaster_id: str, first: int = 20) -> list[CharityCampaignDonation]:
+    def get_charity_campaign_donations(
+        self, broadcaster_id: str, first: int = 20
+    ) -> list[CharityCampaignDonation]:
         """
         Gets the list of donations that users have made to the broadcaster’s active charity campaign
 
@@ -652,7 +796,9 @@ class Bot:
 
         return self.__client.get_charity_campaign_donations(broadcaster_id, first)
 
-    def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
+    def get_chatters(
+        self, broadcaster_id: str, moderator_id: str, first: int = 100
+    ) -> list[User]:
         """
         Gets the list of users that are connected to the broadcaster’s chat session
 
@@ -671,7 +817,7 @@ class Bot:
 
         return self.__client.get_chatters(broadcaster_id, moderator_id, first)
 
-    def get_channel_emotes(self,broadcaster_id):
+    def get_channel_emotes(self, broadcaster_id):
         """
         Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes
         Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
@@ -696,7 +842,7 @@ class Bot:
 
         return self.__client.get_global_emotes()
 
-    def get_emote_sets(self,emote_set_id):
+    def get_emote_sets(self, emote_set_id):
         """
         Gets all Twitch emotes for one or more specific emote sets
 
@@ -710,7 +856,7 @@ class Bot:
 
         return self.__client.get_emote_sets(emote_set_id)
 
-    def get_channel_chat_badges(self,broadcaster_id):
+    def get_channel_chat_badges(self, broadcaster_id):
         """
         Gets a list of custom chat badges that can be used in chat for the specified channel
         This includes subscriber badges and Bit badges
@@ -735,7 +881,7 @@ class Bot:
 
         return self.__client.get_global_chat_badges()
 
-    def get_chat_settings(self,broadcaster_id,moderator_id=""):
+    def get_chat_settings(self, broadcaster_id, moderator_id=""):
         """
         Gets the broadcaster’s chat settings
 
@@ -750,9 +896,22 @@ class Bot:
             dict
         """
 
-        return self.__client.get_chat_settings(broadcaster_id,moderator_id)
+        return self.__client.get_chat_settings(broadcaster_id, moderator_id)
 
-    def update_chat_settings(self,broadcaster_id,moderator_id,emote_mode=None,follower_mode=None,follower_mode_duration=0,non_moderator_chat_delay=None,non_moderator_chat_delay_duration=0,slow_mode=None,slow_mode_wait_time=30,subscriber_mode=None,unique_chat_mode=None):
+    def update_chat_settings(
+        self,
+        broadcaster_id,
+        moderator_id,
+        emote_mode=None,
+        follower_mode=None,
+        follower_mode_duration=0,
+        non_moderator_chat_delay=None,
+        non_moderator_chat_delay_duration=0,
+        slow_mode=None,
+        slow_mode_wait_time=30,
+        subscriber_mode=None,
+        unique_chat_mode=None,
+    ):
         """
         Updates the broadcaster’s chat settings
 
@@ -794,9 +953,23 @@ class Bot:
             dict
         """
 
-        return self.__client.update_chat_settings(broadcaster_id,moderator_id,emote_mode,follower_mode,follower_mode_duration,non_moderator_chat_delay,non_moderator_chat_delay_duration,slow_mode,slow_mode_wait_time,subscriber_mode,unique_chat_mode)
+        return self.__client.update_chat_settings(
+            broadcaster_id,
+            moderator_id,
+            emote_mode,
+            follower_mode,
+            follower_mode_duration,
+            non_moderator_chat_delay,
+            non_moderator_chat_delay_duration,
+            slow_mode,
+            slow_mode_wait_time,
+            subscriber_mode,
+            unique_chat_mode,
+        )
 
-    def send_chat_announcement(self, broadcaster_id: str, moderator_id: str, message: str, color: str = "") -> None:
+    def send_chat_announcement(
+        self, broadcaster_id: str, moderator_id: str, message: str, color: str = ""
+    ) -> None:
         """
         Sends an announcement to the broadcaster’s chat room
 
@@ -811,9 +984,13 @@ class Bot:
                 If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement
         """
 
-        self.__client.send_chat_announcement(broadcaster_id, moderator_id, message, color)
+        self.__client.send_chat_announcement(
+            broadcaster_id, moderator_id, message, color
+        )
 
-    def send_a_shoutout(self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str) -> None:
+    def send_a_shoutout(
+        self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str
+    ) -> None:
         """
         Sends a Shoutout to the specified broadcaster
 
@@ -824,7 +1001,9 @@ class Bot:
                 This ID must match the user ID in the access token
         """
 
-        self.__client.send_a_shoutout(from_broadcaster_id, to_broadcaster_id, moderator_id)
+        self.__client.send_a_shoutout(
+            from_broadcaster_id, to_broadcaster_id, moderator_id
+        )
 
     def get_user_chat_color(self, user_id: str | list[str]) -> list[dict]:
         """
@@ -854,7 +1033,7 @@ class Bot:
 
         self.__client.update_user_chat_color(user_id, color)
 
-    def create_clip(self,broadcaster_id,has_delay=False):
+    def create_clip(self, broadcaster_id, has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
 
@@ -867,9 +1046,18 @@ class Bot:
             dict
         """
 
-        return self.__client.create_clip(broadcaster_id,has_delay)
+        return self.__client.create_clip(broadcaster_id, has_delay)
 
-    def get_clips(self, broadcaster_id: str = "", game_id: str = "", id: list[str] = [], started_at: str = "", ended_at: str = "", first: int = 20, is_featured: bool = False):
+    def get_clips(
+        self,
+        broadcaster_id: str = "",
+        game_id: str = "",
+        id: list[str] = [],
+        started_at: str = "",
+        ended_at: str = "",
+        first: int = 20,
+        is_featured: bool = False,
+    ):
         """
         Gets one or more video clips that were captured from streams
         The id, game_id, and broadcaster_id query parameters are mutually exclusive
@@ -891,7 +1079,9 @@ class Bot:
             list[Clip]
         """
 
-        return self.__client.get_clips(broadcaster_id, game_id, id, started_at, ended_at, first, is_featured)
+        return self.__client.get_clips(
+            broadcaster_id, game_id, id, started_at, ended_at, first, is_featured
+        )
 
     def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
         """
@@ -907,7 +1097,9 @@ class Bot:
 
         return self.__client.get_content_classification_labels(locale)
 
-    def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
+    def get_drops_entitlements(
+        self, id="", user_id="", game_id="", fulfillment_status="", first=20
+    ):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
@@ -924,9 +1116,11 @@ class Bot:
             list
         """
 
-        return self.__client.get_drops_entitlements(id,user_id,game_id,fulfillment_status,first)
+        return self.__client.get_drops_entitlements(
+            id, user_id, game_id, fulfillment_status, first
+        )
 
-    def update_drops_entitlements(self,entitlement_ids=[],fulfillment_status=""):
+    def update_drops_entitlements(self, entitlement_ids=[], fulfillment_status=""):
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
@@ -940,9 +1134,13 @@ class Bot:
             list
         """
 
-        return self.__client.update_drops_entitlements(entitlement_ids,fulfillment_status)
+        return self.__client.update_drops_entitlements(
+            entitlement_ids, fulfillment_status
+        )
 
-    def get_extension_configuration_segment(self,broadcaster_id,extension_id,segment):
+    def get_extension_configuration_segment(
+        self, broadcaster_id, extension_id, segment
+    ):
         """
         Gets the specified configuration segment from the specified extension
         You can retrieve each segment a maximum of 20 times per minute
@@ -959,9 +1157,13 @@ class Bot:
             dict
         """
 
-        return self.__client.get_extension_configuration_segment(broadcaster_id,extension_id,segment)
+        return self.__client.get_extension_configuration_segment(
+            broadcaster_id, extension_id, segment
+        )
 
-    def set_extension_configuration_segment(self,extension_id,segment,broadcaster_id="",content="",version=""):
+    def set_extension_configuration_segment(
+        self, extension_id, segment, broadcaster_id="", content="", version=""
+    ):
         """
         Sets a single configuration segment of any type
         Each segment is limited to 5 KB and can be set at most 20 times per minute
@@ -977,9 +1179,13 @@ class Bot:
             version (str, optional): Configuration version with the segment type
         """
 
-        self.__client.set_extension_configuration_segment(extension_id,segment,broadcaster_id,content,version)
+        self.__client.set_extension_configuration_segment(
+            extension_id, segment, broadcaster_id, content, version
+        )
 
-    def set_extension_required_configuration(self,broadcaster_id,extension_id,extension_version,configuration_version):
+    def set_extension_required_configuration(
+        self, broadcaster_id, extension_id, extension_version, configuration_version
+    ):
         """
         Enable activation of a specified Extension, after any required broadcaster configuration is correct
 
@@ -990,9 +1196,13 @@ class Bot:
             configuration_version (str): The version of the configuration to use with the Extension
         """
 
-        self.__client.set_extension_required_configuration(broadcaster_id,extension_id,extension_version,configuration_version)
+        self.__client.set_extension_required_configuration(
+            broadcaster_id, extension_id, extension_version, configuration_version
+        )
 
-    def send_extension_pubsub_message(self,target,broadcaster_id,is_global_broadcast,message):
+    def send_extension_pubsub_message(
+        self, target, broadcaster_id, is_global_broadcast, message
+    ):
         """
         A message can be sent to either a specified channel or globally (all channels on which your extension is active)
         Extension PubSub has a rate limit of 100 requests per minute for a combination of Extension client ID and broadcaster ID
@@ -1005,9 +1215,11 @@ class Bot:
             message (str): String-encoded JSON message to be sent
         """
 
-        self.__client.send_extension_pubsub_message(target,broadcaster_id,is_global_broadcast,message)
+        self.__client.send_extension_pubsub_message(
+            target, broadcaster_id, is_global_broadcast, message
+        )
 
-    def get_extension_live_channels(self,extension_id,first=20):
+    def get_extension_live_channels(self, extension_id, first=20):
         """
         Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
         A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
@@ -1021,7 +1233,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_live_channels(extension_id,first)
+        return self.__client.get_extension_live_channels(extension_id, first)
 
     def get_extension_secrets(self):
         """
@@ -1034,7 +1246,7 @@ class Bot:
 
         return self.__client.get_extension_secrets()
 
-    def create_extension_secret(self,delay=300):
+    def create_extension_secret(self, delay=300):
         """
         Creates a JWT signing secret for a specific Extension
         Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
@@ -1050,7 +1262,9 @@ class Bot:
 
         return self.__client.create_extension_secret(delay)
 
-    def send_extension_chat_message(self,broadcaster_id,text,extension_id,extension_version):
+    def send_extension_chat_message(
+        self, broadcaster_id, text, extension_id, extension_version
+    ):
         """
         Sends a specified chat message to a specified channel
         The message will appear in the channel’s chat as a normal message
@@ -1065,9 +1279,11 @@ class Bot:
             extension_version (str): Version of the Extension sending this message
         """
 
-        self.__client.send_extension_chat_message(broadcaster_id,text,extension_id,extension_version)
+        self.__client.send_extension_chat_message(
+            broadcaster_id, text, extension_id, extension_version
+        )
 
-    def get_extensions(self,extension_id,extension_version=""):
+    def get_extensions(self, extension_id, extension_version=""):
         """
         Gets information about your Extensions; either the current version or a specified version
 
@@ -1080,9 +1296,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_extensions(extension_id,extension_version)
+        return self.__client.get_extensions(extension_id, extension_version)
 
-    def get_released_extensions(self,extension_id,extension_version=""):
+    def get_released_extensions(self, extension_id, extension_version=""):
         """
         Gets information about a released Extension; either the current version or a specified version
 
@@ -1095,9 +1311,11 @@ class Bot:
             dict
         """
 
-        return self.__client.get_released_extensions(extension_id,extension_version)
+        return self.__client.get_released_extensions(extension_id, extension_version)
 
-    def get_extension_bits_products(self,extension_client_id,should_include_all=False):
+    def get_extension_bits_products(
+        self, extension_client_id, should_include_all=False
+    ):
         """
         Gets a list of Bits products that belongs to an Extension
 
@@ -1110,9 +1328,20 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_bits_products(extension_client_id,should_include_all)
+        return self.__client.get_extension_bits_products(
+            extension_client_id, should_include_all
+        )
 
-    def update_extension_bits_product(self,extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False):
+    def update_extension_bits_product(
+        self,
+        extension_client_id,
+        sku,
+        cost,
+        display_name,
+        in_development=False,
+        expiration="",
+        is_broadcast=False,
+    ):
         """
         Add or update a Bits products that belongs to an Extension
 
@@ -1137,9 +1366,17 @@ class Bot:
             dict
         """
 
-        return self.__client.update_extension_bits_product(extension_client_id, sku, cost, display_name, in_development, expiration, is_broadcast)
+        return self.__client.update_extension_bits_product(
+            extension_client_id,
+            sku,
+            cost,
+            display_name,
+            in_development,
+            expiration,
+            is_broadcast,
+        )
 
-    def create_eventsub_subscription(self,type,version,condition,transport):
+    def create_eventsub_subscription(self, type, version, condition, transport):
         """
         Creates an EventSub subscription
 
@@ -1157,9 +1394,11 @@ class Bot:
             EventSubSubscription
         """
 
-        return self.__client.create_eventsub_subscription(type,version,condition,transport)
+        return self.__client.create_eventsub_subscription(
+            type, version, condition, transport
+        )
 
-    def delete_eventsub_subscription(self,id):
+    def delete_eventsub_subscription(self, id):
         """
         Delete an EventSub subscription
 
@@ -1169,7 +1408,9 @@ class Bot:
 
         self.__client.delete_eventsub_subscription(id)
 
-    def get_eventsub_subscriptions(self, status: str = "", type: str = "", user_id: str = "") -> list[EventSubSubscription]:
+    def get_eventsub_subscriptions(
+        self, status: str = "", type: str = "", user_id: str = ""
+    ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
         Only include one filter query parameter
@@ -1186,7 +1427,7 @@ class Bot:
 
         return self.__client.get_eventsub_subscriptions(status, type, user_id)
 
-    def get_top_games(self,first=20):
+    def get_top_games(self, first=20):
         """
         Gets games sorted by number of current viewers on Twitch, most popular first
 
@@ -1200,7 +1441,9 @@ class Bot:
 
         return self.__client.get_top_games(first)
 
-    def get_games(self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) -> list[Game]:
+    def get_games(
+        self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []
+    ) -> list[Game]:
         """
         Gets information about specified categories or games
 
@@ -1218,7 +1461,7 @@ class Bot:
 
         return self.__client.get_games(id, name, igdb_id)
 
-    def get_creator_goals(self,broadcaster_id):
+    def get_creator_goals(self, broadcaster_id):
         """
         Gets the broadcaster’s list of active goals
         Use this to get the current progress of each goal
@@ -1232,7 +1475,9 @@ class Bot:
 
         return self.__client.get_creator_goals(broadcaster_id)
 
-    def get_channel_guest_star_settings(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_channel_guest_star_settings(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> dict:
         """
         Gets the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -1245,9 +1490,19 @@ class Bot:
             dict
         """
 
-        return self.__client.get_channel_guest_star_settings(broadcaster_id, moderator_id)
+        return self.__client.get_channel_guest_star_settings(
+            broadcaster_id, moderator_id
+        )
 
-    def update_channel_guest_star_settings(self, broadcaster_id: str, is_moderator_send_live_enabled: bool=None, slot_count: int=None, is_browser_source_audio_enabled: bool=None, group_layout: str="", regenerate_browser_sources: bool=None) -> None:
+    def update_channel_guest_star_settings(
+        self,
+        broadcaster_id: str,
+        is_moderator_send_live_enabled: bool = None,
+        slot_count: int = None,
+        is_browser_source_audio_enabled: bool = None,
+        group_layout: str = "",
+        regenerate_browser_sources: bool = None,
+    ) -> None:
         """
         Mutates the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -1262,9 +1517,18 @@ class Bot:
             regenerate_browser_sources (bool): Flag determining if Guest Star should regenerate the auth token associated with the channel’s browser sources
         """
 
-        self.__client.update_channel_guest_star_settings(broadcaster_id, is_moderator_send_live_enabled, slot_count, is_browser_source_audio_enabled, group_layout, regenerate_browser_sources)
+        self.__client.update_channel_guest_star_settings(
+            broadcaster_id,
+            is_moderator_send_live_enabled,
+            slot_count,
+            is_browser_source_audio_enabled,
+            group_layout,
+            regenerate_browser_sources,
+        )
 
-    def get_guest_star_session(self, broadcaster_id: str, moderator_id: str) -> GuestStarSession:
+    def get_guest_star_session(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> GuestStarSession:
         """
         Gets information about an ongoing Guest Star session for a particular channel
 
@@ -1293,7 +1557,9 @@ class Bot:
 
         return self.__client.create_guest_star_session(broadcaster_id)
 
-    def end_guest_star_session(self, broadcaster_id: str, session_id: str) -> GuestStarSession:
+    def end_guest_star_session(
+        self, broadcaster_id: str, session_id: str
+    ) -> GuestStarSession:
         """
         Programmatically ends a Guest Star session on behalf of the broadcaster
 
@@ -1308,7 +1574,9 @@ class Bot:
 
         return self.__client.end_guest_star_session(broadcaster_id, session_id)
 
-    def get_guest_star_invites(self, broadcaster_id: str, moderator_id: str, session_id: str) -> list[dict]:
+    def get_guest_star_invites(
+        self, broadcaster_id: str, moderator_id: str, session_id: str
+    ) -> list[dict]:
         """
         Provides a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
 
@@ -1322,9 +1590,13 @@ class Bot:
             list[dict]
         """
 
-        return self.__client.get_guest_star_invites(broadcaster_id, moderator_id, session_id)
+        return self.__client.get_guest_star_invites(
+            broadcaster_id, moderator_id, session_id
+        )
 
-    def send_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+    def send_guest_star_invite(
+        self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
+    ) -> None:
         """
         Sends an invite to a specified guest on behalf of the broadcaster for a Guest Star session in progress
 
@@ -1336,9 +1608,13 @@ class Bot:
             guest_id (str): Twitch User ID for the guest to invite to the Guest Star session
         """
 
-        self.__client.send_guest_star_invite(broadcaster_id, moderator_id, session_id, guest_id)
+        self.__client.send_guest_star_invite(
+            broadcaster_id, moderator_id, session_id, guest_id
+        )
 
-    def delete_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+    def delete_guest_star_invite(
+        self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
+    ) -> None:
         """
         Revokes a previously sent invite for a Guest Star session
 
@@ -1350,9 +1626,18 @@ class Bot:
             guest_id (str): Twitch User ID for the guest to revoke the Guest Star session invite from
         """
 
-        self.__client.delete_guest_star_invite(broadcaster_id, moderator_id, session_id, guest_id)
+        self.__client.delete_guest_star_invite(
+            broadcaster_id, moderator_id, session_id, guest_id
+        )
 
-    def assign_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str) -> None:
+    def assign_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        guest_id: str,
+        slot_id: str,
+    ) -> None:
         """
         Allows a previously invited user to be assigned a slot within the active Guest Star session, once that guest has indicated they are ready to join
 
@@ -1366,9 +1651,18 @@ class Bot:
             slot_id (str): The slot assignment to give to the user
         """
 
-        self.__client.assign_guest_star_slot(broadcaster_id, moderator_id, session_id, guest_id, slot_id)
+        self.__client.assign_guest_star_slot(
+            broadcaster_id, moderator_id, session_id, guest_id, slot_id
+        )
 
-    def update_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, source_slot_id: str, destination_slot_id: str="") -> None:
+    def update_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        source_slot_id: str,
+        destination_slot_id: str = "",
+    ) -> None:
         """
         Allows a user to update the assigned slot for a particular user within the active Guest Star session
 
@@ -1382,12 +1676,26 @@ class Bot:
                 If the destination slot is occupied, the user assigned will be swapped into source_slot_id
         """
 
-        self.__client.update_guest_star_slot(broadcaster_id, moderator_id, session_id, source_slot_id, destination_slot_id)
+        self.__client.update_guest_star_slot(
+            broadcaster_id,
+            moderator_id,
+            session_id,
+            source_slot_id,
+            destination_slot_id,
+        )
 
-    def delete_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str, should_reinvite_guest: str="") -> None:
+    def delete_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        guest_id: str,
+        slot_id: str,
+        should_reinvite_guest: str = "",
+    ) -> None:
         """
         Allows a caller to remove a slot assignment from a user participating in an active Guest Star session
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster running the Guest Star session
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
@@ -1398,12 +1706,29 @@ class Bot:
             should_reinvite_guest (str): Flag signaling that the guest should be reinvited to the session, sending them back to the invite queue
         """
 
-        self.__client.delete_guest_star_slot(broadcaster_id, moderator_id, session_id, guest_id, slot_id, should_reinvite_guest)
+        self.__client.delete_guest_star_slot(
+            broadcaster_id,
+            moderator_id,
+            session_id,
+            guest_id,
+            slot_id,
+            should_reinvite_guest,
+        )
 
-    def update_guest_star_slot_settings(self, broadcaster_id: str, moderator_id: str, session_id: str, slot_id: str, is_audio_enabled: bool=None, is_video_enabled: bool=None, is_live: bool=None, volume: int=None) -> None:
+    def update_guest_star_slot_settings(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        slot_id: str,
+        is_audio_enabled: bool = None,
+        is_video_enabled: bool = None,
+        is_live: bool = None,
+        volume: int = None,
+    ) -> None:
         """
         Allows a user to update slot settings for a particular guest within a Guest Star session, such as allowing the user to share audio or video within the call as a host
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster running the Guest Star session
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
@@ -1416,9 +1741,20 @@ class Bot:
             volume (int): Value from 0-100 that controls the audio volume for shared views containing the slot
         """
 
-        self.__client.update_guest_star_slot_settings(broadcaster_id, moderator_id, session_id, slot_id, is_audio_enabled, is_video_enabled, is_live, volume)
+        self.__client.update_guest_star_slot_settings(
+            broadcaster_id,
+            moderator_id,
+            session_id,
+            slot_id,
+            is_audio_enabled,
+            is_video_enabled,
+            is_live,
+            volume,
+        )
 
-    def get_hype_train_events(self, broadcaster_id: str, first: int=1) -> list[HypeTrainEvent]:
+    def get_hype_train_events(
+        self, broadcaster_id: str, first: int = 1
+    ) -> list[HypeTrainEvent]:
         """
         Gets the information of the most recent Hype Train of the given channel ID
         When there is currently an active Hype Train, it returns information about that Hype Train
@@ -1437,7 +1773,9 @@ class Bot:
 
         return self.__client.get_hype_train_events(broadcaster_id, first)
 
-    def check_automod_status(self, broadcaster_id: str, msg_id: str, msg_user: str) -> list[dict]:
+    def check_automod_status(
+        self, broadcaster_id: str, msg_id: str, msg_user: str
+    ) -> list[dict]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
@@ -1452,7 +1790,7 @@ class Bot:
 
         return self.__client.check_automod_status(broadcaster_id, msg_id, msg_user)
 
-    def manage_held_automod_messages(self,user_id,msg_id,action):
+    def manage_held_automod_messages(self, user_id, msg_id, action):
         """
         Allow or deny a message that was held for review by AutoMod
 
@@ -1464,9 +1802,9 @@ class Bot:
                           Must be "ALLOW" or "DENY"
         """
 
-        self.__client.manage_held_automod_messages(user_id,msg_id,action)
+        self.__client.manage_held_automod_messages(user_id, msg_id, action)
 
-    def get_automod_settings(self,broadcaster_id,moderator_id):
+    def get_automod_settings(self, broadcaster_id, moderator_id):
         """
         Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -1479,10 +1817,23 @@ class Bot:
         Returns:
             dict
         """
-        
-        return self.__client.get_automod_settings(broadcaster_id,moderator_id)
 
-    def update_automod_settings(self,broadcaster_id,moderator_id,aggression=0,bullying=0,disability=0,misogyny=0,overall_level=0,race_ethnicity_or_religion=0,sex_based_terms=0,sexuality_sex_or_gender=0,swearing=0):
+        return self.__client.get_automod_settings(broadcaster_id, moderator_id)
+
+    def update_automod_settings(
+        self,
+        broadcaster_id,
+        moderator_id,
+        aggression=0,
+        bullying=0,
+        disability=0,
+        misogyny=0,
+        overall_level=0,
+        race_ethnicity_or_religion=0,
+        sex_based_terms=0,
+        sexuality_sex_or_gender=0,
+        swearing=0,
+    ):
         """
         Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -1505,9 +1856,21 @@ class Bot:
             dict
         """
 
-        return self.__client.update_automod_settings(broadcaster_id,moderator_id,aggression,bullying,disability,misogyny,overall_level,race_ethnicity_or_religion,sex_based_terms,sexuality_sex_or_gender,swearing)
+        return self.__client.update_automod_settings(
+            broadcaster_id,
+            moderator_id,
+            aggression,
+            bullying,
+            disability,
+            misogyny,
+            overall_level,
+            race_ethnicity_or_religion,
+            sex_based_terms,
+            sexuality_sex_or_gender,
+            swearing,
+        )
 
-    def get_banned_users(self,broadcaster_id,user_id=[],first=20):
+    def get_banned_users(self, broadcaster_id, user_id=[], first=20):
         """
         Returns all banned and timed-out users in a channel
 
@@ -1522,9 +1885,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_banned_users(broadcaster_id,user_id,first)
+        return self.__client.get_banned_users(broadcaster_id, user_id, first)
 
-    def ban_user(self,broadcaster_id,moderator_id,reason,user_id,duration=None):
+    def ban_user(self, broadcaster_id, moderator_id, reason, user_id, duration=None):
         """
         Bans a user from participating in a broadcaster’s chat room, or puts them in a timeout
         If the user is currently in a timeout, you can use this method to change the duration of the timeout or ban them altogether
@@ -1547,9 +1910,11 @@ class Bot:
             dict
         """
 
-        return self.__client.ban_user(broadcaster_id,moderator_id,reason,user_id,duration)
+        return self.__client.ban_user(
+            broadcaster_id, moderator_id, reason, user_id, duration
+        )
 
-    def unban_user(self,broadcaster_id,moderator_id,user_id):
+    def unban_user(self, broadcaster_id, moderator_id, user_id):
         """
         Removes the ban or timeout that was placed on the specified user
 
@@ -1561,9 +1926,9 @@ class Bot:
             user_id (str): The ID of the user to remove the ban or timeout from
         """
 
-        self.__client.unban_user(broadcaster_id,moderator_id,user_id)
+        self.__client.unban_user(broadcaster_id, moderator_id, user_id)
 
-    def get_blocked_terms(self,broadcaster_id,moderator_id,first=20):
+    def get_blocked_terms(self, broadcaster_id, moderator_id, first=20):
         """
         Gets the broadcaster’s list of non-private, blocked words or phrases
         These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
@@ -1581,9 +1946,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_blocked_terms(broadcaster_id,moderator_id,first)
+        return self.__client.get_blocked_terms(broadcaster_id, moderator_id, first)
 
-    def add_blocked_term(self,broadcaster_id,moderator_id,text):
+    def add_blocked_term(self, broadcaster_id, moderator_id, text):
         """
         Adds a word or phrase to the broadcaster’s list of blocked terms
         These are the terms that broadcasters don’t want used in their chat room
@@ -1602,9 +1967,9 @@ class Bot:
             dict
         """
 
-        return self.__client.add_blocked_term(broadcaster_id,moderator_id,text)
+        return self.__client.add_blocked_term(broadcaster_id, moderator_id, text)
 
-    def remove_blocked_term(self,broadcaster_id,id,moderator_id):
+    def remove_blocked_term(self, broadcaster_id, id, moderator_id):
         """
         Removes the word or phrase that the broadcaster is blocking users from using in their chat room
 
@@ -1616,9 +1981,11 @@ class Bot:
                                 If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
         """
 
-        self.__client.remove_blocked_term(broadcaster_id,id,moderator_id)
+        self.__client.remove_blocked_term(broadcaster_id, id, moderator_id)
 
-    def delete_chat_messages(self, broadcaster_id: str, moderator_id: str, message_id: str = "") -> None:
+    def delete_chat_messages(
+        self, broadcaster_id: str, moderator_id: str, message_id: str = ""
+    ) -> None:
         """
         Removes a single chat message or all chat messages from the broadcaster’s chat room
 
@@ -1632,7 +1999,7 @@ class Bot:
 
         self.__client.delete_chat_messages(broadcaster_id, moderator_id, message_id)
 
-    def get_moderators(self,broadcaster_id,user_id=[],first=20):
+    def get_moderators(self, broadcaster_id, user_id=[], first=20):
         """
         Returns all moderators in a channel
 
@@ -1647,7 +2014,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_moderators(broadcaster_id,user_id,first)
+        return self.__client.get_moderators(broadcaster_id, user_id, first)
 
     def add_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
         """
@@ -1673,7 +2040,9 @@ class Bot:
 
         self.__client.remove_channel_moderator(broadcaster_id, user_id)
 
-    def get_vips(self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) -> list[User]:
+    def get_vips(
+        self, broadcaster_id: str, user_id: list[str] = [], first: int = 20
+    ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
 
@@ -1716,7 +2085,9 @@ class Bot:
 
         self.__client.remove_channel_vip(user_id, broadcaster_id)
 
-    def update_shield_mode_status(self, broadcaster_id: str, moderator_id: str, is_active: bool) -> dict:
+    def update_shield_mode_status(
+        self, broadcaster_id: str, moderator_id: str, is_active: bool
+    ) -> dict:
         """
         Activates or deactivates the broadcaster’s Shield Mode
 
@@ -1730,7 +2101,9 @@ class Bot:
             dict
         """
 
-        return self.__client.update_shield_mode_status(broadcaster_id, moderator_id, is_active)
+        return self.__client.update_shield_mode_status(
+            broadcaster_id, moderator_id, is_active
+        )
 
     def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
         """
@@ -1747,7 +2120,7 @@ class Bot:
 
         return self.__client.get_shield_mode_status(broadcaster_id, moderator_id)
 
-    def get_polls(self,broadcaster_id,id=[],first=20):
+    def get_polls(self, broadcaster_id, id=[], first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
         Poll information is available for 90 days
@@ -1763,10 +2136,18 @@ class Bot:
         Returns:
             list
         """
-        
-        return self.__client.get_polls(broadcaster_id,id,first)
 
-    def create_poll(self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool=False, channel_points_per_vote: int=0) -> Poll:
+        return self.__client.get_polls(broadcaster_id, id, first)
+
+    def create_poll(
+        self,
+        broadcaster_id: str,
+        title: str,
+        choices: list[str],
+        duration: int,
+        channel_points_voting_enabled: bool = False,
+        channel_points_per_vote: int = 0,
+    ) -> Poll:
         """
         Create a poll for a specific Twitch channel
 
@@ -1791,9 +2172,16 @@ class Bot:
             Poll
         """
 
-        return self.__client.create_poll(broadcaster_id, title, choices, duration, channel_points_voting_enabled, channel_points_per_vote)
+        return self.__client.create_poll(
+            broadcaster_id,
+            title,
+            choices,
+            duration,
+            channel_points_voting_enabled,
+            channel_points_per_vote,
+        )
 
-    def end_poll(self,broadcaster_id,id,status):
+    def end_poll(self, broadcaster_id, id, status):
         """
         End a poll that is currently active
 
@@ -1808,9 +2196,9 @@ class Bot:
             dict
         """
 
-        return self.__client.end_poll(broadcaster_id,id,status)
+        return self.__client.end_poll(broadcaster_id, id, status)
 
-    def get_predictions(self,broadcaster_id,id=[],first=20):
+    def get_predictions(self, broadcaster_id, id=[], first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
@@ -1826,9 +2214,15 @@ class Bot:
             list
         """
 
-        return self.__client.get_predictions(broadcaster_id,id,first)
+        return self.__client.get_predictions(broadcaster_id, id, first)
 
-    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) -> Prediction:
+    def create_prediction(
+        self,
+        broadcaster_id: str,
+        title: str,
+        outcomes: list[str],
+        prediction_window: int,
+    ) -> Prediction:
         """
         Create a Channel Points Prediction for a specific Twitch channel
 
@@ -1848,9 +2242,11 @@ class Bot:
             Prediction
         """
 
-        return self.__client.create_prediction(broadcaster_id,title,outcomes,prediction_window)
+        return self.__client.create_prediction(
+            broadcaster_id, title, outcomes, prediction_window
+        )
 
-    def end_prediction(self,broadcaster_id,id,status,winning_outcome_id=""):
+    def end_prediction(self, broadcaster_id, id, status, winning_outcome_id=""):
         """
         Lock, resolve, or cancel a Channel Points Prediction
         Active Predictions can be updated to be "locked", "resolved", or "canceled"
@@ -1869,17 +2265,19 @@ class Bot:
             Prediction
         """
 
-        return self.__client.end_prediction(broadcaster_id,id,status,winning_outcome_id)
+        return self.__client.end_prediction(
+            broadcaster_id, id, status, winning_outcome_id
+        )
 
     def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
         """
         Raid another channel by sending the broadcaster’s viewers to the targeted channel
-        
+
         Args:
             from_broadcaster_id (str): The ID of the broadcaster that’s sending the raiding party
                 This ID must match the user ID in the user access token
             to_broadcaster_id (str): The ID of the broadcaster to raid
-        
+
         Returns:
             dict
         """
@@ -1889,7 +2287,7 @@ class Bot:
     def cancel_raid(self, broadcaster_id: str) -> None:
         """
         Cancel a pending raid
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster that initiated the raid
                 This ID must match the user ID in the user access token
@@ -1897,7 +2295,9 @@ class Bot:
 
         self.__client.cancel_raid(broadcaster_id)
 
-    def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
+    def get_channel_stream_schedule(
+        self, broadcaster_id, id=[], start_time="", utc_offset="0", first=20
+    ):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
         Scheduled broadcasts are defined as "stream segments"
@@ -1918,7 +2318,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_channel_stream_schedule(broadcaster_id,id,start_time,utc_offset,first)
+        return self.__client.get_channel_stream_schedule(
+            broadcaster_id, id, start_time, utc_offset, first
+        )
 
     def get_channel_icalendar(self, broadcaster_id):
         """
@@ -1933,7 +2335,14 @@ class Bot:
 
         return self.__client.get_channel_icalendar(broadcaster_id)
 
-    def update_channel_stream_schedule(self,broadcaster_id,is_vacation_enabled=False,vacation_start_time="",vacation_end_time="",timezone=""):
+    def update_channel_stream_schedule(
+        self,
+        broadcaster_id,
+        is_vacation_enabled=False,
+        vacation_start_time="",
+        vacation_end_time="",
+        timezone="",
+    ):
         """
         Update the settings for a channel’s stream schedule
         This can be used for setting vacation details
@@ -1951,9 +2360,24 @@ class Bot:
                                       Required if is_vacation_enabled is set to true
         """
 
-        self.__client.update_channel_stream_schedule(broadcaster_id,is_vacation_enabled,vacation_start_time,vacation_end_time,timezone)
+        self.__client.update_channel_stream_schedule(
+            broadcaster_id,
+            is_vacation_enabled,
+            vacation_start_time,
+            vacation_end_time,
+            timezone,
+        )
 
-    def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
+    def create_channel_stream_schedule_segment(
+        self,
+        broadcaster_id,
+        start_time,
+        timezone,
+        is_recurring,
+        duration=240,
+        category_id="",
+        title="",
+    ):
         """
         Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -1973,9 +2397,27 @@ class Bot:
             StreamSchedule
         """
 
-        return self.__client.create_channel_stream_schedule_segment(broadcaster_id,start_time,timezone,is_recurring,duration,category_id,title)
+        return self.__client.create_channel_stream_schedule_segment(
+            broadcaster_id,
+            start_time,
+            timezone,
+            is_recurring,
+            duration,
+            category_id,
+            title,
+        )
 
-    def update_channel_stream_schedule_segment(self,broadcaster_id,id,start_time="",duration=240,category_id="",title="",is_canceled=False,timezone=""):
+    def update_channel_stream_schedule_segment(
+        self,
+        broadcaster_id,
+        id,
+        start_time="",
+        duration=240,
+        category_id="",
+        title="",
+        is_canceled=False,
+        timezone="",
+    ):
         """
         Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -1996,9 +2438,18 @@ class Bot:
             StreamSchedule
         """
 
-        return self.__client.update_channel_stream_schedule_segment(broadcaster_id,id,start_time,duration,category_id,title,is_canceled,timezone)
+        return self.__client.update_channel_stream_schedule_segment(
+            broadcaster_id,
+            id,
+            start_time,
+            duration,
+            category_id,
+            title,
+            is_canceled,
+            timezone,
+        )
 
-    def delete_channel_stream_schedule_segment(self,broadcaster_id,id):
+    def delete_channel_stream_schedule_segment(self, broadcaster_id, id):
         """
         Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -2008,9 +2459,9 @@ class Bot:
             id (str): The ID of the streaming segment to delete
         """
 
-        self.__client.delete_channel_stream_schedule_segment(broadcaster_id,id)
+        self.__client.delete_channel_stream_schedule_segment(broadcaster_id, id)
 
-    def search_categories(self,query,first=20):
+    def search_categories(self, query, first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially
 
@@ -2023,26 +2474,28 @@ class Bot:
             list
         """
 
-        return self.__client.search_categories(query,first)
+        return self.__client.search_categories(query, first)
 
-    def search_channels(self, query: str, first: int=20, live_only: bool=False) -> list[Channel]:
+    def search_channels(
+        self, query: str, first: int = 20, live_only: bool = False
+    ) -> list[Channel]:
         """
         Gets the channels that match the specified query and have streamed content within the past 6 months
         To match, the beginning of the broadcaster’s name or category must match the query string
-        
+
         Args:
             query (str): The URI-encoded search string
             first (int): The maximum number of items to return
                 Minimum: 1
             live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
-        
+
         Returns:
             list[Channel]
         """
 
         return self.__client.search_channels(query, first, live_only)
 
-    def get_stream_key(self,broadcaster_id):
+    def get_stream_key(self, broadcaster_id):
         """
         Gets the channel stream key for a user
 
@@ -2055,7 +2508,15 @@ class Bot:
 
         return self.__client.get_stream_key(broadcaster_id)
 
-    def get_streams(self, user_id: str | list[str]="", user_login: str | list[str]="", game_id: str | list[str]="", type: str="all", language: str | list[str]="", first: int=20) -> list[Stream]:
+    def get_streams(
+        self,
+        user_id: str | list[str] = "",
+        user_login: str | list[str] = "",
+        game_id: str | list[str] = "",
+        type: str = "all",
+        language: str | list[str] = "",
+        first: int = 20,
+    ) -> list[Stream]:
         """
         Gets a list of all streams
         The list is in descending order by the number of viewers watching the stream
@@ -2078,9 +2539,11 @@ class Bot:
             list[Stream]
         """
 
-        return self.__client.get_streams(user_id, user_login, game_id, type, language, first)
+        return self.__client.get_streams(
+            user_id, user_login, game_id, type, language, first
+        )
 
-    def get_followed_streams(self, user_id: str, first: int=100) -> list[Stream]:
+    def get_followed_streams(self, user_id: str, first: int = 100) -> list[Stream]:
         """
         Gets the list of broadcasters that the user follows and that are streaming live
 
@@ -2096,7 +2559,7 @@ class Bot:
 
         return self.__client.get_followed_streams(user_id, first)
 
-    def create_stream_marker(self,user_id,description=""):
+    def create_stream_marker(self, user_id, description=""):
         """
         Creates a marker in the stream of a user specified by user ID
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -2111,9 +2574,9 @@ class Bot:
             list
         """
 
-        return self.__client.create_stream_marker(user_id,description)
+        return self.__client.create_stream_marker(user_id, description)
 
-    def get_stream_markers(self,user_id="",video_id="",first=20):
+    def get_stream_markers(self, user_id="", video_id="", first=20):
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -2130,9 +2593,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_stream_markers(user_id,video_id,first)
+        return self.__client.get_stream_markers(user_id, video_id, first)
 
-    def get_broadcaster_subscriptions(self,broadcaster_id,user_id=[],first=20):
+    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=[], first=20):
         """
         Get all of a broadcaster’s subscriptions
 
@@ -2148,9 +2611,11 @@ class Bot:
             list
         """
 
-        return self.__client.get_broadcaster_subscriptions(broadcaster_id,user_id,first)
+        return self.__client.get_broadcaster_subscriptions(
+            broadcaster_id, user_id, first
+        )
 
-    def check_user_subscription(self,broadcaster_id,user_id):
+    def check_user_subscription(self, broadcaster_id, user_id):
         """
         Checks if a specific user (user_id) is subscribed to a specific channel (broadcaster_id)
 
@@ -2162,9 +2627,9 @@ class Bot:
             dict
         """
 
-        return self.__client.check_user_subscription(broadcaster_id,user_id)
+        return self.__client.check_user_subscription(broadcaster_id, user_id)
 
-    def get_all_stream_tags(self,first=20,tag_id=[]):
+    def get_all_stream_tags(self, first=20, tag_id=[]):
         """
         Gets the list of all stream tags defined by Twitch
 
@@ -2177,9 +2642,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_all_stream_tags(first,tag_id)
+        return self.__client.get_all_stream_tags(first, tag_id)
 
-    def get_stream_tags(self,broadcaster_id):
+    def get_stream_tags(self, broadcaster_id):
         """
         Gets the list of current stream tags that have been set for a channel
 
@@ -2192,7 +2657,7 @@ class Bot:
 
         return self.__client.get_stream_tags(broadcaster_id)
 
-    def get_channel_teams(self,broadcaster_id):
+    def get_channel_teams(self, broadcaster_id):
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
 
@@ -2205,7 +2670,7 @@ class Bot:
 
         return self.__client.get_channel_teams(broadcaster_id)
 
-    def get_teams(self,name="",id=""):
+    def get_teams(self, name="", id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
@@ -2218,9 +2683,9 @@ class Bot:
             Team
         """
 
-        return self.__client.get_teams(name,id)
+        return self.__client.get_teams(name, id)
 
-    def get_users(self,id=[],login=[]):
+    def get_users(self, id=[], login=[]):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
@@ -2236,9 +2701,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_users(id,login)
+        return self.__client.get_users(id, login)
 
-    def update_user(self,description=""):
+    def update_user(self, description=""):
         """
         Updates the description of a user specified by the bearer token
         If the description parameter is not provided, no update will occur and the current user data is returned
@@ -2252,7 +2717,7 @@ class Bot:
 
         return self.__client.update_user(description)
 
-    def get_user_block_list(self,broadcaster_id,first=20):
+    def get_user_block_list(self, broadcaster_id, first=20):
         """
         Gets a specified user’s block list
 
@@ -2265,9 +2730,9 @@ class Bot:
             list
         """
 
-        return self.__client.get_user_block_list(broadcaster_id,first)
+        return self.__client.get_user_block_list(broadcaster_id, first)
 
-    def block_user(self,target_user_id,source_context="",reason=""):
+    def block_user(self, target_user_id, source_context="", reason=""):
         """
         Blocks the specified user on behalf of the authenticated user
 
@@ -2279,9 +2744,9 @@ class Bot:
                                     Valid values: "spam", "harassment", or "other"
         """
 
-        self.__client.block_user(target_user_id,source_context,reason)
+        self.__client.block_user(target_user_id, source_context, reason)
 
-    def unblock_user(self,target_user_id):
+    def unblock_user(self, target_user_id):
         """
         Unblocks the specified user on behalf of the authenticated user
 
@@ -2301,7 +2766,7 @@ class Bot:
 
         return self.__client.get_user_extensions()
 
-    def get_user_active_extensions(self,user_id=""):
+    def get_user_active_extensions(self, user_id=""):
         """
         Gets information about active extensions installed by a specified user, identified by a user ID or Bearer token
 
@@ -2325,7 +2790,17 @@ class Bot:
 
         return self.__client.update_user_extensions()
 
-    def get_videos(self,id=[],user_id="",game_id="",first=20,language="",period="all",sort="time",type="all"):
+    def get_videos(
+        self,
+        id=[],
+        user_id="",
+        game_id="",
+        first=20,
+        language="",
+        period="all",
+        sort="time",
+        type="all",
+    ):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
@@ -2353,9 +2828,11 @@ class Bot:
             list
         """
 
-        return self.__client.get_videos(id,user_id,game_id,first,language,period,sort,type)
+        return self.__client.get_videos(
+            id, user_id, game_id, first, language, period, sort, type
+        )
 
-    def delete_video(self,id):
+    def delete_video(self, id):
         """
         Deletes a video
         Videos are past broadcasts, Highlights, or uploads
@@ -2382,7 +2859,7 @@ class Bot:
 
         self.__client.send_whisper(from_user_id, to_user_id, message)
 
-    def get_webhook_subscriptions(self,first=20):
+    def get_webhook_subscriptions(self, first=20):
         """
         Gets the Webhook subscriptions of an application identified by a Bearer token, in order of expiration
 
@@ -2396,7 +2873,7 @@ class Bot:
 
         return self.__client.get_webhook_subscriptions(first)
 
-    def send(self,channel,text):
+    def send(self, channel, text):
         """
         Sends a message by chat
 
@@ -2405,9 +2882,9 @@ class Bot:
             text (str): Message's text
         """
 
-        self.__send_privmsg(channel,text)
+        self.__send_privmsg(channel, text)
 
-    def ban(self,channel,user,reason=""):
+    def ban(self, channel, user, reason=""):
         """
         Bans a user
 
@@ -2417,9 +2894,9 @@ class Bot:
             reason (str, optional): Reason of the ban
         """
 
-        self.__send_privmsg(channel,f"/ban @{user} {reason}")
+        self.__send_privmsg(channel, f"/ban @{user} {reason}")
 
-    def unban(self,channel,user):
+    def unban(self, channel, user):
         """
         Undoes the ban of a user
 
@@ -2428,9 +2905,9 @@ class Bot:
             user (str): Name of the user to readmit
         """
 
-        self.__send_privmsg(channel,f"/unban @{user}")
+        self.__send_privmsg(channel, f"/unban @{user}")
 
-    def clear(self,channel):
+    def clear(self, channel):
         """
         Clears the chat
 
@@ -2438,19 +2915,19 @@ class Bot:
             channel (str): Channel to clean the chat
         """
 
-        self.__send_privmsg(channel,"/clear")
+        self.__send_privmsg(channel, "/clear")
 
-    def delete_poll(self,channel):
+    def delete_poll(self, channel):
         """
         Eliminates the active poll
 
         Args:
             channel (str): Channel in which eliminate the poll
         """
-        
-        self.__send_privmsg(channel,"/deletepoll")
 
-    def emoteonly(self,channel):
+        self.__send_privmsg(channel, "/deletepoll")
+
+    def emoteonly(self, channel):
         """
         Activates the "emotes only" mode
 
@@ -2458,9 +2935,9 @@ class Bot:
             channel (str): Channel on which activate the mode
         """
 
-        self.__send_privmsg(channel,"/emoteonly")
+        self.__send_privmsg(channel, "/emoteonly")
 
-    def emoteonly_off(self,channel):
+    def emoteonly_off(self, channel):
         """
         Disables "emotes only" mode
 
@@ -2468,9 +2945,9 @@ class Bot:
             channel (str): Channel on which disable the mode
         """
 
-        self.__send_privmsg(channel,"/emoteonlyoff")
+        self.__send_privmsg(channel, "/emoteonlyoff")
 
-    def endpoll(self,channel):
+    def endpoll(self, channel):
         """
         Finish the active poll
 
@@ -2478,9 +2955,9 @@ class Bot:
             channel (str): Channel in which finish the poll
         """
 
-        self.__send_privmsg(channel,"/endpoll")
+        self.__send_privmsg(channel, "/endpoll")
 
-    def followers(self,channel):
+    def followers(self, channel):
         """
         Activates the "followers only" mode
 
@@ -2488,9 +2965,9 @@ class Bot:
             channel (str): Channel on which activate the mode
         """
 
-        self.__send_privmsg(channel,"/followers")
+        self.__send_privmsg(channel, "/followers")
 
-    def followers_off(self,channel):
+    def followers_off(self, channel):
         """
         Disables the "followers only" mode
 
@@ -2498,9 +2975,9 @@ class Bot:
             channel (str): Channel on which disable the mode
         """
 
-        self.__send_privmsg(channel,"/followersoff")
+        self.__send_privmsg(channel, "/followersoff")
 
-    def host(self,channel,username):
+    def host(self, channel, username):
         """
         Hosts a channel
 
@@ -2509,9 +2986,9 @@ class Bot:
             username (str): Name of the channel to host
         """
 
-        self.__send_privmsg(channel,f"/host {username}")
+        self.__send_privmsg(channel, f"/host {username}")
 
-    def unhost(self,channel):
+    def unhost(self, channel):
         """
         Unhosts the hosted channel
 
@@ -2519,9 +2996,9 @@ class Bot:
             channel (str): Channel who unhosts
         """
 
-        self.__send_privmsg(channel,f"/unhost")
+        self.__send_privmsg(channel, "/unhost")
 
-    def marker(self,channel,description=""):
+    def marker(self, channel, description=""):
         """
         Leaves a mark on the channel's stream
 
@@ -2530,9 +3007,9 @@ class Bot:
             description (str): Mark's description
         """
 
-        self.__send_privmsg(channel,f"/marker {description}")
+        self.__send_privmsg(channel, f"/marker {description}")
 
-    def mod(self,channel,username):
+    def mod(self, channel, username):
         """
         Makes a user mod
 
@@ -2541,9 +3018,9 @@ class Bot:
             username (str): Name of the user to be promoted
         """
 
-        self.__send_privmsg(channel,f"/mod {username}")
+        self.__send_privmsg(channel, f"/mod {username}")
 
-    def unmod(self,channel,username):
+    def unmod(self, channel, username):
         """
         Removes the moderator's rank from a user
 
@@ -2552,9 +3029,9 @@ class Bot:
             username (str): User's name
         """
 
-        self.__send_privmsg(channel,f"/unmod {username}")
+        self.__send_privmsg(channel, f"/unmod {username}")
 
-    def poll(self,channel):
+    def poll(self, channel):
         """
         Opens a configuration menu for creating a poll
 
@@ -2562,9 +3039,9 @@ class Bot:
             channel (str): Channel in which create the poll
         """
 
-        self.__send_privmsg(channel,"/poll")
+        self.__send_privmsg(channel, "/poll")
 
-    def prediction(self,channel):
+    def prediction(self, channel):
         """
         Opens a configuration menu for creating a prediction
 
@@ -2572,9 +3049,9 @@ class Bot:
             channel (str): Channel in which create the prediction
         """
 
-        self.__send_privmsg(channel,"/prediction")
+        self.__send_privmsg(channel, "/prediction")
 
-    def raid(self,channel,username):
+    def raid(self, channel, username):
         """
         Raids another channel
 
@@ -2583,9 +3060,9 @@ class Bot:
             username (str): Name of the channel to raid
         """
 
-        self.__send_privmsg(channel,f"/raid {username}")
+        self.__send_privmsg(channel, f"/raid {username}")
 
-    def unraid(self,channel):
+    def unraid(self, channel):
         """
         Cancels an raid
 
@@ -2593,9 +3070,9 @@ class Bot:
             channel (str): Channel who unraids
         """
 
-        self.__send_privmsg(channel,"/unraid")
+        self.__send_privmsg(channel, "/unraid")
 
-    def requests(self,channel):
+    def requests(self, channel):
         """
         Opens the reward requests queue
 
@@ -2603,9 +3080,9 @@ class Bot:
             channel (str): Owner of the rewards
         """
 
-        self.__send_privmsg(channel,"/requests")
+        self.__send_privmsg(channel, "/requests")
 
-    def slow(self,channel,duration):
+    def slow(self, channel, duration):
         """
         Activates the "slow" mode
 
@@ -2614,9 +3091,9 @@ class Bot:
             duration (int): Time between messages
         """
 
-        self.__send_privmsg(channel,f"/slow {duration}")
+        self.__send_privmsg(channel, f"/slow {duration}")
 
-    def slow_off(self,channel):
+    def slow_off(self, channel):
         """
         Disables the "slow" mode
 
@@ -2624,9 +3101,9 @@ class Bot:
             channel (str): Channel on which disable the mode
         """
 
-        self.__send_privmsg(channel,f"/slow_off")
+        self.__send_privmsg(channel, "/slow_off")
 
-    def subscribers(self,channel):
+    def subscribers(self, channel):
         """
         Activates the "subscribers only" mode
 
@@ -2634,9 +3111,9 @@ class Bot:
             channel (str): Channel on which activate the mode
         """
 
-        self.__send_privmsg(channel,"/subscribers")
+        self.__send_privmsg(channel, "/subscribers")
 
-    def subscribers_off(self,channel):
+    def subscribers_off(self, channel):
         """
         Disables "subscriber only" mode
 
@@ -2644,9 +3121,9 @@ class Bot:
             channel (str): Channel on which disable the mode
         """
 
-        self.__send_privmsg(channel,"/subscribersoff")
+        self.__send_privmsg(channel, "/subscribersoff")
 
-    def timeout(self,channel,user,duration=600,reason=""):
+    def timeout(self, channel, user, duration=600, reason=""):
         """
         Expels a user temporarily
 
@@ -2657,9 +3134,9 @@ class Bot:
             reason (str): Reason for expulsion
         """
 
-        self.__send_privmsg(channel,f"/timeout @{user} {duration} {reason}")
+        self.__send_privmsg(channel, f"/timeout @{user} {duration} {reason}")
 
-    def untimeout(self,channel,username):
+    def untimeout(self, channel, username):
         """
         Cancels the timeout of a user
 
@@ -2668,9 +3145,9 @@ class Bot:
             username (str): User to readmit
         """
 
-        self.__send_privmsg(channel,f"/untimeout @{username}")
+        self.__send_privmsg(channel, f"/untimeout @{username}")
 
-    def uniquechat(self,channel):
+    def uniquechat(self, channel):
         """
         Activates the "unique" mode
 
@@ -2678,9 +3155,9 @@ class Bot:
             channel (str): Channel on which activate the mode
         """
 
-        self.__send_privmsg(channel,"/uniquechat")
+        self.__send_privmsg(channel, "/uniquechat")
 
-    def uniquechat_off(self,channel):
+    def uniquechat_off(self, channel):
         """
         Disables the "unique" mode
 
@@ -2688,9 +3165,9 @@ class Bot:
             channel (str): Channel on which disable the mode
         """
 
-        self.__send_privmsg(channel,"/uniquechatoff")
+        self.__send_privmsg(channel, "/uniquechatoff")
 
-    def user(self,channel,username):
+    def user(self, channel, username):
         """
         Shows information about a user
 
@@ -2699,9 +3176,9 @@ class Bot:
             username (str): User to show information about
         """
 
-        self.__send_privmsg(channel,f"/user {username}")
+        self.__send_privmsg(channel, f"/user {username}")
 
-    def vip(self,channel,username):
+    def vip(self, channel, username):
         """
         Makes a user vip
 
@@ -2710,9 +3187,9 @@ class Bot:
             username (str): User's name
         """
 
-        self.__send_privmsg(channel,f"/vip {username}")
+        self.__send_privmsg(channel, f"/vip {username}")
 
-    def unvip(self,channel,username):
+    def unvip(self, channel, username):
         """
         Removes the vip range from a user
 
@@ -2721,9 +3198,9 @@ class Bot:
             username (str): User's name
         """
 
-        self.__send_privmsg(channel,f"/unvip {username}")
+        self.__send_privmsg(channel, f"/unvip {username}")
 
-    def block(self,channel,user):
+    def block(self, channel, user):
         """
         Blocks a user
 
@@ -2732,9 +3209,9 @@ class Bot:
             username (str): User to block
         """
 
-        self.__send_privmsg(channel,f"/block @{user}")
+        self.__send_privmsg(channel, f"/block @{user}")
 
-    def unblock(self,channel,user):
+    def unblock(self, channel, user):
         """
         Unblocks a user
 
@@ -2743,9 +3220,9 @@ class Bot:
             user (str): Name of the user to unblock
         """
 
-        self.__send_privmsg(channel,f"/unblock @{user}")
+        self.__send_privmsg(channel, f"/unblock @{user}")
 
-    def color(self,channel,color):
+    def color(self, channel, color):
         """
         Changes the color of the channel's name in the chat
 
@@ -2754,9 +3231,9 @@ class Bot:
             color (str): New color's name
         """
 
-        self.__send_privmsg(channel,f"/color {color}")
+        self.__send_privmsg(channel, f"/color {color}")
 
-    def help(self,channel,command):
+    def help(self, channel, command):
         """
         Shows detailed information about a command
 
@@ -2765,9 +3242,9 @@ class Bot:
             command (str): Command to show information about
         """
 
-        self.__send_privmsg(channel,f"/help {command}")
+        self.__send_privmsg(channel, f"/help {command}")
 
-    def me(self,channel,text):
+    def me(self, channel, text):
         """
         Sends a message by chat in italics
 
@@ -2776,9 +3253,9 @@ class Bot:
             text (str): Message's text
         """
 
-        self.__send_privmsg(channel,f"/me {text}")
+        self.__send_privmsg(channel, f"/me {text}")
 
-    def mods(self,channel):
+    def mods(self, channel):
         """
         Shows the moderators list of a channel
 
@@ -2786,9 +3263,9 @@ class Bot:
             channel (str): Channel who owns the moderators
         """
 
-        self.__send_privmsg(channel,"/mods")
+        self.__send_privmsg(channel, "/mods")
 
-    def vips(self,channel):
+    def vips(self, channel):
         """
         Shows the vips list of a channel
 
@@ -2796,9 +3273,9 @@ class Bot:
             channel (str): Channel who owns the vips
         """
 
-        self.__send_privmsg(channel,"/vips")
+        self.__send_privmsg(channel, "/vips")
 
-    def vote(self,channel,index):
+    def vote(self, channel, index):
         """
         Votes in the active poll
 
@@ -2807,9 +3284,9 @@ class Bot:
             index (int): Number of the option
         """
 
-        self.__send_privmsg(channel,f"/vote {index}")
+        self.__send_privmsg(channel, f"/vote {index}")
 
-    def commercial(self,channel,duration=30):
+    def commercial(self, channel, duration=30):
         """
         Places advertising in the channel
 
@@ -2818,9 +3295,9 @@ class Bot:
             duration (int): Duration of advertising
         """
 
-        self.__send_privmsg(channel,f"/commercial {duration}")
+        self.__send_privmsg(channel, f"/commercial {duration}")
 
-    def whisper(self,channel,user,text):
+    def whisper(self, channel, user, text):
         """
         Whispers to a user
 
@@ -2830,9 +3307,9 @@ class Bot:
             text (str): Whisper's text
         """
 
-        self.__send_privmsg(channel,f"/w {user} {text}")
+        self.__send_privmsg(channel, f"/w {user} {text}")
 
-    def add_method_after_commands(self,name,method):
+    def add_method_after_commands(self, name, method):
         """
         Adds to the bot a method that will be executed after each command
 
@@ -2841,9 +3318,9 @@ class Bot:
             method (func): Method to be executed after each command
         """
 
-        self.custom_methods_after_commands[name]=method
+        self.custom_methods_after_commands[name] = method
 
-    def add_method_before_commands(self,name,method):
+    def add_method_before_commands(self, name, method):
         """
         Adds to the bot a method that will be executed before each command
 
@@ -2852,9 +3329,9 @@ class Bot:
             method (func): Method to be executed before each command
         """
 
-        self.custom_methods_before_commands[name]=method
+        self.custom_methods_before_commands[name] = method
 
-    def remove_check(self,name):
+    def remove_check(self, name):
         """
         Removes a check from the bot
 
@@ -2864,7 +3341,7 @@ class Bot:
 
         self.custom_checks.pop(name)
 
-    def remove_listener(self,name):
+    def remove_listener(self, name):
         """
         Removes a listener from the bot
 
@@ -2874,7 +3351,7 @@ class Bot:
 
         self.listeners_to_remove.append(name)
 
-    def remove_command(self,name):
+    def remove_command(self, name):
         """
         Removes a command from the bot
 
@@ -2884,7 +3361,7 @@ class Bot:
 
         self.commands_to_remove.append(name)
 
-    def remove_method_after_commands(self,name):
+    def remove_method_after_commands(self, name):
         """
         Removes a method that is executed after each command
 
@@ -2892,9 +3369,9 @@ class Bot:
             name (str): Method's name
         """
 
-        self.custom_methods_after_commands.pop(name,None)
+        self.custom_methods_after_commands.pop(name, None)
 
-    def remove_method_before_commands(self,name):
+    def remove_method_before_commands(self, name):
         """
         Removes a method that is executed before each command
 
@@ -2902,4 +3379,4 @@ class Bot:
             name (str): Method's name
         """
 
-        self.custom_methods_before_commands.pop(name,None)
+        self.custom_methods_before_commands.pop(name, None)

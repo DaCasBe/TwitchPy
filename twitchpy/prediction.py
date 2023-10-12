@@ -2,8 +2,22 @@ class Prediction:
     """
     Represents a prediction
     """
-    
-    def __init__(self,id,broadcaster_id,broadcaster_name,broadcaster_login,title,winning_outcome_id,outcomes,prediction_window,status,created_at,ended_at,locked_at):
+
+    def __init__(
+        self,
+        id,
+        broadcaster_id,
+        broadcaster_name,
+        broadcaster_login,
+        title,
+        winning_outcome_id,
+        outcomes,
+        prediction_window,
+        status,
+        created_at,
+        ended_at,
+        locked_at,
+    ):
         """
         Args:
             id (str): ID of the Prediction
@@ -24,15 +38,15 @@ class Prediction:
                              If the status is not LOCKED, this is set to null
         """
 
-        self.id=id
-        self.broadcaster_id=broadcaster_id
-        self.broadcaster_name=broadcaster_name
-        self.broadcaster_login=broadcaster_login
-        self.title=title
-        self.winning_outcome_id=winning_outcome_id
-        self.outcomes=outcomes
-        self.prediction_window=prediction_window
-        self.status=status
-        self.created_at=created_at
-        self.ended_at=ended_at
-        self.locked_at=locked_at
+        self.id = id
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.title = title
+        self.winning_outcome_id = winning_outcome_id
+        self.outcomes = outcomes
+        self.prediction_window = prediction_window
+        self.status = status
+        self.created_at = created_at
+        self.ended_at = ended_at
+        self.locked_at = locked_at

@@ -3,7 +3,17 @@ class Message:
     Represents a message
     """
 
-    def __init__(self,prefix,user,channel,irc_command,irc_args,text,text_command,text_args):
+    def __init__(
+        self,
+        prefix,
+        user,
+        channel,
+        irc_command,
+        irc_args,
+        text,
+        text_command,
+        text_args,
+    ):
         """
         Args:
             prefix (str): Message's prefix
@@ -16,11 +26,11 @@ class Message:
             text_args (str): Command's arguments
         """
 
-        self.prefix=prefix
-        self.user=user
-        self.channel=channel
-        self.irc_command=irc_command
-        self.irc_args=irc_args
-        self.text=text
-        self.text_command=text_command
-        self.text_args=text_args
+        self.prefix = prefix
+        self.user = user
+        self.channel = channel
+        self.irc_command = irc_command
+        self.irc_args = irc_args
+        self.text = text
+        self.text_command = text_command
+        self.text_args = text_args
