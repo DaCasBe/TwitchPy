@@ -3,7 +3,23 @@ class Video:
     Represents a video
     """
 
-    def __init__(self,id,user_id,user_name,title,description,created_at,published_at,url,thumbnail_url,viewable,view_count,language,type,duration):
+    def __init__(
+        self,
+        id,
+        user_id,
+        user_name,
+        title,
+        description,
+        created_at,
+        published_at,
+        url,
+        thumbnail_url,
+        viewable,
+        view_count,
+        language,
+        type,
+        duration,
+    ):
         """
         Args:
             id (str): ID of the video
@@ -22,17 +38,17 @@ class Video:
             duration (str): Duration of the video
         """
 
-        self.id=id
-        self.user_id=user_id
-        self.user_name=user_name
-        self.title=title
-        self.description=description
-        self.created_at=created_at
-        self.published_at=published_at
-        self.url=url
-        self.thumbnail_url=thumbnail_url
-        self.viewable=viewable
-        self.view_count=view_count
-        self.language=language
-        self.type=type
-        self.duration=duration
+        self.id = id
+        self.user_id = user_id
+        self.user_name = user_name
+        self.title = title
+        self.description = description
+        self.created_at = created_at
+        self.published_at = published_at
+        self.url = url
+        self.thumbnail_url = thumbnail_url
+        self.viewable = viewable
+        self.view_count = view_count
+        self.language = language
+        self.type = type
+        self.duration = duration

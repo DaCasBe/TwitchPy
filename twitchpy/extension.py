@@ -3,7 +3,32 @@ class Extension:
     Represents an extension
     """
 
-    def __init__(self,author_name,bits_enabled,can_install,configuration_location,description,eula_tos_url,has_chat_support,icon_url,icon_urls,id,name,privacy_policy_url,request_identity_link,screenshot_urls,state,subscriptions_support_level,summary,support_email,version,viewer_summary,views,allowlisted_config_urls,allowlisted_panel_urls):
+    def __init__(
+        self,
+        author_name,
+        bits_enabled,
+        can_install,
+        configuration_location,
+        description,
+        eula_tos_url,
+        has_chat_support,
+        icon_url,
+        icon_urls,
+        id,
+        name,
+        privacy_policy_url,
+        request_identity_link,
+        screenshot_urls,
+        state,
+        subscriptions_support_level,
+        summary,
+        support_email,
+        version,
+        viewer_summary,
+        views,
+        allowlisted_config_urls,
+        allowlisted_panel_urls,
+    ):
         """
         Args:
             author_name (str): Name of the individual or organization that owns the Extension
@@ -33,26 +58,26 @@ class Extension:
             allowlisted_panel_urls (list): Allow-listed panel URLs for displaying the Extension
         """
 
-        self.author_name=author_name
-        self.bits_enabled=bits_enabled
-        self.can_install=can_install
-        self.configuration_location=configuration_location
-        self.description=description
-        self.eula_tos_url=eula_tos_url
-        self.has_chat_support=has_chat_support
-        self.icon_url=icon_url
-        self.icon_urls=icon_urls
-        self.id=id
-        self.name=name
-        self.privacy_policy_url=privacy_policy_url
-        self.request_identity_link=request_identity_link
-        self.screenshot_urls=screenshot_urls
-        self.state=state
-        self.subscriptions_support_level=subscriptions_support_level
-        self.summary=summary
-        self.support_email=support_email
-        self.version=version
-        self.viewer_summary=viewer_summary
-        self.views=views
-        self.allowlisted_config_urls=allowlisted_config_urls
-        self.allowlisted_panel_urls=allowlisted_panel_urls
+        self.author_name = author_name
+        self.bits_enabled = bits_enabled
+        self.can_install = can_install
+        self.configuration_location = configuration_location
+        self.description = description
+        self.eula_tos_url = eula_tos_url
+        self.has_chat_support = has_chat_support
+        self.icon_url = icon_url
+        self.icon_urls = icon_urls
+        self.id = id
+        self.name = name
+        self.privacy_policy_url = privacy_policy_url
+        self.request_identity_link = request_identity_link
+        self.screenshot_urls = screenshot_urls
+        self.state = state
+        self.subscriptions_support_level = subscriptions_support_level
+        self.summary = summary
+        self.support_email = support_email
+        self.version = version
+        self.viewer_summary = viewer_summary
+        self.views = views
+        self.allowlisted_config_urls = allowlisted_config_urls
+        self.allowlisted_panel_urls = allowlisted_panel_urls

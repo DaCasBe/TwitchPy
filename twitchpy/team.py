@@ -3,7 +3,19 @@ class Team:
     Represents a team
     """
 
-    def __init__(self,users,background_image_url,banner,created_at,updated_at,info,thumbnail_url,team_name,team_display_name,id):
+    def __init__(
+        self,
+        users,
+        background_image_url,
+        banner,
+        created_at,
+        updated_at,
+        info,
+        thumbnail_url,
+        team_name,
+        team_display_name,
+        id,
+    ):
         """
         Args:
             users (list): Users in the team
@@ -17,14 +29,14 @@ class Team:
             team_display_name (str): Team display name
             id (str): Team ID
         """
-        
-        self.users=users
-        self.background_image_url=background_image_url
-        self.banner=banner
-        self.created_at=created_at
-        self.updated_at=updated_at
-        self.info=info
-        self.thumbnail_url=thumbnail_url
-        self.team_name=team_name
-        self.team_display_name=team_display_name
-        self.id=id
+
+        self.users = users
+        self.background_image_url = background_image_url
+        self.banner = banner
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.info = info
+        self.thumbnail_url = thumbnail_url
+        self.team_name = team_name
+        self.team_display_name = team_display_name
+        self.id = id

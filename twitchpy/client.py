@@ -1,36 +1,38 @@
 import logging
+import math
+import os
+
 import requests
+
+import twitchpy.errors
 from twitchpy.badge import Badge
+from twitchpy.channel import Channel
+from twitchpy.charity_campaign import CharityCampaign
+from twitchpy.charity_campaign_donation import CharityCampaignDonation
 from twitchpy.clip import Clip
+from twitchpy.emote import Emote
 from twitchpy.eventsub_subscription import EventSubSubscription
 from twitchpy.extension import Extension
+from twitchpy.game import Game
 from twitchpy.guest_star_session import GuestStarSession
 from twitchpy.hypetrain_event import HypeTrainEvent
 from twitchpy.poll import Poll
-from twitchpy.soundtrack_playlist import SoundtrackPlaylist
-from twitchpy.soundtrack_track import SoundtrackTrack
+from twitchpy.prediction import Prediction
+from twitchpy.redemption import Redemption
+from twitchpy.reward import Reward
+from twitchpy.stream import Stream
 from twitchpy.stream_schedule import StreamSchedule
 from twitchpy.tag import Tag
-from twitchpy.user import User
-from twitchpy.game import Game
-from twitchpy.stream import Stream
-from twitchpy.channel import Channel
-import os
-from twitchpy.reward import Reward
-from twitchpy.redemption import Redemption
-import twitchpy.errors
-import math
-from twitchpy.video import Video
 from twitchpy.team import Team
-from twitchpy.emote import Emote
-from twitchpy.prediction import Prediction
-from twitchpy.charity_campaign import CharityCampaign
-from twitchpy.charity_campaign_donation import CharityCampaignDonation
+from twitchpy.user import User
+from twitchpy.video import Video
 
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
 ENDPOINT_EVENTSUB_SUBSCRIPTION = "https://api.twitch.tv/helix/eventsub/subscriptions"
-ENDPOINT_MODERATION_BLOCKED_TERMS = "https://api.twitch.tv/helix/moderation/blocked_terms"
+ENDPOINT_MODERATION_BLOCKED_TERMS = (
+    "https://api.twitch.tv/helix/moderation/blocked_terms"
+)
 ENDPOINT_POLLS = "https://api.twitch.tv/helix/polls"
 ENDPOINT_PREDICTIONS = "https://api.twitch.tv/helix/predictions"
 ENDPOINT_SCHEDULE_SEGMENT = "https://api.twitch.tv/helix/schedule/segment"
@@ -39,13 +41,25 @@ ENDPOINT_VIPS = "https://api.twitch.tv/helix/channels/vips"
 ENDPOINT_GUEST_STAR_SESSION = "https://api.twitch.tv/helix/guest_star/session"
 ENDPOINT_GUEST_STAR_INVITES = "https://api.twitch.tv/helix/guest_star/invites"
 ENDPOINT_GUEST_STAR_SLOT = "https://api.twitch.tv/helix/guest_star/slot"
+URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
+ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
+
 
 class Client:
     """
     Represents a client connection to the Twitch API
     """
 
-    def __init__(self,oauth_token,client_id,client_secret,redirect_uri,tokens_path,code="",jwt_token=""):
+    def __init__(
+        self,
+        oauth_token,
+        client_id,
+        client_secret,
+        redirect_uri,
+        tokens_path,
+        code="",
+        jwt_token="",
+    ):
         """
         Args:
             oauth_token (str): OAuth Token
@@ -56,27 +70,31 @@ class Client:
             code (str, optional): Authorization code for getting an user token
             jwt_token (str, optional): JWT Token
         """
-        
-        self.oauth_token=oauth_token
-        self.client_id=client_id
-        self.client_secret=client_secret
-        self.redirect_uri=redirect_uri
-        self.tokens_path=tokens_path
-        self.__app_token=self.__get_app_token()
 
-        if code!="":
-            self.__user_token=self.__get_user_token(code)
+        self.oauth_token = oauth_token
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.redirect_uri = redirect_uri
+        self.tokens_path = tokens_path
+        self.__app_token = self.__get_app_token()
+
+        if code != "":
+            self.__user_token = self.__get_user_token(code)
 
         else:
-            self.__user_token=""
+            self.__user_token = ""
 
-        self.__jwt_token=jwt_token
+        self.__jwt_token = jwt_token
 
     def __get_app_token(self):
-        url="https://id.twitch.tv/oauth2/token"
-        payload={"client_id":self.client_id,"client_secret":self.client_secret,"grant_type":"client_credentials"}
+        url = URL_OAUTH2_TOKEN
+        payload = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "client_credentials",
+        }
 
-        response=requests.post(url,json=payload)
+        response = requests.post(url, json=payload)
 
         if response.ok:
             return response.json()["access_token"]
@@ -84,95 +102,118 @@ class Client:
         else:
             raise twitchpy.errors.AppTokenError("Error obtaining app token")
 
-    def __is_last_code_used(self,code):
+    def __is_last_code_used(self, code):
         try:
-            tokens_file=open(self.tokens_path)
-            tokens=tokens_file.readlines()
+            tokens_file = open(self.tokens_path)
+            tokens = tokens_file.readlines()
             tokens_file.close()
-        
+
         except Exception:
             return False
 
         for token in tokens:
-            token=token.replace(" ","").replace("\n","")
-            token=token.split("=")
+            token = token.replace(" ", "").replace("\n", "")
+            token = token.split("=")
 
-            if token[0]=="CODE" and token[1]==code:
+            if token[0] == "CODE" and token[1] == code:
                 return True
 
         return False
 
-    def __read_user_tokens_from_file(self,file):
+    def __read_user_tokens_from_file(self, file):
         try:
-            secret_file=open(file,"rt")
-            data=secret_file.readlines()
+            secret_file = open(file, "rt")
+            data = secret_file.readlines()
             secret_file.close()
 
         except Exception as error:
             logging.exception("Error reading tokens")
             raise error
 
-        user_token=""
-        refresh_user_token=""
+        user_token = ""
+        refresh_user_token = ""
 
         for i in range(len(data)):
-            secret=data[i].split("=")
+            secret = data[i].split("=")
 
-            if "USER_TOKEN"==secret[0]:
-                user_token=secret[1].replace("\n","")
+            if "USER_TOKEN" == secret[0]:
+                user_token = secret[1].replace("\n", "")
 
-            if "REFRESH_USER_TOKEN"==secret[0]:
-                refresh_user_token=secret[1].replace("\n","")
+            if "REFRESH_USER_TOKEN" == secret[0]:
+                refresh_user_token = secret[1].replace("\n", "")
 
-        return user_token,refresh_user_token
+        return user_token, refresh_user_token
 
-    def __save_user_tokens_in_file(self,file,user_token,user_refresh_token,code):
-        data=f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={code}"
+    def __save_user_tokens_in_file(self, file, user_token, user_refresh_token, code):
+        data = f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={code}"
 
-        secret_file=open(file,"wt")
+        secret_file = open(file, "wt")
         secret_file.write(data)
         secret_file.close()
 
-    def __generate_user_tokens(self,code,file):
-        url=f"https://id.twitch.tv/oauth2/token"
-        payload={"client_id":self.client_id,"client_secret":self.client_secret,"code":code,"grant_type":"authorization_code","redirect_uri":self.redirect_uri}
+    def __generate_user_tokens(self, code, file):
+        url = URL_OAUTH2_TOKEN
+        payload = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "code": code,
+            "grant_type": "authorization_code",
+            "redirect_uri": self.redirect_uri,
+        }
 
-        response=requests.post(url,payload)
+        response = requests.post(url, payload)
 
         if response.ok:
-            response=response.json()
-            self.__save_user_tokens_in_file(file,response["access_token"],response["refresh_token"],code)
+            response = response.json()
+            self.__save_user_tokens_in_file(
+                file, response["access_token"], response["refresh_token"], code
+            )
 
-            return response["access_token"],response["refresh_token"]
+            return response["access_token"], response["refresh_token"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def __refresh_user_tokens(self,refresh_user_token):
-        url="https://id.twitch.tv/oauth2/token"
-        payload={"grant_type":"refresh_token","refresh_token":refresh_user_token,"client_id":self.client_id,"client_secret":self.client_secret}
+    def __refresh_user_tokens(self, refresh_user_token):
+        url = URL_OAUTH2_TOKEN
+        payload = {
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_user_token,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+        }
 
-        response=requests.post(url,json=payload)
+        response = requests.post(url, json=payload)
 
         if response.ok:
-            response=response.json()
-            return response["access_token"],response["refresh_token"]
+            response = response.json()
+            return response["access_token"], response["refresh_token"]
 
         else:
             raise twitchpy.errors.UserTokenError("Error obtaining user token")
 
-    def __get_user_token(self,code):
-        if self.__is_last_code_used(code) or (not self.__is_last_code_used(code) and os.path.isfile(self.tokens_path)):
-            user_token,refresh_user_token=self.__read_user_tokens_from_file(self.tokens_path)
-            user_token,refresh_user_token=self.__refresh_user_tokens(refresh_user_token)
-            self.__save_user_tokens_in_file(self.tokens_path,user_token,refresh_user_token,code)
+    def __get_user_token(self, code):
+        if self.__is_last_code_used(code) or (
+            not self.__is_last_code_used(code) and os.path.isfile(self.tokens_path)
+        ):
+            user_token, refresh_user_token = self.__read_user_tokens_from_file(
+                self.tokens_path
+            )
+            user_token, refresh_user_token = self.__refresh_user_tokens(
+                refresh_user_token
+            )
+            self.__save_user_tokens_in_file(
+                self.tokens_path, user_token, refresh_user_token, code
+            )
 
         else:
-            user_token,refresh_user_token=self.__generate_user_tokens(code,self.tokens_path)
+            user_token, refresh_user_token = self.__generate_user_tokens(
+                code, self.tokens_path
+            )
 
         return user_token
 
-    def start_commercial(self,broadcaster_id,length):
+    def start_commercial(self, broadcaster_id, length):
         """
         Starts a commercial on a specified channel
 
@@ -188,20 +229,26 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/channels/commercial"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"broadcaster_id":broadcaster_id,"length":length}
+        url = "https://api.twitch.tv/helix/channels/commercial"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {"broadcaster_id": broadcaster_id, "length": length}
 
-        response=requests.post(url,headers=headers,json=payload)
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.ok:
-            response=response.json()
+            response = response.json()
             return response["data"][0]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_extension_analytics(self,ended_at="",extension_id="",first=20,started_at="",type=""):
+    def get_extension_analytics(
+        self, ended_at="", extension_id="", first=20, started_at="", type=""
+    ):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
@@ -225,47 +272,52 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/analytics/extensions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/analytics/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if ended_at!="":
-            params["ended_at"]=ended_at
+        if ended_at != "":
+            params["ended_at"] = ended_at
 
-        if extension_id!="":
-            params["extension_id"]=extension_id
+        if extension_id != "":
+            params["extension_id"] = extension_id
 
-        if started_at!="":
-            params["started_at"]=started_at
+        if started_at != "":
+            params["started_at"] = started_at
 
-        if type!="":
-            params["type"]=type
+        if type != "":
+            params["type"] = type
 
-        after=""
-        calls=math.ceil(first/100)
-        extension_analytics=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        extension_analytics = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
+                response = response.json()
                 extension_analytics.extend(response["data"])
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return extension_analytics
 
-    def get_game_analytics(self,ended_at="",first=20,game_id="",started_at="",type=""):
+    def get_game_analytics(
+        self, ended_at="", first=20, game_id="", started_at="", type=""
+    ):
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
@@ -288,47 +340,50 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/analytics/games"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/analytics/games"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if ended_at!="":
-            params["ended_at"]=ended_at
+        if ended_at != "":
+            params["ended_at"] = ended_at
 
-        if game_id!="":
-            params["game_id"]=game_id
+        if game_id != "":
+            params["game_id"] = game_id
 
-        if started_at!="":
-            params["started_at"]=started_at
+        if started_at != "":
+            params["started_at"] = started_at
 
-        if type!="":
-            params["type"]=type
+        if type != "":
+            params["type"] = type
 
-        after=""
-        calls=math.ceil(first/100)
-        game_analytics=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        game_analytics = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
+                response = response.json()
                 game_analytics.extend(response["data"])
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return game_analytics
 
-    def get_bits_leaderboard(self,count=10,period="all",started_at="",user_id=""):
+    def get_bits_leaderboard(self, count=10, period="all", started_at="", user_id=""):
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -353,23 +408,26 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/bits/leaderboard"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/bits/leaderboard"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if count!=10:
-            params["count"]=count
+        if count != 10:
+            params["count"] = count
 
-        if period!="all":
-            params["period"]=period
+        if period != "all":
+            params["period"] = period
 
-        if started_at!="":
-            params["started_at"]=started_at
+        if started_at != "":
+            params["started_at"] = started_at
 
-        if user_id!="":
-            params["user_id"]=user_id
+        if user_id != "":
+            params["user_id"] = user_id
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             return response.json()["data"]
@@ -377,7 +435,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_cheermotes(self,broadcaster_id=""):
+    def get_cheermotes(self, broadcaster_id=""):
         """
         Retrieves the list of available Cheermotes
         Cheermotes returned are available throughout Twitch, in all Bits-enabled channels
@@ -392,22 +450,25 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/bits/cheermotes"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/bits/cheermotes"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if broadcaster_id!="":
-            params={"broadcaster_id":broadcaster_id}
-        
-        response=requests.get(url,headers=headers,params=params)
-        
+        if broadcaster_id != "":
+            params = {"broadcaster_id": broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
-        
-    def get_extension_transactions(self,extension_id,id=[],first=20):
+
+    def get_extension_transactions(self, extension_id, id=[], first=20):
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
@@ -426,38 +487,41 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions/transactions"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"extension_id":extension_id}
+        url = "https://api.twitch.tv/helix/extensions/transactions"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"extension_id": extension_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if first!=20:
-            params["first"]=first
+        if first != 20:
+            params["first"] = first
 
-        after=""
-        calls=math.ceil(first/100)
-        extension_transactions=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        extension_transactions = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
+                response = response.json()
                 extension_transactions.extend(response["data"])
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
@@ -480,21 +544,46 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/channels"
-        headers = {"Authorization": f"Bearer {self.__user_token if self.__user_token != '' else self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token if self.__user_token != '' else self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id}
 
         response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             channel = response.json()["data"][0]
-            channel = Channel(channel["broadcaster_id"], channel["broadcaster_login"], channel["broadcaster_name"], channel["broadcaster_language"], channel["game_name"], channel["game_id"], channel["title"], channel["delay"], channel["tags"], channel["content_classification_labels"], channel["is_branded_content"])
+            channel = Channel(
+                channel["broadcaster_id"],
+                channel["broadcaster_login"],
+                channel["broadcaster_name"],
+                channel["broadcaster_language"],
+                channel["game_name"],
+                channel["game_id"],
+                channel["title"],
+                channel["delay"],
+                channel["tags"],
+                channel["content_classification_labels"],
+                channel["is_branded_content"],
+            )
 
             return channel
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def modify_channel_information(self, broadcaster_id: str, game_id: str = None, broadcaster_language: str = None, title: str = None, delay: int = None, tags: list[str] = [], content_classification_labels: list[dict] = [], is_branded_content: bool = None):
+    def modify_channel_information(
+        self,
+        broadcaster_id: str,
+        game_id: str = None,
+        broadcaster_language: str = None,
+        title: str = None,
+        delay: int = None,
+        tags: list[str] = [],
+        content_classification_labels: list[dict] = [],
+        is_branded_content: bool = None,
+    ):
         """
         Updates a channel’s properties
 
@@ -516,7 +605,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/channels"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id}
 
         if game_id is not None:
@@ -542,7 +634,7 @@ class Client:
 
         requests.patch(url, headers=headers, data=data)
 
-    def get_channel_editors(self,broadcaster_id):
+    def get_channel_editors(self, broadcaster_id):
         """
         Gets a list of users who have editor permissions for a specific channel
 
@@ -556,26 +648,31 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/channels/editors"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/channels/editors"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            ids=[]
+            ids = []
 
             for user in response.json()["data"]:
                 ids.append(user["user_id"])
 
-            users=self.get_users(id=ids)
+            users = self.get_users(id=ids)
 
             return users
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_followed_channels(self, user_id: str, broadcaster_id: str = "", first: int = 20) -> list[Channel]:
+    def get_followed_channels(
+        self, user_id: str, broadcaster_id: str = "", first: int = 20
+    ) -> list[Channel]:
         """
         Gets a list of broadcasters that the specified user follows
 
@@ -597,7 +694,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/channels/followed"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"user_id": user_id}
 
         if broadcaster_id != "":
@@ -618,7 +718,11 @@ class Client:
             if response.ok:
                 response = response.json()
 
-                channels.append(self.get_channel([channel["broadcaster_id"] for channel in response["data"]]))
+                channels.append(
+                    self.get_channel(
+                        [channel["broadcaster_id"] for channel in response["data"]]
+                    )
+                )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -628,7 +732,9 @@ class Client:
 
         return channels
 
-    def get_channel_followers(self, broadcaster_id: str, user_id: str = "", first: int = 20) -> list[Channel]:
+    def get_channel_followers(
+        self, broadcaster_id: str, user_id: str = "", first: int = 20
+    ) -> list[Channel]:
         """
         The function `get_channel_followers` retrieves a list of channels that are following a specific
         broadcaster on Twitch.
@@ -650,7 +756,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/channels/followers"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id}
 
         if user_id != "":
@@ -671,7 +780,11 @@ class Client:
             if response.ok:
                 response = response.json()
 
-                channels.append(self.get_channel([channel["user_id"] for channel in response["data"]]))
+                channels.append(
+                    self.get_channel(
+                        [channel["user_id"] for channel in response["data"]]
+                    )
+                )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -681,7 +794,23 @@ class Client:
 
         return channels
 
-    def create_custom_reward(self,broadcaster_id,title,cost,prompt="",is_enabled=True,background_color="",is_user_input_required=False,is_max_per_stream_enabled=False,max_per_stream=None,is_max_per_user_per_stream_enabled=False,max_per_user_per_stream=None,is_global_cooldown_enabled=False,global_cooldown_seconds=None,should_redemptions_skip_request_queue=False):
+    def create_custom_reward(
+        self,
+        broadcaster_id,
+        title,
+        cost,
+        prompt="",
+        is_enabled=True,
+        background_color="",
+        is_user_input_required=False,
+        is_max_per_stream_enabled=False,
+        max_per_stream=None,
+        is_max_per_user_per_stream_enabled=False,
+        max_per_user_per_stream=None,
+        is_global_cooldown_enabled=False,
+        global_cooldown_seconds=None,
+        should_redemptions_skip_request_queue=False,
+    ):
         """
         Creates a Custom Reward on a channel
 
@@ -719,54 +848,87 @@ class Client:
         """
 
         url = ENDPOINT_CUSTOM_REWARDS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"title":title,"cost":cost}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "title": title, "cost": cost}
 
-        if prompt!="":
-            params["prompt"]=prompt
+        if prompt != "":
+            params["prompt"] = prompt
 
-        if is_enabled!=True:
-            params["is_enabled"]=is_enabled
+        if is_enabled is not True:
+            params["is_enabled"] = is_enabled
 
-        if background_color!="":
-            params["background_color"]=background_color
+        if background_color != "":
+            params["background_color"] = background_color
 
-        if is_user_input_required!=False:
-            params["is_user_input_required"]=is_user_input_required
+        if is_user_input_required is not False:
+            params["is_user_input_required"] = is_user_input_required
 
-        if is_max_per_stream_enabled!=False:
-            params["is_max_per_stream_enabled"]=is_max_per_stream_enabled
+        if is_max_per_stream_enabled is not False:
+            params["is_max_per_stream_enabled"] = is_max_per_stream_enabled
 
-        if max_per_stream!=None:
-            params["max_per_stream"]=max_per_stream
+        if max_per_stream is not None:
+            params["max_per_stream"] = max_per_stream
 
-        if is_max_per_user_per_stream_enabled!=False:
-            params["is_max_per_user_per_stream_enabled"]=is_max_per_user_per_stream_enabled
+        if is_max_per_user_per_stream_enabled is not False:
+            params[
+                "is_max_per_user_per_stream_enabled"
+            ] = is_max_per_user_per_stream_enabled
 
-        if max_per_user_per_stream!=None:
-            params["max_per_user_per_stream"]=max_per_user_per_stream
+        if max_per_user_per_stream is not None:
+            params["max_per_user_per_stream"] = max_per_user_per_stream
 
-        if is_global_cooldown_enabled!=False:
-            params["is_global_cooldown_enabled"]=is_global_cooldown_enabled
+        if is_global_cooldown_enabled is not False:
+            params["is_global_cooldown_enabled"] = is_global_cooldown_enabled
 
-        if global_cooldown_seconds!=None:
-            params["global_cooldown_seconds"]=global_cooldown_seconds
+        if global_cooldown_seconds is not None:
+            params["global_cooldown_seconds"] = global_cooldown_seconds
 
-        if should_redemptions_skip_request_queue!=False:
-            params["should_redemptions_skip_request_queue"]=should_redemptions_skip_request_queue
+        if should_redemptions_skip_request_queue is not False:
+            params[
+                "should_redemptions_skip_request_queue"
+            ] = should_redemptions_skip_request_queue
 
-        response=requests.post(url,headers=headers,params=params)
+        response = requests.post(url, headers=headers, params=params)
 
         if response.ok:
-            reward=response.json()["data"][0]
-            reward=Reward(reward["broadcaster_name"],reward["broadcaster_id"],reward["id"],image=reward["image"],background_color=reward["background_color"],is_enabled=reward["is_enabled"],cost=reward["cost"],title=reward["title"],prompt=reward["prompt"],is_user_input_required=reward["is_user_input_required"],max_per_stream_setting=reward["max_per_stream_setting"],max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],global_cooldown_setting=reward["global_cooldown_setting"],is_paused=reward["is_paused"],is_in_stock=reward["is_in_stock"],default_image=reward["default_image"],should_redemptions_skip_request_queue=reward["should_redemptions_skip_request_queue"],redemptions_redeemed_current_stream=reward["redemptions_redeemed_current_stream"],cooldown_expires_at=reward["cooldown_expires_at"])
+            reward = response.json()["data"][0]
+            reward = Reward(
+                reward["broadcaster_name"],
+                reward["broadcaster_id"],
+                reward["id"],
+                image=reward["image"],
+                background_color=reward["background_color"],
+                is_enabled=reward["is_enabled"],
+                cost=reward["cost"],
+                title=reward["title"],
+                prompt=reward["prompt"],
+                is_user_input_required=reward["is_user_input_required"],
+                max_per_stream_setting=reward["max_per_stream_setting"],
+                max_per_user_per_stream_setting=reward[
+                    "max_per_user_per_stream_setting"
+                ],
+                global_cooldown_setting=reward["global_cooldown_setting"],
+                is_paused=reward["is_paused"],
+                is_in_stock=reward["is_in_stock"],
+                default_image=reward["default_image"],
+                should_redemptions_skip_request_queue=reward[
+                    "should_redemptions_skip_request_queue"
+                ],
+                redemptions_redeemed_current_stream=reward[
+                    "redemptions_redeemed_current_stream"
+                ],
+                cooldown_expires_at=reward["cooldown_expires_at"],
+            )
 
             return reward
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def delete_custom_reward(self,broadcaster_id,id):
+    def delete_custom_reward(self, broadcaster_id, id):
         """
         Deletes a Custom Reward on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the OAuth token in order to be deleted
@@ -779,12 +941,15 @@ class Client:
         """
 
         url = ENDPOINT_CUSTOM_REWARDS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id}
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
-    def get_custom_reward(self,broadcaster_id,id=[],only_manageable_rewards=False):
+    def get_custom_reward(self, broadcaster_id, id=[], only_manageable_rewards=False):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
@@ -802,30 +967,63 @@ class Client:
             list
         """
 
-        url=f"https://api.twitch.tv/helix/channel_points/custom_rewards"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/channel_points/custom_rewards"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if only_manageable_rewards!=False:
-            params["only_manageable_rewards"]=only_manageable_rewards
+        if only_manageable_rewards is not False:
+            params["only_manageable_rewards"] = only_manageable_rewards
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            rewards=[]
+            rewards = []
 
             for reward in response.json()["data"]:
-                rewards.append(Reward(reward["broadcaster_name"],reward["broadcaster_id"],reward["id"],image=reward["image"],background_color=reward["background_color"],is_enabled=reward["is_enabled"],cost=reward["cost"],title=reward["title"],prompt=reward["prompt"],is_user_input_required=reward["is_user_input_required"],max_per_stream_setting=reward["max_per_stream_setting"],max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],global_cooldown_setting=reward["global_cooldown_setting"],is_paused=reward["is_paused"],is_in_stock=reward["is_in_stock"],default_image=reward["default_image"],should_redemptions_skip_request_queue=reward["should_redemptions_skip_request_queue"],redemptions_redeemed_current_stream=reward["redemptions_redeemed_current_stream"],cooldown_expires_at=reward["cooldown_expires_at"]))
+                rewards.append(
+                    Reward(
+                        reward["broadcaster_name"],
+                        reward["broadcaster_id"],
+                        reward["id"],
+                        image=reward["image"],
+                        background_color=reward["background_color"],
+                        is_enabled=reward["is_enabled"],
+                        cost=reward["cost"],
+                        title=reward["title"],
+                        prompt=reward["prompt"],
+                        is_user_input_required=reward["is_user_input_required"],
+                        max_per_stream_setting=reward["max_per_stream_setting"],
+                        max_per_user_per_stream_setting=reward[
+                            "max_per_user_per_stream_setting"
+                        ],
+                        global_cooldown_setting=reward["global_cooldown_setting"],
+                        is_paused=reward["is_paused"],
+                        is_in_stock=reward["is_in_stock"],
+                        default_image=reward["default_image"],
+                        should_redemptions_skip_request_queue=reward[
+                            "should_redemptions_skip_request_queue"
+                        ],
+                        redemptions_redeemed_current_stream=reward[
+                            "redemptions_redeemed_current_stream"
+                        ],
+                        cooldown_expires_at=reward["cooldown_expires_at"],
+                    )
+                )
 
             return rewards
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_custom_reward_redemption(self,broadcaster_id,reward_id,id=[],status="",sort="OLDEST",first=20):
+    def get_custom_reward_redemption(
+        self, broadcaster_id, reward_id, id=[], status="", sort="OLDEST", first=20
+    ):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
         Developers only have access to get and update redemptions for the rewards created programmatically by the same client_id
@@ -850,43 +1048,82 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"reward_id":reward_id}
+        url = "https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "reward_id": reward_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if status!="":
-            params["status"]=status
+        if status != "":
+            params["status"] = status
 
-        if sort!="OLDEST":
-            params["sort"]=sort
+        if sort != "OLDEST":
+            params["sort"] = sort
 
-        after=""
-        calls=math.ceil(first/50)
-        redemptions=[]
+        after = ""
+        calls = math.ceil(first / 50)
+        redemptions = []
 
         for call in range(calls):
-            params["first"] = min(50, first-(50*call))
+            params["first"] = min(50, first - (50 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
                 for redemption in response.json()["data"]:
-                    reward=Reward(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["reward"]["id"],cost=redemption["reward"]["cost"],title=redemption["reward"]["title"],prompt=redemption["reward"]["prompt"])
-                    redemptions.append(Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],reward))
-
+                    reward = Reward(
+                        redemption["broadcaster_name"],
+                        redemption["broadcaster_id"],
+                        redemption["reward"]["id"],
+                        cost=redemption["reward"]["cost"],
+                        title=redemption["reward"]["title"],
+                        prompt=redemption["reward"]["prompt"],
+                    )
+                    redemptions.append(
+                        Redemption(
+                            redemption["broadcaster_name"],
+                            redemption["broadcaster_id"],
+                            redemption["id"],
+                            redemption["user_id"],
+                            redemption["user_name"],
+                            redemption["user_input"],
+                            redemption["status"],
+                            redemption["redeemed_at"],
+                            reward,
+                        )
+                    )
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
-        
+
         return redemptions
 
-    def update_custom_reward(self,broadcaster_id,id,title="",prompt="",cost=None,background_color="",is_enabled=None,is_user_input_required=None,is_max_per_stream_enabled=None,max_per_stream=None,is_max_per_user_per_stream_enabled=None,max_per_user_per_stream=None,is_global_cooldown_enabled=None,global_cooldown_seconds=None,is_paused=None,should_redemptions_skip_request_queue=None):
+    def update_custom_reward(
+        self,
+        broadcaster_id,
+        id,
+        title="",
+        prompt="",
+        cost=None,
+        background_color="",
+        is_enabled=None,
+        is_user_input_required=None,
+        is_max_per_stream_enabled=None,
+        max_per_stream=None,
+        is_max_per_user_per_stream_enabled=None,
+        max_per_user_per_stream=None,
+        is_global_cooldown_enabled=None,
+        global_cooldown_seconds=None,
+        is_paused=None,
+        should_redemptions_skip_request_queue=None,
+    ):
         """
         Updates a Custom Reward created on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the user OAuth token
@@ -924,63 +1161,96 @@ class Client:
         """
 
         url = ENDPOINT_CUSTOM_REWARDS
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id}
 
-        if title!="":
-            data["title"]=title
+        if title != "":
+            data["title"] = title
 
-        if prompt!="":
-            data["prompt"]=prompt
+        if prompt != "":
+            data["prompt"] = prompt
 
-        if cost!=None:
-            data["cost"]=cost
+        if cost is not None:
+            data["cost"] = cost
 
-        if background_color!="":
-            data["background_color"]=background_color
+        if background_color != "":
+            data["background_color"] = background_color
 
-        if is_enabled!=None:
-            data["is_enabled"]=is_enabled
+        if is_enabled is not None:
+            data["is_enabled"] = is_enabled
 
-        if is_user_input_required!=None:
-            data["is_user_input_required"]=is_user_input_required
+        if is_user_input_required is not None:
+            data["is_user_input_required"] = is_user_input_required
 
-        if is_max_per_stream_enabled!=None:
-            data["is_max_per_stream_enabled"]=is_max_per_stream_enabled
+        if is_max_per_stream_enabled is not None:
+            data["is_max_per_stream_enabled"] = is_max_per_stream_enabled
 
-        if max_per_stream!=None:
-            data["max_per_stream"]=max_per_stream
+        if max_per_stream is not None:
+            data["max_per_stream"] = max_per_stream
 
-        if is_max_per_user_per_stream_enabled!=None:
-            data["is_max_per_user_per_stream_enabled"]=is_max_per_user_per_stream_enabled
+        if is_max_per_user_per_stream_enabled is not None:
+            data[
+                "is_max_per_user_per_stream_enabled"
+            ] = is_max_per_user_per_stream_enabled
 
-        if max_per_user_per_stream!=None:
-            data["max_per_user_per_stream"]=max_per_user_per_stream
+        if max_per_user_per_stream is not None:
+            data["max_per_user_per_stream"] = max_per_user_per_stream
 
-        if is_global_cooldown_enabled!=None:
-            data["is_global_cooldown_enabled"]=is_global_cooldown_enabled
+        if is_global_cooldown_enabled is not None:
+            data["is_global_cooldown_enabled"] = is_global_cooldown_enabled
 
-        if global_cooldown_seconds!=None:
-            data["global_cooldown_seconds"]=global_cooldown_seconds
+        if global_cooldown_seconds is not None:
+            data["global_cooldown_seconds"] = global_cooldown_seconds
 
-        if is_paused!=None:
-            data["is_paused"]=is_paused
+        if is_paused is not None:
+            data["is_paused"] = is_paused
 
-        if should_redemptions_skip_request_queue!=None:
-            data["should_redemptions_skip_request_queue"]=should_redemptions_skip_request_queue
+        if should_redemptions_skip_request_queue is not None:
+            data[
+                "should_redemptions_skip_request_queue"
+            ] = should_redemptions_skip_request_queue
 
-        response=requests.patch(url,headers=headers,data=data)
+        response = requests.patch(url, headers=headers, data=data)
 
         if response.ok:
-            reward=response.json()["data"]
-            reward=Reward(reward["broadcaster_name"],reward["broadcaster_id"],reward["id"],image=reward["image"],background_color=reward["background_color"],is_enabled=reward["is_enabled"],cost=reward["cost"],title=reward["title"],prompt=reward["prompt"],is_user_input_required=reward["is_user_input_required"],max_per_stream_setting=reward["max_per_stream_setting"],max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],global_cooldown_setting=reward["global_cooldown_setting"],is_paused=reward["is_paused"],is_in_stock=reward["is_in_stock"],default_image=reward["default_image"],should_redemptions_skip_request_queue=reward["should_redemptions_skip_request_queue"],redemptions_redeemed_current_stream=reward["redemptions_redeemed_current_stream"],cooldown_expires_at=reward["cooldown_expires_at"])
+            reward = response.json()["data"]
+            reward = Reward(
+                reward["broadcaster_name"],
+                reward["broadcaster_id"],
+                reward["id"],
+                image=reward["image"],
+                background_color=reward["background_color"],
+                is_enabled=reward["is_enabled"],
+                cost=reward["cost"],
+                title=reward["title"],
+                prompt=reward["prompt"],
+                is_user_input_required=reward["is_user_input_required"],
+                max_per_stream_setting=reward["max_per_stream_setting"],
+                max_per_user_per_stream_setting=reward[
+                    "max_per_user_per_stream_setting"
+                ],
+                global_cooldown_setting=reward["global_cooldown_setting"],
+                is_paused=reward["is_paused"],
+                is_in_stock=reward["is_in_stock"],
+                default_image=reward["default_image"],
+                should_redemptions_skip_request_queue=reward[
+                    "should_redemptions_skip_request_queue"
+                ],
+                redemptions_redeemed_current_stream=reward[
+                    "redemptions_redeemed_current_stream"
+                ],
+                cooldown_expires_at=reward["cooldown_expires_at"],
+            )
 
             return reward
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_redemption_status(self,id,broadcaster_id,reward_id,status=""):
+    def update_redemption_status(self, id, broadcaster_id, reward_id, status=""):
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
@@ -1002,20 +1272,40 @@ class Client:
             Redemption
         """
 
-        url="https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"id":id,"broadcaster_id":broadcaster_id,"reward_id":reward_id}
+        url = "https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"id": id, "broadcaster_id": broadcaster_id, "reward_id": reward_id}
 
-        if status!="":
-            data["status"]=status
+        if status != "":
+            data["status"] = status
 
-        response=requests.patch(url,headers=headers,data=data)
+        response = requests.patch(url, headers=headers, data=data)
 
         if response.ok:
-            redemption=response.json()["data"][0]
-            reward=Reward(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["reward"]["id"],cost=redemption["reward"]["cost"],title=redemption["reward"]["title"],prompt=redemption["reward"]["prompt"])
-            redemption=Redemption(redemption["broadcaster_name"],redemption["broadcaster_id"],redemption["id"],redemption["user_id"],redemption["user_name"],redemption["user_input"],redemption["status"],redemption["redeemed_at"],reward)
-            
+            redemption = response.json()["data"][0]
+            reward = Reward(
+                redemption["broadcaster_name"],
+                redemption["broadcaster_id"],
+                redemption["reward"]["id"],
+                cost=redemption["reward"]["cost"],
+                title=redemption["reward"]["title"],
+                prompt=redemption["reward"]["prompt"],
+            )
+            redemption = Redemption(
+                redemption["broadcaster_name"],
+                redemption["broadcaster_id"],
+                redemption["id"],
+                redemption["user_id"],
+                redemption["user_name"],
+                redemption["user_input"],
+                redemption["status"],
+                redemption["redeemed_at"],
+                reward,
+            )
+
             return redemption
 
         else:
@@ -1037,18 +1327,34 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/charity/campaigns"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id}
 
         response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            return CharityCampaign(response.json()["data"][0]["id"], response.json()["data"][0]["broadcaster_id"], response.json()["data"][0]["broadcaster_name"], response.json()["data"][0]["broadcaster_login"], response.json()["data"][0]["charity_name"], response.json()["data"][0]["charity_description"], response.json()["data"][0]["charity_logo"], response.json()["data"][0]["charity_website"], response.json()["data"][0]["current_amount"], response.json()["data"][0]["target_amount"])
+            return CharityCampaign(
+                response.json()["data"][0]["id"],
+                response.json()["data"][0]["broadcaster_id"],
+                response.json()["data"][0]["broadcaster_name"],
+                response.json()["data"][0]["broadcaster_login"],
+                response.json()["data"][0]["charity_name"],
+                response.json()["data"][0]["charity_description"],
+                response.json()["data"][0]["charity_logo"],
+                response.json()["data"][0]["charity_website"],
+                response.json()["data"][0]["current_amount"],
+                response.json()["data"][0]["target_amount"],
+            )
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_charity_campaign_donations(self, broadcaster_id: str, first: int = 20) -> list[CharityCampaignDonation]:
+    def get_charity_campaign_donations(
+        self, broadcaster_id: str, first: int = 20
+    ) -> list[CharityCampaignDonation]:
         """
         Gets the list of donations that users have made to the broadcaster’s active charity campaign
 
@@ -1067,7 +1373,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/charity/donations"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id}
 
         after = ""
@@ -1086,7 +1395,16 @@ class Client:
                 response = response.json()
 
                 for donation in response["data"]:
-                    donations.append(CharityCampaignDonation(donation["id"], donation["campaign_id"], donation["user_id"], donation["user_login"], donation["user_name"], donation["amount"]))
+                    donations.append(
+                        CharityCampaignDonation(
+                            donation["id"],
+                            donation["campaign_id"],
+                            donation["user_id"],
+                            donation["user_login"],
+                            donation["user_name"],
+                            donation["amount"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -1096,7 +1414,9 @@ class Client:
 
         return donations
 
-    def get_chatters(self, broadcaster_id: str, moderator_id: str, first: int = 100) -> list[User]:
+    def get_chatters(
+        self, broadcaster_id: str, moderator_id: str, first: int = 100
+    ) -> list[User]:
         """
         Gets the list of users that are connected to the broadcaster’s chat session
 
@@ -1117,7 +1437,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/chat/chatters"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
         after = ""
@@ -1135,7 +1458,9 @@ class Client:
             if response.ok:
                 response = response.json()
 
-                users.extend(self.get_users([user["user_id"] for user in response["data"]]))
+                users.extend(
+                    self.get_users([user["user_id"] for user in response["data"]])
+                )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -1145,7 +1470,7 @@ class Client:
 
         return users
 
-    def get_channel_emotes(self,broadcaster_id):
+    def get_channel_emotes(self, broadcaster_id):
         """
         Gets all custom emotes for a specific Twitch channel including subscriber emotes, Bits tier emotes, and follower emotes
         Custom channel emotes are custom emoticons that viewers may use in Twitch chat once they are subscribed to, cheered in, or followed the channel that owns the emotes
@@ -1160,17 +1485,32 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/emotes"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/chat/emotes"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            emotes=[]
+            emotes = []
 
             for emote in response.json()["data"]:
-                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"],emote["tier"],emote["emote_type"],emote["emote_set_id"]))
+                emotes.append(
+                    Emote(
+                        emote["id"],
+                        emote["name"],
+                        emote["images"],
+                        emote["format"],
+                        emote["scale"],
+                        emote["theme_mode"],
+                        emote["tier"],
+                        emote["emote_type"],
+                        emote["emote_set_id"],
+                    )
+                )
 
             return emotes
 
@@ -1189,23 +1529,35 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/emotes/global"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        url = "https://api.twitch.tv/helix/chat/emotes/global"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
 
-        response=requests.get(url,headers=headers)
+        response = requests.get(url, headers=headers)
 
         if response.ok:
-            emotes=[]
+            emotes = []
 
             for emote in response.json()["data"]:
-                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"]))
+                emotes.append(
+                    Emote(
+                        emote["id"],
+                        emote["name"],
+                        emote["images"],
+                        emote["format"],
+                        emote["scale"],
+                        emote["theme_mode"],
+                    )
+                )
 
             return emotes
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_emote_sets(self,emote_set_id):
+    def get_emote_sets(self, emote_set_id):
         """
         Gets all Twitch emotes for one or more specific emote sets
 
@@ -1220,24 +1572,38 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/emotes/set"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"emote_set_id":emote_set_id}
+        url = "https://api.twitch.tv/helix/chat/emotes/set"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"emote_set_id": emote_set_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            emotes=[]
+            emotes = []
 
             for emote in response.json()["data"]:
-                emotes.append(Emote(emote["id"],emote["name"],emote["images"],emote["format"],emote["scale"],emote["theme_mode"],emote_type=emote["emote_type"],emote_set_id=emote["emote_set_id"]))
+                emotes.append(
+                    Emote(
+                        emote["id"],
+                        emote["name"],
+                        emote["images"],
+                        emote["format"],
+                        emote["scale"],
+                        emote["theme_mode"],
+                        emote_type=emote["emote_type"],
+                        emote_set_id=emote["emote_set_id"],
+                    )
+                )
 
             return emotes
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_channel_chat_badges(self,broadcaster_id):
+    def get_channel_chat_badges(self, broadcaster_id):
         """
         Gets a list of custom chat badges that can be used in chat for the specified channel
         This includes subscriber badges and Bit badges
@@ -1253,17 +1619,20 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/badges"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/chat/badges"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            badges=[]
+            badges = []
 
             for badge in response.json()["data"]:
-                badges.append(Badge(badge["set_id"],badge["versions"]))
+                badges.append(Badge(badge["set_id"], badge["versions"]))
 
             return badges
 
@@ -1281,23 +1650,26 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/chat/badges/global"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
+        url = "https://api.twitch.tv/helix/chat/badges/global"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
 
-        response=requests.get(url,headers=headers)
-        
+        response = requests.get(url, headers=headers)
+
         if response.ok:
-            badges=[]
+            badges = []
 
             for badge in response.json()["data"]:
-                badges.append(Badge(badge["set_id"],badge["versions"]))
+                badges.append(Badge(badge["set_id"], badge["versions"]))
 
             return badges
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_chat_settings(self,broadcaster_id,moderator_id=""):
+    def get_chat_settings(self, broadcaster_id, moderator_id=""):
         """
         Gets the broadcaster’s chat settings
 
@@ -1315,11 +1687,14 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/chat/settings"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+        url = "https://api.twitch.tv/helix/chat/settings"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             return response.json()["data"][0]
@@ -1327,7 +1702,20 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_chat_settings(self,broadcaster_id,moderator_id,emote_mode=None,follower_mode=None,follower_mode_duration=0,non_moderator_chat_delay=None,non_moderator_chat_delay_duration=0,slow_mode=None,slow_mode_wait_time=30,subscriber_mode=None,unique_chat_mode=None):
+    def update_chat_settings(
+        self,
+        broadcaster_id,
+        moderator_id,
+        emote_mode=None,
+        follower_mode=None,
+        follower_mode_duration=0,
+        non_moderator_chat_delay=None,
+        non_moderator_chat_delay_duration=0,
+        slow_mode=None,
+        slow_mode_wait_time=30,
+        subscriber_mode=None,
+        unique_chat_mode=None,
+    ):
         """
         Updates the broadcaster’s chat settings
 
@@ -1372,38 +1760,43 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/chat/settings"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+        url = "https://api.twitch.tv/helix/chat/settings"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        if emote_mode!=None:
-            data["emote_mode"]=emote_mode
-        
-        if follower_mode!=None:
-            data["follower_mode"]=follower_mode
-        
-        if follower_mode_duration!=0:
-            data["follower_mode_duration"]=follower_mode_duration
+        if emote_mode is not None:
+            data["emote_mode"] = emote_mode
 
-        if non_moderator_chat_delay!=None:
-            data["non_moderator_chat_delay"]=non_moderator_chat_delay
+        if follower_mode is not None:
+            data["follower_mode"] = follower_mode
 
-        if non_moderator_chat_delay_duration!=0:
-            data["non_moderator_chat_delay_duration"]=non_moderator_chat_delay_duration
+        if follower_mode_duration != 0:
+            data["follower_mode_duration"] = follower_mode_duration
 
-        if slow_mode!=None:
-            data["slow_mode"]=slow_mode
+        if non_moderator_chat_delay is not None:
+            data["non_moderator_chat_delay"] = non_moderator_chat_delay
 
-        if slow_mode_wait_time!=30:
-            data["slow_mode_wait_time"]=slow_mode_wait_time
+        if non_moderator_chat_delay_duration != 0:
+            data[
+                "non_moderator_chat_delay_duration"
+            ] = non_moderator_chat_delay_duration
 
-        if subscriber_mode!=None:
-            data["subscriber_mode"]=subscriber_mode
+        if slow_mode is not None:
+            data["slow_mode"] = slow_mode
 
-        if unique_chat_mode!=None:
-            data["unique_chat_mode"]=unique_chat_mode
+        if slow_mode_wait_time != 30:
+            data["slow_mode_wait_time"] = slow_mode_wait_time
 
-        response=requests.patch(url,headers=headers,data=data)
+        if subscriber_mode is not None:
+            data["subscriber_mode"] = subscriber_mode
+
+        if unique_chat_mode is not None:
+            data["unique_chat_mode"] = unique_chat_mode
+
+        response = requests.patch(url, headers=headers, data=data)
 
         if response.ok:
             return response.json()["data"][0]
@@ -1411,7 +1804,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def send_chat_announcement(self, broadcaster_id: str, moderator_id: str, message: str, color: str = "") -> None:
+    def send_chat_announcement(
+        self, broadcaster_id: str, moderator_id: str, message: str, color: str = ""
+    ) -> None:
         """
         Sends an announcement to the broadcaster’s chat room
 
@@ -1427,15 +1822,25 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/chat/announcements"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": "application/json"}
-        payload = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "message": message}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "message": message,
+        }
 
         if color != "":
             payload["color"] = color
 
         requests.post(url, headers=headers, json=payload)
 
-    def send_a_shoutout(self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str) -> None:
+    def send_a_shoutout(
+        self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str
+    ) -> None:
         """
         Sends a Shoutout to the specified broadcaster
 
@@ -1447,8 +1852,15 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/chat/shoutouts"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        payload = {"from_broadcaster_id": from_broadcaster_id, "to_broadcaster_id": to_broadcaster_id, "moderator_id": moderator_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "from_broadcaster_id": from_broadcaster_id,
+            "to_broadcaster_id": to_broadcaster_id,
+            "moderator_id": moderator_id,
+        }
 
         requests.post(url, headers=headers, json=payload)
 
@@ -1468,7 +1880,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/chat/color"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"user_id": user_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -1492,12 +1907,15 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/chat/color"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"user_id": user_id, "color": color}
 
         requests.put(url, headers=headers, data=data)
 
-    def create_clip(self,broadcaster_id,has_delay=False):
+    def create_clip(self, broadcaster_id, has_delay=False):
         """
         This returns both an ID and an edit URL for a new clip
 
@@ -1513,22 +1931,34 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/clips"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/clips"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {"broadcaster_id": broadcaster_id}
 
-        if has_delay!=False:
-            payload["has_delay"]=has_delay
+        if has_delay is not False:
+            payload["has_delay"] = has_delay
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_clips(self, broadcaster_id: str = "", game_id: str = "", id: list[str] = [], started_at: str = "", ended_at: str = "", first: int = 20, is_featured: bool = False) -> list[Clip]:
+    def get_clips(
+        self,
+        broadcaster_id: str = "",
+        game_id: str = "",
+        id: list[str] = [],
+        started_at: str = "",
+        ended_at: str = "",
+        first: int = 20,
+        is_featured: bool = False,
+    ) -> list[Clip]:
         """
         Gets one or more video clips that were captured from streams
         The id, game_id, and broadcaster_id query parameters are mutually exclusive
@@ -1551,7 +1981,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/clips"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {}
 
         if broadcaster_id != "":
@@ -1583,12 +2016,32 @@ class Client:
                 params["after"] = after
 
             response = requests.get(url, headers=headers, params=params)
-            
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for clip in response["data"]:
-                    clips.append(Clip(clip["id"], clip["url"], clip["embed_url"], clip["broadcaster_id"], clip["broadcaster_name"], clip["creator_id"], clip["creator_name"], clip["video_id"], clip["game_id"], clip["language"], clip["title"], clip["view_count"], clip["created_at"], clip["thumbnail_url"], clip["duration"], clip["vod_offset"], clip["is_featured"]))
+                    clips.append(
+                        Clip(
+                            clip["id"],
+                            clip["url"],
+                            clip["embed_url"],
+                            clip["broadcaster_id"],
+                            clip["broadcaster_name"],
+                            clip["creator_id"],
+                            clip["creator_name"],
+                            clip["video_id"],
+                            clip["game_id"],
+                            clip["language"],
+                            clip["title"],
+                            clip["view_count"],
+                            clip["created_at"],
+                            clip["thumbnail_url"],
+                            clip["duration"],
+                            clip["vod_offset"],
+                            clip["is_featured"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -1614,7 +2067,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/content_classification_labels"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {}
 
         if locale != "en-US":
@@ -1628,7 +2084,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_drops_entitlements(self,id="",user_id="",game_id="",fulfillment_status="",first=20):
+    def get_drops_entitlements(
+        self, id="", user_id="", game_id="", fulfillment_status="", first=20
+    ):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
@@ -1647,48 +2105,51 @@ class Client:
         Returns:
             list
         """
-        
-        url="https://api.twitch.tv/helix/entitlements/drops"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
 
-        if id!="":
-            params["id"]=id
+        url = "https://api.twitch.tv/helix/entitlements/drops"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if user_id!="":
-            params["user_id"]=user_id
+        if id != "":
+            params["id"] = id
 
-        if game_id!="":
-            params["game_id"]=game_id
+        if user_id != "":
+            params["user_id"] = user_id
 
-        if fulfillment_status!="":
-            params["fulfillment_status"]=fulfillment_status
+        if game_id != "":
+            params["game_id"] = game_id
 
-        after=""
-        calls=math.ceil(first/1000)
-        drops_entitlements=[]
+        if fulfillment_status != "":
+            params["fulfillment_status"] = fulfillment_status
+
+        after = ""
+        calls = math.ceil(first / 1000)
+        drops_entitlements = []
 
         for call in range(calls):
-            params["first"] = min(1000, first-(1000*call))
+            params["first"] = min(1000, first - (1000 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
+                response = response.json()
                 drops_entitlements.extend(response["data"])
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return drops_entitlements
 
-    def update_drops_entitlements(self,entitlement_ids=[],fulfillment_status=""):
+    def update_drops_entitlements(self, entitlement_ids=[], fulfillment_status=""):
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
@@ -1705,25 +2166,31 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/entitlements/drops"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        data={}
+        url = "https://api.twitch.tv/helix/entitlements/drops"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        data = {}
 
-        if len(entitlement_ids)>0:
-            data["entitlement_ids"]=entitlement_ids
+        if len(entitlement_ids) > 0:
+            data["entitlement_ids"] = entitlement_ids
 
-        if fulfillment_status!="":
-            data["fulfillment_status"]=fulfillment_status
+        if fulfillment_status != "":
+            data["fulfillment_status"] = fulfillment_status
 
-        response=requests.patch(url,headers=headers,data=data)
-        
+        response = requests.patch(url, headers=headers, data=data)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_extension_configuration_segment(self,broadcaster_id,extension_id,segment):
+    def get_extension_configuration_segment(
+        self, broadcaster_id, extension_id, segment
+    ):
         """
         Gets the specified configuration segment from the specified extension
         You can retrieve each segment a maximum of 20 times per minute
@@ -1743,11 +2210,18 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/extensions/configurations"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"extension_id":extension_id,"segment":segment}
+        url = "https://api.twitch.tv/helix/extensions/configurations"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {
+            "broadcaster_id": broadcaster_id,
+            "extension_id": extension_id,
+            "segment": segment,
+        }
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             return response.json()["data"][0]
@@ -1755,7 +2229,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def set_extension_configuration_segment(self,extension_id,segment,broadcaster_id="",content="",version=""):
+    def set_extension_configuration_segment(
+        self, extension_id, segment, broadcaster_id="", content="", version=""
+    ):
         """
         Sets a single configuration segment of any type
         Each segment is limited to 5 KB and can be set at most 20 times per minute
@@ -1771,22 +2247,27 @@ class Client:
             version (str, optional): Configuration version with the segment type
         """
 
-        url="https://api.twitch.tv/helix/extensions/configurations"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        data={"extension_id":extension_id,"segment":segment}
+        url = "https://api.twitch.tv/helix/extensions/configurations"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"extension_id": extension_id, "segment": segment}
 
-        if broadcaster_id!="":
-            data["broadcaster_id"]=broadcaster_id
+        if broadcaster_id != "":
+            data["broadcaster_id"] = broadcaster_id
 
-        if content!="":
-            data["content"]=content
+        if content != "":
+            data["content"] = content
 
-        if version!="":
-            data["version"]=version
+        if version != "":
+            data["version"] = version
 
-        requests.put(url,headers=headers,data=data)
+        requests.put(url, headers=headers, data=data)
 
-    def set_extension_required_configuration(self,broadcaster_id,extension_id,extension_version,configuration_version):
+    def set_extension_required_configuration(
+        self, broadcaster_id, extension_id, extension_version, configuration_version
+    ):
         """
         Enable activation of a specified Extension, after any required broadcaster configuration is correct
 
@@ -1797,13 +2278,23 @@ class Client:
             configuration_version (str): The version of the configuration to use with the Extension
         """
 
-        url="https://api.twitch.tv/helix/extensions/required_configuration"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"extension_id":extension_id,"extension_version":extension_version,"configuration_version":configuration_version}
+        url = "https://api.twitch.tv/helix/extensions/required_configuration"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "extension_id": extension_id,
+            "extension_version": extension_version,
+            "configuration_version": configuration_version,
+        }
 
-        requests.put(url,headers=headers,data=data)
+        requests.put(url, headers=headers, data=data)
 
-    def send_extension_pubsub_message(self,target,broadcaster_id,is_global_broadcast,message):
+    def send_extension_pubsub_message(
+        self, target, broadcaster_id, is_global_broadcast, message
+    ):
         """
         A message can be sent to either a specified channel or globally (all channels on which your extension is active)
         Extension PubSub has a rate limit of 100 requests per minute for a combination of Extension client ID and broadcaster ID
@@ -1816,13 +2307,21 @@ class Client:
             message (str): String-encoded JSON message to be sent
         """
 
-        url="https://api.twitch.tv/helix/extensions/pubsub"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        data={"target":target,"broadcaster_id":broadcaster_id,"is_global_broadcast":is_global_broadcast,"message":message}
+        url = "https://api.twitch.tv/helix/extensions/pubsub"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "target": target,
+            "broadcaster_id": broadcaster_id,
+            "is_global_broadcast": is_global_broadcast,
+            "message": message,
+        }
 
-        requests.post(url,headers=headers,data=data)
+        requests.post(url, headers=headers, data=data)
 
-    def get_extension_live_channels(self,extension_id,first=20):
+    def get_extension_live_channels(self, extension_id, first=20):
         """
         Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
         A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
@@ -1839,30 +2338,33 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions/live"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":{self.client_id}}
-        params={"extension_id":extension_id}
+        url = "https://api.twitch.tv/helix/extensions/live"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": {self.client_id},
+        }
+        params = {"extension_id": extension_id}
 
-        after=""
-        calls=math.ceil(first/100)
-        channels=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        channels = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for channel in response["data"]:
                     channels.append(channel)
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
@@ -1881,10 +2383,13 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions/jwt/secrets"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        
-        response=requests.get(url,headers=headers)
+        url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+
+        response = requests.get(url, headers=headers)
 
         if response.ok:
             return response.json()["data"]
@@ -1892,7 +2397,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def create_extension_secret(self,delay=300):
+    def create_extension_secret(self, delay=300):
         """
         Creates a JWT signing secret for a specific Extension
         Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
@@ -1909,14 +2414,17 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions/jwt/secrets"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        payload={}
+        url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {}
 
-        if delay!=300:
-            payload["delay"]=delay
+        if delay != 300:
+            payload["delay"] = delay
 
-        response=requests.post(url,headers=headers,json=payload)
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.ok:
             return response.json()["data"][0]
@@ -1924,7 +2432,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def send_extension_chat_message(self,broadcaster_id,text,extension_id,extension_version):
+    def send_extension_chat_message(
+        self, broadcaster_id, text, extension_id, extension_version
+    ):
         """
         Sends a specified chat message to a specified channel
         The message will appear in the channel’s chat as a normal message
@@ -1939,13 +2449,21 @@ class Client:
             extension_version (str): Version of the Extension sending this message
         """
 
-        url="https://api.twitch.tv/helix/extensions/chat"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id,"text":text,"extension_id":extension_id,"extension_version":extension_version}
+        url = "https://api.twitch.tv/helix/extensions/chat"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "text": text,
+            "extension_id": extension_id,
+            "extension_version": extension_version,
+        }
 
-        requests.post(url,headers=headers,json=payload)
+        requests.post(url, headers=headers, json=payload)
 
-    def get_extensions(self,extension_id,extension_version=""):
+    def get_extensions(self, extension_id, extension_version=""):
         """
         Gets information about your Extensions; either the current version or a specified version
 
@@ -1961,27 +2479,56 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions"
-        headers={"Authorization":f"Bearer {self.__jwt_token}","Client-Id":self.client_id}
-        params={"extension_id":extension_id}
+        url = "https://api.twitch.tv/helix/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__jwt_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"extension_id": extension_id}
 
-        if extension_version!="":
-            params["extension_version"]=extension_version
+        if extension_version != "":
+            params["extension_version"] = extension_version
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            extensions=[]
+            extensions = []
 
             for extension in response.json()["data"]:
-                extensions.append(Extension(extension["author_name"],extension["bits_enables"],extension["can_install"],extension["configuration_location"],extension["description"],extension["eula_tos_url"],extension["has_chat_support"],extension["icon_url"],extension["icon_urls"],extension["id"],extension["name"],extension["privacy_policy_url"],extension["request_identity_link"],extension["screenshot_urls"],extension["state"],extension["subscriptions_support_level"],extension["summary"],extension["support_email"],extension["version"],extension["viewer_summary"],extension["views"],extension["allowlisted_config_urls"],extension["allowlisted_panel_urls"]))
+                extensions.append(
+                    Extension(
+                        extension["author_name"],
+                        extension["bits_enables"],
+                        extension["can_install"],
+                        extension["configuration_location"],
+                        extension["description"],
+                        extension["eula_tos_url"],
+                        extension["has_chat_support"],
+                        extension["icon_url"],
+                        extension["icon_urls"],
+                        extension["id"],
+                        extension["name"],
+                        extension["privacy_policy_url"],
+                        extension["request_identity_link"],
+                        extension["screenshot_urls"],
+                        extension["state"],
+                        extension["subscriptions_support_level"],
+                        extension["summary"],
+                        extension["support_email"],
+                        extension["version"],
+                        extension["viewer_summary"],
+                        extension["views"],
+                        extension["allowlisted_config_urls"],
+                        extension["allowlisted_panel_urls"],
+                    )
+                )
 
             return extensions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_released_extensions(self,extension_id,extension_version=""):
+    def get_released_extensions(self, extension_id, extension_version=""):
         """
         Gets information about a released Extension; either the current version or a specified version
 
@@ -1997,27 +2544,58 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/extensions/released"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"extension_id":extension_id}
+        url = "https://api.twitch.tv/helix/extensions/released"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"extension_id": extension_id}
 
-        if extension_version!="":
-            params["extension_version"]=extension_version
+        if extension_version != "":
+            params["extension_version"] = extension_version
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
-            extensions=[]
+            extensions = []
 
             for extension in response.json()["data"]:
-                extensions.append(Extension(extension["author_name"],extension["bits_enables"],extension["can_install"],extension["configuration_location"],extension["description"],extension["eula_tos_url"],extension["has_chat_support"],extension["icon_url"],extension["icon_urls"],extension["id"],extension["name"],extension["privacy_policy_url"],extension["request_identity_link"],extension["screenshot_urls"],extension["state"],extension["subscriptions_support_level"],extension["summary"],extension["support_email"],extension["version"],extension["viewer_summary"],extension["views"],extension["allowlisted_config_urls"],extension["allowlisted_panel_urls"]))
+                extensions.append(
+                    Extension(
+                        extension["author_name"],
+                        extension["bits_enables"],
+                        extension["can_install"],
+                        extension["configuration_location"],
+                        extension["description"],
+                        extension["eula_tos_url"],
+                        extension["has_chat_support"],
+                        extension["icon_url"],
+                        extension["icon_urls"],
+                        extension["id"],
+                        extension["name"],
+                        extension["privacy_policy_url"],
+                        extension["request_identity_link"],
+                        extension["screenshot_urls"],
+                        extension["state"],
+                        extension["subscriptions_support_level"],
+                        extension["summary"],
+                        extension["support_email"],
+                        extension["version"],
+                        extension["viewer_summary"],
+                        extension["views"],
+                        extension["allowlisted_config_urls"],
+                        extension["allowlisted_panel_urls"],
+                    )
+                )
 
             return extensions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_extension_bits_products(self,extension_client_id,should_include_all=False):
+    def get_extension_bits_products(
+        self, extension_client_id, should_include_all=False
+    ):
         """
         Gets a list of Bits products that belongs to an Extension
 
@@ -2033,14 +2611,17 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/bits/extensions"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":extension_client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/bits/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": extension_client_id,
+        }
+        params = {}
 
-        if should_include_all!=False:
-            params["should_include_all"]=should_include_all
+        if should_include_all is not False:
+            params["should_include_all"] = should_include_all
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             return response.json()["data"]
@@ -2048,7 +2629,16 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_extension_bits_product(self,extension_client_id,sku,cost,display_name,in_development=False,expiration="",is_broadcast=False):
+    def update_extension_bits_product(
+        self,
+        extension_client_id,
+        sku,
+        cost,
+        display_name,
+        in_development=False,
+        expiration="",
+        is_broadcast=False,
+    ):
         """
         Add or update a Bits products that belongs to an Extension
 
@@ -2076,20 +2666,23 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/bits/extensions"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":extension_client_id}
-        data={"sku":sku,"cost":cost,"display_name":display_name}
+        url = "https://api.twitch.tv/helix/bits/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": extension_client_id,
+        }
+        data = {"sku": sku, "cost": cost, "display_name": display_name}
 
-        if in_development!=False:
-            data["in_development"]=in_development
+        if in_development is not False:
+            data["in_development"] = in_development
 
-        if expiration!="":
-            data["expiration"]=expiration
+        if expiration != "":
+            data["expiration"] = expiration
 
-        if is_broadcast!=False:
-            data["is_broadcast"]=is_broadcast
+        if is_broadcast is not False:
+            data["is_broadcast"] = is_broadcast
 
-        response=requests.put(url,headers=headers,data=data)
+        response = requests.put(url, headers=headers, data=data)
 
         if response.ok:
             return response.json()["data"][0]
@@ -2097,7 +2690,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def create_eventsub_subscription(self,type,version,condition,transport):
+    def create_eventsub_subscription(self, type, version, condition, transport):
         """
         Creates an EventSub subscription
 
@@ -2119,21 +2712,39 @@ class Client:
         """
 
         url = ENDPOINT_EVENTSUB_SUBSCRIPTION
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"type":type,"version":version,"condition":condition,"transport":transport}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {
+            "type": type,
+            "version": version,
+            "condition": condition,
+            "transport": transport,
+        }
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
-            subscription=response.json()["data"][0]
-            subscription=EventSubSubscription(subscription["id"],subscription["status"],subscription["type"],subscription["version"],subscription["condition"],subscription["created_at"],subscription["transport"],subscription["cost"])
+            subscription = response.json()["data"][0]
+            subscription = EventSubSubscription(
+                subscription["id"],
+                subscription["status"],
+                subscription["type"],
+                subscription["version"],
+                subscription["condition"],
+                subscription["created_at"],
+                subscription["transport"],
+                subscription["cost"],
+            )
 
             return subscription
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def delete_eventsub_subscription(self,id):
+    def delete_eventsub_subscription(self, id):
         """
         Delete an EventSub subscription
 
@@ -2142,12 +2753,17 @@ class Client:
         """
 
         url = ENDPOINT_EVENTSUB_SUBSCRIPTION
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        data={"id":id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"id": id}
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
-    def get_eventsub_subscriptions(self, status: str = "", type: str = "", user_id: str = "") -> list[EventSubSubscription]:
+    def get_eventsub_subscriptions(
+        self, status: str = "", type: str = "", user_id: str = ""
+    ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
         Only include one filter query parameter
@@ -2164,34 +2780,48 @@ class Client:
         Returns:
             list[EventSubSubscription]
         """
-        
+
         url = ENDPOINT_EVENTSUB_SUBSCRIPTION
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if status!="":
-            params["status"]=status
+        if status != "":
+            params["status"] = status
 
-        if type!="":
-            params["type"]=type
+        if type != "":
+            params["type"] = type
 
         if user_id != "":
             params["user_id"] = user_id
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            subscriptions=[]
+            subscriptions = []
 
             for subscription in response.json()["data"]:
-                subscriptions.append(EventSubSubscription(subscription["id"],subscription["status"],subscription["type"],subscription["version"],subscription["condition"],subscription["created_at"],subscription["transport"],subscription["cost"]))
+                subscriptions.append(
+                    EventSubSubscription(
+                        subscription["id"],
+                        subscription["status"],
+                        subscription["type"],
+                        subscription["version"],
+                        subscription["condition"],
+                        subscription["created_at"],
+                        subscription["transport"],
+                        subscription["cost"],
+                    )
+                )
 
             return subscriptions
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_top_games(self,first=20):
+    def get_top_games(self, first=20):
         """
         Gets games sorted by number of current viewers on Twitch, most popular first
 
@@ -2206,37 +2836,49 @@ class Client:
             list
         """
 
-        url=f"https://api.twitch.tv/helix/games/top"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/games/top"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        after=""
-        calls=math.ceil(first/100)
-        games=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        games = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for game in response["data"]:
-                    games.append(Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"]))
+                    games.append(
+                        Game(
+                            game["id"],
+                            game["name"],
+                            game["box_art_url"],
+                            game["igdb_id"],
+                        )
+                    )
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return games
 
-    def get_games(self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) -> list[Game]:
+    def get_games(
+        self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []
+    ) -> list[Game]:
         """
         Gets information about specified categories or games
 
@@ -2256,7 +2898,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/games"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {}
 
         if len(id) > 0:
@@ -2274,14 +2919,16 @@ class Client:
             games = []
 
             for game in response.json()["data"]:
-                games.append(Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"]))
+                games.append(
+                    Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"])
+                )
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
         return games
 
-    def get_creator_goals(self,broadcaster_id):
+    def get_creator_goals(self, broadcaster_id):
         """
         Gets the broadcaster’s list of active goals
         Use this to get the current progress of each goal
@@ -2295,20 +2942,25 @@ class Client:
         Returns:
             list
         """
-        
-        url="https://api.twitch.tv/helix/goals"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        url = "https://api.twitch.tv/helix/goals"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_channel_guest_star_settings(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_channel_guest_star_settings(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> dict:
         """
         Gets the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -2325,7 +2977,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/guest_star/channel_settings"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -2336,7 +2991,15 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_channel_guest_star_settings(self, broadcaster_id: str, is_moderator_send_live_enabled: bool=None, slot_count: int=None, is_browser_source_audio_enabled: bool=None, group_layout: str="", regenerate_browser_sources: bool=None) -> None:
+    def update_channel_guest_star_settings(
+        self,
+        broadcaster_id: str,
+        is_moderator_send_live_enabled: bool = None,
+        slot_count: int = None,
+        is_browser_source_audio_enabled: bool = None,
+        group_layout: str = "",
+        regenerate_browser_sources: bool = None,
+    ) -> None:
         """
         Mutates the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -2352,7 +3015,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/guest_star/channel_settings"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id}
 
         if is_moderator_send_live_enabled is not None:
@@ -2372,7 +3038,9 @@ class Client:
 
         requests.put(url, headers=headers, json=data)
 
-    def get_guest_star_session(self, broadcaster_id: str, moderator_id: str) -> GuestStarSession:
+    def get_guest_star_session(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> GuestStarSession:
         """
         Gets information about an ongoing Guest Star session for a particular channel
 
@@ -2389,7 +3057,10 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SESSION
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -2418,7 +3089,10 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SESSION
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         payload = {"broadcaster_id": broadcaster_id}
 
         response = requests.post(url, headers=headers, json=payload)
@@ -2431,7 +3105,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["data"]["message"])
 
-    def end_guest_star_session(self, broadcaster_id: str, session_id: str) -> GuestStarSession:
+    def end_guest_star_session(
+        self, broadcaster_id: str, session_id: str
+    ) -> GuestStarSession:
         """
         Programmatically ends a Guest Star session on behalf of the broadcaster
 
@@ -2448,7 +3124,10 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SESSION
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id, "session_id": session_id}
 
         response = requests.delete(url, headers=headers, data=data)
@@ -2461,7 +3140,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["data"]["message"])
 
-    def get_guest_star_invites(self, broadcaster_id: str, moderator_id: str, session_id: str) -> list[dict]:
+    def get_guest_star_invites(
+        self, broadcaster_id: str, moderator_id: str, session_id: str
+    ) -> list[dict]:
         """
         Provides a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
 
@@ -2479,8 +3160,15 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_INVITES
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+        }
 
         response = requests.get(url, headers=headers, params=params)
 
@@ -2490,7 +3178,9 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def send_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+    def send_guest_star_invite(
+        self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
+    ) -> None:
         """
         Sends an invite to a specified guest on behalf of the broadcaster for a Guest Star session in progress
 
@@ -2503,12 +3193,22 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_INVITES
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        payload = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "guest_id": guest_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "guest_id": guest_id,
+        }
 
         requests.post(url, headers=headers, json=payload)
 
-    def delete_guest_star_invite(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str) -> None:
+    def delete_guest_star_invite(
+        self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
+    ) -> None:
         """
         Revokes a previously sent invite for a Guest Star session
 
@@ -2521,12 +3221,27 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_INVITES
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "guest_id": guest_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "guest_id": guest_id,
+        }
 
         requests.delete(url, headers=headers, data=data)
 
-    def assign_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str) -> None:
+    def assign_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        guest_id: str,
+        slot_id: str,
+    ) -> None:
         """
         Allows a previously invited user to be assigned a slot within the active Guest Star session, once that guest has indicated they are ready to join
 
@@ -2541,12 +3256,28 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SLOT
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        payload = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "guest_id": guest_id, "slot_id": slot_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "guest_id": guest_id,
+            "slot_id": slot_id,
+        }
 
         requests.post(url, headers=headers, json=payload)
 
-    def update_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, source_slot_id: str, destination_slot_id: str="") -> None:
+    def update_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        source_slot_id: str,
+        destination_slot_id: str = "",
+    ) -> None:
         """
         Allows a user to update the assigned slot for a particular user within the active Guest Star session
 
@@ -2561,18 +3292,34 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SLOT
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "source_slot_id": source_slot_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "source_slot_id": source_slot_id,
+        }
 
         if destination_slot_id != "":
-            data ["destination_slot_id"] = destination_slot_id
+            data["destination_slot_id"] = destination_slot_id
 
         requests.patch(url, headers=headers, data=data)
 
-    def delete_guest_star_slot(self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str, slot_id: str, should_reinvite_guest: str="") -> None:
+    def delete_guest_star_slot(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        guest_id: str,
+        slot_id: str,
+        should_reinvite_guest: str = "",
+    ) -> None:
         """
         Allows a caller to remove a slot assignment from a user participating in an active Guest Star session
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster running the Guest Star session
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
@@ -2584,18 +3331,37 @@ class Client:
         """
 
         url = ENDPOINT_GUEST_STAR_SLOT
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "guest_id": guest_id, "slot_id": slot_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "guest_id": guest_id,
+            "slot_id": slot_id,
+        }
 
         if should_reinvite_guest != "":
             data["should_reinvite_guest"] = should_reinvite_guest
 
         requests.delete(url, headers=headers, data=data)
 
-    def update_guest_star_slot_settings(self, broadcaster_id: str, moderator_id: str, session_id: str, slot_id: str, is_audio_enabled: bool=None, is_video_enabled: bool=None, is_live: bool=None, volume: int=None) -> None:
+    def update_guest_star_slot_settings(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        session_id: str,
+        slot_id: str,
+        is_audio_enabled: bool = None,
+        is_video_enabled: bool = None,
+        is_live: bool = None,
+        volume: int = None,
+    ) -> None:
         """
         Allows a user to update slot settings for a particular guest within a Guest Star session, such as allowing the user to share audio or video within the call as a host
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster running the Guest Star session
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
@@ -2609,24 +3375,34 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/guest_star/slot_settings"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "session_id": session_id, "slot_id": slot_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "session_id": session_id,
+            "slot_id": slot_id,
+        }
 
-        if is_audio_enabled != None:
+        if is_audio_enabled is not None:
             data["is_audio_enabled"] = is_audio_enabled
 
-        if is_video_enabled != None:
+        if is_video_enabled is not None:
             data["is_video_enabled"] = is_video_enabled
 
-        if is_live != None:
+        if is_live is not None:
             data["is_live"] = is_live
 
-        if volume != None:
+        if volume is not None:
             data["volume"] = volume
 
         requests.patch(url, headers=headers, data=data)
 
-    def get_hype_train_events(self, broadcaster_id: str, first: int=1) -> list[HypeTrainEvent]:
+    def get_hype_train_events(
+        self, broadcaster_id: str, first: int = 1
+    ) -> list[HypeTrainEvent]:
         """
         Gets the information of the most recent Hype Train of the given channel ID
         When there is currently an active Hype Train, it returns information about that Hype Train
@@ -2646,37 +3422,50 @@ class Client:
             list[HypeTrainEvent]
         """
 
-        url="https://api.twitch.tv/helix/hypetrain/events"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
-        
-        cursor=""
-        calls=math.ceil(first/100)
-        events=[]
+        url = "https://api.twitch.tv/helix/hypetrain/events"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
+
+        cursor = ""
+        calls = math.ceil(first / 100)
+        events = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if cursor!="":
-                params["cursor"]=cursor
+            if cursor != "":
+                params["cursor"] = cursor
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for event in response["data"]:
-                    events.append(HypeTrainEvent(event["id"],event["event_type"],event["event_timestamp"],event["version"],event["event_data"]))
+                    events.append(
+                        HypeTrainEvent(
+                            event["id"],
+                            event["event_type"],
+                            event["event_timestamp"],
+                            event["version"],
+                            event["event_data"],
+                        )
+                    )
 
-                if "pagination" in response and response["pagination"]!=None:
-                    cursor=response["pagination"]["cursor"]
+                if "pagination" in response and response["pagination"] is not None:
+                    cursor = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return events
 
-    def check_automod_status(self, broadcaster_id: str, msg_id: str, msg_user: str) -> list[dict]:
+    def check_automod_status(
+        self, broadcaster_id: str, msg_id: str, msg_user: str
+    ) -> list[dict]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
@@ -2693,18 +3482,24 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/moderation/enforcements/status"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
-        payload = {"broadcaster_id": broadcaster_id, "data": [{"msg_id": msg_id, "msg_user": msg_user}]}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "data": [{"msg_id": msg_id, "msg_user": msg_user}],
+        }
 
-        response = requests.post(url, headers = headers, json = payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def manage_held_automod_messages(self,user_id,msg_id,action):
+    def manage_held_automod_messages(self, user_id, msg_id, action):
         """
         Allow or deny a message that was held for review by AutoMod
 
@@ -2716,13 +3511,16 @@ class Client:
                           Must be "ALLOW" or "DENY"
         """
 
-        url="https://api.twitch.tv/helix/moderation/automod/message"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"user_id":user_id,"msg_id":msg_id,"action":action}
+        url = "https://api.twitch.tv/helix/moderation/automod/message"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {"user_id": user_id, "msg_id": msg_id, "action": action}
 
-        requests.post(url,headers=headers,json=payload)
+        requests.post(url, headers=headers, json=payload)
 
-    def get_automod_settings(self,broadcaster_id,moderator_id):
+    def get_automod_settings(self, broadcaster_id, moderator_id):
         """
         Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2739,11 +3537,14 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/moderation/automod/settings"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+        url = "https://api.twitch.tv/helix/moderation/automod/settings"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response=requests.get(url,headers=headers,params=params)
+        response = requests.get(url, headers=headers, params=params)
 
         if response.ok:
             return response.json()["data"][0]
@@ -2751,7 +3552,20 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_automod_settings(self,broadcaster_id,moderator_id,aggression=None,bullying=None,disability=None,misogyny=None,overall_level=None,race_ethnicity_or_religion=None,sex_based_terms=None,sexuality_sex_or_gender=None,swearing=None):
+    def update_automod_settings(
+        self,
+        broadcaster_id,
+        moderator_id,
+        aggression=None,
+        bullying=None,
+        disability=None,
+        misogyny=None,
+        overall_level=None,
+        race_ethnicity_or_religion=None,
+        sex_based_terms=None,
+        sexuality_sex_or_gender=None,
+        swearing=None,
+    ):
         """
         Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2776,39 +3590,43 @@ class Client:
         Returns:
             dict
         """
-        
-        url="https://api.twitch.tv/helix/moderation/automod/settings"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
 
-        if aggression!=None:
-            data["aggression"]=aggression
+        url = "https://api.twitch.tv/helix/moderation/automod/settings"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        if bullying!=None:
-            data["bullying"]=bullying
+        if aggression is not None:
+            data["aggression"] = aggression
 
-        if disability!=None:
-            data["disability"]=disability
-        
-        if misogyny!=None:
-            data["misogyny"]=misogyny
-        
-        if overall_level!=None:
-            data["overall_level"]=overall_level
+        if bullying is not None:
+            data["bullying"] = bullying
 
-        if race_ethnicity_or_religion!=None:
-            data["race_ethnicity_or_religion"]=race_ethnicity_or_religion
+        if disability is not None:
+            data["disability"] = disability
 
-        if sex_based_terms!=None:
-            data["sex_based_terms"]=sex_based_terms
+        if misogyny is not None:
+            data["misogyny"] = misogyny
 
-        if sexuality_sex_or_gender!=None:
-            data["sexuality_sex_or_gender"]=sexuality_sex_or_gender
+        if overall_level is not None:
+            data["overall_level"] = overall_level
 
-        if swearing!=None:
-            data["swearing"]=swearing
+        if race_ethnicity_or_religion is not None:
+            data["race_ethnicity_or_religion"] = race_ethnicity_or_religion
 
-        response=requests.put(url,headers=headers,json=data)
+        if sex_based_terms is not None:
+            data["sex_based_terms"] = sex_based_terms
+
+        if sexuality_sex_or_gender is not None:
+            data["sexuality_sex_or_gender"] = sexuality_sex_or_gender
+
+        if swearing is not None:
+            data["swearing"] = swearing
+
+        response = requests.put(url, headers=headers, json=data)
 
         if response.ok:
             return response.json()["data"][0]
@@ -2816,7 +3634,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_banned_users(self,broadcaster_id,user_id=[],first=20):
+    def get_banned_users(self, broadcaster_id, user_id=[], first=20):
         """
         Returns all banned and timed-out users in a channel
 
@@ -2834,45 +3652,48 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/moderation/banned"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/moderation/banned"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id)>0:
-            params["user_id"]=user_id
+        if len(user_id) > 0:
+            params["user_id"] = user_id
 
-        if first!=20:
-            params["first"]=first
+        if first != 20:
+            params["first"] = first
 
-        after=""
-        calls=math.ceil(first/100)
-        users=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        users = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
                 users.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return users
 
-    def ban_user(self,broadcaster_id,moderator_id,reason,user_id,duration=None):
+    def ban_user(self, broadcaster_id, moderator_id, reason, user_id, duration=None):
         """
         Bans a user from participating in a broadcaster’s chat room, or puts them in a timeout
         If the user is currently in a timeout, you can use this method to change the duration of the timeout or ban them altogether
@@ -2898,26 +3719,29 @@ class Client:
             dict
         """
 
-        url="https://api.twitch.tv/helix/moderation/bans"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
+        url = "https://api.twitch.tv/helix/moderation/bans"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        data={"reason":reason,"user_id":user_id}
+        data = {"reason": reason, "user_id": user_id}
 
-        if duration!=None:
-            data["duration"]=duration
+        if duration is not None:
+            data["duration"] = duration
 
-        payload["data"]=data
-        
-        response=requests.post(url,headers=headers,json=payload)
+        payload["data"] = data
+
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.ok:
             return response.json()["data"]
-        
+
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def unban_user(self,broadcaster_id,moderator_id,user_id):
+    def unban_user(self, broadcaster_id, moderator_id, user_id):
         """
         Removes the ban or timeout that was placed on the specified user
 
@@ -2932,13 +3756,20 @@ class Client:
             twitchpy.errors.ClientError
         """
 
-        url="https://api.twitch.tv/helix/moderation/bans"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id,"user_id":user_id}
+        url = "https://api.twitch.tv/helix/moderation/bans"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "user_id": user_id,
+        }
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
-    def get_blocked_terms(self,broadcaster_id,moderator_id,first=20):
+    def get_blocked_terms(self, broadcaster_id, moderator_id, first=20):
         """
         Gets the broadcaster’s list of non-private, blocked words or phrases
         These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
@@ -2958,43 +3789,46 @@ class Client:
         Returns:
             list
         """
-        
-        url = ENDPOINT_MODERATION_BLOCKED_TERMS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id}
 
-        if first!=20:
-            params["first"]=first
-        
-        after=""
-        calls=math.ceil(first/100)
-        blocked_terms=[]
+        url = ENDPOINT_MODERATION_BLOCKED_TERMS
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
+
+        if first != 20:
+            params["first"] = first
+
+        after = ""
+        calls = math.ceil(first / 100)
+        blocked_terms = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
                 blocked_terms.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
-        
+
         return blocked_terms
 
-    def add_blocked_term(self,broadcaster_id,moderator_id,text):
+    def add_blocked_term(self, broadcaster_id, moderator_id, text):
         """
         Adds a word or phrase to the broadcaster’s list of blocked terms
         These are the terms that broadcasters don’t want used in their chat room
@@ -3017,10 +3851,18 @@ class Client:
         """
 
         url = ENDPOINT_MODERATION_BLOCKED_TERMS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"broadcaster_id":broadcaster_id,"moderator_id":moderator_id,"text":text}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "text": text,
+        }
 
-        response=requests.post(url,headers=headers,json=payload)
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.ok:
             return response.json()["data"][0]
@@ -3028,7 +3870,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def remove_blocked_term(self,broadcaster_id,id,moderator_id):
+    def remove_blocked_term(self, broadcaster_id, id, moderator_id):
         """
         Removes the word or phrase that the broadcaster is blocking users from using in their chat room
 
@@ -3041,12 +3883,21 @@ class Client:
         """
 
         url = ENDPOINT_MODERATION_BLOCKED_TERMS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id,"moderator_id":moderator_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "id": id,
+            "moderator_id": moderator_id,
+        }
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
-    def delete_chat_messages(self, broadcaster_id: str, moderator_id: str, message_id: str = "") -> None:
+    def delete_chat_messages(
+        self, broadcaster_id: str, moderator_id: str, message_id: str = ""
+    ) -> None:
         """
         Removes a single chat message or all chat messages from the broadcaster’s chat room
 
@@ -3059,7 +3910,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/moderation/chat"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
         if message_id != "":
@@ -3067,7 +3921,7 @@ class Client:
 
         requests.delete(url, headers=headers, data=data)
 
-    def get_moderators(self,broadcaster_id,user_id=[],first=20):
+    def get_moderators(self, broadcaster_id, user_id=[], first=20):
         """
         Returns all moderators in a channel
 
@@ -3085,33 +3939,36 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/moderation/moderators"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = ENDPOINT_MODERATORS
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id)>0:
-            params["user_id"]=user_id
+        if len(user_id) > 0:
+            params["user_id"] = user_id
 
-        after=""
-        calls=math.ceil(first/100)
-        ids=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        ids = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
-                
+                response = response.json()
+
                 for user in response["data"]:
                     ids.append(user["user_id"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3128,8 +3985,11 @@ class Client:
             user_id (str): The ID of the user to add as a moderator in the broadcaster’s chat room
         """
 
-        url = "https://api.twitch.tv/helix/moderation/moderators"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        url = ENDPOINT_MODERATORS
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         payload = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
         requests.post(url, headers=headers, json=payload)
@@ -3144,13 +4004,18 @@ class Client:
             user_id (str): The ID of the user to remove as a moderator from the broadcaster’s chat room
         """
 
-        url = "https://api.twitch.tv/helix/moderation/moderators"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        url = ENDPOINT_MODERATORS
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
         requests.delete(url, headers=headers, data=data)
 
-    def get_vips(self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) -> list[User]:
+    def get_vips(
+        self, broadcaster_id: str, user_id: list[str] = [], first: int = 20
+    ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
 
@@ -3171,7 +4036,10 @@ class Client:
         """
 
         url = ENDPOINT_VIPS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id}
 
         if len(user_id) > 0:
@@ -3193,7 +4061,11 @@ class Client:
                 response = response.json()
 
                 if response["data"] is not None:
-                    users.append(self.get_users(id=[user["user_id"] for user in response["data"]]))
+                    users.append(
+                        self.get_users(
+                            id=[user["user_id"] for user in response["data"]]
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -3214,7 +4086,10 @@ class Client:
         """
 
         url = ENDPOINT_VIPS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         payload = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
         requests.post(url, headers=headers, json=payload)
@@ -3229,12 +4104,17 @@ class Client:
         """
 
         url = ENDPOINT_VIPS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
         requests.delete(url, headers=headers, data=data)
 
-    def update_shield_mode_status(self, broadcaster_id: str, moderator_id: str, is_active: bool) -> dict:
+    def update_shield_mode_status(
+        self, broadcaster_id: str, moderator_id: str, is_active: bool
+    ) -> dict:
         """
         Activates or deactivates the broadcaster’s Shield Mode
 
@@ -3252,8 +4132,16 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/moderation/shield_mode"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id, "is_active": is_active}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        data = {
+            "broadcaster_id": broadcaster_id,
+            "moderator_id": moderator_id,
+            "is_active": is_active,
+        }
 
         response = requests.put(url, headers=headers, data=data)
 
@@ -3280,7 +4168,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/moderation/shield_mode"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
         response = requests.get(url, headers=headers, params=params)
@@ -3291,7 +4182,7 @@ class Client:
         else:
             twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_polls(self,broadcaster_id,id=[],first=20):
+    def get_polls(self, broadcaster_id, id=[], first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
         Poll information is available for 90 days
@@ -3312,40 +4203,67 @@ class Client:
         """
 
         url = ENDPOINT_POLLS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        after=""
-        calls=math.ceil(first/20)
-        polls=[]
+        after = ""
+        calls = math.ceil(first / 20)
+        polls = []
 
         for call in range(calls):
-            params["first"] = min(20, first-(20*call))
+            params["first"] = min(20, first - (20 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
+            response = requests.get(url, headers=headers, params=params)
 
             if response.ok:
-                response=response.json()
-                
-                if response["data"]!=None:
+                response = response.json()
+
+                if response["data"] is not None:
                     for poll in response["data"]:
-                        polls.append(Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"]))
+                        polls.append(
+                            Poll(
+                                poll["id"],
+                                poll["broadcaster_id"],
+                                poll["broadcaster_name"],
+                                poll["broadcaster_login"],
+                                poll["title"],
+                                poll["choices"],
+                                poll["bits_voting_enabled"],
+                                poll["bits_per_vote"],
+                                poll["channel_points_voting_enabled"],
+                                poll["channel_points_per_vote"],
+                                poll["status"],
+                                poll["duration"],
+                                poll["started_at"],
+                            )
+                        )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return polls
 
-    def create_poll(self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool=False, channel_points_per_vote: int=0) -> Poll:
+    def create_poll(
+        self,
+        broadcaster_id: str,
+        title: str,
+        choices: list[str],
+        duration: int,
+        channel_points_voting_enabled: bool = False,
+        channel_points_per_vote: int = 0,
+    ) -> Poll:
         """
         Create a poll for a specific Twitch channel
 
@@ -3374,14 +4292,23 @@ class Client:
         """
 
         url = ENDPOINT_POLLS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
 
         choices_dicts = []
 
         for choice in choices:
             choices_dicts.append({"title": choice})
 
-        payload = {"broadcaster_id": broadcaster_id, "title": title, "choices": choices_dicts, "duration": duration}
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "title": title,
+            "choices": choices_dicts,
+            "duration": duration,
+        }
 
         if channel_points_voting_enabled is not False:
             payload["channel_points_voting_enabled"] = channel_points_voting_enabled
@@ -3393,14 +4320,26 @@ class Client:
 
         if response.ok:
             poll = response.json()["data"][0]
-            poll = Poll(poll["id"], poll["broadcaster_id"], poll["broadcaster_name"], poll["broadcaster_login"], poll["title"], poll["choices"], poll["channel_points_voting_enabled"], poll["channel_points_per_vote"], poll["status"], poll["duration"], poll["started_at"])
+            poll = Poll(
+                poll["id"],
+                poll["broadcaster_id"],
+                poll["broadcaster_name"],
+                poll["broadcaster_login"],
+                poll["title"],
+                poll["choices"],
+                poll["channel_points_voting_enabled"],
+                poll["channel_points_per_vote"],
+                poll["status"],
+                poll["duration"],
+                poll["started_at"],
+            )
 
             return poll
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def end_poll(self,broadcaster_id,id,status):
+    def end_poll(self, broadcaster_id, id, status):
         """
         End a poll that is currently active
 
@@ -3419,21 +4358,38 @@ class Client:
         """
 
         url = ENDPOINT_POLLS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id, "status": status}
 
-        response=requests.patch(url,headers=headers,data=data)
+        response = requests.patch(url, headers=headers, data=data)
 
         if response.ok:
-            poll=response.json()["data"][0]
-            poll=Poll(poll["id"],poll["broadcaster_id"],poll["broadcaster_name"],poll["broadcaster_login"],poll["title"],poll["choices"],poll["bits_voting_enabled"],poll["bits_per_vote"],poll["channel_points_voting_enabled"],poll["channel_points_per_vote"],poll["status"],poll["duration"],poll["started_at"])
+            poll = response.json()["data"][0]
+            poll = Poll(
+                poll["id"],
+                poll["broadcaster_id"],
+                poll["broadcaster_name"],
+                poll["broadcaster_login"],
+                poll["title"],
+                poll["choices"],
+                poll["bits_voting_enabled"],
+                poll["bits_per_vote"],
+                poll["channel_points_voting_enabled"],
+                poll["channel_points_per_vote"],
+                poll["status"],
+                poll["duration"],
+                poll["started_at"],
+            )
 
             return poll
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_predictions(self,broadcaster_id,id=[],first=20):
+    def get_predictions(self, broadcaster_id, id=[], first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
@@ -3453,39 +4409,63 @@ class Client:
         """
 
         url = ENDPOINT_PREDICTIONS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        after=""
-        calls=math.ceil(first/20)
-        predictions=[]
+        after = ""
+        calls = math.ceil(first / 20)
+        predictions = []
 
         for call in range(calls):
-            params["first"] = min(20, first-(20*call))
+            params["first"] = min(20, first - (20 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for prediction in response["data"]:
-                    predictions.append(Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"]))
+                    predictions.append(
+                        Prediction(
+                            prediction["id"],
+                            prediction["broadcaster_id"],
+                            prediction["broadcaster_name"],
+                            prediction["broadcaster_login"],
+                            prediction["title"],
+                            prediction["winning_outcome_id"],
+                            prediction["outcomes"],
+                            prediction["prediction_window"],
+                            prediction["status"],
+                            prediction["created_at"],
+                            prediction["ended_at"],
+                            prediction["locked_at"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return predictions
 
-    def create_prediction(self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) -> Prediction:
+    def create_prediction(
+        self,
+        broadcaster_id: str,
+        title: str,
+        outcomes: list[str],
+        prediction_window: int,
+    ) -> Prediction:
         """
         Create a Channel Points Prediction for a specific Twitch channel
 
@@ -3509,8 +4489,16 @@ class Client:
         """
 
         url = ENDPOINT_PREDICTIONS
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"broadcaster_id":broadcaster_id,"title":title,"prediction_window":prediction_window}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "title": title,
+            "prediction_window": prediction_window,
+        }
 
         outcomes_payload = []
 
@@ -3519,18 +4507,31 @@ class Client:
 
         payload["outcomes"] = outcomes_payload
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
-            prediction=response.json()["data"][0]
-            prediction=Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"])
+            prediction = response.json()["data"][0]
+            prediction = Prediction(
+                prediction["id"],
+                prediction["broadcaster_id"],
+                prediction["broadcaster_name"],
+                prediction["broadcaster_login"],
+                prediction["title"],
+                prediction["winning_outcome_id"],
+                prediction["outcomes"],
+                prediction["prediction_window"],
+                prediction["status"],
+                prediction["created_at"],
+                prediction["ended_at"],
+                prediction["locked_at"],
+            )
 
             return prediction
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def end_prediction(self,broadcaster_id,id,status,winning_outcome_id=""):
+    def end_prediction(self, broadcaster_id, id, status, winning_outcome_id=""):
         """
         Lock, resolve, or cancel a Channel Points Prediction
         Active Predictions can be updated to be "locked", "resolved", or "canceled"
@@ -3553,17 +4554,33 @@ class Client:
         """
 
         url = ENDPOINT_PREDICTIONS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id,"status":status}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id, "status": status}
 
-        if winning_outcome_id!="":
-            data["winning_outcome_id"]=winning_outcome_id
+        if winning_outcome_id != "":
+            data["winning_outcome_id"] = winning_outcome_id
 
-        response=requests.patch(url,headers=headers,data=data)
-        
+        response = requests.patch(url, headers=headers, data=data)
+
         if response.ok:
-            prediction=response.json()["data"][0]
-            prediction=Prediction(prediction["id"],prediction["broadcaster_id"],prediction["broadcaster_name"],prediction["broadcaster_login"],prediction["title"],prediction["winning_outcome_id"],prediction["outcomes"],prediction["prediction_window"],prediction["status"],prediction["created_at"],prediction["ended_at"],prediction["locked_at"])
+            prediction = response.json()["data"][0]
+            prediction = Prediction(
+                prediction["id"],
+                prediction["broadcaster_id"],
+                prediction["broadcaster_name"],
+                prediction["broadcaster_login"],
+                prediction["title"],
+                prediction["winning_outcome_id"],
+                prediction["outcomes"],
+                prediction["prediction_window"],
+                prediction["status"],
+                prediction["created_at"],
+                prediction["ended_at"],
+                prediction["locked_at"],
+            )
 
             return prediction
 
@@ -3573,21 +4590,27 @@ class Client:
     def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
         """
         Raid another channel by sending the broadcaster’s viewers to the targeted channel
-        
+
         Args:
             from_broadcaster_id (str): The ID of the broadcaster that’s sending the raiding party
                 This ID must match the user ID in the user access token
             to_broadcaster_id (str): The ID of the broadcaster to raid
-        
+
         Returns:
             dict
         """
 
         url = "https://api.twitch.tv/helix/raids"
-        headers = {"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload = {"from_broadcaster_id": from_broadcaster_id, "to_broadcaster_id": to_broadcaster_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "from_broadcaster_id": from_broadcaster_id,
+            "to_broadcaster_id": to_broadcaster_id,
+        }
 
-        response = requests.post(url, headers = headers, json = payload)
+        response = requests.post(url, headers=headers, json=payload)
 
         if response.ok:
             return response.json()["data"]
@@ -3598,19 +4621,24 @@ class Client:
     def cancel_raid(self, broadcaster_id: str) -> None:
         """
         Cancel a pending raid
-        
+
         Args:
             broadcaster_id (str): The ID of the broadcaster that initiated the raid
                 This ID must match the user ID in the user access token
         """
 
         url = "https://api.twitch.tv/helix/raids"
-        headers = {"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         data = {"broadcaster_id": broadcaster_id}
 
-        requests.delete(url, headers = headers, data = data)
+        requests.delete(url, headers=headers, data=data)
 
-    def get_channel_stream_schedule(self,broadcaster_id,id=[],start_time="",utc_offset="0",first=20):
+    def get_channel_stream_schedule(
+        self, broadcaster_id, id=[], start_time="", utc_offset="0", first=20
+    ):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
         Scheduled broadcasts are defined as "stream segments"
@@ -3634,39 +4662,50 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/schedule"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/schedule"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if start_time!="":
-            params["start_time"]=start_time
+        if start_time != "":
+            params["start_time"] = start_time
 
-        if utc_offset!="0":
-            params["utc_offset"]=utc_offset
+        if utc_offset != "0":
+            params["utc_offset"] = utc_offset
 
-        after=""
-        calls=math.ceil(first/25)
-        schedules=[]
+        after = ""
+        calls = math.ceil(first / 25)
+        schedules = []
 
         for call in range(calls):
-            params["first"] = min(25, first-(25*call))
+            params["first"] = min(25, first - (25 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for schedule in response["data"]:
-                    schedules.append(StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"]))
+                    schedules.append(
+                        StreamSchedule(
+                            schedule["segments"],
+                            schedule["broadcaster_id"],
+                            schedule["broadcaster_name"],
+                            schedule["broadcaster_login"],
+                            schedule["vacation"],
+                        )
+                    )
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
@@ -3684,10 +4723,10 @@ class Client:
             str
         """
 
-        url="https://api.twitch.tv/helix/schedule/icalendar"
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/schedule/icalendar"
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,params=params)
+        response = requests.get(url, params=params)
 
         if response.ok:
             return response.text
@@ -3695,7 +4734,14 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_channel_stream_schedule(self,broadcaster_id,is_vacation_enabled=False,vacation_start_time="",vacation_end_time="",timezone=""):
+    def update_channel_stream_schedule(
+        self,
+        broadcaster_id,
+        is_vacation_enabled=False,
+        vacation_start_time="",
+        vacation_end_time="",
+        timezone="",
+    ):
         """
         Update the settings for a channel’s stream schedule
         This can be used for setting vacation details
@@ -3715,10 +4761,13 @@ class Client:
         Raises:
             twitchpy.errors.ClientError
         """
-        
-        url="https://api.twitch.tv/helix/schedule/settings"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id}
+
+        url = "https://api.twitch.tv/helix/schedule/settings"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id}
 
         if is_vacation_enabled:
             data["is_vacation_enabled"] = True
@@ -3732,9 +4781,18 @@ class Client:
         if timezone != "":
             data["timezone"] = timezone
 
-        requests.patch(url,headers=headers,data=data)
+        requests.patch(url, headers=headers, data=data)
 
-    def create_channel_stream_schedule_segment(self,broadcaster_id,start_time,timezone,is_recurring,duration=240,category_id="",title=""):
+    def create_channel_stream_schedule_segment(
+        self,
+        broadcaster_id,
+        start_time,
+        timezone,
+        is_recurring,
+        duration=240,
+        category_id="",
+        title="",
+    ):
         """
         Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -3756,32 +4814,56 @@ class Client:
         Returns:
             StreamSchedule
         """
-        
+
         url = ENDPOINT_SCHEDULE_SEGMENT
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        payload={"broadcaster_id":broadcaster_id,"start_time":start_time,"timezone":timezone,"is_recurring":is_recurring}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {
+            "broadcaster_id": broadcaster_id,
+            "start_time": start_time,
+            "timezone": timezone,
+            "is_recurring": is_recurring,
+        }
 
-        if duration!=240:
-            payload["duration"]=duration
+        if duration != 240:
+            payload["duration"] = duration
 
-        if category_id!="":
-            payload["category_id"]=category_id
+        if category_id != "":
+            payload["category_id"] = category_id
 
-        if title!="":
-            payload["title"]=title
+        if title != "":
+            payload["title"] = title
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
-            schedule=response.json()["data"][0]
-            schedule=StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"])
+            schedule = response.json()["data"][0]
+            schedule = StreamSchedule(
+                schedule["segments"],
+                schedule["broadcaster_id"],
+                schedule["broadcaster_name"],
+                schedule["broadcaster_login"],
+                schedule["vacation"],
+            )
 
             return schedule
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_channel_stream_schedule_segment(self,broadcaster_id,id,start_time="",duration=240,category_id="",title="",is_canceled=False,timezone=""):
+    def update_channel_stream_schedule_segment(
+        self,
+        broadcaster_id,
+        id,
+        start_time="",
+        duration=240,
+        category_id="",
+        title="",
+        is_canceled=False,
+        timezone="",
+    ):
         """
         Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -3804,41 +4886,50 @@ class Client:
         Returns:
             StreamSchedule
         """
-        
+
         url = ENDPOINT_SCHEDULE_SEGMENT
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id}
 
-        if start_time!="":
-            data["start_time"]=start_time
+        if start_time != "":
+            data["start_time"] = start_time
 
-        if duration!=240:
-            data["duration"]=duration
+        if duration != 240:
+            data["duration"] = duration
 
-        if category_id!="":
-            data["category_id"]=category_id
+        if category_id != "":
+            data["category_id"] = category_id
 
-        if title!="":
-            data["title"]=title
+        if title != "":
+            data["title"] = title
 
-        if is_canceled!=False:
-            data["is_canceled"]=is_canceled
+        if is_canceled is not False:
+            data["is_canceled"] = is_canceled
 
-        if timezone!="":
-            data["timezone"]=timezone
+        if timezone != "":
+            data["timezone"] = timezone
 
-        response=requests.patch(url,headers=headers,data=data)
-        
+        response = requests.patch(url, headers=headers, data=data)
+
         if response.ok:
-            schedule=response.json()["data"][0]
-            schedule=StreamSchedule(schedule["segments"],schedule["broadcaster_id"],schedule["broadcaster_name"],schedule["broadcaster_login"],schedule["vacation"])
+            schedule = response.json()["data"][0]
+            schedule = StreamSchedule(
+                schedule["segments"],
+                schedule["broadcaster_id"],
+                schedule["broadcaster_name"],
+                schedule["broadcaster_login"],
+                schedule["vacation"],
+            )
 
             return schedule
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def delete_channel_stream_schedule_segment(self,broadcaster_id,id):
+    def delete_channel_stream_schedule_segment(self, broadcaster_id, id):
         """
         Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
@@ -3849,12 +4940,15 @@ class Client:
         """
 
         url = ENDPOINT_SCHEDULE_SEGMENT
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"broadcaster_id":broadcaster_id,"id":id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"broadcaster_id": broadcaster_id, "id": id}
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
-    def search_categories(self,query,first=20):
+    def search_categories(self, query, first=20):
         """
         Returns a list of games or categories that match the query via name either entirely or partially
 
@@ -3870,37 +4964,44 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/search/categories"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"query":query}
+        url = "https://api.twitch.tv/helix/search/categories"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"query": query}
 
-        after=""
-        calls=math.ceil(first/100)
-        games=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        games = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for game in response["data"]:
-                    games.append(Game(game["id"],game["name"],box_art_url=game["box_art_url"]))
+                    games.append(
+                        Game(game["id"], game["name"], box_art_url=game["box_art_url"])
+                    )
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return games
 
-    def search_channels(self, query: str, first: int=20, live_only: bool=False) -> list[Channel]:
+    def search_channels(
+        self, query: str, first: int = 20, live_only: bool = False
+    ) -> list[Channel]:
         """
         Gets the channels that match the specified query and have streamed content within the past 6 months
         To match, the beginning of the broadcaster’s name or category must match the query string
@@ -3919,7 +5020,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/search/channels"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"query": query}
 
         if live_only is not False:
@@ -3936,12 +5040,22 @@ class Client:
                 params["after"] = after
 
             response = requests.get(url, headers=headers, params=params)
-            
+
             if response.ok:
                 response = response.json()
 
                 for channel in response["data"]:
-                    channels.append(Channel(channel["id"], channel["broadcaster_login"], channel["display_name"], channel["game_id"], channel["game_name"], channel["title"], broadcaster_language=channel["broadcaster_language"]))
+                    channels.append(
+                        Channel(
+                            channel["id"],
+                            channel["broadcaster_login"],
+                            channel["display_name"],
+                            channel["game_id"],
+                            channel["game_name"],
+                            channel["title"],
+                            broadcaster_language=channel["broadcaster_language"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -3951,7 +5065,7 @@ class Client:
 
         return channels
 
-    def get_stream_key(self,broadcaster_id):
+    def get_stream_key(self, broadcaster_id):
         """
         Gets the channel stream key for a user
 
@@ -3965,19 +5079,30 @@ class Client:
             str
         """
 
-        url="https://api.twitch.tv/helix/streams/key"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/streams/key"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
             return response.json()["data"][0]["stream_key"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_streams(self, user_id: str | list[str]="", user_login: str | list[str]="", game_id: str | list[str]="", type: str="all", language: str | list[str]="", first: int=20) -> list[Stream]:
+    def get_streams(
+        self,
+        user_id: str | list[str] = "",
+        user_login: str | list[str] = "",
+        game_id: str | list[str] = "",
+        type: str = "all",
+        language: str | list[str] = "",
+        first: int = 20,
+    ) -> list[Stream]:
         """
         Gets a list of all streams
         The list is in descending order by the number of viewers watching the stream
@@ -4004,7 +5129,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/streams"
-        headers = {"Authorization": f"Bearer {self.__app_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
         params = {}
 
         if user_id != "":
@@ -4038,7 +5166,24 @@ class Client:
                 response = response.json()
 
                 for stream in response["data"]:
-                    streams.append(Stream(stream["id"], stream["user_id"], stream["user_login"], stream["user_name"], stream["game_id"], stream["game_name"], stream["type"], stream["title"], stream["tags"], stream["viewer_count"], stream["started_at"], stream["language"], stream["thumbnail_url"], stream["is_mature"]))
+                    streams.append(
+                        Stream(
+                            stream["id"],
+                            stream["user_id"],
+                            stream["user_login"],
+                            stream["user_name"],
+                            stream["game_id"],
+                            stream["game_name"],
+                            stream["type"],
+                            stream["title"],
+                            stream["tags"],
+                            stream["viewer_count"],
+                            stream["started_at"],
+                            stream["language"],
+                            stream["thumbnail_url"],
+                            stream["is_mature"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -4048,7 +5193,7 @@ class Client:
 
         return streams
 
-    def get_followed_streams(self, user_id: str, first: int=100) -> list[Stream]:
+    def get_followed_streams(self, user_id: str, first: int = 100) -> list[Stream]:
         """
         Gets the list of broadcasters that the user follows and that are streaming live
 
@@ -4066,7 +5211,10 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/streams/followed"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
         params = {"user_id": user_id}
 
         after = ""
@@ -4080,12 +5228,29 @@ class Client:
                 params["after"] = after
 
             response = requests.get(url, headers=headers, params=params)
-            
+
             if response.ok:
                 response = response.json()
-                
+
                 for stream in response["data"]:
-                    streams.append(Stream(stream["id"], stream["user_id"], stream["user_login"], stream["user_name"], stream["game_id"], stream["game_name"], stream["type"], stream["title"], stream["tags"], stream["viewer_count"], stream["started_at"], stream["language"], stream["thumbnail_url"], stream["is_mature"]))
+                    streams.append(
+                        Stream(
+                            stream["id"],
+                            stream["user_id"],
+                            stream["user_login"],
+                            stream["user_name"],
+                            stream["game_id"],
+                            stream["game_name"],
+                            stream["type"],
+                            stream["title"],
+                            stream["tags"],
+                            stream["viewer_count"],
+                            stream["started_at"],
+                            stream["language"],
+                            stream["thumbnail_url"],
+                            stream["is_mature"],
+                        )
+                    )
 
                 if "pagination" in response and "cursor" in response["pagination"]:
                     after = response["pagination"]["cursor"]
@@ -4095,7 +5260,7 @@ class Client:
 
         return streams
 
-    def create_stream_marker(self,user_id,description=""):
+    def create_stream_marker(self, user_id, description=""):
         """
         Creates a marker in the stream of a user specified by user ID
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -4113,22 +5278,26 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/streams/markers"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
-        payload={"user_id":user_id}
+        url = "https://api.twitch.tv/helix/streams/markers"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {"user_id": user_id}
 
-        if description!="":
-            payload["description"]=description
+        if description != "":
+            payload["description"] = description
 
-        response=requests.post(url,headers=headers,json=payload)
-        
+        response = requests.post(url, headers=headers, json=payload)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_stream_markers(self,user_id="",video_id="",first=20):
+    def get_stream_markers(self, user_id="", video_id="", first=20):
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -4148,41 +5317,44 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/streams/markers"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/streams/markers"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if user_id!="":
-            params["user_id"]=user_id
+        if user_id != "":
+            params["user_id"] = user_id
 
-        if video_id!="":
-            params["video_id"]=video_id
+        if video_id != "":
+            params["video_id"] = video_id
 
-        after=""
-        calls=math.ceil(first/100)
-        markers=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        markers = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
                 markers.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return markers
 
-    def get_broadcaster_subscriptions(self,broadcaster_id,user_id=[],first=20):
+    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=[], first=20):
         """
         Get all of a broadcaster’s subscriptions
 
@@ -4201,45 +5373,48 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/subscriptions"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/subscriptions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id)>0:
-            params["user_id"]=user_id
+        if len(user_id) > 0:
+            params["user_id"] = user_id
 
-        if first!=20:
-            params["first"]=first
+        if first != 20:
+            params["first"] = first
 
-        after=""
-        calls=math.ceil(first/100)
-        subscriptions=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        subscriptions = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
                 subscriptions.extend(response["data"])
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return subscriptions
 
-    def check_user_subscription(self,broadcaster_id,user_id):
+    def check_user_subscription(self, broadcaster_id, user_id):
         """
         Checks if a specific user (user_id) is subscribed to a specific channel (broadcaster_id)
 
@@ -4253,20 +5428,23 @@ class Client:
         Returns:
             dict
         """
-        
-        url="https://api.twitch.tv/helix/subscriptions/user"
-        headers={"Authorization":f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id,"user_id":user_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        url = "https://api.twitch.tv/helix/subscriptions/user"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id, "user_id": user_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
             return response.json()["data"][0]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_all_stream_tags(self,first=20,tag_id=[]):
+    def get_all_stream_tags(self, first=20, tag_id=[]):
         """
         Gets the list of all stream tags defined by Twitch
 
@@ -4282,40 +5460,50 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/tags/streams"
-        headers={"Authorization":f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/tags/streams"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if len(tag_id)>0:
-            params["tag_id"]=tag_id
+        if len(tag_id) > 0:
+            params["tag_id"] = tag_id
 
-        after=""
-        calls=math.ceil(first/100)
-        tags=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        tags = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for tag in response["data"]:
-                    tags.append(Tag(tag["tag_id"],tag["is_auto"],tag["localization_names"],tag["localization_descriptions"]))
+                    tags.append(
+                        Tag(
+                            tag["tag_id"],
+                            tag["is_auto"],
+                            tag["localization_names"],
+                            tag["localization_descriptions"],
+                        )
+                    )
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return tags
 
-    def get_stream_tags(self,broadcaster_id):
+    def get_stream_tags(self, broadcaster_id):
         """
         Gets the list of current stream tags that have been set for a channel
 
@@ -4329,25 +5517,35 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/streams/tags"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/streams/tags"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            response=response.json()
-            tags=[]
+            response = response.json()
+            tags = []
 
             for tag in response["data"]:
-                tags.append(Tag(tag["tag_id"],tag["is_auto"],tag["localization_names"],tag["localization_descriptions"]))
+                tags.append(
+                    Tag(
+                        tag["tag_id"],
+                        tag["is_auto"],
+                        tag["localization_names"],
+                        tag["localization_descriptions"],
+                    )
+                )
 
             return tags
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_channel_teams(self,broadcaster_id):
+    def get_channel_teams(self, broadcaster_id):
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
 
@@ -4361,14 +5559,17 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/teams/channel"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        url = "https://api.twitch.tv/helix/teams/channel"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            teams=[]
+            teams = []
 
             for team in response.json()["data"]:
                 teams.append(self.get_teams(id=team["id"]))
@@ -4378,7 +5579,7 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_teams(self,name="",id=""):
+    def get_teams(self, name="", id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
@@ -4394,33 +5595,49 @@ class Client:
             Team
         """
 
-        url="https://api.twitch.tv/helix/teams"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/teams"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if name!="":
-            params["name"]=name
+        if name != "":
+            params["name"] = name
 
-        if id!="":
-            params["id"]=id
+        if id != "":
+            params["id"] = id
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            team=response.json()["data"][0]
-            users=[]
+            team = response.json()["data"][0]
+            users = []
 
             for user in team["users"]:
-                users.append(User(user["user_id"],user["user_login"],user["user_name"]))
+                users.append(
+                    User(user["user_id"], user["user_login"], user["user_name"])
+                )
 
-            team=Team(users,team["background_image_url"],team["banner"],team["created_at"],team["updated_at"],team["info"],team["thumbnail_url"],team["team_name"],team["team_display_name"],team["id"])
+            team = Team(
+                users,
+                team["background_image_url"],
+                team["banner"],
+                team["created_at"],
+                team["updated_at"],
+                team["info"],
+                team["thumbnail_url"],
+                team["team_name"],
+                team["team_display_name"],
+                team["id"],
+            )
 
             return team
-                
+
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_users(self,id=[],login=[]):
+    def get_users(self, id=[], login=[]):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
@@ -4439,35 +5656,50 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/users"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/users"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if len(login)>0:
-            aux=[]
+        if len(login) > 0:
+            aux = []
 
             for i in range(len(login)):
-                aux.append(login[i].replace("@","").lower())
+                aux.append(login[i].replace("@", "").lower())
 
-            params["login"]=aux
+            params["login"] = aux
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
-            users=[]
+            users = []
 
             for user in response.json()["data"]:
-                users.append(User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"]))
-            
+                users.append(
+                    User(
+                        user["id"],
+                        user["login"],
+                        user["display_name"],
+                        user["type"],
+                        user["broadcaster_type"],
+                        user["description"],
+                        user["profile_image_url"],
+                        user["offline_image_url"],
+                        user["view_count"],
+                    )
+                )
+
             return users
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def update_user(self,description=""):
+    def update_user(self, description=""):
         """
         Updates the description of a user specified by the bearer token
         If the description parameter is not provided, no update will occur and the current user data is returned
@@ -4482,25 +5714,38 @@ class Client:
             User
         """
 
-        url="https://api.twitch.tv/helix/users"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={}
+        url = "https://api.twitch.tv/helix/users"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {}
 
-        if description!="":
-            data={"description":description}
+        if description != "":
+            data = {"description": description}
 
-        response=requests.put(url,headers=headers,data=data)
+        response = requests.put(url, headers=headers, data=data)
 
         if response.ok:
-            user=response.json()["data"][0]
-            user=User(user["id"],user["login"],user["display_name"],user["type"],user["broadcaster_type"],user["description"],user["profile_image_url"],user["offline_image_url"],user["view_count"])
+            user = response.json()["data"][0]
+            user = User(
+                user["id"],
+                user["login"],
+                user["display_name"],
+                user["type"],
+                user["broadcaster_type"],
+                user["description"],
+                user["profile_image_url"],
+                user["offline_image_url"],
+                user["view_count"],
+            )
 
             return user
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_user_block_list(self,broadcaster_id,first=20):
+    def get_user_block_list(self, broadcaster_id, first=20):
         """
         Gets a specified user’s block list
 
@@ -4517,28 +5762,31 @@ class Client:
         """
 
         url = ENDPOINT_USER_BLOCKS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={"broadcaster_id":broadcaster_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
 
-        if first!=20:
-            params["first"]=first
+        if first != 20:
+            params["first"] = first
 
-        after=""
-        calls=math.ceil(first/100)
-        ids=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        ids = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
                 for user in response.json()["data"]:
                     ids.append(user["user_id"])
@@ -4548,7 +5796,7 @@ class Client:
 
         return self.get_users(id=ids)
 
-    def block_user(self,target_user_id,source_context="",reason=""):
+    def block_user(self, target_user_id, source_context="", reason=""):
         """
         Blocks the specified user on behalf of the authenticated user
 
@@ -4561,18 +5809,21 @@ class Client:
         """
 
         url = ENDPOINT_USER_BLOCKS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"target_user_id":target_user_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"target_user_id": target_user_id}
 
-        if source_context!="":
-            data["source_context"]=source_context
+        if source_context != "":
+            data["source_context"] = source_context
 
-        if reason!="":
-            data["reason"]=reason
+        if reason != "":
+            data["reason"] = reason
 
-        requests.put(url,headers=headers,data=data)
+        requests.put(url, headers=headers, data=data)
 
-    def unblock_user(self,target_user_id):
+    def unblock_user(self, target_user_id):
         """
         Unblocks the specified user on behalf of the authenticated user
 
@@ -4581,10 +5832,13 @@ class Client:
         """
 
         url = ENDPOINT_USER_BLOCKS
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"target_user_id":target_user_id}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"target_user_id": target_user_id}
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
     def get_user_extensions(self):
         """
@@ -4597,18 +5851,21 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/users/extensions/list"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
+        url = "https://api.twitch.tv/helix/users/extensions/list"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
 
-        response=requests.get(url,headers=headers)
-        
+        response = requests.get(url, headers=headers)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_user_active_extensions(self,user_id=""):
+    def get_user_active_extensions(self, user_id=""):
         """
         Gets information about active extensions installed by a specified user, identified by a user ID or Bearer token
 
@@ -4622,15 +5879,18 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/users/extensions"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/users/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if user_id!="":
-            params={"user_id":user_id}
+        if user_id != "":
+            params = {"user_id": user_id}
 
-        response=requests.get(url,headers=headers,params=params)
-        
+        response = requests.get(url, headers=headers, params=params)
+
         if response.ok:
             return response.json()["data"]
 
@@ -4649,18 +5909,32 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/users/extensions"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": CONTENT_TYPE_APPLICATION_JSON}
+        url = "https://api.twitch.tv/helix/users/extensions"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
 
-        response=requests.put(url,headers=headers)
-        
+        response = requests.put(url, headers=headers)
+
         if response.ok:
             return response.json()["data"]
 
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
-    def get_videos(self,id=[],user_id="",game_id="",first=20,language="",period="all",sort="time",type="all"):
+    def get_videos(
+        self,
+        id=[],
+        user_id="",
+        game_id="",
+        first=20,
+        language="",
+        period="all",
+        sort="time",
+        type="all",
+    ):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
@@ -4691,58 +5965,78 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/videos"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/videos"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if len(id)>0:
-            params["id"]=id
+        if len(id) > 0:
+            params["id"] = id
 
-        if user_id!="":
-            params["user_id"]=user_id
+        if user_id != "":
+            params["user_id"] = user_id
 
-        if game_id!="":
-            params["game_id"]=game_id
+        if game_id != "":
+            params["game_id"] = game_id
 
-        if language!="":
-            params["language"]=language
+        if language != "":
+            params["language"] = language
 
-        if period!="all":
-            params["period"]=period
+        if period != "all":
+            params["period"] = period
 
-        if sort!="time":
-            params["sort"]=sort
+        if sort != "time":
+            params["sort"] = sort
 
-        if type!="all":
-            params["type"]=type
+        if type != "all":
+            params["type"] = type
 
-        after=""
-        calls=math.ceil(first/100)
-        videos=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        videos = []
 
         for call in range(calls):
-            params["first"] = min(100, first-(100*call))
+            params["first"] = min(100, first - (100 * call))
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
 
                 for video in response["data"]:
-                    videos.append(Video(video["id"],video["user_id"],video["user_name"],video["title"],video["description"],video["created_at"],video["published_at"],video["url"],video["thumbnail_url"],video["viewable"],video["view_count"],video["language"],video["type"],video["duration"]))
+                    videos.append(
+                        Video(
+                            video["id"],
+                            video["user_id"],
+                            video["user_name"],
+                            video["title"],
+                            video["description"],
+                            video["created_at"],
+                            video["published_at"],
+                            video["url"],
+                            video["thumbnail_url"],
+                            video["viewable"],
+                            video["view_count"],
+                            video["language"],
+                            video["type"],
+                            video["duration"],
+                        )
+                    )
 
                 if "pagination" in response:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return videos
 
-    def delete_video(self,id):
+    def delete_video(self, id):
         """
         Deletes a video
         Videos are past broadcasts, Highlights, or uploads
@@ -4752,11 +6046,14 @@ class Client:
                       Limit: 5
         """
 
-        url="https://api.twitch.tv/helix/videos"
-        headers={"Authorization": f"Bearer {self.__user_token}","Client-Id":self.client_id}
-        data={"id":id}
+        url = "https://api.twitch.tv/helix/videos"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"id": id}
 
-        requests.delete(url,headers=headers,data=data)
+        requests.delete(url, headers=headers, data=data)
 
     def send_whisper(self, from_user_id: str, to_user_id: str, message: str) -> None:
         """
@@ -4772,12 +6069,20 @@ class Client:
         """
 
         url = "https://api.twitch.tv/helix/whispers"
-        headers = {"Authorization": f"Bearer {self.__user_token}", "Client-Id": self.client_id, "Content-Type": "application/json"}
-        payload = {"from_user_id": from_user_id, "to_user_id": to_user_id, "message": message}
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {
+            "from_user_id": from_user_id,
+            "to_user_id": to_user_id,
+            "message": message,
+        }
 
         requests.post(url, headers=headers, json=payload)
 
-    def get_webhook_subscriptions(self,first=20):
+    def get_webhook_subscriptions(self, first=20):
         """
         Gets the Webhook subscriptions of an application identified by a Bearer token, in order of expiration
 
@@ -4792,35 +6097,38 @@ class Client:
             list
         """
 
-        url="https://api.twitch.tv/helix/webhooks/subscriptions"
-        headers={"Authorization": f"Bearer {self.__app_token}","Client-Id":self.client_id}
-        params={}
+        url = "https://api.twitch.tv/helix/webhooks/subscriptions"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {}
 
-        if first!=20:
-            params={"first":first}
+        if first != 20:
+            params = {"first": first}
 
-        after=""
-        calls=math.ceil(first/100)
-        subscriptions=[]
+        after = ""
+        calls = math.ceil(first / 100)
+        subscriptions = []
 
         for call in range(calls):
-            if first-(100*call)>100:
-                params["first"]=100
-            
+            if first - (100 * call) > 100:
+                params["first"] = 100
+
             else:
-                params["first"]=first-(100*call)
+                params["first"] = first - (100 * call)
 
-            if after!="":
-                params["after"]=after
+            if after != "":
+                params["after"] = after
 
-            response=requests.get(url,headers=headers,params=params)
-            
+            response = requests.get(url, headers=headers, params=params)
+
             if response.ok:
-                response=response.json()
+                response = response.json()
                 subscriptions.extend(response["data"])
 
                 if "pagination" in response and "cursor" in response["pagination"]:
-                    after=response["pagination"]["cursor"]
+                    after = response["pagination"]["cursor"]
 
             else:
                 raise twitchpy.errors.ClientError(response.json()["message"])

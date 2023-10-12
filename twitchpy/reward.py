@@ -2,8 +2,29 @@ class Reward:
     """
     Represents a reward
     """
-    
-    def __init__(self, broadcaster_name, broadcaster_id, id, image="", background_color="", is_enabled=True, cost=0, title="", prompt="", is_user_input_required=False, max_per_stream_setting=None, max_per_user_per_stream_setting=None, global_cooldown_setting=None, is_paused=False, is_in_stock=True, default_image=None, should_redemptions_skip_request_queue=False, redemptions_redeemed_current_stream=0, cooldown_expires_at=None):
+
+    def __init__(
+        self,
+        broadcaster_name,
+        broadcaster_id,
+        id,
+        image="",
+        background_color="",
+        is_enabled=True,
+        cost=0,
+        title="",
+        prompt="",
+        is_user_input_required=False,
+        max_per_stream_setting=None,
+        max_per_user_per_stream_setting=None,
+        global_cooldown_setting=None,
+        is_paused=False,
+        is_in_stock=True,
+        default_image=None,
+        should_redemptions_skip_request_queue=False,
+        redemptions_redeemed_current_stream=0,
+        cooldown_expires_at=None,
+    ):
         """
         Args:
             broadcaster_name (str): Name of the channel owner of the reward
@@ -27,16 +48,16 @@ class Reward:
             cooldown_expires_at (int): Timestamp of the cooldown expiration
         """
 
-        self.broadcaster_name=broadcaster_name
-        self.broadcaster_id=broadcaster_id
-        self.id=id
-        self.image=image
-        self.background_color=background_color
-        self.is_enabled=is_enabled
-        self.cost=cost
-        self.title=title
-        self.prompt=prompt
-        self.is_user_input_required=is_user_input_required
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_id = broadcaster_id
+        self.id = id
+        self.image = image
+        self.background_color = background_color
+        self.is_enabled = is_enabled
+        self.cost = cost
+        self.title = title
+        self.prompt = prompt
+        self.is_user_input_required = is_user_input_required
 
         if max_per_stream_setting is None:
             self.max_per_stream_setting = dict()
@@ -47,12 +68,14 @@ class Reward:
         if global_cooldown_setting is None:
             self.global_cooldown_setting = dict()
 
-        self.is_paused=is_paused
-        self.is_in_stock=is_in_stock
+        self.is_paused = is_paused
+        self.is_in_stock = is_in_stock
 
         if default_image is None:
             self.default_image = dict()
 
-        self.should_redemptions_skip_request_queue=should_redemptions_skip_request_queue
-        self.redemptions_redeemed_current_stream=redemptions_redeemed_current_stream
-        self.cooldown_expires_at=cooldown_expires_at
+        self.should_redemptions_skip_request_queue = (
+            should_redemptions_skip_request_queue
+        )
+        self.redemptions_redeemed_current_stream = redemptions_redeemed_current_stream
+        self.cooldown_expires_at = cooldown_expires_at

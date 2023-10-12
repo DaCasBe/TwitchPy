@@ -18,7 +18,7 @@ class Stream:
         started_at: str,
         language: str,
         thumbnail_url: str,
-        is_mature: bool
+        is_mature: bool,
     ):
         """
         Args:
