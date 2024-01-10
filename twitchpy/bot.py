@@ -100,7 +100,7 @@ class Bot:
         self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self):
-        self.irc = ssl.wrap_socket(socket.socket())
+        self.irc = ssl.SSLContext().wrap_socket(socket.socket())
         self.irc.settimeout(1)
         self.irc.connect((self.__irc_server, self.__irc_port))
 
