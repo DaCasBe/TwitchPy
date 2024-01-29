@@ -3,7 +3,18 @@ class Emote:
     Represents an emote
     """
 
-    def __init__(self,id,name,images,format,scale,theme_mode,tier="",emote_type="",emote_set_id=""):
+    def __init__(
+        self,
+        id,
+        name,
+        images,
+        format,
+        scale,
+        theme_mode,
+        tier="",
+        emote_type="",
+        emote_set_id="",
+    ):
         """
         Args:
             id (str): An ID that identifies the emote
@@ -24,12 +35,12 @@ class Emote:
             emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
         """
 
-        self.id=id
-        self.name=name
-        self.images=images
-        self.format=format
-        self.scale=scale
-        self.theme_mode=theme_mode
-        self.tier=tier
-        self.emote_type=emote_type
-        self.emote_set_id=emote_set_id
+        self.id = id
+        self.name = name
+        self.images = images
+        self.format = format
+        self.scale = scale
+        self.theme_mode = theme_mode
+        self.tier = tier
+        self.emote_type = emote_type
+        self.emote_set_id = emote_set_id
