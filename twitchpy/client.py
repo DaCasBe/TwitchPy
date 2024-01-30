@@ -246,6 +246,64 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()["message"])
 
+    def get_ad_schedule(self, broadcaster_id: str) -> dict:
+        """
+        Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url = "https://api.twitch.tv/helix/channels/ads"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"broadcaster_id": broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def snooze_next_ad(self, broadcaster_id) -> dict:
+        """
+        If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url = "https://api.twitch.tv/helix/channels/ads/schedule/snooze"
+        headers = {
+            "Authorization": f"Bearer {self.__user_token}",
+            "Client-Id": self.client_id,
+        }
+        payload = {"broadcaster_id": broadcaster_id}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
     def get_extension_analytics(
         self, ended_at="", extension_id="", first=20, started_at="", type=""
     ):
