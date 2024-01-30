@@ -167,7 +167,7 @@ class Bot:
         if not string.startswith(prefix):
             return string
 
-        return string[len(prefix):]
+        return string[len(prefix) :] # noqa E203
 
     def __parse_message(self, received_msg):
         parts = received_msg.split(&#34; &#34;)
@@ -346,6 +346,32 @@ class Bot:
         &#34;&#34;&#34;
 
         return self.__client.start_commercial(broadcaster_id, length)
+
+    def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        return self.__client.get_ad_schedule(broadcaster_id)
+
+    def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+        &#34;&#34;&#34;
+        If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        return self.__client.snooze_next_ad(broadcaster_id)
 
     def get_extension_analytics(
         self, ended_at=&#34;&#34;, extension_id=&#34;&#34;, first=20, started_at=&#34;&#34;, type=&#34;&#34;
@@ -3577,7 +3603,7 @@ class Bot:
         if not string.startswith(prefix):
             return string
 
-        return string[len(prefix):]
+        return string[len(prefix) :] # noqa E203
 
     def __parse_message(self, received_msg):
         parts = received_msg.split(&#34; &#34;)
@@ -3756,6 +3782,32 @@ class Bot:
         &#34;&#34;&#34;
 
         return self.__client.start_commercial(broadcaster_id, length)
+
+    def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        return self.__client.get_ad_schedule(broadcaster_id)
+
+    def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+        &#34;&#34;&#34;
+        If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        return self.__client.snooze_next_ad(broadcaster_id)
 
     def get_extension_analytics(
         self, ended_at=&#34;&#34;, extension_id=&#34;&#34;, first=20, started_at=&#34;&#34;, type=&#34;&#34;
@@ -8509,6 +8561,36 @@ This parameter is required if status is being set to RESOLVED</dd>
     self.__send_privmsg(channel, &#34;/followersoff&#34;)</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.bot.Bot.get_ad_schedule"><code class="name flex">
+<span>def <span class="ident">get_ad_schedule</span></span>(<span>self, broadcaster_id: str) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Provided broadcaster_id must match the user_id in the auth token</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+    &#34;&#34;&#34;
+    Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+    Args:
+        broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    return self.__client.get_ad_schedule(broadcaster_id)</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.bot.Bot.get_all_stream_tags"><code class="name flex">
 <span>def <span class="ident">get_all_stream_tags</span></span>(<span>self, first=20, tag_id=[])</span>
 </code></dt>
@@ -12144,6 +12226,36 @@ Required if the segment type is "developer" or "broadcaster"</dd>
     self.__send_privmsg(channel, &#34;/slow_off&#34;)</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.bot.Bot.snooze_next_ad"><code class="name flex">
+<span>def <span class="ident">snooze_next_ad</span></span>(<span>self, broadcaster_id) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Provided broadcaster_id must match the user_id in the auth token</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+    &#34;&#34;&#34;
+    If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+    Args:
+        broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    return self.__client.snooze_next_ad(broadcaster_id)</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.bot.Bot.start_commercial"><code class="name flex">
 <span>def <span class="ident">start_commercial</span></span>(<span>self, broadcaster_id, length)</span>
 </code></dt>
@@ -13783,6 +13895,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.bot.Bot.endpoll" href="#twitchpy.bot.Bot.endpoll">endpoll</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.followers" href="#twitchpy.bot.Bot.followers">followers</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.followers_off" href="#twitchpy.bot.Bot.followers_off">followers_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.get_ad_schedule" href="#twitchpy.bot.Bot.get_ad_schedule">get_ad_schedule</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.get_all_stream_tags" href="#twitchpy.bot.Bot.get_all_stream_tags">get_all_stream_tags</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.get_automod_settings" href="#twitchpy.bot.Bot.get_automod_settings">get_automod_settings</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.get_banned_users" href="#twitchpy.bot.Bot.get_banned_users">get_banned_users</a></code></li>
@@ -13880,6 +13993,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.bot.Bot.set_extension_required_configuration" href="#twitchpy.bot.Bot.set_extension_required_configuration">set_extension_required_configuration</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.slow" href="#twitchpy.bot.Bot.slow">slow</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.slow_off" href="#twitchpy.bot.Bot.slow_off">slow_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.snooze_next_ad" href="#twitchpy.bot.Bot.snooze_next_ad">snooze_next_ad</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.start_commercial" href="#twitchpy.bot.Bot.start_commercial">start_commercial</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.start_raid" href="#twitchpy.bot.Bot.start_raid">start_raid</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.stop" href="#twitchpy.bot.Bot.stop">stop</a></code></li>

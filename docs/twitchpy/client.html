@@ -274,6 +274,64 @@ class Client:
         else:
             raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
 
+    def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/channels/ads&#34;
+        headers = {
+            &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+            &#34;Client-Id&#34;: self.client_id,
+        }
+        params = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+        &#34;&#34;&#34;
+        If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/channels/ads/schedule/snooze&#34;
+        headers = {
+            &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+            &#34;Client-Id&#34;: self.client_id,
+        }
+        payload = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
     def get_extension_analytics(
         self, ended_at=&#34;&#34;, extension_id=&#34;&#34;, first=20, started_at=&#34;&#34;, type=&#34;&#34;
     ):
@@ -6397,6 +6455,64 @@ class Client:
         if response.ok:
             response = response.json()
             return response[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+        &#34;&#34;&#34;
+        Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/channels/ads&#34;
+        headers = {
+            &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+            &#34;Client-Id&#34;: self.client_id,
+        }
+        params = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+        &#34;&#34;&#34;
+        If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+        Args:
+            broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/channels/ads/schedule/snooze&#34;
+        headers = {
+            &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+            &#34;Client-Id&#34;: self.client_id,
+        }
+        payload = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
 
         else:
             raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
@@ -14127,6 +14243,54 @@ This parameter is required if status is being set to RESOLVED</dd>
         raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.get_ad_schedule"><code class="name flex">
+<span>def <span class="ident">get_ad_schedule</span></span>(<span>self, broadcaster_id: str) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Provided broadcaster_id must match the user_id in the auth token</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_ad_schedule(self, broadcaster_id: str) -&gt; dict:
+    &#34;&#34;&#34;
+    Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
+
+    Args:
+        broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/channels/ads&#34;
+    headers = {
+        &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+        &#34;Client-Id&#34;: self.client_id,
+    }
+    params = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;][0]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.get_all_stream_tags"><code class="name flex">
 <span>def <span class="ident">get_all_stream_tags</span></span>(<span>self, first=20, tag_id=[])</span>
 </code></dt>
@@ -19762,6 +19926,54 @@ Required if the segment type is "developer" or "broadcaster"</dd>
     requests.put(url, headers=headers, data=data)</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.snooze_next_ad"><code class="name flex">
+<span>def <span class="ident">snooze_next_ad</span></span>(<span>self, broadcaster_id) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Provided broadcaster_id must match the user_id in the auth token</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def snooze_next_ad(self, broadcaster_id) -&gt; dict:
+    &#34;&#34;&#34;
+    If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
+
+    Args:
+        broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/channels/ads/schedule/snooze&#34;
+    headers = {
+        &#34;Authorization&#34;: f&#34;Bearer {self.__user_token}&#34;,
+        &#34;Client-Id&#34;: self.client_id,
+    }
+    payload = {&#34;broadcaster_id&#34;: broadcaster_id}
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;][0]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.start_commercial"><code class="name flex">
 <span>def <span class="ident">start_commercial</span></span>(<span>self, broadcaster_id, length)</span>
 </code></dt>
@@ -21363,6 +21575,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.end_guest_star_session" href="#twitchpy.client.Client.end_guest_star_session">end_guest_star_session</a></code></li>
 <li><code><a title="twitchpy.client.Client.end_poll" href="#twitchpy.client.Client.end_poll">end_poll</a></code></li>
 <li><code><a title="twitchpy.client.Client.end_prediction" href="#twitchpy.client.Client.end_prediction">end_prediction</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_ad_schedule" href="#twitchpy.client.Client.get_ad_schedule">get_ad_schedule</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_all_stream_tags" href="#twitchpy.client.Client.get_all_stream_tags">get_all_stream_tags</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_automod_settings" href="#twitchpy.client.Client.get_automod_settings">get_automod_settings</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_banned_users" href="#twitchpy.client.Client.get_banned_users">get_banned_users</a></code></li>
@@ -21441,6 +21654,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.send_whisper" href="#twitchpy.client.Client.send_whisper">send_whisper</a></code></li>
 <li><code><a title="twitchpy.client.Client.set_extension_configuration_segment" href="#twitchpy.client.Client.set_extension_configuration_segment">set_extension_configuration_segment</a></code></li>
 <li><code><a title="twitchpy.client.Client.set_extension_required_configuration" href="#twitchpy.client.Client.set_extension_required_configuration">set_extension_required_configuration</a></code></li>
+<li><code><a title="twitchpy.client.Client.snooze_next_ad" href="#twitchpy.client.Client.snooze_next_ad">snooze_next_ad</a></code></li>
 <li><code><a title="twitchpy.client.Client.start_commercial" href="#twitchpy.client.Client.start_commercial">start_commercial</a></code></li>
 <li><code><a title="twitchpy.client.Client.start_raid" href="#twitchpy.client.Client.start_raid">start_raid</a></code></li>
 <li><code><a title="twitchpy.client.Client.unban_user" href="#twitchpy.client.Client.unban_user">unban_user</a></code></li>
