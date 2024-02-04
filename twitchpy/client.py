@@ -43,6 +43,7 @@ ENDPOINT_GUEST_STAR_INVITES = "https://api.twitch.tv/helix/guest_star/invites"
 ENDPOINT_GUEST_STAR_SLOT = "https://api.twitch.tv/helix/guest_star/slot"
 URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
 ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
+ENDPOINT_CONDUITS = "https://api.twitch.tv/helix/eventsub/conduits"
 
 
 class Client:
@@ -931,9 +932,9 @@ class Client:
             params["max_per_stream"] = max_per_stream
 
         if is_max_per_user_per_stream_enabled is not False:
-            params[
-                "is_max_per_user_per_stream_enabled"
-            ] = is_max_per_user_per_stream_enabled
+            params["is_max_per_user_per_stream_enabled"] = (
+                is_max_per_user_per_stream_enabled
+            )
 
         if max_per_user_per_stream is not None:
             params["max_per_user_per_stream"] = max_per_user_per_stream
@@ -945,9 +946,9 @@ class Client:
             params["global_cooldown_seconds"] = global_cooldown_seconds
 
         if should_redemptions_skip_request_queue is not False:
-            params[
-                "should_redemptions_skip_request_queue"
-            ] = should_redemptions_skip_request_queue
+            params["should_redemptions_skip_request_queue"] = (
+                should_redemptions_skip_request_queue
+            )
 
         response = requests.post(url, headers=headers, params=params)
 
@@ -1250,9 +1251,9 @@ class Client:
             data["max_per_stream"] = max_per_stream
 
         if is_max_per_user_per_stream_enabled is not None:
-            data[
-                "is_max_per_user_per_stream_enabled"
-            ] = is_max_per_user_per_stream_enabled
+            data["is_max_per_user_per_stream_enabled"] = (
+                is_max_per_user_per_stream_enabled
+            )
 
         if max_per_user_per_stream is not None:
             data["max_per_user_per_stream"] = max_per_user_per_stream
@@ -1267,9 +1268,9 @@ class Client:
             data["is_paused"] = is_paused
 
         if should_redemptions_skip_request_queue is not None:
-            data[
-                "should_redemptions_skip_request_queue"
-            ] = should_redemptions_skip_request_queue
+            data["should_redemptions_skip_request_queue"] = (
+                should_redemptions_skip_request_queue
+            )
 
         response = requests.patch(url, headers=headers, data=data)
 
@@ -1838,9 +1839,9 @@ class Client:
             data["non_moderator_chat_delay"] = non_moderator_chat_delay
 
         if non_moderator_chat_delay_duration != 0:
-            data[
-                "non_moderator_chat_delay_duration"
-            ] = non_moderator_chat_delay_duration
+            data["non_moderator_chat_delay_duration"] = (
+                non_moderator_chat_delay_duration
+            )
 
         if slow_mode is not None:
             data["slow_mode"] = slow_mode
@@ -2108,6 +2109,194 @@ class Client:
                 raise twitchpy.errors.ClientError(response.json()["message"])
 
         return clips
+
+    def get_conduits(self) -> list[dict]:
+        """
+        Gets the conduits for a client ID
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        url = ENDPOINT_CONDUITS
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def create_conduits(self, shard_count: int) -> dict:
+        """
+        Creates a new conduit
+
+        Args:
+            shard_count (int): The number of shards to create for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url = ENDPOINT_CONDUITS
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        payload = {"shard_count", shard_count}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def update_conduits(self, id: str, shard_count: int) -> dict:
+        """
+        Updates a conduit’s shard count
+        To delete shards, update the count to a lower number, and the shards above the count will be deleted
+
+        Args:
+            id (str): Conduit ID
+            shard_count (int): The new number of shards for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url = ENDPOINT_CONDUITS
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        data = {"id": id, "shard_count": shard_count}
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()["data"][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def delete_conduit(self, id: str) -> None:
+        """
+        Deletes a specified conduit
+
+        Args:
+            id (str): Conduit ID
+
+        Raises:
+            twitchpy.errors.ClientError
+        """
+
+        url = ENDPOINT_CONDUITS
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        data = {"id": id}
+
+        response = requests.delete(url, headers=headers, data=data)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+    def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
+        """
+        Gets a lists of all shards for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            status (str): Status to filter by
+
+        Raise:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        url = "https://api.twitch.tv/helix/eventsub/conduits/shards"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+        }
+        params = {"conduit_id": conduit_id}
+
+        if status != "":
+            params["status"] = status
+
+        response = requests.get(url, headers=headers, params=params)
+
+        conduit_shards = []
+
+        while response.ok and "pagination" in response:
+            conduit_shards.append(response.json()["data"])
+            params["after"] = response.json()["pagination"]["cursor"]
+
+            response = requests.get(url, headers=headers, params=params)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()["message"])
+
+        return conduit_shards
+
+    def update_conduit_shards(
+        self, conduit_id: str, shards: list[dict], session_id: str = ""
+    ) -> dict:
+        """
+        Updates shard(s) for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            shards (list[dict]): List of shards to update
+            session_id (str): An ID that identifies the WebSocket to send notifications to
+                Specify this field only if method is set to websocket
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        url = "https://api.twitch.tv/helix/eventsub/conduits/shards"
+        headers = {
+            "Authorization": f"Bearer {self.__app_token}",
+            "Client-Id": self.client_id,
+            "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+        }
+        data = {"conduit_id": conduit_id, "shards": shards}
+
+        if session_id != "":
+            data["session_id"] = session_id
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()["data"]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()["message"])
 
     def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
         """
