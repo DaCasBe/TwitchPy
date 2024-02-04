@@ -2137,6 +2137,171 @@ class Client:
 
         return clips
 
+    def get_conduits(self) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets the conduits for a client ID
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+
+        response = requests.get(url, headers=headers)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def create_conduits(self, shard_count: int) -&gt; dict:
+        &#34;&#34;&#34;
+        Creates a new conduit
+
+        Args:
+            shard_count (int): The number of shards to create for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        payload = {&#34;shard_count&#34;, shard_count}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def update_conduits(self, id: str, shard_count: int) -&gt; dict:
+        &#34;&#34;&#34;
+        Updates a conduit’s shard count
+        To delete shards, update the count to a lower number, and the shards above the count will be deleted
+
+        Args:
+            id (str): Conduit ID
+            shard_count (int): The new number of shards for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        data = {&#34;id&#34;: id, &#34;shard_count&#34;: shard_count}
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def delete_conduit(self, id: str) -&gt; None:
+        &#34;&#34;&#34;
+        Deletes a specified conduit
+
+        Args:
+            id (str): Conduit ID
+
+        Raises:
+            twitchpy.errors.ClientError
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+        data = {&#34;id&#34;: id}
+
+        response = requests.delete(url, headers=headers, data=data)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def get_conduit_shards(self, conduit_id: str, status: str = &#34;&#34;) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets a lists of all shards for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            status (str): Status to filter by
+
+        Raise:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+        params = {&#34;conduit_id&#34;: conduit_id}
+
+        if status != &#34;&#34;:
+            params[&#34;status&#34;] = status
+
+        response = requests.get(url, headers=headers, params=params)
+
+        conduit_shards = []
+
+        while response.ok and &#34;pagination&#34; in response:
+            conduit_shards.append(response.json()[&#34;data&#34;])
+            params[&#34;after&#34;] = response.json()[&#34;pagination&#34;][&#34;cursor&#34;]
+
+            response = requests.get(url, headers=headers, params=params)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+        return conduit_shards
+
+    def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+        &#34;&#34;&#34;
+        Updates shard(s) for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            shards (list[dict]): List of shards to update
+            session_id (str): An ID that identifies the WebSocket to send notifications to
+                Specify this field only if method is set to websocket
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        data = {&#34;conduit_id&#34;: conduit_id, &#34;shards&#34;: shards}
+
+        if session_id != &#34;&#34;:
+            data[&#34;session_id&#34;] = session_id
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
     def get_content_classification_labels(self, locale: str = &#34;en-US&#34;) -&gt; list[dict]:
         &#34;&#34;&#34;
         Gets information about Twitch content classification labels
@@ -8322,6 +8487,171 @@ class Client:
 
         return clips
 
+    def get_conduits(self) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets the conduits for a client ID
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+
+        response = requests.get(url, headers=headers)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def create_conduits(self, shard_count: int) -&gt; dict:
+        &#34;&#34;&#34;
+        Creates a new conduit
+
+        Args:
+            shard_count (int): The number of shards to create for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        payload = {&#34;shard_count&#34;, shard_count}
+
+        response = requests.post(url, headers=headers, json=payload)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def update_conduits(self, id: str, shard_count: int) -&gt; dict:
+        &#34;&#34;&#34;
+        Updates a conduit’s shard count
+        To delete shards, update the count to a lower number, and the shards above the count will be deleted
+
+        Args:
+            id (str): Conduit ID
+            shard_count (int): The new number of shards for this conduit
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        data = {&#34;id&#34;: id, &#34;shard_count&#34;: shard_count}
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;][0]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def delete_conduit(self, id: str) -&gt; None:
+        &#34;&#34;&#34;
+        Deletes a specified conduit
+
+        Args:
+            id (str): Conduit ID
+
+        Raises:
+            twitchpy.errors.ClientError
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+        data = {&#34;id&#34;: id}
+
+        response = requests.delete(url, headers=headers, data=data)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    def get_conduit_shards(self, conduit_id: str, status: str = &#34;&#34;) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets a lists of all shards for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            status (str): Status to filter by
+
+        Raise:
+            twitchpy.errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+        params = {&#34;conduit_id&#34;: conduit_id}
+
+        if status != &#34;&#34;:
+            params[&#34;status&#34;] = status
+
+        response = requests.get(url, headers=headers, params=params)
+
+        conduit_shards = []
+
+        while response.ok and &#34;pagination&#34; in response:
+            conduit_shards.append(response.json()[&#34;data&#34;])
+            params[&#34;after&#34;] = response.json()[&#34;pagination&#34;][&#34;cursor&#34;]
+
+            response = requests.get(url, headers=headers, params=params)
+
+        if not response.ok:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+        return conduit_shards
+
+    def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+        &#34;&#34;&#34;
+        Updates shard(s) for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            shards (list[dict]): List of shards to update
+            session_id (str): An ID that identifies the WebSocket to send notifications to
+                Specify this field only if method is set to websocket
+
+        Raises:
+            twitchpy.errors.ClientError
+
+        Returns:
+            dict
+        &#34;&#34;&#34;
+
+        url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+        headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+        data = {&#34;conduit_id&#34;: conduit_id, &#34;shards&#34;: shards}
+
+        if session_id != &#34;&#34;:
+            data[&#34;session_id&#34;] = session_id
+
+        response = requests.patch(url, headers=headers, data=data)
+
+        if response.ok:
+            return response.json()[&#34;data&#34;]
+
+        else:
+            raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
     def get_content_classification_labels(self, locale: str = &#34;en-US&#34;) -&gt; list[dict]:
         &#34;&#34;&#34;
         Gets information about Twitch content classification labels
@@ -13049,6 +13379,51 @@ Default: false</dd>
         raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.create_conduits"><code class="name flex">
+<span>def <span class="ident">create_conduits</span></span>(<span>self, shard_count: int) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new conduit</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>shard_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of shards to create for this conduit</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_conduits(self, shard_count: int) -&gt; dict:
+    &#34;&#34;&#34;
+    Creates a new conduit
+
+    Args:
+        shard_count (int): The number of shards to create for this conduit
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+    payload = {&#34;shard_count&#34;, shard_count}
+
+    response = requests.post(url, headers=headers, json=payload)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;][0]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.create_custom_reward"><code class="name flex">
 <span>def <span class="ident">create_custom_reward</span></span>(<span>self, broadcaster_id, title, cost, prompt='', is_enabled=True, background_color='', is_user_input_required=False, is_max_per_stream_enabled=False, max_per_stream=None, is_max_per_user_per_stream_enabled=False, max_per_user_per_stream=None, is_global_cooldown_enabled=False, global_cooldown_seconds=None, should_redemptions_skip_request_queue=False)</span>
 </code></dt>
@@ -13798,6 +14173,43 @@ If not specified, the request removes all messages in the broadcaster’s chat r
         data[&#34;message_id&#34;] = message_id
 
     requests.delete(url, headers=headers, data=data)</code></pre>
+</details>
+</dd>
+<dt id="twitchpy.client.Client.delete_conduit"><code class="name flex">
+<span>def <span class="ident">delete_conduit</span></span>(<span>self, id: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Deletes a specified conduit</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Conduit ID</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete_conduit(self, id: str) -&gt; None:
+    &#34;&#34;&#34;
+    Deletes a specified conduit
+
+    Args:
+        id (str): Conduit ID
+
+    Raises:
+        twitchpy.errors.ClientError
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+    data = {&#34;id&#34;: id}
+
+    response = requests.delete(url, headers=headers, data=data)
+
+    if not response.ok:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.delete_custom_reward"><code class="name flex">
@@ -15829,6 +16241,100 @@ Minimum: 1</dd>
             raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
 
     return clips</code></pre>
+</details>
+</dd>
+<dt id="twitchpy.client.Client.get_conduit_shards"><code class="name flex">
+<span>def <span class="ident">get_conduit_shards</span></span>(<span>self, conduit_id: str, status: str = '') ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a lists of all shards for a conduit</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>conduit_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Conduit ID</dd>
+<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
+<dd>Status to filter by</dd>
+</dl>
+<h2 id="raise">Raise</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>list[dict]</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_conduit_shards(self, conduit_id: str, status: str = &#34;&#34;) -&gt; list[dict]:
+    &#34;&#34;&#34;
+    Gets a lists of all shards for a conduit
+
+    Args:
+        conduit_id (str): Conduit ID
+        status (str): Status to filter by
+
+    Raise:
+        twitchpy.errors.ClientError
+
+    Returns:
+        list[dict]
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+    params = {&#34;conduit_id&#34;: conduit_id}
+
+    if status != &#34;&#34;:
+        params[&#34;status&#34;] = status
+
+    response = requests.get(url, headers=headers, params=params)
+
+    conduit_shards = []
+
+    while response.ok and &#34;pagination&#34; in response:
+        conduit_shards.append(response.json()[&#34;data&#34;])
+        params[&#34;after&#34;] = response.json()[&#34;pagination&#34;][&#34;cursor&#34;]
+
+        response = requests.get(url, headers=headers, params=params)
+
+    if not response.ok:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])
+
+    return conduit_shards</code></pre>
+</details>
+</dd>
+<dt id="twitchpy.client.Client.get_conduits"><code class="name flex">
+<span>def <span class="ident">get_conduits</span></span>(<span>self) ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets the conduits for a client ID</p>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>list[dict]</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_conduits(self) -&gt; list[dict]:
+    &#34;&#34;&#34;
+    Gets the conduits for a client ID
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        list[dict]
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id}
+
+    response = requests.get(url, headers=headers)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_content_classification_labels"><code class="name flex">
@@ -20714,6 +21220,112 @@ Default is false</dd>
         raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.update_conduit_shards"><code class="name flex">
+<span>def <span class="ident">update_conduit_shards</span></span>(<span>self, conduit_id: str, shards: list[dict], session_id: str = '') ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates shard(s) for a conduit</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>conduit_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Conduit ID</dd>
+<dt><strong><code>shards</code></strong> :&ensp;<code>list[dict]</code></dt>
+<dd>List of shards to update</dd>
+<dt><strong><code>session_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the WebSocket to send notifications to
+Specify this field only if method is set to websocket</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+    &#34;&#34;&#34;
+    Updates shard(s) for a conduit
+
+    Args:
+        conduit_id (str): Conduit ID
+        shards (list[dict]): List of shards to update
+        session_id (str): An ID that identifies the WebSocket to send notifications to
+            Specify this field only if method is set to websocket
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits/shards&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+    data = {&#34;conduit_id&#34;: conduit_id, &#34;shards&#34;: shards}
+
+    if session_id != &#34;&#34;:
+        data[&#34;session_id&#34;] = session_id
+
+    response = requests.patch(url, headers=headers, data=data)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
+</details>
+</dd>
+<dt id="twitchpy.client.Client.update_conduits"><code class="name flex">
+<span>def <span class="ident">update_conduits</span></span>(<span>self, id: str, shard_count: int) ‑> dict</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates a conduit’s shard count
+To delete shards, update the count to a lower number, and the shards above the count will be deleted</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Conduit ID</dd>
+<dt><strong><code>shard_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>The new number of shards for this conduit</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>twitchpy.errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>dict</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_conduits(self, id: str, shard_count: int) -&gt; dict:
+    &#34;&#34;&#34;
+    Updates a conduit’s shard count
+    To delete shards, update the count to a lower number, and the shards above the count will be deleted
+
+    Args:
+        id (str): Conduit ID
+        shard_count (int): The new number of shards for this conduit
+
+    Raises:
+        twitchpy.errors.ClientError
+
+    Returns:
+        dict
+    &#34;&#34;&#34;
+
+    url = &#34;https://api.twitch.tv/helix/eventsub/conduits&#34;
+    headers = {&#34;Authorization&#34;: f&#34;Bearer {self.__app_token}&#34;, &#34;Client-Id&#34;: self.client_id, &#34;Content-Type&#34;: &#34;application/json&#34;}
+    data = {&#34;id&#34;: id, &#34;shard_count&#34;: shard_count}
+
+    response = requests.patch(url, headers=headers, data=data)
+
+    if response.ok:
+        return response.json()[&#34;data&#34;][0]
+
+    else:
+        raise twitchpy.errors.ClientError(response.json()[&#34;message&#34;])</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.update_custom_reward"><code class="name flex">
 <span>def <span class="ident">update_custom_reward</span></span>(<span>self, broadcaster_id, id, title='', prompt='', cost=None, background_color='', is_enabled=None, is_user_input_required=None, is_max_per_stream_enabled=None, max_per_stream=None, is_max_per_user_per_stream_enabled=None, max_per_user_per_stream=None, is_global_cooldown_enabled=None, global_cooldown_seconds=None, is_paused=None, should_redemptions_skip_request_queue=None)</span>
 </code></dt>
@@ -21558,6 +22170,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.check_user_subscription" href="#twitchpy.client.Client.check_user_subscription">check_user_subscription</a></code></li>
 <li><code><a title="twitchpy.client.Client.create_channel_stream_schedule_segment" href="#twitchpy.client.Client.create_channel_stream_schedule_segment">create_channel_stream_schedule_segment</a></code></li>
 <li><code><a title="twitchpy.client.Client.create_clip" href="#twitchpy.client.Client.create_clip">create_clip</a></code></li>
+<li><code><a title="twitchpy.client.Client.create_conduits" href="#twitchpy.client.Client.create_conduits">create_conduits</a></code></li>
 <li><code><a title="twitchpy.client.Client.create_custom_reward" href="#twitchpy.client.Client.create_custom_reward">create_custom_reward</a></code></li>
 <li><code><a title="twitchpy.client.Client.create_eventsub_subscription" href="#twitchpy.client.Client.create_eventsub_subscription">create_eventsub_subscription</a></code></li>
 <li><code><a title="twitchpy.client.Client.create_extension_secret" href="#twitchpy.client.Client.create_extension_secret">create_extension_secret</a></code></li>
@@ -21567,6 +22180,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.create_stream_marker" href="#twitchpy.client.Client.create_stream_marker">create_stream_marker</a></code></li>
 <li><code><a title="twitchpy.client.Client.delete_channel_stream_schedule_segment" href="#twitchpy.client.Client.delete_channel_stream_schedule_segment">delete_channel_stream_schedule_segment</a></code></li>
 <li><code><a title="twitchpy.client.Client.delete_chat_messages" href="#twitchpy.client.Client.delete_chat_messages">delete_chat_messages</a></code></li>
+<li><code><a title="twitchpy.client.Client.delete_conduit" href="#twitchpy.client.Client.delete_conduit">delete_conduit</a></code></li>
 <li><code><a title="twitchpy.client.Client.delete_custom_reward" href="#twitchpy.client.Client.delete_custom_reward">delete_custom_reward</a></code></li>
 <li><code><a title="twitchpy.client.Client.delete_eventsub_subscription" href="#twitchpy.client.Client.delete_eventsub_subscription">delete_eventsub_subscription</a></code></li>
 <li><code><a title="twitchpy.client.Client.delete_guest_star_invite" href="#twitchpy.client.Client.delete_guest_star_invite">delete_guest_star_invite</a></code></li>
@@ -21597,6 +22211,8 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.get_chatters" href="#twitchpy.client.Client.get_chatters">get_chatters</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_cheermotes" href="#twitchpy.client.Client.get_cheermotes">get_cheermotes</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_clips" href="#twitchpy.client.Client.get_clips">get_clips</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_conduit_shards" href="#twitchpy.client.Client.get_conduit_shards">get_conduit_shards</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_conduits" href="#twitchpy.client.Client.get_conduits">get_conduits</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_content_classification_labels" href="#twitchpy.client.Client.get_content_classification_labels">get_content_classification_labels</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_creator_goals" href="#twitchpy.client.Client.get_creator_goals">get_creator_goals</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_custom_reward" href="#twitchpy.client.Client.get_custom_reward">get_custom_reward</a></code></li>
@@ -21664,6 +22280,8 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.update_channel_stream_schedule" href="#twitchpy.client.Client.update_channel_stream_schedule">update_channel_stream_schedule</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_channel_stream_schedule_segment" href="#twitchpy.client.Client.update_channel_stream_schedule_segment">update_channel_stream_schedule_segment</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_chat_settings" href="#twitchpy.client.Client.update_chat_settings">update_chat_settings</a></code></li>
+<li><code><a title="twitchpy.client.Client.update_conduit_shards" href="#twitchpy.client.Client.update_conduit_shards">update_conduit_shards</a></code></li>
+<li><code><a title="twitchpy.client.Client.update_conduits" href="#twitchpy.client.Client.update_conduits">update_conduits</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_custom_reward" href="#twitchpy.client.Client.update_custom_reward">update_custom_reward</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_drops_entitlements" href="#twitchpy.client.Client.update_drops_entitlements">update_drops_entitlements</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_extension_bits_product" href="#twitchpy.client.Client.update_extension_bits_product">update_extension_bits_product</a></code></li>
