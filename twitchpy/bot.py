@@ -139,7 +139,7 @@ class Bot:
         if not string.startswith(prefix):
             return string
 
-        return string[len(prefix) :] # noqa E203
+        return string[len(prefix) :]  # noqa E203
 
     def __parse_message(self, received_msg):
         parts = received_msg.split(" ")
@@ -1108,6 +1108,86 @@ class Bot:
         return self.__client.get_clips(
             broadcaster_id, game_id, id, started_at, ended_at, first, is_featured
         )
+
+    def get_conduits(self) -> list[dict]:
+        """
+        Gets the conduits for a client ID
+
+        Returns:
+            list[dict]
+        """
+
+        return self.__client.get_conduits()
+
+    def create_conduits(self, shard_count: int) -> dict:
+        """
+        Creates a new conduit
+
+        Args:
+            shard_count (int): The number of shards to create for this conduit
+
+        Returns:
+            dict
+        """
+
+        return self.__client.create_conduits(shard_count)
+
+    def update_conduits(self, id: str, shard_count: int) -> dict:
+        """
+        Updates a conduit’s shard count
+        To delete shards, update the count to a lower number, and the shards above the count will be deleted
+
+        Args:
+            id (str): Conduit ID
+            shard_count (int): The new number of shards for this conduit
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_conduits(id, shard_count)
+
+    def delete_conduit(self, id: str) -> None:
+        """
+        Deletes a specified conduit
+
+        Args:
+            id (str): Conduit ID
+        """
+
+        self.__client.delete_conduit(id)
+
+    def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
+        """
+        Gets a lists of all shards for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            status (str): Status to filter by
+
+        Returns:
+            list[dict]
+        """
+
+        return self.__client.get_conduit_shards(conduit_id, status)
+
+    def update_conduit_shards(
+        self, conduit_id: str, shards: list[dict], session_id: str = ""
+    ) -> dict:
+        """
+        Updates shard(s) for a conduit
+
+        Args:
+            conduit_id (str): Conduit ID
+            shards (list[dict]): List of shards to update
+            session_id (str): An ID that identifies the WebSocket to send notifications to
+                Specify this field only if method is set to websocket
+
+        Returns:
+            dict
+        """
+
+        return self.__client.update_conduit_shards(conduit_id, shards, session_id)
 
     def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
         """
