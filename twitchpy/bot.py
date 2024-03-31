@@ -205,7 +205,7 @@ class Bot:
 
     def __remove_listeners(self) -> None:
         for listener in self.listeners_to_remove:
-            if listener in self.custom_listeners.keys():
+            if listener in self.custom_listeners:
                 self.custom_listeners.pop(listener)
 
         self.listeners_to_remove = []
@@ -216,7 +216,7 @@ class Bot:
 
     def __remove_methods_before_commands(self) -> None:
         for method in self.methods_before_commands_to_remove:
-            if method in self.custom_methods_before_commands.keys():
+            if method in self.custom_methods_before_commands:
                 self.custom_methods_before_commands.pop(method)
 
     def __execute_commands(self, message: Message) -> None:
@@ -229,7 +229,7 @@ class Bot:
 
     def __remove_methods_after_commands(self) -> None:
         for method in self.methods_after_commands_to_remove:
-            if method in self.custom_methods_after_commands.keys():
+            if method in self.custom_methods_after_commands:
                 self.custom_methods_after_commands.pop(method)
 
     def __handle_message(self, received_msg):
@@ -263,7 +263,7 @@ class Bot:
                     self.__handle_message(received_msg)
 
                 for command in self.commands_to_remove:
-                    if command in self.custom_commands.keys():
+                    if command in self.custom_commands:
                         self.custom_commands.pop(command)
 
             except socket.timeout:

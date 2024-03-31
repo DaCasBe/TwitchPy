@@ -133,8 +133,8 @@ class Client:
         user_token = ""
         refresh_user_token = ""
 
-        for i in range(len(data)):
-            secret = data[i].split("=")
+        for token in data:
+            secret = token.split("=")
 
             if "USER_TOKEN" == secret[0]:
                 user_token = secret[1].replace("\n", "")
@@ -6120,12 +6120,9 @@ class Client:
             params["id"] = user_ids
 
         if login is not None and len(login) > 0:
-            aux = []
-
-            for i in range(len(login)):
-                aux.append(login[i].replace("@", "").lower())
-
-            params["login"] = aux
+            params["login"] = [
+                user_login.replace("@", "").lower() for user_login in login
+            ]
 
         response = requests.get(
             url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
