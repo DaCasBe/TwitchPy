@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.user API documentation</title>
+<title>twitchpy.dataclasses.channel API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,52 +19,58 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.user</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.channel</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class User:
+<pre><code class="python">class Channel:
     &#34;&#34;&#34;
-    Represents an user
+    Represents a channel
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id,
-        login,
-        display_name,
-        type=&#34;&#34;,
-        broadcaster_type=&#34;&#34;,
-        description=&#34;&#34;,
-        profile_image_url=&#34;&#34;,
-        offline_image_url=&#34;&#34;,
-        view_count=0,
+        broadcaster_id: str,
+        broadcaster_login: str,
+        broadcaster_name: str,
+        broadcaster_language: str,
+        game_name: str,
+        game_id: str,
+        title: str,
+        delay: int,
+        tags: list[str],
+        content_classification_labels: list[str],
+        is_branded_content: bool,
     ):
         &#34;&#34;&#34;
         Args:
-            id (int): User&#39;s ID
-            login (str): User&#39;s login
-            display_name (str): User&#39;s name
-            type (str): User type
-            broadcaster_type (str): User&#39;s range
-            description (str): User&#39;s description
-            profile_image_url (str): URL of the user&#39;s profile image
-            offline_image_url (str): URL of the image that is displayed when the user is not on stream
-            view_count (int): Number of user viewers
+            broadcaster_id (str): An ID that uniquely identifies the broadcaster
+            broadcaster_login (str): The broadcaster’s login name
+            broadcaster_name (str): The broadcaster’s display name
+            broadcaster_language (str): The broadcaster’s preferred language
+            game_name (str): The name of the game that the broadcaster is playing or last played
+            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
+            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
+            delay (int): The value of the broadcaster’s stream delay setting, in seconds
+            tags (list[str]): The tags applied to the channel
+            content_classification_labels (list[str]): The CCLs applied to the channel
+            is_branded_content (bool): Boolean flag indicating if the channel has branded content
         &#34;&#34;&#34;
 
-        self.id = id
-        self.login = login
-        self.display_name = display_name
-        self.type = type
-        self.broadcaster_type = broadcaster_type
-        self.description = description
-        self.profile_image_url = profile_image_url
-        self.offline_image_url = offline_image_url
-        self.view_count = view_count</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_login = broadcaster_login
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_language = broadcaster_language
+        self.game_name = game_name
+        self.game_id = game_id
+        self.title = title
+        self.delay = delay
+        self.tags = tags
+        self.content_classification_labels = content_classification_labels
+        self.is_branded_content = is_branded_content</code></pre>
 </details>
 </section>
 <section>
@@ -76,76 +82,86 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.user.User"><code class="flex name class">
-<span>class <span class="ident">User</span></span>
-<span>(</span><span>id, login, display_name, type='', broadcaster_type='', description='', profile_image_url='', offline_image_url='', view_count=0)</span>
+<dt id="twitchpy.dataclasses.channel.Channel"><code class="flex name class">
+<span>class <span class="ident">Channel</span></span>
+<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, delay: int, tags: list[str], content_classification_labels: list[str], is_branded_content: bool)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents an user</p>
+<div class="desc"><p>Represents a channel</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>int</code></dt>
-<dd>User's ID</dd>
-<dt><strong><code>login</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's login</dd>
-<dt><strong><code>display_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's name</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
-<dd>User type</dd>
-<dt><strong><code>broadcaster_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's range</dd>
-<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's description</dd>
-<dt><strong><code>profile_image_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL of the user's profile image</dd>
-<dt><strong><code>offline_image_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL of the image that is displayed when the user is not on stream</dd>
-<dt><strong><code>view_count</code></strong> :&ensp;<code>int</code></dt>
-<dd>Number of user viewers</dd>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that uniquely identifies the broadcaster</dd>
+<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
+<dd>The broadcaster’s login name</dd>
+<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The broadcaster’s display name</dd>
+<dt><strong><code>broadcaster_language</code></strong> :&ensp;<code>str</code></dt>
+<dd>The broadcaster’s preferred language</dd>
+<dt><strong><code>game_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the game that the broadcaster is playing or last played</dd>
+<dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that uniquely identifies the game that the broadcaster is playing or last played</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>The title of the stream that the broadcaster is currently streaming or last streamed</dd>
+<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
+<dd>The value of the broadcaster’s stream delay setting, in seconds</dd>
+<dt><strong><code>tags</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>The tags applied to the channel</dd>
+<dt><strong><code>content_classification_labels</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>The CCLs applied to the channel</dd>
+<dt><strong><code>is_branded_content</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Boolean flag indicating if the channel has branded content</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class User:
+<pre><code class="python">class Channel:
     &#34;&#34;&#34;
-    Represents an user
+    Represents a channel
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id,
-        login,
-        display_name,
-        type=&#34;&#34;,
-        broadcaster_type=&#34;&#34;,
-        description=&#34;&#34;,
-        profile_image_url=&#34;&#34;,
-        offline_image_url=&#34;&#34;,
-        view_count=0,
+        broadcaster_id: str,
+        broadcaster_login: str,
+        broadcaster_name: str,
+        broadcaster_language: str,
+        game_name: str,
+        game_id: str,
+        title: str,
+        delay: int,
+        tags: list[str],
+        content_classification_labels: list[str],
+        is_branded_content: bool,
     ):
         &#34;&#34;&#34;
         Args:
-            id (int): User&#39;s ID
-            login (str): User&#39;s login
-            display_name (str): User&#39;s name
-            type (str): User type
-            broadcaster_type (str): User&#39;s range
-            description (str): User&#39;s description
-            profile_image_url (str): URL of the user&#39;s profile image
-            offline_image_url (str): URL of the image that is displayed when the user is not on stream
-            view_count (int): Number of user viewers
+            broadcaster_id (str): An ID that uniquely identifies the broadcaster
+            broadcaster_login (str): The broadcaster’s login name
+            broadcaster_name (str): The broadcaster’s display name
+            broadcaster_language (str): The broadcaster’s preferred language
+            game_name (str): The name of the game that the broadcaster is playing or last played
+            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
+            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
+            delay (int): The value of the broadcaster’s stream delay setting, in seconds
+            tags (list[str]): The tags applied to the channel
+            content_classification_labels (list[str]): The CCLs applied to the channel
+            is_branded_content (bool): Boolean flag indicating if the channel has branded content
         &#34;&#34;&#34;
 
-        self.id = id
-        self.login = login
-        self.display_name = display_name
-        self.type = type
-        self.broadcaster_type = broadcaster_type
-        self.description = description
-        self.profile_image_url = profile_image_url
-        self.offline_image_url = offline_image_url
-        self.view_count = view_count</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_login = broadcaster_login
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_language = broadcaster_language
+        self.game_name = game_name
+        self.game_id = game_id
+        self.title = title
+        self.delay = delay
+        self.tags = tags
+        self.content_classification_labels = content_classification_labels
+        self.is_branded_content = is_branded_content</code></pre>
 </details>
 </dd>
 </dl>
@@ -159,13 +175,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.user.User" href="#twitchpy.user.User">User</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.channel.Channel" href="#twitchpy.dataclasses.channel.Channel">Channel</a></code></h4>
 </li>
 </ul>
 </li>

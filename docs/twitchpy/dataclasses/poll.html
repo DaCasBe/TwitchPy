@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.charity_campaign_donation API documentation</title>
+<title>twitchpy.dataclasses.poll API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,46 +19,62 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.charity_campaign_donation</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.poll</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaignDonation:
+<pre><code class="python">class Poll:
     &#34;&#34;&#34;
-    Represents a donation made to a charity campaign
+    Represents a poll
     &#34;&#34;&#34;
 
     def __init__(
         self,
         id: str,
-        campaign_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        amount: dict,
+        broadcaster_id: str,
+        broadcaster_name: str,
+        broadcaster_login: str,
+        title: str,
+        choices: list[dict],
+        channel_points_voting_enabled: bool,
+        channel_points_per_vote: int,
+        status: str,
+        duration: int,
+        started_at: str,
+        ended_at: str = &#34;&#34;,
     ):
         &#34;&#34;&#34;
-        The function initializes an object with the given parameters.
-
         Args:
-            id (str): An ID that identifies the donation
-            campaign_id (str): An ID that identifies the charity campaign that the donation applies to
-            user_id (str): An ID that identifies a user that donated money to the campaign
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            amount (dict): The amount of money that the user donated
-        used.
+            id (str): ID of the poll
+            broadcaster_id (str): ID of the broadcaster
+            broadcaster_name (str): Name of the broadcaster
+            broadcaster_login (str): Login of the broadcaster
+            title (str): Question displayed for the poll
+            choices (list): The poll choices
+            channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
+            channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
+            status (str): Poll status
+                Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
+            duration (int): Total duration for the poll (in seconds)
+            started_at (str): UTC timestamp for the poll’s start time
+            ended_at (str): UTC timestamp for the poll’s end time
         &#34;&#34;&#34;
 
         self.id = id
-        self.campaign_id = campaign_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.amount = amount</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.title = title
+        self.choices = choices
+        self.channel_points_voting_enabled = channel_points_voting_enabled
+        self.channel_points_per_vote = channel_points_per_vote
+        self.status = status
+        self.duration = duration
+        self.started_at = started_at
+        self.ended_at = ended_at</code></pre>
 </details>
 </section>
 <section>
@@ -70,66 +86,93 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.charity_campaign_donation.CharityCampaignDonation"><code class="flex name class">
-<span>class <span class="ident">CharityCampaignDonation</span></span>
-<span>(</span><span>id: str, campaign_id: str, user_id: str, user_login: str, user_name: str, amount: dict)</span>
+<dt id="twitchpy.dataclasses.poll.Poll"><code class="flex name class">
+<span>class <span class="ident">Poll</span></span>
+<span>(</span><span>id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, choices: list[dict], channel_points_voting_enabled: bool, channel_points_per_vote: int, status: str, duration: int, started_at: str, ended_at: str = '')</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a donation made to a charity campaign</p>
-<p>The function initializes an object with the given parameters.</p>
+<div class="desc"><p>Represents a poll</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the donation</dd>
-<dt><strong><code>campaign_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the charity campaign that the donation applies to</dd>
-<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies a user that donated money to the campaign</dd>
-<dt><strong><code>user_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s login name</dd>
-<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s display name</dd>
-<dt><strong><code>amount</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The amount of money that the user donated</dd>
-</dl>
-<p>used.</p></div>
+<dd>ID of the poll</dd>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>ID of the broadcaster</dd>
+<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the broadcaster</dd>
+<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
+<dd>Login of the broadcaster</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Question displayed for the poll</dd>
+<dt><strong><code>choices</code></strong> :&ensp;<code>list</code></dt>
+<dd>The poll choices</dd>
+<dt><strong><code>channel_points_voting_enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates if Channel Points can be used for voting</dd>
+<dt><strong><code>channel_points_per_vote</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of Channel Points required to vote once with Channel Points</dd>
+<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
+<dd>Poll status
+Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</dd>
+<dt><strong><code>duration</code></strong> :&ensp;<code>int</code></dt>
+<dd>Total duration for the poll (in seconds)</dd>
+<dt><strong><code>started_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>UTC timestamp for the poll’s start time</dd>
+<dt><strong><code>ended_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>UTC timestamp for the poll’s end time</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaignDonation:
+<pre><code class="python">class Poll:
     &#34;&#34;&#34;
-    Represents a donation made to a charity campaign
+    Represents a poll
     &#34;&#34;&#34;
 
     def __init__(
         self,
         id: str,
-        campaign_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        amount: dict,
+        broadcaster_id: str,
+        broadcaster_name: str,
+        broadcaster_login: str,
+        title: str,
+        choices: list[dict],
+        channel_points_voting_enabled: bool,
+        channel_points_per_vote: int,
+        status: str,
+        duration: int,
+        started_at: str,
+        ended_at: str = &#34;&#34;,
     ):
         &#34;&#34;&#34;
-        The function initializes an object with the given parameters.
-
         Args:
-            id (str): An ID that identifies the donation
-            campaign_id (str): An ID that identifies the charity campaign that the donation applies to
-            user_id (str): An ID that identifies a user that donated money to the campaign
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            amount (dict): The amount of money that the user donated
-        used.
+            id (str): ID of the poll
+            broadcaster_id (str): ID of the broadcaster
+            broadcaster_name (str): Name of the broadcaster
+            broadcaster_login (str): Login of the broadcaster
+            title (str): Question displayed for the poll
+            choices (list): The poll choices
+            channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
+            channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
+            status (str): Poll status
+                Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
+            duration (int): Total duration for the poll (in seconds)
+            started_at (str): UTC timestamp for the poll’s start time
+            ended_at (str): UTC timestamp for the poll’s end time
         &#34;&#34;&#34;
 
         self.id = id
-        self.campaign_id = campaign_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.amount = amount</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.title = title
+        self.choices = choices
+        self.channel_points_voting_enabled = channel_points_voting_enabled
+        self.channel_points_per_vote = channel_points_per_vote
+        self.status = status
+        self.duration = duration
+        self.started_at = started_at
+        self.ended_at = ended_at</code></pre>
 </details>
 </dd>
 </dl>
@@ -143,13 +186,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.charity_campaign_donation.CharityCampaignDonation" href="#twitchpy.charity_campaign_donation.CharityCampaignDonation">CharityCampaignDonation</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.poll.Poll" href="#twitchpy.dataclasses.poll.Poll">Poll</a></code></h4>
 </li>
 </ul>
 </li>

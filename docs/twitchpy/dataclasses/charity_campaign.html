@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.emote API documentation</title>
+<title>twitchpy.dataclasses.charity_campaign API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,59 +19,55 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.emote</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.charity_campaign</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Emote:
+<pre><code class="python">class CharityCampaign:
     &#34;&#34;&#34;
-    Represents an emote
+    Represents a charity campaign
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id,
-        name,
-        images,
-        format,
-        scale,
-        theme_mode,
-        tier=&#34;&#34;,
-        emote_type=&#34;&#34;,
-        emote_set_id=&#34;&#34;,
+        id: str,
+        broadcaster_id: str,
+        broadcaster_name: str,
+        broadcaster_login: str,
+        charity_name: str,
+        charity_description: str,
+        charity_logo: str,
+        charity_website: str,
+        current_amount: dict,
+        target_amount: dict,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the emote
-            name (str): The name of the emote
-                        This is the name that viewers type in the chat window to get the emote to appear
-            images (dict): Contains the image URLs for the emote
-                           These image URLs will always provide a static (i.e., non-animated) emote image with a light background
-            format (list): The formats that the emote is available in
-                           The possible formats are: animated, static
-            scale (list): The sizes that the emote is available in
-                          Possible sizes are: 1.0, 2.0, 3.0
-            theme_mode (list): The background themes that the emote is available in
-                               Possible themes are: dark, light
-            tier (str, optional): The subscriber tier at which the emote is unlocked
-                        This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
-            emote_type (str, optional): The type of emote
-                              The possible values are: bitstier, follower, subscriptions
-            emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
+            id (str): An ID that identifies the charity campaign
+            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
+            broadcaster_name (str): The broadcaster’s display name
+            broadcaster_login (str): The broadcaster’s login name
+            charity_name (str): The charity’s name
+            charity_description (str): A description of the charity
+            charity_logo (str): A URL to an image of the charity’s logo
+            charity_website (str): A URL to the charity’s website
+            current_amount (dict): The current amount of donations that the campaign has received
+            target_amount (dict): The campaign’s fundraising goal
         &#34;&#34;&#34;
 
         self.id = id
-        self.name = name
-        self.images = images
-        self.format = format
-        self.scale = scale
-        self.theme_mode = theme_mode
-        self.tier = tier
-        self.emote_type = emote_type
-        self.emote_set_id = emote_set_id</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.charity_name = charity_name
+        self.charity_description = charity_description
+        self.charity_logo = charity_logo
+        self.charity_website = charity_website
+        self.current_amount = current_amount
+        self.target_amount = target_amount</code></pre>
 </details>
 </section>
 <section>
@@ -83,90 +79,81 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.emote.Emote"><code class="flex name class">
-<span>class <span class="ident">Emote</span></span>
-<span>(</span><span>id, name, images, format, scale, theme_mode, tier='', emote_type='', emote_set_id='')</span>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign"><code class="flex name class">
+<span>class <span class="ident">CharityCampaign</span></span>
+<span>(</span><span>id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, charity_name: str, charity_description: str, charity_logo: str, charity_website: str, current_amount: dict, target_amount: dict)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents an emote</p>
+<div class="desc"><p>Represents a charity campaign</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the emote</dd>
-<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the emote
-This is the name that viewers type in the chat window to get the emote to appear</dd>
-<dt><strong><code>images</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Contains the image URLs for the emote
-These image URLs will always provide a static (i.e., non-animated) emote image with a light background</dd>
-<dt><strong><code>format</code></strong> :&ensp;<code>list</code></dt>
-<dd>The formats that the emote is available in
-The possible formats are: animated, static</dd>
-<dt><strong><code>scale</code></strong> :&ensp;<code>list</code></dt>
-<dd>The sizes that the emote is available in
-Possible sizes are: 1.0, 2.0, 3.0</dd>
-<dt><strong><code>theme_mode</code></strong> :&ensp;<code>list</code></dt>
-<dd>The background themes that the emote is available in
-Possible themes are: dark, light</dd>
-<dt><strong><code>tier</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>The subscriber tier at which the emote is unlocked
-This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string</dd>
-<dt><strong><code>emote_type</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>The type of emote
-The possible values are: bitstier, follower, subscriptions</dd>
-<dt><strong><code>emote_set_id</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>An ID that identifies the emote set that the emote belongs to</dd>
+<dd>An ID that identifies the charity campaign</dd>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the broadcaster that’s running the campaign</dd>
+<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The broadcaster’s display name</dd>
+<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
+<dd>The broadcaster’s login name</dd>
+<dt><strong><code>charity_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The charity’s name</dd>
+<dt><strong><code>charity_description</code></strong> :&ensp;<code>str</code></dt>
+<dd>A description of the charity</dd>
+<dt><strong><code>charity_logo</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to an image of the charity’s logo</dd>
+<dt><strong><code>charity_website</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to the charity’s website</dd>
+<dt><strong><code>current_amount</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The current amount of donations that the campaign has received</dd>
+<dt><strong><code>target_amount</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The campaign’s fundraising goal</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Emote:
+<pre><code class="python">class CharityCampaign:
     &#34;&#34;&#34;
-    Represents an emote
+    Represents a charity campaign
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id,
-        name,
-        images,
-        format,
-        scale,
-        theme_mode,
-        tier=&#34;&#34;,
-        emote_type=&#34;&#34;,
-        emote_set_id=&#34;&#34;,
+        id: str,
+        broadcaster_id: str,
+        broadcaster_name: str,
+        broadcaster_login: str,
+        charity_name: str,
+        charity_description: str,
+        charity_logo: str,
+        charity_website: str,
+        current_amount: dict,
+        target_amount: dict,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the emote
-            name (str): The name of the emote
-                        This is the name that viewers type in the chat window to get the emote to appear
-            images (dict): Contains the image URLs for the emote
-                           These image URLs will always provide a static (i.e., non-animated) emote image with a light background
-            format (list): The formats that the emote is available in
-                           The possible formats are: animated, static
-            scale (list): The sizes that the emote is available in
-                          Possible sizes are: 1.0, 2.0, 3.0
-            theme_mode (list): The background themes that the emote is available in
-                               Possible themes are: dark, light
-            tier (str, optional): The subscriber tier at which the emote is unlocked
-                        This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
-            emote_type (str, optional): The type of emote
-                              The possible values are: bitstier, follower, subscriptions
-            emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
+            id (str): An ID that identifies the charity campaign
+            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
+            broadcaster_name (str): The broadcaster’s display name
+            broadcaster_login (str): The broadcaster’s login name
+            charity_name (str): The charity’s name
+            charity_description (str): A description of the charity
+            charity_logo (str): A URL to an image of the charity’s logo
+            charity_website (str): A URL to the charity’s website
+            current_amount (dict): The current amount of donations that the campaign has received
+            target_amount (dict): The campaign’s fundraising goal
         &#34;&#34;&#34;
 
         self.id = id
-        self.name = name
-        self.images = images
-        self.format = format
-        self.scale = scale
-        self.theme_mode = theme_mode
-        self.tier = tier
-        self.emote_type = emote_type
-        self.emote_set_id = emote_set_id</code></pre>
+        self.broadcaster_id = broadcaster_id
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_login = broadcaster_login
+        self.charity_name = charity_name
+        self.charity_description = charity_description
+        self.charity_logo = charity_logo
+        self.charity_website = charity_website
+        self.current_amount = current_amount
+        self.target_amount = target_amount</code></pre>
 </details>
 </dd>
 </dl>
@@ -180,13 +167,13 @@ The possible values are: bitstier, follower, subscriptions</dd>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.emote.Emote" href="#twitchpy.emote.Emote">Emote</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign">CharityCampaign</a></code></h4>
 </li>
 </ul>
 </li>

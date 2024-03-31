@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.charity_campaign API documentation</title>
+<title>twitchpy.dataclasses.video API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,55 +19,67 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.charity_campaign</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.video</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaign:
+<pre><code class="python">class Video:
     &#34;&#34;&#34;
-    Represents a charity campaign
+    Represents a video
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        charity_name: str,
-        charity_description: str,
-        charity_logo: str,
-        charity_website: str,
-        current_amount: dict,
-        target_amount: dict,
+        id,
+        user_id,
+        user_name,
+        title,
+        description,
+        created_at,
+        published_at,
+        url,
+        thumbnail_url,
+        viewable,
+        view_count,
+        language,
+        type,
+        duration,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the charity campaign
-            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_login (str): The broadcaster’s login name
-            charity_name (str): The charity’s name
-            charity_description (str): A description of the charity
-            charity_logo (str): A URL to an image of the charity’s logo
-            charity_website (str): A URL to the charity’s website
-            current_amount (dict): The current amount of donations that the campaign has received
-            target_amount (dict): The campaign’s fundraising goal
+            id (str): ID of the video
+            user_id (str): ID of the owner of the video
+            user_name (str): User name of the owner of the video
+            title (str): Title of the video
+            description (str): Description of the video
+            created_at (str): Date of creation of the video
+            published_at (str): Date of publication of the video
+            url (str): URL of the video
+            thumbnail_url (str): URL of the preview image of the video
+            viewable (str): Indicates whether the video is publicly viewable
+            view_count (int): Number of times the video has been viewed
+            language (str): Language of the video
+            type (str): Type of the video
+            duration (str): Duration of the video
         &#34;&#34;&#34;
 
         self.id = id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.charity_name = charity_name
-        self.charity_description = charity_description
-        self.charity_logo = charity_logo
-        self.charity_website = charity_website
-        self.current_amount = current_amount
-        self.target_amount = target_amount</code></pre>
+        self.user_id = user_id
+        self.user_name = user_name
+        self.title = title
+        self.description = description
+        self.created_at = created_at
+        self.published_at = published_at
+        self.url = url
+        self.thumbnail_url = thumbnail_url
+        self.viewable = viewable
+        self.view_count = view_count
+        self.language = language
+        self.type = type
+        self.duration = duration</code></pre>
 </details>
 </section>
 <section>
@@ -79,81 +91,101 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.charity_campaign.CharityCampaign"><code class="flex name class">
-<span>class <span class="ident">CharityCampaign</span></span>
-<span>(</span><span>id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, charity_name: str, charity_description: str, charity_logo: str, charity_website: str, current_amount: dict, target_amount: dict)</span>
+<dt id="twitchpy.dataclasses.video.Video"><code class="flex name class">
+<span>class <span class="ident">Video</span></span>
+<span>(</span><span>id, user_id, user_name, title, description, created_at, published_at, url, thumbnail_url, viewable, view_count, language, type, duration)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a charity campaign</p>
+<div class="desc"><p>Represents a video</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the charity campaign</dd>
-<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the broadcaster that’s running the campaign</dd>
-<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The broadcaster’s display name</dd>
-<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>The broadcaster’s login name</dd>
-<dt><strong><code>charity_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The charity’s name</dd>
-<dt><strong><code>charity_description</code></strong> :&ensp;<code>str</code></dt>
-<dd>A description of the charity</dd>
-<dt><strong><code>charity_logo</code></strong> :&ensp;<code>str</code></dt>
-<dd>A URL to an image of the charity’s logo</dd>
-<dt><strong><code>charity_website</code></strong> :&ensp;<code>str</code></dt>
-<dd>A URL to the charity’s website</dd>
-<dt><strong><code>current_amount</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The current amount of donations that the campaign has received</dd>
-<dt><strong><code>target_amount</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The campaign’s fundraising goal</dd>
+<dd>ID of the video</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>ID of the owner of the video</dd>
+<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>User name of the owner of the video</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of the video</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>Description of the video</dd>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>Date of creation of the video</dd>
+<dt><strong><code>published_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>Date of publication of the video</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the video</dd>
+<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the preview image of the video</dd>
+<dt><strong><code>viewable</code></strong> :&ensp;<code>str</code></dt>
+<dd>Indicates whether the video is publicly viewable</dd>
+<dt><strong><code>view_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of times the video has been viewed</dd>
+<dt><strong><code>language</code></strong> :&ensp;<code>str</code></dt>
+<dd>Language of the video</dd>
+<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
+<dd>Type of the video</dd>
+<dt><strong><code>duration</code></strong> :&ensp;<code>str</code></dt>
+<dd>Duration of the video</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaign:
+<pre><code class="python">class Video:
     &#34;&#34;&#34;
-    Represents a charity campaign
+    Represents a video
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        charity_name: str,
-        charity_description: str,
-        charity_logo: str,
-        charity_website: str,
-        current_amount: dict,
-        target_amount: dict,
+        id,
+        user_id,
+        user_name,
+        title,
+        description,
+        created_at,
+        published_at,
+        url,
+        thumbnail_url,
+        viewable,
+        view_count,
+        language,
+        type,
+        duration,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the charity campaign
-            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_login (str): The broadcaster’s login name
-            charity_name (str): The charity’s name
-            charity_description (str): A description of the charity
-            charity_logo (str): A URL to an image of the charity’s logo
-            charity_website (str): A URL to the charity’s website
-            current_amount (dict): The current amount of donations that the campaign has received
-            target_amount (dict): The campaign’s fundraising goal
+            id (str): ID of the video
+            user_id (str): ID of the owner of the video
+            user_name (str): User name of the owner of the video
+            title (str): Title of the video
+            description (str): Description of the video
+            created_at (str): Date of creation of the video
+            published_at (str): Date of publication of the video
+            url (str): URL of the video
+            thumbnail_url (str): URL of the preview image of the video
+            viewable (str): Indicates whether the video is publicly viewable
+            view_count (int): Number of times the video has been viewed
+            language (str): Language of the video
+            type (str): Type of the video
+            duration (str): Duration of the video
         &#34;&#34;&#34;
 
         self.id = id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.charity_name = charity_name
-        self.charity_description = charity_description
-        self.charity_logo = charity_logo
-        self.charity_website = charity_website
-        self.current_amount = current_amount
-        self.target_amount = target_amount</code></pre>
+        self.user_id = user_id
+        self.user_name = user_name
+        self.title = title
+        self.description = description
+        self.created_at = created_at
+        self.published_at = published_at
+        self.url = url
+        self.thumbnail_url = thumbnail_url
+        self.viewable = viewable
+        self.view_count = view_count
+        self.language = language
+        self.type = type
+        self.duration = duration</code></pre>
 </details>
 </dd>
 </dl>
@@ -167,13 +199,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.charity_campaign.CharityCampaign" href="#twitchpy.charity_campaign.CharityCampaign">CharityCampaign</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.video.Video" href="#twitchpy.dataclasses.video.Video">Video</a></code></h4>
 </li>
 </ul>
 </li>

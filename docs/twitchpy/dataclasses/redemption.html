@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.stream API documentation</title>
+<title>twitchpy.dataclasses.redemption API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,67 +19,52 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.stream</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.redemption</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Stream:
+<pre><code class="python">class Redemption:
     &#34;&#34;&#34;
-    Represents a stream
+    Represents a reward redemption
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        game_id: str,
-        game_name: str,
-        type: str,
-        title: str,
-        tags: list[str],
-        viewer_count: int,
-        started_at: str,
-        language: str,
-        thumbnail_url: str,
-        is_mature: bool,
+        broadcaster_name,
+        broadcaster_id,
+        id,
+        user_id,
+        user_name,
+        user_input,
+        status,
+        redeemed_at,
+        reward,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the stream
-            user_id (str): The ID of the user that’s broadcasting the stream
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            game_id (str): The ID of the category or game being played
-            game_name (str): The name of the category or game being played
-            type (str): The type of stream
-            title (str): The stream’s title
-            tags (list[str]): The tags applied to the stream
-            viewer_count (int): The number of users watching the stream
-            started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
-            language (str): The language that the stream uses
-            thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
-            is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
+            broadcaster_name (str): The display name of the broadcaster that the reward belongs to
+            broadcaster_id (str): The id of the broadcaster that the reward belongs to
+            id (str): The ID of the redemption
+            user_id (str): The ID of the user that redeemed the reward
+            user_name (str): The display name of the user that redeemed the reward
+            user_input (str): The user input provided
+            status (str): One of UNFULFILLED, FULFILLED or CANCELED
+            redeemed_at (str): Timestamp of when the reward was redeemed
+            reward (Reward): The custom reward that was redeemed at the time it was redeemed
         &#34;&#34;&#34;
 
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_id = broadcaster_id
         self.id = id
         self.user_id = user_id
-        self.user_login = user_login
         self.user_name = user_name
-        self.game_id = game_id
-        self.game_name = game_name
-        self.type = type
-        self.title = title
-        self.tags = tags
-        self.viewer_count = viewer_count
-        self.started_at = started_at
-        self.language = language
-        self.thumbnail_url = thumbnail_url
-        self.is_mature = is_mature</code></pre>
+        self.user_input = user_input
+        self.status = status
+        self.redeemed_at = redeemed_at
+        self.reward = reward</code></pre>
 </details>
 </section>
 <section>
@@ -91,101 +76,76 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.stream.Stream"><code class="flex name class">
-<span>class <span class="ident">Stream</span></span>
-<span>(</span><span>id: str, user_id: str, user_login: str, user_name: str, game_id: str, game_name: str, type: str, title: str, tags: list[str], viewer_count: int, started_at: str, language: str, thumbnail_url: str, is_mature: bool)</span>
+<dt id="twitchpy.dataclasses.redemption.Redemption"><code class="flex name class">
+<span>class <span class="ident">Redemption</span></span>
+<span>(</span><span>broadcaster_name, broadcaster_id, id, user_id, user_name, user_input, status, redeemed_at, reward)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a stream</p>
+<div class="desc"><p>Represents a reward redemption</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The display name of the broadcaster that the reward belongs to</dd>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The id of the broadcaster that the reward belongs to</dd>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the stream</dd>
+<dd>The ID of the redemption</dd>
 <dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID of the user that’s broadcasting the stream</dd>
-<dt><strong><code>user_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s login name</dd>
+<dd>The ID of the user that redeemed the reward</dd>
 <dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s display name</dd>
-<dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID of the category or game being played</dd>
-<dt><strong><code>game_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the category or game being played</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
-<dd>The type of stream</dd>
-<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
-<dd>The stream’s title</dd>
-<dt><strong><code>tags</code></strong> :&ensp;<code>list[str]</code></dt>
-<dd>The tags applied to the stream</dd>
-<dt><strong><code>viewer_count</code></strong> :&ensp;<code>int</code></dt>
-<dd>The number of users watching the stream</dd>
-<dt><strong><code>started_at</code></strong> :&ensp;<code>str</code></dt>
-<dd>The UTC date and time (in RFC3339 format) of when the broadcast began</dd>
-<dt><strong><code>language</code></strong> :&ensp;<code>str</code></dt>
-<dd>The language that the stream uses</dd>
-<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>A URL to an image of a frame from the last 5 minutes of the stream</dd>
-<dt><strong><code>is_mature</code></strong> :&ensp;<code>bool</code></dt>
-<dd>A Boolean value that indicates whether the stream is meant for mature audiences</dd>
+<dd>The display name of the user that redeemed the reward</dd>
+<dt><strong><code>user_input</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user input provided</dd>
+<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
+<dd>One of UNFULFILLED, FULFILLED or CANCELED</dd>
+<dt><strong><code>redeemed_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>Timestamp of when the reward was redeemed</dd>
+<dt><strong><code>reward</code></strong> :&ensp;<code>Reward</code></dt>
+<dd>The custom reward that was redeemed at the time it was redeemed</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Stream:
+<pre><code class="python">class Redemption:
     &#34;&#34;&#34;
-    Represents a stream
+    Represents a reward redemption
     &#34;&#34;&#34;
 
     def __init__(
         self,
-        id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        game_id: str,
-        game_name: str,
-        type: str,
-        title: str,
-        tags: list[str],
-        viewer_count: int,
-        started_at: str,
-        language: str,
-        thumbnail_url: str,
-        is_mature: bool,
+        broadcaster_name,
+        broadcaster_id,
+        id,
+        user_id,
+        user_name,
+        user_input,
+        status,
+        redeemed_at,
+        reward,
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the stream
-            user_id (str): The ID of the user that’s broadcasting the stream
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            game_id (str): The ID of the category or game being played
-            game_name (str): The name of the category or game being played
-            type (str): The type of stream
-            title (str): The stream’s title
-            tags (list[str]): The tags applied to the stream
-            viewer_count (int): The number of users watching the stream
-            started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
-            language (str): The language that the stream uses
-            thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
-            is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
+            broadcaster_name (str): The display name of the broadcaster that the reward belongs to
+            broadcaster_id (str): The id of the broadcaster that the reward belongs to
+            id (str): The ID of the redemption
+            user_id (str): The ID of the user that redeemed the reward
+            user_name (str): The display name of the user that redeemed the reward
+            user_input (str): The user input provided
+            status (str): One of UNFULFILLED, FULFILLED or CANCELED
+            redeemed_at (str): Timestamp of when the reward was redeemed
+            reward (Reward): The custom reward that was redeemed at the time it was redeemed
         &#34;&#34;&#34;
 
+        self.broadcaster_name = broadcaster_name
+        self.broadcaster_id = broadcaster_id
         self.id = id
         self.user_id = user_id
-        self.user_login = user_login
         self.user_name = user_name
-        self.game_id = game_id
-        self.game_name = game_name
-        self.type = type
-        self.title = title
-        self.tags = tags
-        self.viewer_count = viewer_count
-        self.started_at = started_at
-        self.language = language
-        self.thumbnail_url = thumbnail_url
-        self.is_mature = is_mature</code></pre>
+        self.user_input = user_input
+        self.status = status
+        self.redeemed_at = redeemed_at
+        self.reward = reward</code></pre>
 </details>
 </dd>
 </dl>
@@ -199,13 +159,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.stream.Stream" href="#twitchpy.stream.Stream">Stream</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.redemption.Redemption" href="#twitchpy.dataclasses.redemption.Redemption">Redemption</a></code></h4>
 </li>
 </ul>
 </li>

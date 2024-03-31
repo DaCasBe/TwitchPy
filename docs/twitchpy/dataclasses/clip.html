@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.channel API documentation</title>
+<title>twitchpy.dataclasses.clip API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,58 +19,77 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.channel</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.clip</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Channel:
+<pre><code class="python">class Clip:
     &#34;&#34;&#34;
-    Represents a channel
+    Represents a clip
     &#34;&#34;&#34;
 
     def __init__(
         self,
+        id: str,
+        url: str,
+        embed_url: str,
         broadcaster_id: str,
-        broadcaster_login: str,
         broadcaster_name: str,
-        broadcaster_language: str,
-        game_name: str,
+        creator_id: str,
+        creator_name: str,
+        video_id: str,
         game_id: str,
+        language: str,
         title: str,
-        delay: int,
-        tags: list[str],
-        content_classification_labels: list[str],
-        is_branded_content: bool,
+        view_count: int,
+        created_at: str,
+        thumbnail_url: str,
+        duration: float,
+        vod_offset: int,
+        is_featured: bool,
     ):
         &#34;&#34;&#34;
         Args:
-            broadcaster_id (str): An ID that uniquely identifies the broadcaster
-            broadcaster_login (str): The broadcaster’s login name
+            id (str): An ID that uniquely identifies the clip
+            url (str): A URL to the clip
+            embed_url (str): A URL that you can use in an iframe to embed the clip
+            broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
             broadcaster_name (str): The broadcaster’s display name
-            broadcaster_language (str): The broadcaster’s preferred language
-            game_name (str): The name of the game that the broadcaster is playing or last played
-            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
-            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
-            tags (list[str]): The tags applied to the channel
-            content_classification_labels (list[str]): The CCLs applied to the channel
-            is_branded_content (bool): Boolean flag indicating if the channel has branded content
+            creator_id (str): An ID that identifies the user that created the clip
+            creator_name (str): The user’s display name
+            video_id (str): An ID that identifies the video that the clip came from
+            game_id (str): The ID of the game that was being played when the clip was created
+            language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
+            title (str): The title of the clip
+            view_count (int): The number of times the clip has been viewed
+            created_at (str): The date and time of when the clip was created
+            thumbnail_url (str): A URL to a thumbnail image of the clip
+            duration (float): The length of the clip, in seconds
+                Precision is 0.1
+            vod_offset (int): The zero-based offset, in seconds, to where the clip starts in the video (VOD)
+            is_featured (bool): A Boolean value that indicates if the clip is featured or not
         &#34;&#34;&#34;
 
+        self.id = id
+        self.url = url
+        self.embed_url = embed_url
         self.broadcaster_id = broadcaster_id
-        self.broadcaster_login = broadcaster_login
         self.broadcaster_name = broadcaster_name
-        self.broadcaster_language = broadcaster_language
-        self.game_name = game_name
+        self.creator_id = creator_id
+        self.creator_name = creator_name
+        self.video_id = video_id
         self.game_id = game_id
+        self.language = language
         self.title = title
-        self.delay = delay
-        self.tags = tags
-        self.content_classification_labels = content_classification_labels
-        self.is_branded_content = is_branded_content</code></pre>
+        self.view_count = view_count
+        self.created_at = created_at
+        self.thumbnail_url = thumbnail_url
+        self.duration = duration
+        self.vod_offset = vod_offset
+        self.is_featured = is_featured</code></pre>
 </details>
 </section>
 <section>
@@ -82,86 +101,118 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.channel.Channel"><code class="flex name class">
-<span>class <span class="ident">Channel</span></span>
-<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, delay: int, tags: list[str], content_classification_labels: list[str], is_branded_content: bool)</span>
+<dt id="twitchpy.dataclasses.clip.Clip"><code class="flex name class">
+<span>class <span class="ident">Clip</span></span>
+<span>(</span><span>id: str, url: str, embed_url: str, broadcaster_id: str, broadcaster_name: str, creator_id: str, creator_name: str, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a channel</p>
+<div class="desc"><p>Represents a clip</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that uniquely identifies the clip</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to the clip</dd>
+<dt><strong><code>embed_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL that you can use in an iframe to embed the clip</dd>
 <dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that uniquely identifies the broadcaster</dd>
-<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>The broadcaster’s login name</dd>
+<dd>An ID that identifies the broadcaster that the video was clipped from</dd>
 <dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The broadcaster’s display name</dd>
-<dt><strong><code>broadcaster_language</code></strong> :&ensp;<code>str</code></dt>
-<dd>The broadcaster’s preferred language</dd>
-<dt><strong><code>game_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the game that the broadcaster is playing or last played</dd>
+<dt><strong><code>creator_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the user that created the clip</dd>
+<dt><strong><code>creator_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user’s display name</dd>
+<dt><strong><code>video_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the video that the clip came from</dd>
 <dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that uniquely identifies the game that the broadcaster is playing or last played</dd>
+<dd>The ID of the game that was being played when the clip was created</dd>
+<dt><strong><code>language</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ISO 639-1 two-letter language code that the broadcaster broadcasts in</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
-<dd>The title of the stream that the broadcaster is currently streaming or last streamed</dd>
-<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
-<dd>The value of the broadcaster’s stream delay setting, in seconds</dd>
-<dt><strong><code>tags</code></strong> :&ensp;<code>list[str]</code></dt>
-<dd>The tags applied to the channel</dd>
-<dt><strong><code>content_classification_labels</code></strong> :&ensp;<code>list[str]</code></dt>
-<dd>The CCLs applied to the channel</dd>
-<dt><strong><code>is_branded_content</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Boolean flag indicating if the channel has branded content</dd>
+<dd>The title of the clip</dd>
+<dt><strong><code>view_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of times the clip has been viewed</dd>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>The date and time of when the clip was created</dd>
+<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to a thumbnail image of the clip</dd>
+<dt><strong><code>duration</code></strong> :&ensp;<code>float</code></dt>
+<dd>The length of the clip, in seconds
+Precision is 0.1</dd>
+<dt><strong><code>vod_offset</code></strong> :&ensp;<code>int</code></dt>
+<dd>The zero-based offset, in seconds, to where the clip starts in the video (VOD)</dd>
+<dt><strong><code>is_featured</code></strong> :&ensp;<code>bool</code></dt>
+<dd>A Boolean value that indicates if the clip is featured or not</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Channel:
+<pre><code class="python">class Clip:
     &#34;&#34;&#34;
-    Represents a channel
+    Represents a clip
     &#34;&#34;&#34;
 
     def __init__(
         self,
+        id: str,
+        url: str,
+        embed_url: str,
         broadcaster_id: str,
-        broadcaster_login: str,
         broadcaster_name: str,
-        broadcaster_language: str,
-        game_name: str,
+        creator_id: str,
+        creator_name: str,
+        video_id: str,
         game_id: str,
+        language: str,
         title: str,
-        delay: int,
-        tags: list[str],
-        content_classification_labels: list[str],
-        is_branded_content: bool,
+        view_count: int,
+        created_at: str,
+        thumbnail_url: str,
+        duration: float,
+        vod_offset: int,
+        is_featured: bool,
     ):
         &#34;&#34;&#34;
         Args:
-            broadcaster_id (str): An ID that uniquely identifies the broadcaster
-            broadcaster_login (str): The broadcaster’s login name
+            id (str): An ID that uniquely identifies the clip
+            url (str): A URL to the clip
+            embed_url (str): A URL that you can use in an iframe to embed the clip
+            broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
             broadcaster_name (str): The broadcaster’s display name
-            broadcaster_language (str): The broadcaster’s preferred language
-            game_name (str): The name of the game that the broadcaster is playing or last played
-            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
-            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
-            tags (list[str]): The tags applied to the channel
-            content_classification_labels (list[str]): The CCLs applied to the channel
-            is_branded_content (bool): Boolean flag indicating if the channel has branded content
+            creator_id (str): An ID that identifies the user that created the clip
+            creator_name (str): The user’s display name
+            video_id (str): An ID that identifies the video that the clip came from
+            game_id (str): The ID of the game that was being played when the clip was created
+            language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
+            title (str): The title of the clip
+            view_count (int): The number of times the clip has been viewed
+            created_at (str): The date and time of when the clip was created
+            thumbnail_url (str): A URL to a thumbnail image of the clip
+            duration (float): The length of the clip, in seconds
+                Precision is 0.1
+            vod_offset (int): The zero-based offset, in seconds, to where the clip starts in the video (VOD)
+            is_featured (bool): A Boolean value that indicates if the clip is featured or not
         &#34;&#34;&#34;
 
+        self.id = id
+        self.url = url
+        self.embed_url = embed_url
         self.broadcaster_id = broadcaster_id
-        self.broadcaster_login = broadcaster_login
         self.broadcaster_name = broadcaster_name
-        self.broadcaster_language = broadcaster_language
-        self.game_name = game_name
+        self.creator_id = creator_id
+        self.creator_name = creator_name
+        self.video_id = video_id
         self.game_id = game_id
+        self.language = language
         self.title = title
-        self.delay = delay
-        self.tags = tags
-        self.content_classification_labels = content_classification_labels
-        self.is_branded_content = is_branded_content</code></pre>
+        self.view_count = view_count
+        self.created_at = created_at
+        self.thumbnail_url = thumbnail_url
+        self.duration = duration
+        self.vod_offset = vod_offset
+        self.is_featured = is_featured</code></pre>
 </details>
 </dd>
 </dl>
@@ -175,13 +226,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.channel.Channel" href="#twitchpy.channel.Channel">Channel</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.clip.Clip" href="#twitchpy.dataclasses.clip.Clip">Clip</a></code></h4>
 </li>
 </ul>
 </li>
