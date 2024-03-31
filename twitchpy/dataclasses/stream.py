@@ -5,13 +5,13 @@ class Stream:
 
     def __init__(
         self,
-        id: str,
+        stream_id: str,
         user_id: str,
         user_login: str,
         user_name: str,
         game_id: str,
         game_name: str,
-        type: str,
+        stream_type: str,
         title: str,
         tags: list[str],
         viewer_count: int,
@@ -22,13 +22,13 @@ class Stream:
     ):
         """
         Args:
-            id (str): An ID that identifies the stream
+            stream_id (str): An ID that identifies the stream
             user_id (str): The ID of the user that’s broadcasting the stream
             user_login (str): The user’s login name
             user_name (str): The user’s display name
             game_id (str): The ID of the category or game being played
             game_name (str): The name of the category or game being played
-            type (str): The type of stream
+            stream_type (str): The type of stream
             title (str): The stream’s title
             tags (list[str]): The tags applied to the stream
             viewer_count (int): The number of users watching the stream
@@ -38,13 +38,13 @@ class Stream:
             is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
         """
 
-        self.id = id
+        self.id = stream_id
         self.user_id = user_id
         self.user_login = user_login
         self.user_name = user_name
         self.game_id = game_id
         self.game_name = game_name
-        self.type = type
+        self.type = stream_type
         self.title = title
         self.tags = tags
         self.viewer_count = viewer_count

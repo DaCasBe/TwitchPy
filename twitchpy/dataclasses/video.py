@@ -5,7 +5,7 @@ class Video:
 
     def __init__(
         self,
-        id,
+        video_id,
         user_id,
         user_name,
         title,
@@ -17,7 +17,7 @@ class Video:
         viewable,
         view_count,
         language,
-        type,
+        video_type,
         duration,
     ):
         """
@@ -38,7 +38,7 @@ class Video:
             duration (str): Duration of the video
         """
 
-        self.id = id
+        self.id = video_id
         self.user_id = user_id
         self.user_name = user_name
         self.title = title
@@ -50,5 +50,5 @@ class Video:
         self.viewable = viewable
         self.view_count = view_count
         self.language = language
-        self.type = type
+        self.type = video_type
         self.duration = duration

@@ -7,7 +7,7 @@ class Reward:
         self,
         broadcaster_name,
         broadcaster_id,
-        id,
+        reward_id,
         image="",
         background_color="",
         is_enabled=True,
@@ -29,7 +29,7 @@ class Reward:
         Args:
             broadcaster_name (str): Name of the channel owner of the reward
             broadcaster_id (str): ID of the channel owner of the reward
-            id (str): ID of the reward
+            reward_id (str): ID of the reward
             image (str): Image of the reward
             background_color (str): Background color of the reward
             is_enabled (bool): Is the reward currently enabled
@@ -50,7 +50,7 @@ class Reward:
 
         self.broadcaster_name = broadcaster_name
         self.broadcaster_id = broadcaster_id
-        self.id = id
+        self.id = reward_id
         self.image = image
         self.background_color = background_color
         self.is_enabled = is_enabled

@@ -5,7 +5,7 @@ class CharityCampaign:
 
     def __init__(
         self,
-        id: str,
+        campaign_id: str,
         broadcaster_id: str,
         broadcaster_name: str,
         broadcaster_login: str,
@@ -18,7 +18,7 @@ class CharityCampaign:
     ):
         """
         Args:
-            id (str): An ID that identifies the charity campaign
+            campaign_id (str): An ID that identifies the charity campaign
             broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
             broadcaster_name (str): The broadcaster’s display name
             broadcaster_login (str): The broadcaster’s login name
@@ -30,7 +30,7 @@ class CharityCampaign:
             target_amount (dict): The campaign’s fundraising goal
         """
 
-        self.id = id
+        self.id = campaign_id
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login
