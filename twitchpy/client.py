@@ -4431,24 +4431,26 @@ class Client:
         else:
             errors.ClientError(response.json()["message"])
 
-    def get_polls(self, broadcaster_id, id=[], first=20):
+    def get_polls(
+        self, broadcaster_id: str, id: list[str] = [], first: int = 20
+    ) -> list[Poll]:
         """
-        Get information about all polls or specific polls for a Twitch channel
-        Poll information is available for 90 days
+        Gets a list of polls that the broadcaster created
+        Polls are available for 90 days after they’re created
 
         Args:
-            broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
-            id (list, optional): ID of a poll
-                                 Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
+            broadcaster_id (str): The ID of the broadcaster that created the polls
+                This ID must match the user ID in the user access token
+            id (list[str]): A list of IDs that identify the polls to return
+                Maximum: 20
+            first (int): The maximum number of items to return per page in the response
+                Default: 20
 
         Raises:
             errors.ClientError
 
         Returns:
-            list
+            list[Poll]
         """
 
         url = ENDPOINT_POLLS
@@ -4486,8 +4488,6 @@ class Client:
                                 poll["broadcaster_login"],
                                 poll["title"],
                                 poll["choices"],
-                                poll["bits_voting_enabled"],
-                                poll["bits_per_vote"],
                                 poll["channel_points_voting_enabled"],
                                 poll["channel_points_per_vote"],
                                 poll["status"],
@@ -4588,16 +4588,17 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def end_poll(self, broadcaster_id, id, status):
+    def end_poll(self, broadcaster_id: str, id: str, status: str) -> Poll:
         """
-        End a poll that is currently active
+        Ends an active poll
+        You have the option to end it or end it and archive it
 
         Args:
-            broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the poll
-            status (str): The poll status to be set
-                          Valid values: "TERMINATED", "ARCHIVED"
+            broadcaster_id (str): The ID of the broadcaster that’s running the poll
+                This ID must match the user ID in the user access token
+            id (str): The ID of the poll to update
+            status (str): The status to set the poll to
+                Valid values: "TERMINATED", "ARCHIVED"
 
         Raises:
             errors.ClientError
@@ -4624,8 +4625,6 @@ class Client:
                 poll["broadcaster_login"],
                 poll["title"],
                 poll["choices"],
-                poll["bits_voting_enabled"],
-                poll["bits_per_vote"],
                 poll["channel_points_voting_enabled"],
                 poll["channel_points_per_vote"],
                 poll["status"],
@@ -5258,7 +5257,7 @@ class Client:
         Args:
             query (str): The URI-encoded search string
             first (int): The maximum number of items to return
-                Minimum: 1
+                Default: 20
             live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
 
         Raises:
@@ -5299,10 +5298,11 @@ class Client:
                             channel["id"],
                             channel["broadcaster_login"],
                             channel["display_name"],
-                            channel["game_id"],
+                            channel["broadcaster_language"],
                             channel["game_name"],
+                            channel["game_id"],
                             channel["title"],
-                            broadcaster_language=channel["broadcaster_language"],
+                            channel["tags"],
                         )
                     )
 
