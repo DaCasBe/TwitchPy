@@ -33,7 +33,7 @@
 
     def __init__(
         self,
-        id: str,
+        donation_id: str,
         campaign_id: str,
         user_id: str,
         user_login: str,
@@ -44,7 +44,7 @@
         The function initializes an object with the given parameters.
 
         Args:
-            id (str): An ID that identifies the donation
+            donation_id (str): An ID that identifies the donation
             campaign_id (str): An ID that identifies the charity campaign that the donation applies to
             user_id (str): An ID that identifies a user that donated money to the campaign
             user_login (str): The user’s login name
@@ -53,7 +53,7 @@
         used.
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = donation_id
         self.campaign_id = campaign_id
         self.user_id = user_id
         self.user_login = user_login
@@ -72,14 +72,14 @@
 <dl>
 <dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation"><code class="flex name class">
 <span>class <span class="ident">CharityCampaignDonation</span></span>
-<span>(</span><span>id: str, campaign_id: str, user_id: str, user_login: str, user_name: str, amount: dict)</span>
+<span>(</span><span>donation_id: str, campaign_id: str, user_id: str, user_login: str, user_name: str, amount: dict)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a donation made to a charity campaign</p>
 <p>The function initializes an object with the given parameters.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>donation_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the donation</dd>
 <dt><strong><code>campaign_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the charity campaign that the donation applies to</dd>
@@ -104,7 +104,7 @@
 
     def __init__(
         self,
-        id: str,
+        donation_id: str,
         campaign_id: str,
         user_id: str,
         user_login: str,
@@ -115,7 +115,7 @@
         The function initializes an object with the given parameters.
 
         Args:
-            id (str): An ID that identifies the donation
+            donation_id (str): An ID that identifies the donation
             campaign_id (str): An ID that identifies the charity campaign that the donation applies to
             user_id (str): An ID that identifies a user that donated money to the campaign
             user_login (str): The user’s login name
@@ -124,7 +124,7 @@
         used.
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = donation_id
         self.campaign_id = campaign_id
         self.user_id = user_id
         self.user_login = user_login

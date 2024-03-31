@@ -33,10 +33,10 @@
 
     def __init__(
         self,
-        id,
+        emote_id,
         name,
         images,
-        format,
+        emote_format,
         scale,
         theme_mode,
         tier=&#34;&#34;,
@@ -45,12 +45,12 @@
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the emote
+            emote_id (str): An ID that identifies the emote
             name (str): The name of the emote
                         This is the name that viewers type in the chat window to get the emote to appear
             images (dict): Contains the image URLs for the emote
                            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
-            format (list): The formats that the emote is available in
+            emote_format (list): The formats that the emote is available in
                            The possible formats are: animated, static
             scale (list): The sizes that the emote is available in
                           Possible sizes are: 1.0, 2.0, 3.0
@@ -63,10 +63,10 @@
             emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = emote_id
         self.name = name
         self.images = images
-        self.format = format
+        self.format = emote_format
         self.scale = scale
         self.theme_mode = theme_mode
         self.tier = tier
@@ -85,13 +85,13 @@
 <dl>
 <dt id="twitchpy.dataclasses.emote.Emote"><code class="flex name class">
 <span>class <span class="ident">Emote</span></span>
-<span>(</span><span>id, name, images, format, scale, theme_mode, tier='', emote_type='', emote_set_id='')</span>
+<span>(</span><span>emote_id, name, images, emote_format, scale, theme_mode, tier='', emote_type='', emote_set_id='')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an emote</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>emote_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the emote</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the emote
@@ -99,7 +99,7 @@ This is the name that viewers type in the chat window to get the emote to appear
 <dt><strong><code>images</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Contains the image URLs for the emote
 These image URLs will always provide a static (i.e., non-animated) emote image with a light background</dd>
-<dt><strong><code>format</code></strong> :&ensp;<code>list</code></dt>
+<dt><strong><code>emote_format</code></strong> :&ensp;<code>list</code></dt>
 <dd>The formats that the emote is available in
 The possible formats are: animated, static</dd>
 <dt><strong><code>scale</code></strong> :&ensp;<code>list</code></dt>
@@ -128,10 +128,10 @@ The possible values are: bitstier, follower, subscriptions</dd>
 
     def __init__(
         self,
-        id,
+        emote_id,
         name,
         images,
-        format,
+        emote_format,
         scale,
         theme_mode,
         tier=&#34;&#34;,
@@ -140,12 +140,12 @@ The possible values are: bitstier, follower, subscriptions</dd>
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the emote
+            emote_id (str): An ID that identifies the emote
             name (str): The name of the emote
                         This is the name that viewers type in the chat window to get the emote to appear
             images (dict): Contains the image URLs for the emote
                            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
-            format (list): The formats that the emote is available in
+            emote_format (list): The formats that the emote is available in
                            The possible formats are: animated, static
             scale (list): The sizes that the emote is available in
                           Possible sizes are: 1.0, 2.0, 3.0
@@ -158,10 +158,10 @@ The possible values are: bitstier, follower, subscriptions</dd>
             emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = emote_id
         self.name = name
         self.images = images
-        self.format = format
+        self.format = emote_format
         self.scale = scale
         self.theme_mode = theme_mode
         self.tier = tier

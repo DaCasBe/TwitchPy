@@ -32,7 +32,15 @@
     &#34;&#34;&#34;
 
     def __init__(
-        self, id, status, type, version, condition, created_at, transport, cost
+        self,
+        subscription_id,
+        status,
+        subscription_type,
+        version,
+        condition,
+        created_at,
+        transport,
+        cost,
     ):
         &#34;&#34;&#34;
         Args:
@@ -47,9 +55,9 @@
             cost (int): The amount that the subscription counts against your limit
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = subscription_id
         self.status = status
-        self.type = type
+        self.type = subscription_type
         self.version = version
         self.condition = condition
         self.created_at = created_at
@@ -68,7 +76,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription"><code class="flex name class">
 <span>class <span class="ident">EventSubSubscription</span></span>
-<span>(</span><span>id, status, type, version, condition, created_at, transport, cost)</span>
+<span>(</span><span>subscription_id, status, subscription_type, version, condition, created_at, transport, cost)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an EventSub subscription</p>
@@ -102,7 +110,15 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
     &#34;&#34;&#34;
 
     def __init__(
-        self, id, status, type, version, condition, created_at, transport, cost
+        self,
+        subscription_id,
+        status,
+        subscription_type,
+        version,
+        condition,
+        created_at,
+        transport,
+        cost,
     ):
         &#34;&#34;&#34;
         Args:
@@ -117,9 +133,9 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
             cost (int): The amount that the subscription counts against your limit
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = subscription_id
         self.status = status
-        self.type = type
+        self.type = subscription_type
         self.version = version
         self.condition = condition
         self.created_at = created_at
