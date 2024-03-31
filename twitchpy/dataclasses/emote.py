@@ -5,10 +5,10 @@ class Emote:
 
     def __init__(
         self,
-        id,
+        emote_id,
         name,
         images,
-        format,
+        emote_format,
         scale,
         theme_mode,
         tier="",
@@ -17,12 +17,12 @@ class Emote:
     ):
         """
         Args:
-            id (str): An ID that identifies the emote
+            emote_id (str): An ID that identifies the emote
             name (str): The name of the emote
                         This is the name that viewers type in the chat window to get the emote to appear
             images (dict): Contains the image URLs for the emote
                            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
-            format (list): The formats that the emote is available in
+            emote_format (list): The formats that the emote is available in
                            The possible formats are: animated, static
             scale (list): The sizes that the emote is available in
                           Possible sizes are: 1.0, 2.0, 3.0
@@ -35,10 +35,10 @@ class Emote:
             emote_set_id (str, optional): An ID that identifies the emote set that the emote belongs to
         """
 
-        self.id = id
+        self.id = emote_id
         self.name = name
         self.images = images
-        self.format = format
+        self.format = emote_format
         self.scale = scale
         self.theme_mode = theme_mode
         self.tier = tier

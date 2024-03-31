@@ -33,7 +33,7 @@
 
     def __init__(
         self,
-        id: str,
+        clip_id: str,
         url: str,
         embed_url: str,
         broadcaster_id: str,
@@ -53,7 +53,7 @@
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that uniquely identifies the clip
+            clip_id (str): An ID that uniquely identifies the clip
             url (str): A URL to the clip
             embed_url (str): A URL that you can use in an iframe to embed the clip
             broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
@@ -73,7 +73,7 @@
             is_featured (bool): A Boolean value that indicates if the clip is featured or not
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = clip_id
         self.url = url
         self.embed_url = embed_url
         self.broadcaster_id = broadcaster_id
@@ -103,13 +103,13 @@
 <dl>
 <dt id="twitchpy.dataclasses.clip.Clip"><code class="flex name class">
 <span>class <span class="ident">Clip</span></span>
-<span>(</span><span>id: str, url: str, embed_url: str, broadcaster_id: str, broadcaster_name: str, creator_id: str, creator_name: str, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
+<span>(</span><span>clip_id: str, url: str, embed_url: str, broadcaster_id: str, broadcaster_name: str, creator_id: str, creator_name: str, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a clip</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>clip_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that uniquely identifies the clip</dd>
 <dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
 <dd>A URL to the clip</dd>
@@ -156,7 +156,7 @@ Precision is 0.1</dd>
 
     def __init__(
         self,
-        id: str,
+        clip_id: str,
         url: str,
         embed_url: str,
         broadcaster_id: str,
@@ -176,7 +176,7 @@ Precision is 0.1</dd>
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that uniquely identifies the clip
+            clip_id (str): An ID that uniquely identifies the clip
             url (str): A URL to the clip
             embed_url (str): A URL that you can use in an iframe to embed the clip
             broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
@@ -196,7 +196,7 @@ Precision is 0.1</dd>
             is_featured (bool): A Boolean value that indicates if the clip is featured or not
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = clip_id
         self.url = url
         self.embed_url = embed_url
         self.broadcaster_id = broadcaster_id

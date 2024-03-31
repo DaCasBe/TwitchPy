@@ -5,7 +5,7 @@ class CharityCampaignDonation:
 
     def __init__(
         self,
-        id: str,
+        donation_id: str,
         campaign_id: str,
         user_id: str,
         user_login: str,
@@ -16,7 +16,7 @@ class CharityCampaignDonation:
         The function initializes an object with the given parameters.
 
         Args:
-            id (str): An ID that identifies the donation
+            donation_id (str): An ID that identifies the donation
             campaign_id (str): An ID that identifies the charity campaign that the donation applies to
             user_id (str): An ID that identifies a user that donated money to the campaign
             user_login (str): The user’s login name
@@ -25,7 +25,7 @@ class CharityCampaignDonation:
         used.
         """
 
-        self.id = id
+        self.id = donation_id
         self.campaign_id = campaign_id
         self.user_id = user_id
         self.user_login = user_login

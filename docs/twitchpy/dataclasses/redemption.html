@@ -35,7 +35,7 @@
         self,
         broadcaster_name,
         broadcaster_id,
-        id,
+        redemption_id,
         user_id,
         user_name,
         user_input,
@@ -47,7 +47,7 @@
         Args:
             broadcaster_name (str): The display name of the broadcaster that the reward belongs to
             broadcaster_id (str): The id of the broadcaster that the reward belongs to
-            id (str): The ID of the redemption
+            redemption_id (str): The ID of the redemption
             user_id (str): The ID of the user that redeemed the reward
             user_name (str): The display name of the user that redeemed the reward
             user_input (str): The user input provided
@@ -58,7 +58,7 @@
 
         self.broadcaster_name = broadcaster_name
         self.broadcaster_id = broadcaster_id
-        self.id = id
+        self.id = redemption_id
         self.user_id = user_id
         self.user_name = user_name
         self.user_input = user_input
@@ -78,7 +78,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.redemption.Redemption"><code class="flex name class">
 <span>class <span class="ident">Redemption</span></span>
-<span>(</span><span>broadcaster_name, broadcaster_id, id, user_id, user_name, user_input, status, redeemed_at, reward)</span>
+<span>(</span><span>broadcaster_name, broadcaster_id, redemption_id, user_id, user_name, user_input, status, redeemed_at, reward)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a reward redemption</p>
@@ -88,7 +88,7 @@
 <dd>The display name of the broadcaster that the reward belongs to</dd>
 <dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The id of the broadcaster that the reward belongs to</dd>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>redemption_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The ID of the redemption</dd>
 <dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The ID of the user that redeemed the reward</dd>
@@ -116,7 +116,7 @@
         self,
         broadcaster_name,
         broadcaster_id,
-        id,
+        redemption_id,
         user_id,
         user_name,
         user_input,
@@ -128,7 +128,7 @@
         Args:
             broadcaster_name (str): The display name of the broadcaster that the reward belongs to
             broadcaster_id (str): The id of the broadcaster that the reward belongs to
-            id (str): The ID of the redemption
+            redemption_id (str): The ID of the redemption
             user_id (str): The ID of the user that redeemed the reward
             user_name (str): The display name of the user that redeemed the reward
             user_input (str): The user input provided
@@ -139,7 +139,7 @@
 
         self.broadcaster_name = broadcaster_name
         self.broadcaster_id = broadcaster_id
-        self.id = id
+        self.id = redemption_id
         self.user_id = user_id
         self.user_name = user_name
         self.user_input = user_input

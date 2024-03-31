@@ -42,7 +42,7 @@
         thumbnail_url,
         team_name,
         team_display_name,
-        id,
+        team_id,
     ):
         &#34;&#34;&#34;
         Args:
@@ -55,7 +55,7 @@
             thumbnail_url (str): Image URL for the team logo
             team_name (str): Team name
             team_display_name (str): Team display name
-            id (str): Team ID
+            team_id (str): Team ID
         &#34;&#34;&#34;
 
         self.users = users
@@ -67,7 +67,7 @@
         self.thumbnail_url = thumbnail_url
         self.team_name = team_name
         self.team_display_name = team_display_name
-        self.id = id</code></pre>
+        self.id = team_id</code></pre>
 </details>
 </section>
 <section>
@@ -81,7 +81,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.team.Team"><code class="flex name class">
 <span>class <span class="ident">Team</span></span>
-<span>(</span><span>users, background_image_url, banner, created_at, updated_at, info, thumbnail_url, team_name, team_display_name, id)</span>
+<span>(</span><span>users, background_image_url, banner, created_at, updated_at, info, thumbnail_url, team_name, team_display_name, team_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a team</p>
@@ -105,7 +105,7 @@
 <dd>Team name</dd>
 <dt><strong><code>team_display_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>Team display name</dd>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>team_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>Team ID</dd>
 </dl></div>
 <details class="source">
@@ -128,7 +128,7 @@
         thumbnail_url,
         team_name,
         team_display_name,
-        id,
+        team_id,
     ):
         &#34;&#34;&#34;
         Args:
@@ -141,7 +141,7 @@
             thumbnail_url (str): Image URL for the team logo
             team_name (str): Team name
             team_display_name (str): Team display name
-            id (str): Team ID
+            team_id (str): Team ID
         &#34;&#34;&#34;
 
         self.users = users
@@ -153,7 +153,7 @@
         self.thumbnail_url = thumbnail_url
         self.team_name = team_name
         self.team_display_name = team_display_name
-        self.id = id</code></pre>
+        self.id = team_id</code></pre>
 </details>
 </dd>
 </dl>

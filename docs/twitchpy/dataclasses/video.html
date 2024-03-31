@@ -33,7 +33,7 @@
 
     def __init__(
         self,
-        id,
+        video_id,
         user_id,
         user_name,
         title,
@@ -45,7 +45,7 @@
         viewable,
         view_count,
         language,
-        type,
+        video_type,
         duration,
     ):
         &#34;&#34;&#34;
@@ -66,7 +66,7 @@
             duration (str): Duration of the video
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = video_id
         self.user_id = user_id
         self.user_name = user_name
         self.title = title
@@ -78,7 +78,7 @@
         self.viewable = viewable
         self.view_count = view_count
         self.language = language
-        self.type = type
+        self.type = video_type
         self.duration = duration</code></pre>
 </details>
 </section>
@@ -93,7 +93,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.video.Video"><code class="flex name class">
 <span>class <span class="ident">Video</span></span>
-<span>(</span><span>id, user_id, user_name, title, description, created_at, published_at, url, thumbnail_url, viewable, view_count, language, type, duration)</span>
+<span>(</span><span>video_id, user_id, user_name, title, description, created_at, published_at, url, thumbnail_url, viewable, view_count, language, video_type, duration)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a video</p>
@@ -139,7 +139,7 @@
 
     def __init__(
         self,
-        id,
+        video_id,
         user_id,
         user_name,
         title,
@@ -151,7 +151,7 @@
         viewable,
         view_count,
         language,
-        type,
+        video_type,
         duration,
     ):
         &#34;&#34;&#34;
@@ -172,7 +172,7 @@
             duration (str): Duration of the video
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = video_id
         self.user_id = user_id
         self.user_name = user_name
         self.title = title
@@ -184,7 +184,7 @@
         self.viewable = viewable
         self.view_count = view_count
         self.language = language
-        self.type = type
+        self.type = video_type
         self.duration = duration</code></pre>
 </details>
 </dd>

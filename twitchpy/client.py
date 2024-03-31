@@ -47,6 +47,8 @@ URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
 ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
 ENDPOINT_CONDUITS = "https://api.twitch.tv/helix/eventsub/conduits"
 
+DEFAULT_TIMEOUT = 10
+
 
 class Client:
     """
@@ -97,7 +99,7 @@ class Client:
             "grant_type": "client_credentials",
         }
 
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["access_token"]
@@ -106,13 +108,8 @@ class Client:
             raise errors.AppTokenError("Error obtaining app token")
 
     def __is_last_code_used(self, code):
-        try:
-            tokens_file = open(self.tokens_path)
+        with open(self.tokens_path, encoding="UTF-8") as tokens_file:
             tokens = tokens_file.readlines()
-            tokens_file.close()
-
-        except Exception:
-            return False
 
         for token in tokens:
             token = token.replace(" ", "").replace("\n", "")
@@ -125,7 +122,7 @@ class Client:
 
     def __read_user_tokens_from_file(self, file):
         try:
-            secret_file = open(file, "rt")
+            secret_file = open(file, "rt", encoding="UTF-8")
             data = secret_file.readlines()
             secret_file.close()
 
@@ -136,8 +133,8 @@ class Client:
         user_token = ""
         refresh_user_token = ""
 
-        for i in range(len(data)):
-            secret = data[i].split("=")
+        for token in data:
+            secret = token.split("=")
 
             if "USER_TOKEN" == secret[0]:
                 user_token = secret[1].replace("\n", "")
@@ -150,7 +147,7 @@ class Client:
     def __save_user_tokens_in_file(self, file, user_token, user_refresh_token, code):
         data = f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={code}"
 
-        secret_file = open(file, "wt")
+        secret_file = open(file, "wt", encoding="UTF-8")
         secret_file.write(data)
         secret_file.close()
 
@@ -164,7 +161,7 @@ class Client:
             "redirect_uri": self.redirect_uri,
         }
 
-        response = requests.post(url, payload)
+        response = requests.post(url, payload, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             response = response.json()
@@ -186,7 +183,7 @@ class Client:
             "client_secret": self.client_secret,
         }
 
-        response = requests.post(url, json=payload)
+        response = requests.post(url, json=payload, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             response = response.json()
@@ -240,7 +237,9 @@ class Client:
         }
         payload = {"broadcaster_id": broadcaster_id, "length": length}
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             response = response.json()
@@ -270,7 +269,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -299,7 +300,9 @@ class Client:
         }
         payload = {"broadcaster_id": broadcaster_id}
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -308,7 +311,7 @@ class Client:
             raise errors.ClientError(response.json()["message"])
 
     def get_extension_analytics(
-        self, ended_at="", extension_id="", first=20, started_at="", type=""
+        self, ended_at="", extension_id="", first=20, started_at="", report_type=""
     ):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
@@ -323,7 +326,7 @@ class Client:
             started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                                         This must be on or after January 31, 2018
                                         If this is provided, ended_at also must be specified
-            type (str, optional): Type of analytics report that is returned
+            report_type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
         Raises:
@@ -349,8 +352,8 @@ class Client:
         if started_at != "":
             params["started_at"] = started_at
 
-        if type != "":
-            params["type"] = type
+        if report_type != "":
+            params["type"] = report_type
 
         after = ""
         calls = math.ceil(first / 100)
@@ -362,7 +365,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -377,7 +382,7 @@ class Client:
         return extension_analytics
 
     def get_game_analytics(
-        self, ended_at="", first=20, game_id="", started_at="", type=""
+        self, ended_at="", first=20, game_id="", started_at="", report_type=""
     ):
         """
         Gets a URL that game developers can use to download analytics reports for their games
@@ -391,7 +396,7 @@ class Client:
             game_id (str, optional): Game ID
             started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                                         If this is provided, ended_at also must be specified
-            type (str, optional): Type of analytics report that is returned
+            report_type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
         Raises:
@@ -417,8 +422,8 @@ class Client:
         if started_at != "":
             params["started_at"] = started_at
 
-        if type != "":
-            params["type"] = type
+        if report_type != "":
+            params["type"] = report_type
 
         after = ""
         calls = math.ceil(first / 100)
@@ -430,7 +435,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -488,7 +495,9 @@ class Client:
         if user_id != "":
             params["user_id"] = user_id
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -521,7 +530,9 @@ class Client:
         if broadcaster_id != "":
             params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -529,14 +540,14 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_extension_transactions(self, extension_id, id=[], first=20):
+    def get_extension_transactions(self, extension_id, transaction_ids=None, first=20):
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
             extension_id (str): ID of the extension to list transactions for
-            id (list, optional): Transaction IDs to look up
+            transaction_ids (list, optional): Transaction IDs to look up
                                  Maximum: 100
             first (int, optional): Maximum number of objects to return
                                    Default: 20
@@ -555,8 +566,8 @@ class Client:
         }
         params = {"extension_id": extension_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if transaction_ids is not None and len(transaction_ids) > 0:
+            params["id"] = transaction_ids
 
         if first != 20:
             params["first"] = first
@@ -575,7 +586,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -611,7 +624,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             channel = response.json()["data"][0]
@@ -641,8 +656,8 @@ class Client:
         broadcaster_language: str = None,
         title: str = None,
         delay: int = None,
-        tags: list[str] = [],
-        content_classification_labels: list[dict] = [],
+        tags: list[str] = None,
+        content_classification_labels: list[dict] = None,
         is_branded_content: bool = None,
     ):
         """
@@ -684,16 +699,19 @@ class Client:
         if delay is not None:
             data["delay"] = delay
 
-        if len(tags) > 0:
+        if tags is not None and len(tags) > 0:
             data["tags"] = tags
 
-        if len(content_classification_labels) > 0:
+        if (
+            content_classification_labels is not None
+            and len(content_classification_labels) > 0
+        ):
             data["content_classification_labels"] = content_classification_labels
 
         if is_branded_content is not None:
             data["is_branded_content"] = is_branded_content
 
-        requests.patch(url, headers=headers, data=data)
+        requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_channel_editors(self, broadcaster_id):
         """
@@ -716,7 +734,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             ids = []
@@ -724,7 +744,7 @@ class Client:
             for user in response.json()["data"]:
                 ids.append(user["user_id"])
 
-            users = self.get_users(id=ids)
+            users = self.get_users(user_ids=ids)
 
             return users
 
@@ -774,7 +794,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -836,7 +858,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -952,7 +976,9 @@ class Client:
                 should_redemptions_skip_request_queue
             )
 
-        response = requests.post(url, headers=headers, params=params)
+        response = requests.post(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             reward = response.json()["data"][0]
@@ -989,7 +1015,7 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def delete_custom_reward(self, broadcaster_id, id):
+    def delete_custom_reward(self, broadcaster_id, reward_id):
         """
         Deletes a Custom Reward on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the OAuth token in order to be deleted
@@ -997,7 +1023,7 @@ class Client:
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Custom Reward to delete
+            reward_id (str): ID of the Custom Reward to delete
                       Must match a Custom Reward on broadcaster_id’s channel
         """
 
@@ -1006,17 +1032,19 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id}
+        data = {"broadcaster_id": broadcaster_id, "id": reward_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
-    def get_custom_reward(self, broadcaster_id, id=[], only_manageable_rewards=False):
+    def get_custom_reward(
+        self, broadcaster_id, reward_ids=None, only_manageable_rewards=False
+    ):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+            reward_ids (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
                                 Maximum: 50
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
                                                       Default: false
@@ -1035,13 +1063,15 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if reward_ids is not None and len(reward_ids) > 0:
+            params["id"] = reward_ids
 
         if only_manageable_rewards is not False:
             params["only_manageable_rewards"] = only_manageable_rewards
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             rewards = []
@@ -1083,7 +1113,13 @@ class Client:
             raise errors.ClientError(response.json()["message"])
 
     def get_custom_reward_redemption(
-        self, broadcaster_id, reward_id, id=[], status="", sort="OLDEST", first=20
+        self,
+        broadcaster_id,
+        reward_id,
+        redemption_ids=None,
+        status="",
+        sort="OLDEST",
+        first=20,
     ):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
@@ -1092,7 +1128,7 @@ class Client:
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
-            id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+            redemption_ids (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
                                 Maximum: 50
             status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                                     Can be one of UNFULFILLED, FULFILLED or CANCELED
@@ -1116,8 +1152,8 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "reward_id": reward_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if redemption_ids is not None and len(redemption_ids) > 0:
+            params["id"] = redemption_ids
 
         if status != "":
             params["status"] = status
@@ -1135,7 +1171,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 for redemption in response.json()["data"]:
@@ -1169,7 +1207,7 @@ class Client:
     def update_custom_reward(
         self,
         broadcaster_id,
-        id,
+        reward_id,
         title="",
         prompt="",
         cost=None,
@@ -1191,7 +1229,7 @@ class Client:
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Custom Reward to update
+            reward_id (str): ID of the Custom Reward to update
                       Must match a Custom Reward on the channel of the broadcaster_id
             title (str, optional): The title of the reward
             prompt (str, optional): The prompt for the viewer when they are redeeming the reward
@@ -1226,7 +1264,7 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id}
+        data = {"broadcaster_id": broadcaster_id, "id": reward_id}
 
         if title != "":
             data["title"] = title
@@ -1274,7 +1312,9 @@ class Client:
                 should_redemptions_skip_request_queue
             )
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             reward = response.json()["data"]
@@ -1311,13 +1351,15 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def update_redemption_status(self, id, broadcaster_id, reward_id, status=""):
+    def update_redemption_status(
+        self, redemption_id, broadcaster_id, reward_id, status=""
+    ):
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
 
         Args:
-            id (list): ID of the Custom Reward Redemption to update
+            redemption_id (list): ID of the Custom Reward Redemption to update
                       Must match a Custom Reward Redemption on broadcaster_id’s channel
                       Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
@@ -1338,12 +1380,18 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"id": id, "broadcaster_id": broadcaster_id, "reward_id": reward_id}
+        data = {
+            "id": redemption_id,
+            "broadcaster_id": broadcaster_id,
+            "reward_id": reward_id,
+        }
 
         if status != "":
             data["status"] = status
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             redemption = response.json()["data"][0]
@@ -1394,7 +1442,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return CharityCampaign(
@@ -1450,7 +1500,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -1514,7 +1566,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -1553,7 +1607,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             emotes = []
@@ -1596,7 +1652,7 @@ class Client:
             "Client-Id": self.client_id,
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             emotes = []
@@ -1640,7 +1696,9 @@ class Client:
         }
         params = {"emote_set_id": emote_set_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             emotes = []
@@ -1687,7 +1745,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             badges = []
@@ -1717,7 +1777,7 @@ class Client:
             "Client-Id": self.client_id,
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             badges = []
@@ -1755,7 +1815,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -1857,7 +1919,9 @@ class Client:
         if unique_chat_mode is not None:
             data["unique_chat_mode"] = unique_chat_mode
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -1897,7 +1961,7 @@ class Client:
         if color != "":
             payload["color"] = color
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def send_a_shoutout(
         self, from_broadcaster_id: str, to_broadcaster_id: str, moderator_id: str
@@ -1923,7 +1987,7 @@ class Client:
             "moderator_id": moderator_id,
         }
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def get_user_chat_color(self, user_id: str | list[str]) -> list[dict]:
         """
@@ -1947,7 +2011,9 @@ class Client:
         }
         params = {"user_id": user_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -1974,7 +2040,7 @@ class Client:
         }
         data = {"user_id": user_id, "color": color}
 
-        requests.put(url, headers=headers, data=data)
+        requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def create_clip(self, broadcaster_id, has_delay=False):
         """
@@ -2002,7 +2068,9 @@ class Client:
         if has_delay is not False:
             payload["has_delay"] = has_delay
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -2014,7 +2082,7 @@ class Client:
         self,
         broadcaster_id: str = "",
         game_id: str = "",
-        id: list[str] = [],
+        clip_ids: list[str] = None,
         started_at: str = "",
         ended_at: str = "",
         first: int = 20,
@@ -2027,7 +2095,7 @@ class Client:
         Args:
             broadcaster_id (str): An ID that identifies the broadcaster whose video clips you want to get
             game_id (str): An ID that identifies the game whose clips you want to get
-            id (list[str]): An ID that identifies the clip to get
+            clip_ids (list[str]): An ID that identifies the clip to get
             started_at (str): The start date used to filter clips
             ended_at (str): The end date used to filter clips
             first (int): The maximum number of clips to return
@@ -2054,8 +2122,8 @@ class Client:
         if game_id != "":
             params["game_id"] = game_id
 
-        if len(id) > 0:
-            params["id"] = id
+        if clip_ids is not None and len(clip_ids) > 0:
+            params["id"] = clip_ids
 
         if started_at != "":
             params["started_at"] = started_at
@@ -2076,7 +2144,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -2129,7 +2199,7 @@ class Client:
             "Client-Id": self.client_id,
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["data"]
@@ -2159,7 +2229,9 @@ class Client:
         }
         payload = {"shard_count", shard_count}
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -2167,13 +2239,13 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def update_conduits(self, id: str, shard_count: int) -> dict:
+    def update_conduits(self, conduit_id: str, shard_count: int) -> dict:
         """
         Updates a conduit’s shard count
         To delete shards, update the count to a lower number, and the shards above the count will be deleted
 
         Args:
-            id (str): Conduit ID
+            conduit_id (str): Conduit ID
             shard_count (int): The new number of shards for this conduit
 
         Raises:
@@ -2189,9 +2261,11 @@ class Client:
             "Client-Id": self.client_id,
             "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
         }
-        data = {"id": id, "shard_count": shard_count}
+        data = {"id": conduit_id, "shard_count": shard_count}
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -2199,12 +2273,12 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def delete_conduit(self, id: str) -> None:
+    def delete_conduit(self, conduit_id: str) -> None:
         """
         Deletes a specified conduit
 
         Args:
-            id (str): Conduit ID
+            conduit_id (str): Conduit ID
 
         Raises:
             errors.ClientError
@@ -2215,9 +2289,11 @@ class Client:
             "Authorization": f"Bearer {self.__app_token}",
             "Client-Id": self.client_id,
         }
-        data = {"id": id}
+        data = {"id": conduit_id}
 
-        response = requests.delete(url, headers=headers, data=data)
+        response = requests.delete(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if not response.ok:
             raise errors.ClientError(response.json()["message"])
@@ -2247,7 +2323,9 @@ class Client:
         if status != "":
             params["status"] = status
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         conduit_shards = []
 
@@ -2255,7 +2333,9 @@ class Client:
             conduit_shards.append(response.json()["data"])
             params["after"] = response.json()["pagination"]["cursor"]
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
         if not response.ok:
             raise errors.ClientError(response.json()["message"])
@@ -2292,7 +2372,9 @@ class Client:
         if session_id != "":
             data["session_id"] = session_id
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -2325,7 +2407,9 @@ class Client:
         if locale != "en-US":
             params["locale"] = locale
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -2334,13 +2418,13 @@ class Client:
             raise errors.ClientError(response.json()["message"])
 
     def get_drops_entitlements(
-        self, id="", user_id="", game_id="", fulfillment_status="", first=20
+        self, entitlement_id="", user_id="", game_id="", fulfillment_status="", first=20
     ):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
         Args:
-            id (str, optional): ID of the entitlement
+            entitlement_id (str, optional): ID of the entitlement
             user_id (str, optional): A Twitch User ID
             game_id (str, optional): A Twitch Game ID
             fulfillment_status (str, optional): An optional fulfillment status used to filter entitlements
@@ -2362,8 +2446,8 @@ class Client:
         }
         params = {}
 
-        if id != "":
-            params["id"] = id
+        if entitlement_id != "":
+            params["id"] = entitlement_id
 
         if user_id != "":
             params["user_id"] = user_id
@@ -2384,7 +2468,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -2398,7 +2484,7 @@ class Client:
 
         return drops_entitlements
 
-    def update_drops_entitlements(self, entitlement_ids=[], fulfillment_status=""):
+    def update_drops_entitlements(self, entitlement_ids=None, fulfillment_status=""):
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
@@ -2423,13 +2509,15 @@ class Client:
         }
         data = {}
 
-        if len(entitlement_ids) > 0:
+        if entitlement_ids is not None and len(entitlement_ids) > 0:
             data["entitlement_ids"] = entitlement_ids
 
         if fulfillment_status != "":
             data["fulfillment_status"] = fulfillment_status
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -2470,7 +2558,9 @@ class Client:
             "segment": segment,
         }
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -2512,7 +2602,7 @@ class Client:
         if version != "":
             data["version"] = version
 
-        requests.put(url, headers=headers, data=data)
+        requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def set_extension_required_configuration(
         self, broadcaster_id, extension_id, extension_version, configuration_version
@@ -2539,7 +2629,7 @@ class Client:
             "configuration_version": configuration_version,
         }
 
-        requests.put(url, headers=headers, data=data)
+        requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def send_extension_pubsub_message(
         self, target, broadcaster_id, is_global_broadcast, message
@@ -2568,7 +2658,7 @@ class Client:
             "message": message,
         }
 
-        requests.post(url, headers=headers, data=data)
+        requests.post(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_extension_live_channels(self, extension_id, first=20):
         """
@@ -2604,7 +2694,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -2638,7 +2730,7 @@ class Client:
             "Client-Id": self.client_id,
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["data"]
@@ -2673,7 +2765,9 @@ class Client:
         if delay != 300:
             payload["delay"] = delay
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -2710,7 +2804,7 @@ class Client:
             "extension_version": extension_version,
         }
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def get_extensions(self, extension_id, extension_version=""):
         """
@@ -2738,7 +2832,9 @@ class Client:
         if extension_version != "":
             params["extension_version"] = extension_version
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             extensions = []
@@ -2803,7 +2899,9 @@ class Client:
         if extension_version != "":
             params["extension_version"] = extension_version
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             extensions = []
@@ -2870,7 +2968,9 @@ class Client:
         if should_include_all is not False:
             params["should_include_all"] = should_include_all
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -2931,7 +3031,9 @@ class Client:
         if is_broadcast is not False:
             data["is_broadcast"] = is_broadcast
 
-        response = requests.put(url, headers=headers, data=data)
+        response = requests.put(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -2939,12 +3041,14 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def create_eventsub_subscription(self, type, version, condition, transport):
+    def create_eventsub_subscription(
+        self, subscription_type, version, condition, transport
+    ):
         """
         Creates an EventSub subscription
 
         Args:
-            type (str): The category of the subscription that is being created
+            subscription_type (str): The category of the subscription that is being created
                         Valid values: "channel.update", "channel.follow", "channel.subscribe", "channel.subscription.end", "channel.subscription.gift","channel.subscription.message", "channel.cheer", "channel.raid", "channel.ban", "channel.unban", "channel.moderator.add", "channel.moderator.remove", "channel.channel_points_custom_reward.add", "channel.channel_points_custom_reward.update", "channel.channel_points_custom_reward.remove", "channel.channel_points_custom_reward_redemption.add", "channel.channel_points_custom_reward_redemption.update", "channel.poll.begin", "channel.poll.progress", "channel.poll.end", "channel.prediction.begin", "channel.prediction.progress", "channel.prediction.lock", "channel.prediction.end", "drop.entitlement.grant", "extension.bits_transaction.create", "channel.hype_train.begin", "channel.hype_train.progress", "channel.hype_train.end", "stream.online", "stream.offline", "user.authorization.grant", "user.authorization.revoke", "user.update"
             version (str): The version of the subscription type that is being created
                            Each subscription type has independent versioning
@@ -2967,13 +3071,15 @@ class Client:
             "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
         }
         payload = {
-            "type": type,
+            "type": subscription_type,
             "version": version,
             "condition": condition,
             "transport": transport,
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             subscription = response.json()["data"][0]
@@ -2993,12 +3099,12 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def delete_eventsub_subscription(self, id):
+    def delete_eventsub_subscription(self, subscription_id):
         """
         Delete an EventSub subscription
 
         Args:
-            id (str): The subscription ID for the subscription to delete
+            subscription_id (str): The subscription ID for the subscription to delete
         """
 
         url = ENDPOINT_EVENTSUB_SUBSCRIPTION
@@ -3006,12 +3112,12 @@ class Client:
             "Authorization": f"Bearer {self.__app_token}",
             "Client-Id": self.client_id,
         }
-        data = {"id": id}
+        data = {"id": subscription_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_eventsub_subscriptions(
-        self, status: str = "", type: str = "", user_id: str = ""
+        self, status: str = "", subscription_type: str = "", user_id: str = ""
     ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
@@ -3020,7 +3126,7 @@ class Client:
         Args:
             status (str, optional): Filters subscriptions by one status type
                 Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "moderator_removed", "user_removed", "version_removed", "websocket_disconnected", "websocket_failed_ping_pong", "websocket_received_inbound_traffic", "websocket_connection_unused", "websocket_internal_error", "websocket_network_timeout", "websocket_network_error"
-            type (str, optional): Filters subscriptions by subscription type name
+            subscription_type (str, optional): Filters subscriptions by subscription type name
             user_id (str, optional): Filter subscriptions by user ID
 
         Raises:
@@ -3040,13 +3146,15 @@ class Client:
         if status != "":
             params["status"] = status
 
-        if type != "":
-            params["type"] = type
+        if subscription_type != "":
+            params["type"] = subscription_type
 
         if user_id != "":
             params["user_id"] = user_id
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             subscriptions = []
@@ -3102,7 +3210,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -3126,13 +3236,16 @@ class Client:
         return games
 
     def get_games(
-        self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []
+        self,
+        game_id: list[str] = None,
+        name: list[str] = None,
+        igdb_id: list[str] = None,
     ) -> list[Game]:
         """
         Gets information about specified categories or games
 
         Args:
-            id (list[str]): The ID of the category or game to get
+            game_id (list[str]): The ID of the category or game to get
                 Maximum: 100
             name (list[str]): The name of the category or game to get
                 Maximum: 100
@@ -3153,16 +3266,18 @@ class Client:
         }
         params = {}
 
-        if len(id) > 0:
-            params["id"] = id
+        if game_id is not None and len(game_id) > 0:
+            params["id"] = game_id
 
-        if len(name) > 0:
+        if name is not None and len(name) > 0:
             params["name"] = name
 
-        if len(igdb_id) > 0:
+        if igdb_id is not None and len(igdb_id) > 0:
             params["igdb_id"] = igdb_id
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             games = []
@@ -3199,7 +3314,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -3232,7 +3349,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -3285,7 +3404,7 @@ class Client:
         if regenerate_browser_sources is not None:
             data["regenerate_browser_sources"] = regenerate_browser_sources
 
-        requests.put(url, headers=headers, json=data)
+        requests.put(url, headers=headers, json=data, timeout=DEFAULT_TIMEOUT)
 
     def get_guest_star_session(
         self, broadcaster_id: str, moderator_id: str
@@ -3312,7 +3431,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             response = response.json()["data"][0]
@@ -3344,7 +3465,9 @@ class Client:
         }
         payload = {"broadcaster_id": broadcaster_id}
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             response = response.json()["data"][0]
@@ -3379,7 +3502,9 @@ class Client:
         }
         data = {"broadcaster_id": broadcaster_id, "session_id": session_id}
 
-        response = requests.delete(url, headers=headers, data=data)
+        response = requests.delete(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             response = response.json()["data"][0]
@@ -3419,7 +3544,9 @@ class Client:
             "session_id": session_id,
         }
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -3453,7 +3580,7 @@ class Client:
             "guest_id": guest_id,
         }
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def delete_guest_star_invite(
         self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
@@ -3481,7 +3608,7 @@ class Client:
             "guest_id": guest_id,
         }
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def assign_guest_star_slot(
         self,
@@ -3517,7 +3644,7 @@ class Client:
             "slot_id": slot_id,
         }
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def update_guest_star_slot(
         self,
@@ -3555,7 +3682,7 @@ class Client:
         if destination_slot_id != "":
             data["destination_slot_id"] = destination_slot_id
 
-        requests.patch(url, headers=headers, data=data)
+        requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def delete_guest_star_slot(
         self,
@@ -3595,7 +3722,7 @@ class Client:
         if should_reinvite_guest != "":
             data["should_reinvite_guest"] = should_reinvite_guest
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def update_guest_star_slot_settings(
         self,
@@ -3647,7 +3774,7 @@ class Client:
         if volume is not None:
             data["volume"] = volume
 
-        requests.patch(url, headers=headers, data=data)
+        requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_hype_train_events(
         self, broadcaster_id: str, first: int = 1
@@ -3688,7 +3815,9 @@ class Client:
             if cursor != "":
                 params["cursor"] = cursor
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -3740,7 +3869,9 @@ class Client:
             "data": [{"msg_id": msg_id, "msg_user": msg_user}],
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -3767,7 +3898,7 @@ class Client:
         }
         payload = {"user_id": user_id, "msg_id": msg_id, "action": action}
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def get_automod_settings(self, broadcaster_id, moderator_id):
         """
@@ -3793,7 +3924,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -3875,7 +4008,9 @@ class Client:
         if swearing is not None:
             data["swearing"] = swearing
 
-        response = requests.put(url, headers=headers, json=data)
+        response = requests.put(
+            url, headers=headers, json=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -3883,7 +4018,7 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_banned_users(self, broadcaster_id, user_id=[], first=20):
+    def get_banned_users(self, broadcaster_id, user_id=None, first=20):
         """
         Returns all banned and timed-out users in a channel
 
@@ -3908,7 +4043,7 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id) > 0:
+        if user_id is not None and len(user_id) > 0:
             params["user_id"] = user_id
 
         if first != 20:
@@ -3928,7 +4063,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -3982,7 +4119,9 @@ class Client:
 
         payload["data"] = data
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -4016,7 +4155,7 @@ class Client:
             "user_id": user_id,
         }
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_blocked_terms(self, broadcaster_id, moderator_id, first=20):
         """
@@ -4063,7 +4202,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4111,7 +4252,9 @@ class Client:
             "text": text,
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -4119,13 +4262,13 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def remove_blocked_term(self, broadcaster_id, id, moderator_id):
+    def remove_blocked_term(self, broadcaster_id, blocked_term_id, moderator_id):
         """
         Removes the word or phrase that the broadcaster is blocking users from using in their chat room
 
         Args:
             broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
-            id (str): The ID of the blocked term you want to delete
+            blocked_term_id (str): The ID of the blocked term you want to delete
             moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
                                 This ID must match the user ID associated with the user OAuth token
                                 If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
@@ -4138,11 +4281,11 @@ class Client:
         }
         data = {
             "broadcaster_id": broadcaster_id,
-            "id": id,
+            "id": blocked_term_id,
             "moderator_id": moderator_id,
         }
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def delete_chat_messages(
         self, broadcaster_id: str, moderator_id: str, message_id: str = ""
@@ -4168,9 +4311,9 @@ class Client:
         if message_id != "":
             data["message_id"] = message_id
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
-    def get_moderators(self, broadcaster_id, user_id=[], first=20):
+    def get_moderators(self, broadcaster_id, user_id=None, first=20):
         """
         Returns all moderators in a channel
 
@@ -4195,7 +4338,7 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id) > 0:
+        if user_id is not None and len(user_id) > 0:
             params["user_id"] = user_id
 
         after = ""
@@ -4208,7 +4351,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4222,7 +4367,7 @@ class Client:
             else:
                 raise errors.ClientError(response.json()["message"])
 
-        return self.get_users(id=ids)
+        return self.get_users(user_ids=ids)
 
     def add_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
         """
@@ -4241,7 +4386,7 @@ class Client:
         }
         payload = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def remove_channel_moderator(self, broadcaster_id: str, user_id: str) -> None:
         """
@@ -4260,10 +4405,10 @@ class Client:
         }
         data = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_vips(
-        self, broadcaster_id: str, user_id: list[str] = [], first: int = 20
+        self, broadcaster_id: str, user_id: list[str] = None, first: int = 20
     ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
@@ -4291,7 +4436,7 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id) > 0:
+        if user_id is not None and len(user_id) > 0:
             params["user_id"] = user_id
 
         after = ""
@@ -4304,7 +4449,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4312,7 +4459,7 @@ class Client:
                 if response["data"] is not None:
                     users.append(
                         self.get_users(
-                            id=[user["user_id"] for user in response["data"]]
+                            user_ids=[user["user_id"] for user in response["data"]]
                         )
                     )
 
@@ -4341,7 +4488,7 @@ class Client:
         }
         payload = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def remove_channel_vip(self, user_id: str, broadcaster_id: str) -> None:
         """
@@ -4359,7 +4506,7 @@ class Client:
         }
         data = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def update_shield_mode_status(
         self, broadcaster_id: str, moderator_id: str, is_active: bool
@@ -4392,13 +4539,15 @@ class Client:
             "is_active": is_active,
         }
 
-        response = requests.put(url, headers=headers, data=data)
+        response = requests.put(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
 
         else:
-            errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
         """
@@ -4423,32 +4572,36 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
 
         else:
-            errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
-    def get_polls(self, broadcaster_id, id=[], first=20):
+    def get_polls(
+        self, broadcaster_id: str, poll_ids: list[str] = None, first: int = 20
+    ) -> list[Poll]:
         """
-        Get information about all polls or specific polls for a Twitch channel
-        Poll information is available for 90 days
+        Gets a list of polls that the broadcaster created
+        Polls are available for 90 days after they’re created
 
         Args:
-            broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
-            id (list, optional): ID of a poll
-                                 Maximum: 100
-            first (int, optional): Maximum number of objects to return
-                                   Default: 20
+            broadcaster_id (str): The ID of the broadcaster that created the polls
+                This ID must match the user ID in the user access token
+            poll_ids (list[str]): A list of IDs that identify the polls to return
+                Maximum: 20
+            first (int): The maximum number of items to return per page in the response
+                Default: 20
 
         Raises:
             errors.ClientError
 
         Returns:
-            list
+            list[Poll]
         """
 
         url = ENDPOINT_POLLS
@@ -4458,8 +4611,8 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if poll_ids is not None and len(poll_ids) > 0:
+            params["id"] = poll_ids
 
         after = ""
         calls = math.ceil(first / 20)
@@ -4471,7 +4624,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4486,8 +4641,6 @@ class Client:
                                 poll["broadcaster_login"],
                                 poll["title"],
                                 poll["choices"],
-                                poll["bits_voting_enabled"],
-                                poll["bits_per_vote"],
                                 poll["channel_points_voting_enabled"],
                                 poll["channel_points_per_vote"],
                                 poll["status"],
@@ -4565,7 +4718,9 @@ class Client:
         if channel_points_per_vote != 0:
             payload["channel_points_per_vote"] = channel_points_per_vote
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             poll = response.json()["data"][0]
@@ -4588,16 +4743,17 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def end_poll(self, broadcaster_id, id, status):
+    def end_poll(self, broadcaster_id: str, poll_id: str, status: str) -> Poll:
         """
-        End a poll that is currently active
+        Ends an active poll
+        You have the option to end it or end it and archive it
 
         Args:
-            broadcaster_id (str): The broadcaster running polls
-                                  Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the poll
-            status (str): The poll status to be set
-                          Valid values: "TERMINATED", "ARCHIVED"
+            broadcaster_id (str): The ID of the broadcaster that’s running the poll
+                This ID must match the user ID in the user access token
+            poll_id (str): The ID of the poll to update
+            status (str): The status to set the poll to
+                Valid values: "TERMINATED", "ARCHIVED"
 
         Raises:
             errors.ClientError
@@ -4611,9 +4767,11 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id, "status": status}
+        data = {"broadcaster_id": broadcaster_id, "id": poll_id, "status": status}
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             poll = response.json()["data"][0]
@@ -4624,8 +4782,6 @@ class Client:
                 poll["broadcaster_login"],
                 poll["title"],
                 poll["choices"],
-                poll["bits_voting_enabled"],
-                poll["bits_per_vote"],
                 poll["channel_points_voting_enabled"],
                 poll["channel_points_per_vote"],
                 poll["status"],
@@ -4638,14 +4794,14 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_predictions(self, broadcaster_id, id=[], first=20):
+    def get_predictions(self, broadcaster_id, prediction_ids=None, first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
         Args:
             broadcaster_id (str): The broadcaster running Predictions
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): ID of a Prediction
+            prediction_ids (str, optional): ID of a Prediction
                                 Maximum: 100
             first (int, optional): Maximum number of objects to return
                                    Default: 20
@@ -4664,8 +4820,8 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if prediction_ids is not None and len(prediction_ids) > 0:
+            params["id"] = prediction_ids
 
         after = ""
         calls = math.ceil(first / 20)
@@ -4677,7 +4833,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4756,7 +4914,9 @@ class Client:
 
         payload["outcomes"] = outcomes_payload
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             prediction = response.json()["data"][0]
@@ -4780,7 +4940,9 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def end_prediction(self, broadcaster_id, id, status, winning_outcome_id=""):
+    def end_prediction(
+        self, broadcaster_id, prediction_id, status, winning_outcome_id=""
+    ):
         """
         Lock, resolve, or cancel a Channel Points Prediction
         Active Predictions can be updated to be "locked", "resolved", or "canceled"
@@ -4789,7 +4951,7 @@ class Client:
         Args:
             broadcaster_id (str): The broadcaster running prediction events
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Prediction
+            prediction_id (str): ID of the Prediction
             status (str): The Prediction status to be set
                           Valid values: "RESOLVED", "CANCELED", "LOCKED"
             winning_outcome_id (str, optional): ID of the winning outcome for the Prediction
@@ -4807,12 +4969,14 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id, "status": status}
+        data = {"broadcaster_id": broadcaster_id, "id": prediction_id, "status": status}
 
         if winning_outcome_id != "":
             data["winning_outcome_id"] = winning_outcome_id
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             prediction = response.json()["data"][0]
@@ -4859,7 +5023,9 @@ class Client:
             "to_broadcaster_id": to_broadcaster_id,
         }
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -4883,10 +5049,15 @@ class Client:
         }
         data = {"broadcaster_id": broadcaster_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_channel_stream_schedule(
-        self, broadcaster_id, id=[], start_time="", utc_offset="0", first=20
+        self,
+        broadcaster_id,
+        stream_segment_id=None,
+        start_time="",
+        utc_offset="0",
+        first=20,
     ):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
@@ -4895,7 +5066,7 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): The ID of the stream segment to return
+            stream_segment_id (str, optional): The ID of the stream segment to return
                                 Maximum: 100
             start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
                                         If not specified, the current date and time is used
@@ -4918,8 +5089,8 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(id) > 0:
-            params["id"] = id
+        if stream_segment_id is not None and len(stream_segment_id) > 0:
+            params["id"] = stream_segment_id
 
         if start_time != "":
             params["start_time"] = start_time
@@ -4937,7 +5108,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -4975,7 +5148,7 @@ class Client:
         url = "https://api.twitch.tv/helix/schedule/icalendar"
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.text
@@ -5030,7 +5203,7 @@ class Client:
         if timezone != "":
             data["timezone"] = timezone
 
-        requests.patch(url, headers=headers, data=data)
+        requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def create_channel_stream_schedule_segment(
         self,
@@ -5085,7 +5258,9 @@ class Client:
         if title != "":
             payload["title"] = title
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             schedule = response.json()["data"][0]
@@ -5105,7 +5280,7 @@ class Client:
     def update_channel_stream_schedule_segment(
         self,
         broadcaster_id,
-        id,
+        stream_segment_id,
         start_time="",
         duration=240,
         category_id="",
@@ -5119,7 +5294,7 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): The ID of the streaming segment to update
+            stream_segment_id (str): The ID of the streaming segment to update
             start_time (str, optional): Start time for the scheduled broadcast specified in RFC3339 format
             duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
                                       Default: 240
@@ -5141,7 +5316,7 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id}
+        data = {"broadcaster_id": broadcaster_id, "id": stream_segment_id}
 
         if start_time != "":
             data["start_time"] = start_time
@@ -5161,7 +5336,9 @@ class Client:
         if timezone != "":
             data["timezone"] = timezone
 
-        response = requests.patch(url, headers=headers, data=data)
+        response = requests.patch(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             schedule = response.json()["data"][0]
@@ -5178,14 +5355,14 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def delete_channel_stream_schedule_segment(self, broadcaster_id, id):
+    def delete_channel_stream_schedule_segment(self, broadcaster_id, stream_segment_id):
         """
         Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): The ID of the streaming segment to delete
+            stream_segment_id (str): The ID of the streaming segment to delete
         """
 
         url = ENDPOINT_SCHEDULE_SEGMENT
@@ -5193,9 +5370,9 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"broadcaster_id": broadcaster_id, "id": id}
+        data = {"broadcaster_id": broadcaster_id, "id": stream_segment_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def search_categories(self, query, first=20):
         """
@@ -5230,7 +5407,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5258,7 +5437,7 @@ class Client:
         Args:
             query (str): The URI-encoded search string
             first (int): The maximum number of items to return
-                Minimum: 1
+                Default: 20
             live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
 
         Raises:
@@ -5288,7 +5467,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5299,10 +5480,11 @@ class Client:
                             channel["id"],
                             channel["broadcaster_login"],
                             channel["display_name"],
-                            channel["game_id"],
+                            channel["broadcaster_language"],
                             channel["game_name"],
+                            channel["game_id"],
                             channel["title"],
-                            broadcaster_language=channel["broadcaster_language"],
+                            channel["tags"],
                         )
                     )
 
@@ -5335,7 +5517,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]["stream_key"]
@@ -5348,7 +5532,7 @@ class Client:
         user_id: str | list[str] = "",
         user_login: str | list[str] = "",
         game_id: str | list[str] = "",
-        type: str = "all",
+        stream_type: str = "all",
         language: str | list[str] = "",
         first: int = 20,
     ) -> list[Stream]:
@@ -5363,7 +5547,7 @@ class Client:
                 Maximum: 100
             game_id (str | list[str]): A game (category) ID used to filter the list of streams
                 Maximum: 100
-            type (str): The type of stream to filter the list of streams by
+            stream_type (str): The type of stream to filter the list of streams by
                 Possible values: all, live
             language (str | list[str]): A language code used to filter the list of streams
                 Maximum: 100
@@ -5393,8 +5577,8 @@ class Client:
         if game_id != "":
             params["game_id"] = game_id
 
-        if type != "all":
-            params["type"] = type
+        if stream_type != "all":
+            params["type"] = stream_type
 
         if language != "":
             params["language"] = language
@@ -5409,7 +5593,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5476,7 +5662,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5538,7 +5726,9 @@ class Client:
         if description != "":
             payload["description"] = description
 
-        response = requests.post(url, headers=headers, json=payload)
+        response = requests.post(
+            url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -5589,7 +5779,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5603,7 +5795,7 @@ class Client:
 
         return markers
 
-    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=[], first=20):
+    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=None, first=20):
         """
         Get all of a broadcaster’s subscriptions
 
@@ -5629,7 +5821,7 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        if len(user_id) > 0:
+        if user_id is not None and len(user_id) > 0:
             params["user_id"] = user_id
 
         if first != 20:
@@ -5649,7 +5841,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5685,7 +5879,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"][0]
@@ -5693,7 +5889,7 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_all_stream_tags(self, first=20, tag_id=[]):
+    def get_all_stream_tags(self, first=20, tag_id=None):
         """
         Gets the list of all stream tags defined by Twitch
 
@@ -5716,7 +5912,7 @@ class Client:
         }
         params = {}
 
-        if len(tag_id) > 0:
+        if tag_id is not None and len(tag_id) > 0:
             params["tag_id"] = tag_id
 
         after = ""
@@ -5729,7 +5925,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -5773,7 +5971,9 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             response = response.json()
@@ -5815,27 +6015,29 @@ class Client:
         }
         params = {"broadcaster_id": broadcaster_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             teams = []
 
             for team in response.json()["data"]:
-                teams.append(self.get_teams(id=team["id"]))
+                teams.append(self.get_teams(team_id=team["id"]))
 
             return teams
 
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_teams(self, name="", id=""):
+    def get_teams(self, name="", team_id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
 
         Args:
             name (str, optional): Team name
-            id (str, optional): Team ID
+            team_id (str, optional): Team ID
 
         Raises:
             errors.ClientError
@@ -5854,10 +6056,12 @@ class Client:
         if name != "":
             params["name"] = name
 
-        if id != "":
-            params["id"] = id
+        if team_id != "":
+            params["id"] = team_id
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             team = response.json()["data"][0]
@@ -5886,14 +6090,14 @@ class Client:
         else:
             raise errors.ClientError(response.json()["message"])
 
-    def get_users(self, id=[], login=[]):
+    def get_users(self, user_ids=None, login=None):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
         If neither a user ID nor a login name is specified, the user is looked up by Bearer token
 
         Args:
-            id (list, optional): User ID
+            user_ids (list, optional): User ID
                                  Limit: 100
             login (list, optional): User login name
                                     Limit: 100
@@ -5912,18 +6116,17 @@ class Client:
         }
         params = {}
 
-        if len(id) > 0:
-            params["id"] = id
+        if user_ids is not None and len(user_ids) > 0:
+            params["id"] = user_ids
 
-        if len(login) > 0:
-            aux = []
+        if login is not None and len(login) > 0:
+            params["login"] = [
+                user_login.replace("@", "").lower() for user_login in login
+            ]
 
-            for i in range(len(login)):
-                aux.append(login[i].replace("@", "").lower())
-
-            params["login"] = aux
-
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             users = []
@@ -5973,7 +6176,9 @@ class Client:
         if description != "":
             data = {"description": description}
 
-        response = requests.put(url, headers=headers, data=data)
+        response = requests.put(
+            url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             user = response.json()["data"][0]
@@ -6034,7 +6239,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 for user in response.json()["data"]:
@@ -6043,7 +6250,7 @@ class Client:
             else:
                 raise errors.ClientError(response.json()["message"])
 
-        return self.get_users(id=ids)
+        return self.get_users(user_ids=ids)
 
     def block_user(self, target_user_id, source_context="", reason=""):
         """
@@ -6070,7 +6277,7 @@ class Client:
         if reason != "":
             data["reason"] = reason
 
-        requests.put(url, headers=headers, data=data)
+        requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def unblock_user(self, target_user_id):
         """
@@ -6087,7 +6294,7 @@ class Client:
         }
         data = {"target_user_id": target_user_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def get_user_extensions(self):
         """
@@ -6106,7 +6313,7 @@ class Client:
             "Client-Id": self.client_id,
         }
 
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["data"]
@@ -6138,7 +6345,9 @@ class Client:
         if user_id != "":
             params = {"user_id": user_id}
 
-        response = requests.get(url, headers=headers, params=params)
+        response = requests.get(
+            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+        )
 
         if response.ok:
             return response.json()["data"]
@@ -6165,7 +6374,7 @@ class Client:
             "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
         }
 
-        response = requests.put(url, headers=headers)
+        response = requests.put(url, headers=headers, timeout=DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["data"]
@@ -6175,21 +6384,21 @@ class Client:
 
     def get_videos(
         self,
-        id=[],
+        video_ids=None,
         user_id="",
         game_id="",
         first=20,
         language="",
         period="all",
         sort="time",
-        type="all",
+        video_type="all",
     ):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
 
         Args:
-            id (list): ID of the video being queried
+            video_ids (list): ID of the video being queried
                        Limit: 100
                        If this is specified, you cannot use first, language, period, sort and type
             user_id (str): ID of the user who owns the video
@@ -6203,7 +6412,7 @@ class Client:
             sort (str, optional): Sort order of the videos
                                   Valid values: "time", "trending", "views"
                                   Default: "time"
-            type (str, optional): Type of video
+            video_type (str, optional): Type of video
                                   Valid values: "all", "upload", "archive", "highlight"
                                   Default: "all"
 
@@ -6221,8 +6430,8 @@ class Client:
         }
         params = {}
 
-        if len(id) > 0:
-            params["id"] = id
+        if video_ids is not None and len(video_ids) > 0:
+            params["id"] = video_ids
 
         if user_id != "":
             params["user_id"] = user_id
@@ -6239,8 +6448,8 @@ class Client:
         if sort != "time":
             params["sort"] = sort
 
-        if type != "all":
-            params["type"] = type
+        if video_type != "all":
+            params["type"] = video_type
 
         after = ""
         calls = math.ceil(first / 100)
@@ -6252,7 +6461,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()
@@ -6285,13 +6496,13 @@ class Client:
 
         return videos
 
-    def delete_video(self, id):
+    def delete_video(self, video_id):
         """
         Deletes a video
         Videos are past broadcasts, Highlights, or uploads
 
         Args:
-            id (str): ID of the video(s) to be deleted
+            video_id (str): ID of the video(s) to be deleted
                       Limit: 5
         """
 
@@ -6300,9 +6511,9 @@ class Client:
             "Authorization": f"Bearer {self.__user_token}",
             "Client-Id": self.client_id,
         }
-        data = {"id": id}
+        data = {"id": video_id}
 
-        requests.delete(url, headers=headers, data=data)
+        requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
 
     def send_whisper(self, from_user_id: str, to_user_id: str, message: str) -> None:
         """
@@ -6329,7 +6540,7 @@ class Client:
             "message": message,
         }
 
-        requests.post(url, headers=headers, json=payload)
+        requests.post(url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT)
 
     def get_webhook_subscriptions(self, first=20):
         """
@@ -6370,7 +6581,9 @@ class Client:
             if after != "":
                 params["after"] = after
 
-            response = requests.get(url, headers=headers, params=params)
+            response = requests.get(
+                url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
+            )
 
             if response.ok:
                 response = response.json()

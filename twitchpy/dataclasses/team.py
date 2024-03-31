@@ -14,7 +14,7 @@ class Team:
         thumbnail_url,
         team_name,
         team_display_name,
-        id,
+        team_id,
     ):
         """
         Args:
@@ -27,7 +27,7 @@ class Team:
             thumbnail_url (str): Image URL for the team logo
             team_name (str): Team name
             team_display_name (str): Team display name
-            id (str): Team ID
+            team_id (str): Team ID
         """
 
         self.users = users
@@ -39,4 +39,4 @@ class Team:
         self.thumbnail_url = thumbnail_url
         self.team_name = team_name
         self.team_display_name = team_display_name
-        self.id = id
+        self.id = team_id

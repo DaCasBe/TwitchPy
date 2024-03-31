@@ -5,7 +5,7 @@ class Prediction:
 
     def __init__(
         self,
-        id,
+        prediction_id,
         broadcaster_id,
         broadcaster_name,
         broadcaster_login,
@@ -20,7 +20,7 @@ class Prediction:
     ):
         """
         Args:
-            id (str): ID of the Prediction
+            prediction_id (str): ID of the Prediction
             broadcaster_id (str): ID of the broadcaster
             broadcaster_name (str): Name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
@@ -38,7 +38,7 @@ class Prediction:
                              If the status is not LOCKED, this is set to null
         """
 
-        self.id = id
+        self.id = prediction_id
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login

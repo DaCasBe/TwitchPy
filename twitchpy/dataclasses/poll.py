@@ -5,7 +5,7 @@ class Poll:
 
     def __init__(
         self,
-        id: str,
+        poll_id: str,
         broadcaster_id: str,
         broadcaster_name: str,
         broadcaster_login: str,
@@ -20,7 +20,7 @@ class Poll:
     ):
         """
         Args:
-            id (str): ID of the poll
+            poll_id (str): ID of the poll
             broadcaster_id (str): ID of the broadcaster
             broadcaster_name (str): Name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
@@ -35,7 +35,7 @@ class Poll:
             ended_at (str): UTC timestamp for the poll’s end time
         """
 
-        self.id = id
+        self.id = poll_id
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login

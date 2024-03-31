@@ -33,7 +33,7 @@
 
     def __init__(
         self,
-        id: str,
+        poll_id: str,
         broadcaster_id: str,
         broadcaster_name: str,
         broadcaster_login: str,
@@ -48,7 +48,7 @@
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): ID of the poll
+            poll_id (str): ID of the poll
             broadcaster_id (str): ID of the broadcaster
             broadcaster_name (str): Name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
@@ -63,7 +63,7 @@
             ended_at (str): UTC timestamp for the poll’s end time
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = poll_id
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login
@@ -88,13 +88,13 @@
 <dl>
 <dt id="twitchpy.dataclasses.poll.Poll"><code class="flex name class">
 <span>class <span class="ident">Poll</span></span>
-<span>(</span><span>id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, choices: list[dict], channel_points_voting_enabled: bool, channel_points_per_vote: int, status: str, duration: int, started_at: str, ended_at: str = '')</span>
+<span>(</span><span>poll_id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, choices: list[dict], channel_points_voting_enabled: bool, channel_points_per_vote: int, status: str, duration: int, started_at: str, ended_at: str = '')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a poll</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>poll_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID of the poll</dd>
 <dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID of the broadcaster</dd>
@@ -131,7 +131,7 @@ Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</d
 
     def __init__(
         self,
-        id: str,
+        poll_id: str,
         broadcaster_id: str,
         broadcaster_name: str,
         broadcaster_login: str,
@@ -146,7 +146,7 @@ Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</d
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): ID of the poll
+            poll_id (str): ID of the poll
             broadcaster_id (str): ID of the broadcaster
             broadcaster_name (str): Name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
@@ -161,7 +161,7 @@ Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</d
             ended_at (str): UTC timestamp for the poll’s end time
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = poll_id
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login

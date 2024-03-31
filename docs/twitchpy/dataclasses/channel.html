@@ -40,10 +40,10 @@
         game_name: str,
         game_id: str,
         title: str,
-        delay: int,
         tags: list[str],
-        content_classification_labels: list[str],
-        is_branded_content: bool,
+        delay: int = None,
+        content_classification_labels: list[str] = None,
+        is_branded_content: bool = None,
     ):
         &#34;&#34;&#34;
         Args:
@@ -54,12 +54,11 @@
             game_name (str): The name of the game that the broadcaster is playing or last played
             game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
             title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
             tags (list[str]): The tags applied to the channel
+            delay (int): The value of the broadcaster’s stream delay setting, in seconds
             content_classification_labels (list[str]): The CCLs applied to the channel
             is_branded_content (bool): Boolean flag indicating if the channel has branded content
         &#34;&#34;&#34;
-
         self.broadcaster_id = broadcaster_id
         self.broadcaster_login = broadcaster_login
         self.broadcaster_name = broadcaster_name
@@ -84,7 +83,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.channel.Channel"><code class="flex name class">
 <span>class <span class="ident">Channel</span></span>
-<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, delay: int, tags: list[str], content_classification_labels: list[str], is_branded_content: bool)</span>
+<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, tags: list[str], delay: int = None, content_classification_labels: list[str] = None, is_branded_content: bool = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a channel</p>
@@ -104,10 +103,10 @@
 <dd>An ID that uniquely identifies the game that the broadcaster is playing or last played</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
 <dd>The title of the stream that the broadcaster is currently streaming or last streamed</dd>
-<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
-<dd>The value of the broadcaster’s stream delay setting, in seconds</dd>
 <dt><strong><code>tags</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>The tags applied to the channel</dd>
+<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
+<dd>The value of the broadcaster’s stream delay setting, in seconds</dd>
 <dt><strong><code>content_classification_labels</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>The CCLs applied to the channel</dd>
 <dt><strong><code>is_branded_content</code></strong> :&ensp;<code>bool</code></dt>
@@ -131,10 +130,10 @@
         game_name: str,
         game_id: str,
         title: str,
-        delay: int,
         tags: list[str],
-        content_classification_labels: list[str],
-        is_branded_content: bool,
+        delay: int = None,
+        content_classification_labels: list[str] = None,
+        is_branded_content: bool = None,
     ):
         &#34;&#34;&#34;
         Args:
@@ -145,12 +144,11 @@
             game_name (str): The name of the game that the broadcaster is playing or last played
             game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
             title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
             tags (list[str]): The tags applied to the channel
+            delay (int): The value of the broadcaster’s stream delay setting, in seconds
             content_classification_labels (list[str]): The CCLs applied to the channel
             is_branded_content (bool): Boolean flag indicating if the channel has branded content
         &#34;&#34;&#34;
-
         self.broadcaster_id = broadcaster_id
         self.broadcaster_login = broadcaster_login
         self.broadcaster_name = broadcaster_name

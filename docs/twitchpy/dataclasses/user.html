@@ -33,10 +33,10 @@
 
     def __init__(
         self,
-        id,
+        user_id,
         login,
         display_name,
-        type=&#34;&#34;,
+        user_type=&#34;&#34;,
         broadcaster_type=&#34;&#34;,
         description=&#34;&#34;,
         profile_image_url=&#34;&#34;,
@@ -56,10 +56,10 @@
             view_count (int): Number of user viewers
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = user_id
         self.login = login
         self.display_name = display_name
-        self.type = type
+        self.type = user_type
         self.broadcaster_type = broadcaster_type
         self.description = description
         self.profile_image_url = profile_image_url
@@ -78,7 +78,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.user.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>id, login, display_name, type='', broadcaster_type='', description='', profile_image_url='', offline_image_url='', view_count=0)</span>
+<span>(</span><span>user_id, login, display_name, user_type='', broadcaster_type='', description='', profile_image_url='', offline_image_url='', view_count=0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an user</p>
@@ -114,10 +114,10 @@
 
     def __init__(
         self,
-        id,
+        user_id,
         login,
         display_name,
-        type=&#34;&#34;,
+        user_type=&#34;&#34;,
         broadcaster_type=&#34;&#34;,
         description=&#34;&#34;,
         profile_image_url=&#34;&#34;,
@@ -137,10 +137,10 @@
             view_count (int): Number of user viewers
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = user_id
         self.login = login
         self.display_name = display_name
-        self.type = type
+        self.type = user_type
         self.broadcaster_type = broadcaster_type
         self.description = description
         self.profile_image_url = profile_image_url

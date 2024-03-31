@@ -5,10 +5,10 @@ class User:
 
     def __init__(
         self,
-        id,
+        user_id,
         login,
         display_name,
-        type="",
+        user_type="",
         broadcaster_type="",
         description="",
         profile_image_url="",
@@ -28,10 +28,10 @@ class User:
             view_count (int): Number of user viewers
         """
 
-        self.id = id
+        self.id = user_id
         self.login = login
         self.display_name = display_name
-        self.type = type
+        self.type = user_type
         self.broadcaster_type = broadcaster_type
         self.description = description
         self.profile_image_url = profile_image_url

@@ -7,7 +7,7 @@ class Redemption:
         self,
         broadcaster_name,
         broadcaster_id,
-        id,
+        redemption_id,
         user_id,
         user_name,
         user_input,
@@ -19,7 +19,7 @@ class Redemption:
         Args:
             broadcaster_name (str): The display name of the broadcaster that the reward belongs to
             broadcaster_id (str): The id of the broadcaster that the reward belongs to
-            id (str): The ID of the redemption
+            redemption_id (str): The ID of the redemption
             user_id (str): The ID of the user that redeemed the reward
             user_name (str): The display name of the user that redeemed the reward
             user_input (str): The user input provided
@@ -30,7 +30,7 @@ class Redemption:
 
         self.broadcaster_name = broadcaster_name
         self.broadcaster_id = broadcaster_id
-        self.id = id
+        self.id = redemption_id
         self.user_id = user_id
         self.user_name = user_name
         self.user_input = user_input

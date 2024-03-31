@@ -31,16 +31,18 @@
     Represents a Twitch category
     &#34;&#34;&#34;
 
-    def __init__(self, id: str, name: str, box_art_url: str = &#34;&#34;, igdb_id: str = &#34;&#34;):
+    def __init__(
+        self, game_id: str, name: str, box_art_url: str = &#34;&#34;, igdb_id: str = &#34;&#34;
+    ):
         &#34;&#34;&#34;
         Args:
-            id (int): An ID that identifies the category or game
+            game_id (int): An ID that identifies the category or game
             name (str): The category’s or game’s name
             box_art_url (str): A URL to the category’s or game’s box art
             igdb_id (str): The ID that IGDB uses to identify this game
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = game_id
         self.name = name
         self.box_art_url = box_art_url
         self.igdb_id = igdb_id</code></pre>
@@ -57,13 +59,13 @@
 <dl>
 <dt id="twitchpy.dataclasses.game.Game"><code class="flex name class">
 <span>class <span class="ident">Game</span></span>
-<span>(</span><span>id: str, name: str, box_art_url: str = '', igdb_id: str = '')</span>
+<span>(</span><span>game_id: str, name: str, box_art_url: str = '', igdb_id: str = '')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Twitch category</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>game_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>An ID that identifies the category or game</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The category’s or game’s name</dd>
@@ -81,16 +83,18 @@
     Represents a Twitch category
     &#34;&#34;&#34;
 
-    def __init__(self, id: str, name: str, box_art_url: str = &#34;&#34;, igdb_id: str = &#34;&#34;):
+    def __init__(
+        self, game_id: str, name: str, box_art_url: str = &#34;&#34;, igdb_id: str = &#34;&#34;
+    ):
         &#34;&#34;&#34;
         Args:
-            id (int): An ID that identifies the category or game
+            game_id (int): An ID that identifies the category or game
             name (str): The category’s or game’s name
             box_art_url (str): A URL to the category’s or game’s box art
             igdb_id (str): The ID that IGDB uses to identify this game
         &#34;&#34;&#34;
 
-        self.id = id
+        self.id = game_id
         self.name = name
         self.box_art_url = box_art_url
         self.igdb_id = igdb_id</code></pre>

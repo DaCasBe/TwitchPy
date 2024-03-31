@@ -5,7 +5,7 @@ class Clip:
 
     def __init__(
         self,
-        id: str,
+        clip_id: str,
         url: str,
         embed_url: str,
         broadcaster_id: str,
@@ -25,7 +25,7 @@ class Clip:
     ):
         """
         Args:
-            id (str): An ID that uniquely identifies the clip
+            clip_id (str): An ID that uniquely identifies the clip
             url (str): A URL to the clip
             embed_url (str): A URL that you can use in an iframe to embed the clip
             broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
@@ -45,7 +45,7 @@ class Clip:
             is_featured (bool): A Boolean value that indicates if the clip is featured or not
         """
 
-        self.id = id
+        self.id = clip_id
         self.url = url
         self.embed_url = embed_url
         self.broadcaster_id = broadcaster_id

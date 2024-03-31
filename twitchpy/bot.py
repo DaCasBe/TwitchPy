@@ -83,6 +83,7 @@ class Bot:
         self.methods_after_commands_to_remove = []
         self.custom_methods_before_commands = {}
         self.methods_before_commands_to_remove = []
+        self.irc = None
 
     def __send_command(self, command):
         if "PASS" not in command and "PONG" not in command:
@@ -204,7 +205,7 @@ class Bot:
 
     def __remove_listeners(self) -> None:
         for listener in self.listeners_to_remove:
-            if listener in self.custom_listeners.keys():
+            if listener in self.custom_listeners:
                 self.custom_listeners.pop(listener)
 
         self.listeners_to_remove = []
@@ -215,7 +216,7 @@ class Bot:
 
     def __remove_methods_before_commands(self) -> None:
         for method in self.methods_before_commands_to_remove:
-            if method in self.custom_methods_before_commands.keys():
+            if method in self.custom_methods_before_commands:
                 self.custom_methods_before_commands.pop(method)
 
     def __execute_commands(self, message: Message) -> None:
@@ -228,7 +229,7 @@ class Bot:
 
     def __remove_methods_after_commands(self) -> None:
         for method in self.methods_after_commands_to_remove:
-            if method in self.custom_methods_after_commands.keys():
+            if method in self.custom_methods_after_commands:
                 self.custom_methods_after_commands.pop(method)
 
     def __handle_message(self, received_msg):
@@ -262,7 +263,7 @@ class Bot:
                     self.__handle_message(received_msg)
 
                 for command in self.commands_to_remove:
-                    if command in self.custom_commands.keys():
+                    if command in self.custom_commands:
                         self.custom_commands.pop(command)
 
             except socket.timeout:
@@ -348,7 +349,7 @@ class Bot:
         return self.__client.snooze_next_ad(broadcaster_id)
 
     def get_extension_analytics(
-        self, ended_at="", extension_id="", first=20, started_at="", type=""
+        self, ended_at="", extension_id="", first=20, started_at="", report_type=""
     ):
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
@@ -363,7 +364,7 @@ class Bot:
             started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                                         This must be on or after January 31, 2018
                                         If this is provided, ended_at also must be specified
-            type (str, optional): Type of analytics report that is returned
+            report_type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
         Returns:
@@ -371,11 +372,11 @@ class Bot:
         """
 
         return self.__client.get_extension_analytics(
-            ended_at, extension_id, first, started_at, type
+            ended_at, extension_id, first, started_at, report_type
         )
 
     def get_game_analytics(
-        self, ended_at="", first=20, game_id="", started_at="", type=""
+        self, ended_at="", first=20, game_id="", started_at="", report_type=""
     ):
         """
         Gets a URL that game developers can use to download analytics reports for their games
@@ -389,7 +390,7 @@ class Bot:
             game_id (str, optional): Game ID
             started_at (str, optional): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                                         If this is provided, ended_at also must be specified
-            type (str, optional): Type of analytics report that is returned
+            report_type (str, optional): Type of analytics report that is returned
                                   Valid values: "overview_v2"
 
         Returns:
@@ -397,7 +398,7 @@ class Bot:
         """
 
         return self.__client.get_game_analytics(
-            ended_at, first, game_id, started_at, type
+            ended_at, first, game_id, started_at, report_type
         )
 
     def get_bits_leaderboard(self, count=10, period="all", started_at="", user_id=""):
@@ -438,14 +439,14 @@ class Bot:
 
         return self.__client.get_cheermotes(broadcaster_id)
 
-    def get_extension_transactions(self, extension_id, id=[], first=20):
+    def get_extension_transactions(self, extension_id, transaction_ids=None, first=20):
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
 
         Args:
             extension_id (str): ID of the extension to list transactions for
-            id (list, optional): Transaction IDs to look up
+            transaction_ids (list, optional): Transaction IDs to look up
                                  Maximum: 100
             first (int, optional): Maximum number of objects to return
                                    Default: 20
@@ -454,7 +455,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_extension_transactions(extension_id, id, first)
+        return self.__client.get_extension_transactions(extension_id, transaction_ids, first)
 
     def get_channel(self, broadcaster_id: str | list[str]) -> Channel:
         """
@@ -477,8 +478,8 @@ class Bot:
         broadcaster_language: str = None,
         title: str = None,
         delay: int = None,
-        tags: list[str] = [],
-        content_classification_labels: list[dict] = [],
+        tags: list[str] = None,
+        content_classification_labels: list[dict] = None,
         is_branded_content: bool = None,
     ):
         """
@@ -636,7 +637,7 @@ class Bot:
             should_redemptions_skip_request_queue,
         )
 
-    def delete_custom_reward(self, broadcaster_id, id):
+    def delete_custom_reward(self, broadcaster_id, reward_id):
         """
         Deletes a Custom Reward on a channel
         The Custom Reward specified by id must have been created by the client_id attached to the OAuth token in order to be deleted
@@ -644,19 +645,19 @@ class Bot:
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Custom Reward to delete
+            reward_id (str): ID of the Custom Reward to delete
                       Must match a Custom Reward on broadcaster_id’s channel
         """
 
-        self.__client.delete_custom_reward(broadcaster_id, id)
+        self.__client.delete_custom_reward(broadcaster_id, reward_id)
 
-    def get_custom_reward(self, broadcaster_id, id=[], only_manageable_rewards=False):
+    def get_custom_reward(self, broadcaster_id, reward_ids=None, only_manageable_rewards=False):
         """
         Returns a list of Custom Reward objects for the Custom Rewards on a channel
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
+            reward_ids (list, optional): This parameter filters the results and only returns reward objects for the Custom Rewards with matching ID
                                 Maximum: 50
             only_manageable_rewards (bool, optional): When set to true, only returns custom rewards that the calling broadcaster can manage
                                                       Default: false
@@ -666,11 +667,11 @@ class Bot:
         """
 
         return self.__client.get_custom_reward(
-            broadcaster_id, id, only_manageable_rewards
+            broadcaster_id, reward_ids, only_manageable_rewards
         )
 
     def get_custom_reward_redemption(
-        self, broadcaster_id, reward_id, id=[], status="", sort="OLDEST", first=20
+        self, broadcaster_id, reward_id, redemption_ids=None, status="", sort="OLDEST", first=20
     ):
         """
         Returns Custom Reward Redemption objects for a Custom Reward on a channel that was created by the same client_id
@@ -679,7 +680,7 @@ class Bot:
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
-            id (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
+            redemption_ids (list, optional): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
                                 Maximum: 50
             status (str, optional): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                                     Can be one of UNFULFILLED, FULFILLED or CANCELED
@@ -694,13 +695,13 @@ class Bot:
         """
 
         return self.__client.get_custom_reward_redemption(
-            broadcaster_id, reward_id, id, status, sort, first
+            broadcaster_id, reward_id, redemption_ids, status, sort, first
         )
 
     def update_custom_reward(
         self,
         broadcaster_id,
-        id,
+        reward_id,
         title="",
         prompt="",
         cost=None,
@@ -722,7 +723,7 @@ class Bot:
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Custom Reward to update
+            reward_id (str): ID of the Custom Reward to update
                       Must match a Custom Reward on the channel of the broadcaster_id
             title (str, optional): The title of the reward
             prompt (str, optional): The prompt for the viewer when they are redeeming the reward
@@ -751,7 +752,7 @@ class Bot:
 
         return self.__client.update_custom_reward(
             broadcaster_id,
-            id,
+            reward_id,
             title,
             prompt,
             cost,
@@ -768,13 +769,13 @@ class Bot:
             should_redemptions_skip_request_queue,
         )
 
-    def update_redemption_status(self, id, broadcaster_id, reward_id, status=""):
+    def update_redemption_status(self, redemption_id, broadcaster_id, reward_id, status=""):
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
         The Custom Reward Redemption specified by id must be for a Custom Reward created by the client_id attached to the user OAuth token
 
         Args:
-            id (list): ID of the Custom Reward Redemption to update
+            redemption_id (list): ID of the Custom Reward Redemption to update
                       Must match a Custom Reward Redemption on broadcaster_id’s channel
                       Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
@@ -788,7 +789,7 @@ class Bot:
         """
 
         return self.__client.update_redemption_status(
-            id, broadcaster_id, reward_id, status
+            redemption_id, broadcaster_id, reward_id, status
         )
 
     def get_charity_campaign(self, broadcaster_id: str) -> CharityCampaign:
@@ -1080,7 +1081,7 @@ class Bot:
         self,
         broadcaster_id: str = "",
         game_id: str = "",
-        id: list[str] = [],
+        clip_ids: list[str] = None,
         started_at: str = "",
         ended_at: str = "",
         first: int = 20,
@@ -1093,7 +1094,7 @@ class Bot:
         Args:
             broadcaster_id (str): An ID that identifies the broadcaster whose video clips you want to get
             game_id (str): An ID that identifies the game whose clips you want to get
-            id (list[str]): An ID that identifies the clip to get
+            clip_ids (list[str]): An ID that identifies the clip to get
             started_at (str): The start date used to filter clips
             ended_at (str): The end date used to filter clips
             first (int): The maximum number of clips to return
@@ -1108,7 +1109,7 @@ class Bot:
         """
 
         return self.__client.get_clips(
-            broadcaster_id, game_id, id, started_at, ended_at, first, is_featured
+            broadcaster_id, game_id, clip_ids, started_at, ended_at, first, is_featured
         )
 
     def get_conduits(self) -> list[dict]:
@@ -1134,30 +1135,30 @@ class Bot:
 
         return self.__client.create_conduits(shard_count)
 
-    def update_conduits(self, id: str, shard_count: int) -> dict:
+    def update_conduits(self, conduit_id: str, shard_count: int) -> dict:
         """
         Updates a conduit’s shard count
         To delete shards, update the count to a lower number, and the shards above the count will be deleted
 
         Args:
-            id (str): Conduit ID
+            conduit_id (str): Conduit ID
             shard_count (int): The new number of shards for this conduit
 
         Returns:
             dict
         """
 
-        return self.__client.update_conduits(id, shard_count)
+        return self.__client.update_conduits(conduit_id, shard_count)
 
-    def delete_conduit(self, id: str) -> None:
+    def delete_conduit(self, conduit_id: str) -> None:
         """
         Deletes a specified conduit
 
         Args:
-            id (str): Conduit ID
+            conduit_id (str): Conduit ID
         """
 
-        self.__client.delete_conduit(id)
+        self.__client.delete_conduit(conduit_id)
 
     def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
         """
@@ -1206,13 +1207,13 @@ class Bot:
         return self.__client.get_content_classification_labels(locale)
 
     def get_drops_entitlements(
-        self, id="", user_id="", game_id="", fulfillment_status="", first=20
+        self, entitlement_id="", user_id="", game_id="", fulfillment_status="", first=20
     ):
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
         Args:
-            id (str, optional): ID of the entitlement
+            entitlement_id (str, optional): ID of the entitlement
             user_id (str, optional): A Twitch User ID
             game_id (str, optional): A Twitch Game ID
             fulfillment_status (str, optional): An optional fulfillment status used to filter entitlements
@@ -1225,10 +1226,10 @@ class Bot:
         """
 
         return self.__client.get_drops_entitlements(
-            id, user_id, game_id, fulfillment_status, first
+            entitlement_id, user_id, game_id, fulfillment_status, first
         )
 
-    def update_drops_entitlements(self, entitlement_ids=[], fulfillment_status=""):
+    def update_drops_entitlements(self, entitlement_ids=None, fulfillment_status=""):
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
@@ -1484,12 +1485,12 @@ class Bot:
             is_broadcast,
         )
 
-    def create_eventsub_subscription(self, type, version, condition, transport):
+    def create_eventsub_subscription(self, subscription_type, version, condition, transport):
         """
         Creates an EventSub subscription
 
         Args:
-            type (str): The category of the subscription that is being created
+            subscription_type (str): The category of the subscription that is being created
                         Valid values: "channel.update", "channel.follow", "channel.subscribe", "channel.subscription.end", "channel.subscription.gift","channel.subscription.message", "channel.cheer", "channel.raid", "channel.ban", "channel.unban", "channel.moderator.add", "channel.moderator.remove", "channel.channel_points_custom_reward.add", "channel.channel_points_custom_reward.update", "channel.channel_points_custom_reward.remove", "channel.channel_points_custom_reward_redemption.add", "channel.channel_points_custom_reward_redemption.update", "channel.poll.begin", "channel.poll.progress", "channel.poll.end", "channel.prediction.begin", "channel.prediction.progress", "channel.prediction.lock", "channel.prediction.end", "drop.entitlement.grant", "extension.bits_transaction.create", "channel.hype_train.begin", "channel.hype_train.progress", "channel.hype_train.end", "stream.online", "stream.offline", "user.authorization.grant", "user.authorization.revoke", "user.update"
             version (str): The version of the subscription type that is being created
                            Each subscription type has independent versioning
@@ -1503,10 +1504,10 @@ class Bot:
         """
 
         return self.__client.create_eventsub_subscription(
-            type, version, condition, transport
+            subscription_type, version, condition, transport
         )
 
-    def delete_eventsub_subscription(self, id):
+    def delete_eventsub_subscription(self, subscription_id):
         """
         Delete an EventSub subscription
 
@@ -1514,10 +1515,10 @@ class Bot:
             id (str): The subscription ID for the subscription to delete
         """
 
-        self.__client.delete_eventsub_subscription(id)
+        self.__client.delete_eventsub_subscription(subscription_id)
 
     def get_eventsub_subscriptions(
-        self, status: str = "", type: str = "", user_id: str = ""
+        self, status: str = "", subscription_type: str = "", user_id: str = ""
     ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
@@ -1526,14 +1527,14 @@ class Bot:
         Args:
             status (str, optional): Filters subscriptions by one status type
                 Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "moderator_removed", "user_removed", "version_removed", "websocket_disconnected", "websocket_failed_ping_pong", "websocket_received_inbound_traffic", "websocket_connection_unused", "websocket_internal_error", "websocket_network_timeout", "websocket_network_error"
-            type (str, optional): Filters subscriptions by subscription type name
+            subscription_type (str, optional): Filters subscriptions by subscription type name
             user_id (str, optional): Filter subscriptions by user ID
 
         Returns:
             list[EventSubSubscription]
         """
 
-        return self.__client.get_eventsub_subscriptions(status, type, user_id)
+        return self.__client.get_eventsub_subscriptions(status, subscription_type, user_id)
 
     def get_top_games(self, first=20):
         """
@@ -1550,7 +1551,7 @@ class Bot:
         return self.__client.get_top_games(first)
 
     def get_games(
-        self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []
+        self, game_id: list[str] = None, name: list[str] = None, igdb_id: list[str] = None
     ) -> list[Game]:
         """
         Gets information about specified categories or games
@@ -1567,7 +1568,7 @@ class Bot:
             list[Game]
         """
 
-        return self.__client.get_games(id, name, igdb_id)
+        return self.__client.get_games(game_id, name, igdb_id)
 
     def get_creator_goals(self, broadcaster_id):
         """
@@ -1978,7 +1979,7 @@ class Bot:
             swearing,
         )
 
-    def get_banned_users(self, broadcaster_id, user_id=[], first=20):
+    def get_banned_users(self, broadcaster_id, user_id=None, first=20):
         """
         Returns all banned and timed-out users in a channel
 
@@ -2077,19 +2078,19 @@ class Bot:
 
         return self.__client.add_blocked_term(broadcaster_id, moderator_id, text)
 
-    def remove_blocked_term(self, broadcaster_id, id, moderator_id):
+    def remove_blocked_term(self, broadcaster_id, blocked_term_id, moderator_id):
         """
         Removes the word or phrase that the broadcaster is blocking users from using in their chat room
 
         Args:
             broadcaster_id (str): The ID of the broadcaster that owns the list of blocked terms
-            id (str): The ID of the blocked term you want to delete
+            blocked_term_id (str): The ID of the blocked term you want to delete
             moderator_id (str): The ID of a user that has permission to moderate the broadcaster’s chat room
                                 This ID must match the user ID associated with the user OAuth token
                                 If the broadcaster wants to delete the blocked term (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
         """
 
-        self.__client.remove_blocked_term(broadcaster_id, id, moderator_id)
+        self.__client.remove_blocked_term(broadcaster_id, blocked_term_id, moderator_id)
 
     def delete_chat_messages(
         self, broadcaster_id: str, moderator_id: str, message_id: str = ""
@@ -2107,7 +2108,7 @@ class Bot:
 
         self.__client.delete_chat_messages(broadcaster_id, moderator_id, message_id)
 
-    def get_moderators(self, broadcaster_id, user_id=[], first=20):
+    def get_moderators(self, broadcaster_id, user_id=None, first=20):
         """
         Returns all moderators in a channel
 
@@ -2149,7 +2150,7 @@ class Bot:
         self.__client.remove_channel_moderator(broadcaster_id, user_id)
 
     def get_vips(
-        self, broadcaster_id: str, user_id: list[str] = [], first: int = 20
+        self, broadcaster_id: str, user_id: list[str] = None, first: int = 20
     ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
@@ -2228,7 +2229,7 @@ class Bot:
 
         return self.__client.get_shield_mode_status(broadcaster_id, moderator_id)
 
-    def get_polls(self, broadcaster_id, id=[], first=20):
+    def get_polls(self, broadcaster_id, poll_ids=None, first=20):
         """
         Get information about all polls or specific polls for a Twitch channel
         Poll information is available for 90 days
@@ -2245,7 +2246,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_polls(broadcaster_id, id, first)
+        return self.__client.get_polls(broadcaster_id, poll_ids, first)
 
     def create_poll(
         self,
@@ -2289,14 +2290,14 @@ class Bot:
             channel_points_per_vote,
         )
 
-    def end_poll(self, broadcaster_id, id, status):
+    def end_poll(self, broadcaster_id, poll_id, status):
         """
         End a poll that is currently active
 
         Args:
             broadcaster_id (str): The broadcaster running polls
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the poll
+            poll_id (str): ID of the poll
             status (str): The poll status to be set
                           Valid values: "TERMINATED", "ARCHIVED"
 
@@ -2304,9 +2305,9 @@ class Bot:
             dict
         """
 
-        return self.__client.end_poll(broadcaster_id, id, status)
+        return self.__client.end_poll(broadcaster_id, poll_id, status)
 
-    def get_predictions(self, broadcaster_id, id=[], first=20):
+    def get_predictions(self, broadcaster_id, prediction_ids=None, first=20):
         """
         Get information about all Channel Points Predictions or specific Channel Points Predictions for a Twitch channel
 
@@ -2322,7 +2323,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_predictions(broadcaster_id, id, first)
+        return self.__client.get_predictions(broadcaster_id, prediction_ids, first)
 
     def create_prediction(
         self,
@@ -2354,7 +2355,7 @@ class Bot:
             broadcaster_id, title, outcomes, prediction_window
         )
 
-    def end_prediction(self, broadcaster_id, id, status, winning_outcome_id=""):
+    def end_prediction(self, broadcaster_id, prediction_id, status, winning_outcome_id=""):
         """
         Lock, resolve, or cancel a Channel Points Prediction
         Active Predictions can be updated to be "locked", "resolved", or "canceled"
@@ -2363,7 +2364,7 @@ class Bot:
         Args:
             broadcaster_id (str): The broadcaster running prediction events
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): ID of the Prediction
+            prediction_id (str): ID of the Prediction
             status (str): The Prediction status to be set
                           Valid values: "RESOLVED", "CANCELED", "LOCKED"
             winning_outcome_id (str, optional): ID of the winning outcome for the Prediction
@@ -2374,7 +2375,7 @@ class Bot:
         """
 
         return self.__client.end_prediction(
-            broadcaster_id, id, status, winning_outcome_id
+            broadcaster_id, prediction_id, status, winning_outcome_id
         )
 
     def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
@@ -2404,7 +2405,7 @@ class Bot:
         self.__client.cancel_raid(broadcaster_id)
 
     def get_channel_stream_schedule(
-        self, broadcaster_id, id=[], start_time="", utc_offset="0", first=20
+        self, broadcaster_id, stream_segment_id=None, start_time="", utc_offset="0", first=20
     ):
         """
         Gets all scheduled broadcasts or specific scheduled broadcasts from a channel’s stream schedule
@@ -2413,7 +2414,7 @@ class Bot:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str, optional): The ID of the stream segment to return
+            stream_segment_id (str, optional): The ID of the stream segment to return
                                 Maximum: 100
             start_time (str, optional): A timestamp in RFC3339 format to start returning stream segments from
                                         If not specified, the current date and time is used
@@ -2427,7 +2428,7 @@ class Bot:
         """
 
         return self.__client.get_channel_stream_schedule(
-            broadcaster_id, id, start_time, utc_offset, first
+            broadcaster_id, stream_segment_id, start_time, utc_offset, first
         )
 
     def get_channel_icalendar(self, broadcaster_id):
@@ -2518,7 +2519,7 @@ class Bot:
     def update_channel_stream_schedule_segment(
         self,
         broadcaster_id,
-        id,
+        stream_segment_id,
         start_time="",
         duration=240,
         category_id="",
@@ -2532,7 +2533,7 @@ class Bot:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): The ID of the streaming segment to update
+            stream_segment_id (str): The ID of the streaming segment to update
             start_time (str, optional): Start time for the scheduled broadcast specified in RFC3339 format
             duration (int, optional): Duration of the scheduled broadcast in minutes from the start_time
                                       Default: 240
@@ -2548,7 +2549,7 @@ class Bot:
 
         return self.__client.update_channel_stream_schedule_segment(
             broadcaster_id,
-            id,
+            stream_segment_id,
             start_time,
             duration,
             category_id,
@@ -2557,17 +2558,17 @@ class Bot:
             timezone,
         )
 
-    def delete_channel_stream_schedule_segment(self, broadcaster_id, id):
+    def delete_channel_stream_schedule_segment(self, broadcaster_id, stream_segment_id):
         """
         Delete a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
 
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                                   Provided broadcaster_id must match the user_id in the user OAuth token
-            id (str): The ID of the streaming segment to delete
+            stream_segment_id (str): The ID of the streaming segment to delete
         """
 
-        self.__client.delete_channel_stream_schedule_segment(broadcaster_id, id)
+        self.__client.delete_channel_stream_schedule_segment(broadcaster_id, stream_segment_id)
 
     def search_categories(self, query, first=20):
         """
@@ -2621,7 +2622,7 @@ class Bot:
         user_id: str | list[str] = "",
         user_login: str | list[str] = "",
         game_id: str | list[str] = "",
-        type: str = "all",
+        stream_type: str = "all",
         language: str | list[str] = "",
         first: int = 20,
     ) -> list[Stream]:
@@ -2636,7 +2637,7 @@ class Bot:
                 Maximum: 100
             game_id (str | list[str]): A game (category) ID used to filter the list of streams
                 Maximum: 100
-            type (str): The type of stream to filter the list of streams by
+            stream_type (str): The type of stream to filter the list of streams by
                 Possible values: all, live
             language (str | list[str]): A language code used to filter the list of streams
                 Maximum: 100
@@ -2648,7 +2649,7 @@ class Bot:
         """
 
         return self.__client.get_streams(
-            user_id, user_login, game_id, type, language, first
+            user_id, user_login, game_id, stream_type, language, first
         )
 
     def get_followed_streams(self, user_id: str, first: int = 100) -> list[Stream]:
@@ -2703,7 +2704,7 @@ class Bot:
 
         return self.__client.get_stream_markers(user_id, video_id, first)
 
-    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=[], first=20):
+    def get_broadcaster_subscriptions(self, broadcaster_id, user_id=None, first=20):
         """
         Get all of a broadcaster’s subscriptions
 
@@ -2737,7 +2738,7 @@ class Bot:
 
         return self.__client.check_user_subscription(broadcaster_id, user_id)
 
-    def get_all_stream_tags(self, first=20, tag_id=[]):
+    def get_all_stream_tags(self, first=20, tag_id=None):
         """
         Gets the list of all stream tags defined by Twitch
 
@@ -2778,7 +2779,7 @@ class Bot:
 
         return self.__client.get_channel_teams(broadcaster_id)
 
-    def get_teams(self, name="", id=""):
+    def get_teams(self, name="", team_id=""):
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
@@ -2791,16 +2792,16 @@ class Bot:
             Team
         """
 
-        return self.__client.get_teams(name, id)
+        return self.__client.get_teams(name, team_id)
 
-    def get_users(self, id=[], login=[]):
+    def get_users(self, user_ids=None, login=None):
         """
         Gets an user
         Users are identified by optional user IDs and/or login name
         If neither a user ID nor a login name is specified, the user is looked up by Bearer token
 
         Args:
-            id (list, optional): User ID
+            user_ids (list, optional): User ID
                                  Limit: 100
             login (list, optional): User login name
                                     Limit: 100
@@ -2809,7 +2810,7 @@ class Bot:
             list
         """
 
-        return self.__client.get_users(id, login)
+        return self.__client.get_users(user_ids, login)
 
     def update_user(self, description=""):
         """
@@ -2900,21 +2901,21 @@ class Bot:
 
     def get_videos(
         self,
-        id=[],
+        video_ids=None,
         user_id="",
         game_id="",
         first=20,
         language="",
         period="all",
         sort="time",
-        type="all",
+        video_type="all",
     ):
         """
         Gets video information by video ID, user ID, or game ID
         Each request must specify one video id, one user_id, or one game_id
 
         Args:
-            id (list): ID of the video being queried
+            video_ids (list): ID of the video being queried
                        Limit: 100
                        If this is specified, you cannot use first, language, period, sort and type
             user_id (str): ID of the user who owns the video
@@ -2928,7 +2929,7 @@ class Bot:
             sort (str, optional): Sort order of the videos
                                   Valid values: "time", "trending", "views"
                                   Default: "time"
-            type (str, optional): Type of video
+            video_type (str, optional): Type of video
                                   Valid values: "all", "upload", "archive", "highlight"
                                   Default: "all"
 
@@ -2937,20 +2938,20 @@ class Bot:
         """
 
         return self.__client.get_videos(
-            id, user_id, game_id, first, language, period, sort, type
+            video_ids, user_id, game_id, first, language, period, sort, video_type
         )
 
-    def delete_video(self, id):
+    def delete_video(self, video_id):
         """
         Deletes a video
         Videos are past broadcasts, Highlights, or uploads
 
         Args:
-            id (str): ID of the video(s) to be deleted
+            video_id (str): ID of the video(s) to be deleted
                       Limit: 5
         """
 
-        self.__client.delete_video(id)
+        self.__client.delete_video(video_id)
 
     def send_whisper(self, from_user_id: str, to_user_id: str, message: str) -> None:
         """
