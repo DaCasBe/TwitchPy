@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.prediction API documentation</title>
+<title>twitchpy.dataclasses.stream_schedule API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,65 +19,36 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.prediction</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.stream_schedule</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Prediction:
+<pre><code class="python">class StreamSchedule:
     &#34;&#34;&#34;
-    Represents a prediction
+    Represents a stream schedule
     &#34;&#34;&#34;
 
     def __init__(
-        self,
-        id,
-        broadcaster_id,
-        broadcaster_name,
-        broadcaster_login,
-        title,
-        winning_outcome_id,
-        outcomes,
-        prediction_window,
-        status,
-        created_at,
-        ended_at,
-        locked_at,
+        self, segments, broadcaster_id, broadcaster_name, broadcaster_login, vacation
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): ID of the Prediction
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
+            segments (list): Scheduled broadcasts for this stream schedule
+            broadcaster_id (str): User ID of the broadcaster
+            broadcaster_name (str): Display name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
-            title (str): Title for the Prediction
-            winning_outcome_id (str): ID of the winning outcome
-                                      If the status is ACTIVE, this is set to null
-            outcomes (list): Possible outcomes for the Prediction
-            prediction_window (int): Total duration for the Prediction (in seconds)
-            status (str): Status of the Prediction
-                          Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-            created_at (str): UTC timestamp for the Prediction’s start time
-            ended_at (str): UTC timestamp for when the Prediction ended
-                            If the status is ACTIVE, this is set to null
-            locked_at (str): UTC timestamp for when the Prediction was locked
-                             If the status is not LOCKED, this is set to null
+            vacation (dict): If Vacation Mode is enabled, this includes start and end dates for the vacation
+                             If Vacation Mode is disabled, value is set to null
         &#34;&#34;&#34;
 
-        self.id = id
+        self.segments = segments
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.winning_outcome_id = winning_outcome_id
-        self.outcomes = outcomes
-        self.prediction_window = prediction_window
-        self.status = status
-        self.created_at = created_at
-        self.ended_at = ended_at
-        self.locked_at = locked_at</code></pre>
+        self.vacation = vacation</code></pre>
 </details>
 </section>
 <section>
@@ -89,99 +60,53 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.prediction.Prediction"><code class="flex name class">
-<span>class <span class="ident">Prediction</span></span>
-<span>(</span><span>id, broadcaster_id, broadcaster_name, broadcaster_login, title, winning_outcome_id, outcomes, prediction_window, status, created_at, ended_at, locked_at)</span>
+<dt id="twitchpy.dataclasses.stream_schedule.StreamSchedule"><code class="flex name class">
+<span>class <span class="ident">StreamSchedule</span></span>
+<span>(</span><span>segments, broadcaster_id, broadcaster_name, broadcaster_login, vacation)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a prediction</p>
+<div class="desc"><p>Represents a stream schedule</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID of the Prediction</dd>
+<dt><strong><code>segments</code></strong> :&ensp;<code>list</code></dt>
+<dd>Scheduled broadcasts for this stream schedule</dd>
 <dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID of the broadcaster</dd>
+<dd>User ID of the broadcaster</dd>
 <dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of the broadcaster</dd>
+<dd>Display name of the broadcaster</dd>
 <dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
 <dd>Login of the broadcaster</dd>
-<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
-<dd>Title for the Prediction</dd>
-<dt><strong><code>winning_outcome_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID of the winning outcome
-If the status is ACTIVE, this is set to null</dd>
-<dt><strong><code>outcomes</code></strong> :&ensp;<code>list</code></dt>
-<dd>Possible outcomes for the Prediction</dd>
-<dt><strong><code>prediction_window</code></strong> :&ensp;<code>int</code></dt>
-<dd>Total duration for the Prediction (in seconds)</dd>
-<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
-<dd>Status of the Prediction
-Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED</dd>
-<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
-<dd>UTC timestamp for the Prediction’s start time</dd>
-<dt><strong><code>ended_at</code></strong> :&ensp;<code>str</code></dt>
-<dd>UTC timestamp for when the Prediction ended
-If the status is ACTIVE, this is set to null</dd>
-<dt><strong><code>locked_at</code></strong> :&ensp;<code>str</code></dt>
-<dd>UTC timestamp for when the Prediction was locked
-If the status is not LOCKED, this is set to null</dd>
+<dt><strong><code>vacation</code></strong> :&ensp;<code>dict</code></dt>
+<dd>If Vacation Mode is enabled, this includes start and end dates for the vacation
+If Vacation Mode is disabled, value is set to null</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Prediction:
+<pre><code class="python">class StreamSchedule:
     &#34;&#34;&#34;
-    Represents a prediction
+    Represents a stream schedule
     &#34;&#34;&#34;
 
     def __init__(
-        self,
-        id,
-        broadcaster_id,
-        broadcaster_name,
-        broadcaster_login,
-        title,
-        winning_outcome_id,
-        outcomes,
-        prediction_window,
-        status,
-        created_at,
-        ended_at,
-        locked_at,
+        self, segments, broadcaster_id, broadcaster_name, broadcaster_login, vacation
     ):
         &#34;&#34;&#34;
         Args:
-            id (str): ID of the Prediction
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
+            segments (list): Scheduled broadcasts for this stream schedule
+            broadcaster_id (str): User ID of the broadcaster
+            broadcaster_name (str): Display name of the broadcaster
             broadcaster_login (str): Login of the broadcaster
-            title (str): Title for the Prediction
-            winning_outcome_id (str): ID of the winning outcome
-                                      If the status is ACTIVE, this is set to null
-            outcomes (list): Possible outcomes for the Prediction
-            prediction_window (int): Total duration for the Prediction (in seconds)
-            status (str): Status of the Prediction
-                          Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-            created_at (str): UTC timestamp for the Prediction’s start time
-            ended_at (str): UTC timestamp for when the Prediction ended
-                            If the status is ACTIVE, this is set to null
-            locked_at (str): UTC timestamp for when the Prediction was locked
-                             If the status is not LOCKED, this is set to null
+            vacation (dict): If Vacation Mode is enabled, this includes start and end dates for the vacation
+                             If Vacation Mode is disabled, value is set to null
         &#34;&#34;&#34;
 
-        self.id = id
+        self.segments = segments
         self.broadcaster_id = broadcaster_id
         self.broadcaster_name = broadcaster_name
         self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.winning_outcome_id = winning_outcome_id
-        self.outcomes = outcomes
-        self.prediction_window = prediction_window
-        self.status = status
-        self.created_at = created_at
-        self.ended_at = ended_at
-        self.locked_at = locked_at</code></pre>
+        self.vacation = vacation</code></pre>
 </details>
 </dd>
 </dl>
@@ -195,13 +120,13 @@ If the status is not LOCKED, this is set to null</dd>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.prediction.Prediction" href="#twitchpy.prediction.Prediction">Prediction</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.stream_schedule.StreamSchedule" href="#twitchpy.dataclasses.stream_schedule.StreamSchedule">StreamSchedule</a></code></h4>
 </li>
 </ul>
 </li>

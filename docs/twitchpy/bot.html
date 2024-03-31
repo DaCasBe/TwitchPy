@@ -29,19 +29,21 @@
 <pre><code class="python">import socket
 import ssl
 
-from twitchpy.channel import Channel
-from twitchpy.charity_campaign import CharityCampaign
-from twitchpy.charity_campaign_donation import CharityCampaignDonation
-from twitchpy.client import Client
-from twitchpy.eventsub_subscription import EventSubSubscription
-from twitchpy.game import Game
-from twitchpy.guest_star_session import GuestStarSession
-from twitchpy.hypetrain_event import HypeTrainEvent
-from twitchpy.message import Message
-from twitchpy.poll import Poll
-from twitchpy.prediction import Prediction
-from twitchpy.stream import Stream
-from twitchpy.user import User
+from .client import Client
+from .dataclasses import (
+    Channel,
+    CharityCampaign,
+    CharityCampaignDonation,
+    EventSubSubscription,
+    Game,
+    GuestStarSession,
+    HypeTrainEvent,
+    Message,
+    Poll,
+    Prediction,
+    Stream,
+    User,
+)
 
 
 class Bot:
@@ -167,7 +169,7 @@ class Bot:
         if not string.startswith(prefix):
             return string
 
-        return string[len(prefix) :] # noqa E203
+        return string[len(prefix) :]  # noqa E203
 
     def __parse_message(self, received_msg):
         parts = received_msg.split(&#34; &#34;)
@@ -1199,7 +1201,9 @@ class Bot:
 
         return self.__client.get_conduit_shards(conduit_id, status)
 
-    def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+    def update_conduit_shards(
+        self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;
+    ) -&gt; dict:
         &#34;&#34;&#34;
         Updates shard(s) for a conduit
 
@@ -3681,7 +3685,7 @@ class Bot:
         if not string.startswith(prefix):
             return string
 
-        return string[len(prefix) :] # noqa E203
+        return string[len(prefix) :]  # noqa E203
 
     def __parse_message(self, received_msg):
         parts = received_msg.split(&#34; &#34;)
@@ -4713,7 +4717,9 @@ class Bot:
 
         return self.__client.get_conduit_shards(conduit_id, status)
 
-    def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+    def update_conduit_shards(
+        self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;
+    ) -&gt; dict:
         &#34;&#34;&#34;
         Updates shard(s) for a conduit
 
@@ -8010,7 +8016,7 @@ Default: 300</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.create_guest_star_session"><code class="name flex">
-<span>def <span class="ident">create_guest_star_session</span></span>(<span>self, broadcaster_id: str) ‑> <a title="twitchpy.guest_star_session.GuestStarSession" href="guest_star_session.html#twitchpy.guest_star_session.GuestStarSession">GuestStarSession</a></span>
+<span>def <span class="ident">create_guest_star_session</span></span>(<span>self, broadcaster_id: str) ‑> <a title="twitchpy.dataclasses.guest_star_session.GuestStarSession" href="dataclasses/guest_star_session.html#twitchpy.dataclasses.guest_star_session.GuestStarSession">GuestStarSession</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Programmatically creates a Guest Star session on behalf of the broadcaster</p>
@@ -8042,7 +8048,7 @@ Provided broadcaster_id must match the user_id in the auth token</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.create_poll"><code class="name flex">
-<span>def <span class="ident">create_poll</span></span>(<span>self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool = False, channel_points_per_vote: int = 0) ‑> <a title="twitchpy.poll.Poll" href="poll.html#twitchpy.poll.Poll">Poll</a></span>
+<span>def <span class="ident">create_poll</span></span>(<span>self, broadcaster_id: str, title: str, choices: list[str], duration: int, channel_points_voting_enabled: bool = False, channel_points_per_vote: int = 0) ‑> <a title="twitchpy.dataclasses.poll.Poll" href="dataclasses/poll.html#twitchpy.dataclasses.poll.Poll">Poll</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a poll for a specific Twitch channel</p>
@@ -8120,7 +8126,7 @@ Maximum: 1000000</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.create_prediction"><code class="name flex">
-<span>def <span class="ident">create_prediction</span></span>(<span>self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) ‑> <a title="twitchpy.prediction.Prediction" href="prediction.html#twitchpy.prediction.Prediction">Prediction</a></span>
+<span>def <span class="ident">create_prediction</span></span>(<span>self, broadcaster_id: str, title: str, outcomes: list[str], prediction_window: int) ‑> <a title="twitchpy.dataclasses.prediction.Prediction" href="dataclasses/prediction.html#twitchpy.dataclasses.prediction.Prediction">Prediction</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create a Channel Points Prediction for a specific Twitch channel</p>
@@ -8570,7 +8576,7 @@ Limit: 5</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.end_guest_star_session"><code class="name flex">
-<span>def <span class="ident">end_guest_star_session</span></span>(<span>self, broadcaster_id: str, session_id: str) ‑> <a title="twitchpy.guest_star_session.GuestStarSession" href="guest_star_session.html#twitchpy.guest_star_session.GuestStarSession">GuestStarSession</a></span>
+<span>def <span class="ident">end_guest_star_session</span></span>(<span>self, broadcaster_id: str, session_id: str) ‑> <a title="twitchpy.dataclasses.guest_star_session.GuestStarSession" href="dataclasses/guest_star_session.html#twitchpy.dataclasses.guest_star_session.GuestStarSession">GuestStarSession</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Programmatically ends a Guest Star session on behalf of the broadcaster</p>
@@ -9060,7 +9066,7 @@ Default: 20</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_channel"><code class="name flex">
-<span>def <span class="ident">get_channel</span></span>(<span>self, broadcaster_id: str | list[str]) ‑> <a title="twitchpy.channel.Channel" href="channel.html#twitchpy.channel.Channel">Channel</a></span>
+<span>def <span class="ident">get_channel</span></span>(<span>self, broadcaster_id: str | list[str]) ‑> <a title="twitchpy.dataclasses.channel.Channel" href="dataclasses/channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a channel</p>
@@ -9185,7 +9191,7 @@ Custom channel emotes are custom emoticons that viewers may use in Twitch chat o
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_channel_followers"><code class="name flex">
-<span>def <span class="ident">get_channel_followers</span></span>(<span>self, broadcaster_id: str, user_id: str = '', first: int = 20) ‑> list[<a title="twitchpy.channel.Channel" href="channel.html#twitchpy.channel.Channel">Channel</a>]</span>
+<span>def <span class="ident">get_channel_followers</span></span>(<span>self, broadcaster_id: str, user_id: str = '', first: int = 20) ‑> list[<a title="twitchpy.dataclasses.channel.Channel" href="dataclasses/channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The function <code>get_channel_followers</code> retrieves a list of channels that are following a specific
@@ -9390,7 +9396,7 @@ Default: 20</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_charity_campaign"><code class="name flex">
-<span>def <span class="ident">get_charity_campaign</span></span>(<span>self, broadcaster_id: str) ‑> <a title="twitchpy.charity_campaign.CharityCampaign" href="charity_campaign.html#twitchpy.charity_campaign.CharityCampaign">CharityCampaign</a></span>
+<span>def <span class="ident">get_charity_campaign</span></span>(<span>self, broadcaster_id: str) ‑> <a title="twitchpy.dataclasses.charity_campaign.CharityCampaign" href="dataclasses/charity_campaign.html#twitchpy.dataclasses.charity_campaign.CharityCampaign">CharityCampaign</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets information about the charity campaign that a broadcaster is running</p>
@@ -9422,7 +9428,7 @@ This ID must match the user ID in the access token</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_charity_campaign_donations"><code class="name flex">
-<span>def <span class="ident">get_charity_campaign_donations</span></span>(<span>self, broadcaster_id: str, first: int = 20) ‑> list[<a title="twitchpy.charity_campaign_donation.CharityCampaignDonation" href="charity_campaign_donation.html#twitchpy.charity_campaign_donation.CharityCampaignDonation">CharityCampaignDonation</a>]</span>
+<span>def <span class="ident">get_charity_campaign_donations</span></span>(<span>self, broadcaster_id: str, first: int = 20) ‑> list[<a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation" href="dataclasses/charity_campaign_donation.html#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation">CharityCampaignDonation</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the list of donations that users have made to the broadcaster’s active charity campaign</p>
@@ -9502,7 +9508,7 @@ If the broadcaster wants to get their own settings (instead of having the modera
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_chatters"><code class="name flex">
-<span>def <span class="ident">get_chatters</span></span>(<span>self, broadcaster_id: str, moderator_id: str, first: int = 100) ‑> list[<a title="twitchpy.user.User" href="user.html#twitchpy.user.User">User</a>]</span>
+<span>def <span class="ident">get_chatters</span></span>(<span>self, broadcaster_id: str, moderator_id: str, first: int = 100) ‑> list[<a title="twitchpy.dataclasses.user.User" href="dataclasses/user.html#twitchpy.dataclasses.user.User">User</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the list of users that are connected to the broadcaster’s chat session</p>
@@ -9952,7 +9958,7 @@ Maximum: 25</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_eventsub_subscriptions"><code class="name flex">
-<span>def <span class="ident">get_eventsub_subscriptions</span></span>(<span>self, status: str = '', type: str = '', user_id: str = '') ‑> list[<a title="twitchpy.eventsub_subscription.EventSubSubscription" href="eventsub_subscription.html#twitchpy.eventsub_subscription.EventSubSubscription">EventSubSubscription</a>]</span>
+<span>def <span class="ident">get_eventsub_subscriptions</span></span>(<span>self, status: str = '', type: str = '', user_id: str = '') ‑> list[<a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription" href="dataclasses/eventsub_subscription.html#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription">EventSubSubscription</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get a list of your EventSub subscriptions
@@ -10277,7 +10283,7 @@ If not provided, the current version is returned</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_followed_channels"><code class="name flex">
-<span>def <span class="ident">get_followed_channels</span></span>(<span>self, user_id: str, broadcaster_id: str = '', first: int = 20) ‑> list[<a title="twitchpy.channel.Channel" href="channel.html#twitchpy.channel.Channel">Channel</a>]</span>
+<span>def <span class="ident">get_followed_channels</span></span>(<span>self, user_id: str, broadcaster_id: str = '', first: int = 20) ‑> list[<a title="twitchpy.dataclasses.channel.Channel" href="dataclasses/channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a list of broadcasters that the specified user follows</p>
@@ -10325,7 +10331,7 @@ Minimum: 1</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_followed_streams"><code class="name flex">
-<span>def <span class="ident">get_followed_streams</span></span>(<span>self, user_id: str, first: int = 100) ‑> list[<a title="twitchpy.stream.Stream" href="stream.html#twitchpy.stream.Stream">Stream</a>]</span>
+<span>def <span class="ident">get_followed_streams</span></span>(<span>self, user_id: str, first: int = 100) ‑> list[<a title="twitchpy.dataclasses.stream.Stream" href="dataclasses/stream.html#twitchpy.dataclasses.stream.Stream">Stream</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the list of broadcasters that the user follows and that are streaming live</p>
@@ -10418,7 +10424,7 @@ Valid values: "overview_v2"</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_games"><code class="name flex">
-<span>def <span class="ident">get_games</span></span>(<span>self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) ‑> list[<a title="twitchpy.game.Game" href="game.html#twitchpy.game.Game">Game</a>]</span>
+<span>def <span class="ident">get_games</span></span>(<span>self, id: list[str] = [], name: list[str] = [], igdb_id: list[str] = []) ‑> list[<a title="twitchpy.dataclasses.game.Game" href="dataclasses/game.html#twitchpy.dataclasses.game.Game">Game</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets information about specified categories or games</p>
@@ -10550,7 +10556,7 @@ This ID must match the user_id in the user access token</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_guest_star_session"><code class="name flex">
-<span>def <span class="ident">get_guest_star_session</span></span>(<span>self, broadcaster_id: str, moderator_id: str) ‑> <a title="twitchpy.guest_star_session.GuestStarSession" href="guest_star_session.html#twitchpy.guest_star_session.GuestStarSession">GuestStarSession</a></span>
+<span>def <span class="ident">get_guest_star_session</span></span>(<span>self, broadcaster_id: str, moderator_id: str) ‑> <a title="twitchpy.dataclasses.guest_star_session.GuestStarSession" href="dataclasses/guest_star_session.html#twitchpy.dataclasses.guest_star_session.GuestStarSession">GuestStarSession</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets information about an ongoing Guest Star session for a particular channel</p>
@@ -10587,7 +10593,7 @@ This ID must match the user ID in the user access token</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_hype_train_events"><code class="name flex">
-<span>def <span class="ident">get_hype_train_events</span></span>(<span>self, broadcaster_id: str, first: int = 1) ‑> list[<a title="twitchpy.hypetrain_event.HypeTrainEvent" href="hypetrain_event.html#twitchpy.hypetrain_event.HypeTrainEvent">HypeTrainEvent</a>]</span>
+<span>def <span class="ident">get_hype_train_events</span></span>(<span>self, broadcaster_id: str, first: int = 1) ‑> list[<a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent" href="dataclasses/hypetrain_event.html#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent">HypeTrainEvent</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the information of the most recent Hype Train of the given channel ID
@@ -10932,7 +10938,7 @@ Default: 20</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_streams"><code class="name flex">
-<span>def <span class="ident">get_streams</span></span>(<span>self, user_id: str | list[str] = '', user_login: str | list[str] = '', game_id: str | list[str] = '', type: str = 'all', language: str | list[str] = '', first: int = 20) ‑> list[<a title="twitchpy.stream.Stream" href="stream.html#twitchpy.stream.Stream">Stream</a>]</span>
+<span>def <span class="ident">get_streams</span></span>(<span>self, user_id: str | list[str] = '', user_login: str | list[str] = '', game_id: str | list[str] = '', type: str = 'all', language: str | list[str] = '', first: int = 20) ‑> list[<a title="twitchpy.dataclasses.stream.Stream" href="dataclasses/stream.html#twitchpy.dataclasses.stream.Stream">Stream</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a list of all streams
@@ -11304,7 +11310,7 @@ Default: "all"</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.get_vips"><code class="name flex">
-<span>def <span class="ident">get_vips</span></span>(<span>self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) ‑> list[<a title="twitchpy.user.User" href="user.html#twitchpy.user.User">User</a>]</span>
+<span>def <span class="ident">get_vips</span></span>(<span>self, broadcaster_id: str, user_id: list[str] = [], first: int = 20) ‑> list[<a title="twitchpy.dataclasses.user.User" href="dataclasses/user.html#twitchpy.dataclasses.user.User">User</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a list of the broadcaster’s VIPs</p>
@@ -12035,7 +12041,7 @@ Default: 20</dd>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.search_channels"><code class="name flex">
-<span>def <span class="ident">search_channels</span></span>(<span>self, query: str, first: int = 20, live_only: bool = False) ‑> list[<a title="twitchpy.channel.Channel" href="channel.html#twitchpy.channel.Channel">Channel</a>]</span>
+<span>def <span class="ident">search_channels</span></span>(<span>self, query: str, first: int = 20, live_only: bool = False) ‑> list[<a title="twitchpy.dataclasses.channel.Channel" href="dataclasses/channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the channels that match the specified query and have streamed content within the past 6 months
@@ -13427,7 +13433,9 @@ Specify this field only if method is set to websocket</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update_conduit_shards(self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;) -&gt; dict:
+<pre><code class="python">def update_conduit_shards(
+    self, conduit_id: str, shards: list[dict], session_id: str = &#34;&#34;
+) -&gt; dict:
     &#34;&#34;&#34;
     Updates shard(s) for a conduit
 

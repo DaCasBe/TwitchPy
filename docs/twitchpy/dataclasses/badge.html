@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.eventsub_subscription API documentation</title>
+<title>twitchpy.dataclasses.badge API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,42 +19,27 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.eventsub_subscription</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.badge</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class EventSubSubscription:
+<pre><code class="python">class Badge:
     &#34;&#34;&#34;
-    Represents an EventSub subscription
+    Represents a chat badge
     &#34;&#34;&#34;
 
-    def __init__(
-        self, id, status, type, version, condition, created_at, transport, cost
-    ):
+    def __init__(self, set_id, versions):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the subscription
-            status (str): The subscription’s status
-                          Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
-            type (str): The subscription’s type
-            version (str): The version of the subscription type
-            condition (dict): The subscription’s parameter values
-            created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-            transport (dict): The transport details used to send you notifications
-            cost (int): The amount that the subscription counts against your limit
+            set_id (str): ID for the chat badge set
+            versions (list): Chat badge versions for the set
         &#34;&#34;&#34;
 
-        self.id = id
-        self.status = status
-        self.type = type
-        self.version = version
-        self.condition = condition
-        self.created_at = created_at
-        self.transport = transport
-        self.cost = cost</code></pre>
+        self.set_id = set_id
+        self.versions = versions</code></pre>
 </details>
 </section>
 <section>
@@ -66,65 +51,37 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.eventsub_subscription.EventSubSubscription"><code class="flex name class">
-<span>class <span class="ident">EventSubSubscription</span></span>
-<span>(</span><span>id, status, type, version, condition, created_at, transport, cost)</span>
+<dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
+<span>class <span class="ident">Badge</span></span>
+<span>(</span><span>set_id, versions)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents an EventSub subscription</p>
+<div class="desc"><p>Represents a chat badge</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the subscription</dd>
-<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
-<dd>The subscription’s status
-Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
-<dd>The subscription’s type</dd>
-<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
-<dd>The version of the subscription type</dd>
-<dt><strong><code>condition</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The subscription’s parameter values</dd>
-<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
-<dd>The RFC 3339 timestamp indicating when the subscription was created</dd>
-<dt><strong><code>transport</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The transport details used to send you notifications</dd>
-<dt><strong><code>cost</code></strong> :&ensp;<code>int</code></dt>
-<dd>The amount that the subscription counts against your limit</dd>
+<dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>ID for the chat badge set</dd>
+<dt><strong><code>versions</code></strong> :&ensp;<code>list</code></dt>
+<dd>Chat badge versions for the set</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class EventSubSubscription:
+<pre><code class="python">class Badge:
     &#34;&#34;&#34;
-    Represents an EventSub subscription
+    Represents a chat badge
     &#34;&#34;&#34;
 
-    def __init__(
-        self, id, status, type, version, condition, created_at, transport, cost
-    ):
+    def __init__(self, set_id, versions):
         &#34;&#34;&#34;
         Args:
-            id (str): An ID that identifies the subscription
-            status (str): The subscription’s status
-                          Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
-            type (str): The subscription’s type
-            version (str): The version of the subscription type
-            condition (dict): The subscription’s parameter values
-            created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-            transport (dict): The transport details used to send you notifications
-            cost (int): The amount that the subscription counts against your limit
+            set_id (str): ID for the chat badge set
+            versions (list): Chat badge versions for the set
         &#34;&#34;&#34;
 
-        self.id = id
-        self.status = status
-        self.type = type
-        self.version = version
-        self.condition = condition
-        self.created_at = created_at
-        self.transport = transport
-        self.cost = cost</code></pre>
+        self.set_id = set_id
+        self.versions = versions</code></pre>
 </details>
 </dd>
 </dl>
@@ -138,13 +95,13 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.eventsub_subscription.EventSubSubscription" href="#twitchpy.eventsub_subscription.EventSubSubscription">EventSubSubscription</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.badge.Badge" href="#twitchpy.dataclasses.badge.Badge">Badge</a></code></h4>
 </li>
 </ul>
 </li>

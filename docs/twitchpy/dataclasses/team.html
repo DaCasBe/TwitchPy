@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.badge API documentation</title>
+<title>twitchpy.dataclasses.team API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,27 +19,55 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.badge</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.team</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">class Team:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a team
     &#34;&#34;&#34;
 
-    def __init__(self, set_id, versions):
+    def __init__(
+        self,
+        users,
+        background_image_url,
+        banner,
+        created_at,
+        updated_at,
+        info,
+        thumbnail_url,
+        team_name,
+        team_display_name,
+        id,
+    ):
         &#34;&#34;&#34;
         Args:
-            set_id (str): ID for the chat badge set
-            versions (list): Chat badge versions for the set
+            users (list): Users in the team
+            background_image_url (str): URL of the team background image
+            banner (str): URL for the team banner
+            created_at (str): Date and time the team was created
+            updated_at (str): Date and time the team was last updated
+            info (str): Team description
+            thumbnail_url (str): Image URL for the team logo
+            team_name (str): Team name
+            team_display_name (str): Team display name
+            id (str): Team ID
         &#34;&#34;&#34;
 
-        self.set_id = set_id
-        self.versions = versions</code></pre>
+        self.users = users
+        self.background_image_url = background_image_url
+        self.banner = banner
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.info = info
+        self.thumbnail_url = thumbnail_url
+        self.team_name = team_name
+        self.team_display_name = team_display_name
+        self.id = id</code></pre>
 </details>
 </section>
 <section>
@@ -51,37 +79,81 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.badge.Badge"><code class="flex name class">
-<span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id, versions)</span>
+<dt id="twitchpy.dataclasses.team.Team"><code class="flex name class">
+<span>class <span class="ident">Team</span></span>
+<span>(</span><span>users, background_image_url, banner, created_at, updated_at, info, thumbnail_url, team_name, team_display_name, id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a chat badge</p>
+<div class="desc"><p>Represents a team</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list</code></dt>
-<dd>Chat badge versions for the set</dd>
+<dt><strong><code>users</code></strong> :&ensp;<code>list</code></dt>
+<dd>Users in the team</dd>
+<dt><strong><code>background_image_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the team background image</dd>
+<dt><strong><code>banner</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL for the team banner</dd>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>Date and time the team was created</dd>
+<dt><strong><code>updated_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>Date and time the team was last updated</dd>
+<dt><strong><code>info</code></strong> :&ensp;<code>str</code></dt>
+<dd>Team description</dd>
+<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>Image URL for the team logo</dd>
+<dt><strong><code>team_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Team name</dd>
+<dt><strong><code>team_display_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Team display name</dd>
+<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Team ID</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">class Team:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a team
     &#34;&#34;&#34;
 
-    def __init__(self, set_id, versions):
+    def __init__(
+        self,
+        users,
+        background_image_url,
+        banner,
+        created_at,
+        updated_at,
+        info,
+        thumbnail_url,
+        team_name,
+        team_display_name,
+        id,
+    ):
         &#34;&#34;&#34;
         Args:
-            set_id (str): ID for the chat badge set
-            versions (list): Chat badge versions for the set
+            users (list): Users in the team
+            background_image_url (str): URL of the team background image
+            banner (str): URL for the team banner
+            created_at (str): Date and time the team was created
+            updated_at (str): Date and time the team was last updated
+            info (str): Team description
+            thumbnail_url (str): Image URL for the team logo
+            team_name (str): Team name
+            team_display_name (str): Team display name
+            id (str): Team ID
         &#34;&#34;&#34;
 
-        self.set_id = set_id
-        self.versions = versions</code></pre>
+        self.users = users
+        self.background_image_url = background_image_url
+        self.banner = banner
+        self.created_at = created_at
+        self.updated_at = updated_at
+        self.info = info
+        self.thumbnail_url = thumbnail_url
+        self.team_name = team_name
+        self.team_display_name = team_display_name
+        self.id = id</code></pre>
 </details>
 </dd>
 </dl>
@@ -95,13 +167,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.badge.Badge" href="#twitchpy.badge.Badge">Badge</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.team.Team" href="#twitchpy.dataclasses.team.Team">Team</a></code></h4>
 </li>
 </ul>
 </li>

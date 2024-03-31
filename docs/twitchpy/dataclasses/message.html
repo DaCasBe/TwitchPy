@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.hypetrain_event API documentation</title>
+<title>twitchpy.dataclasses.message API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,33 +19,49 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.hypetrain_event</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.message</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class HypeTrainEvent:
+<pre><code class="python">class Message:
     &#34;&#34;&#34;
-    Represents a Hype Train event
+    Represents a message
     &#34;&#34;&#34;
 
-    def __init__(self, id, event_type, event_timestamp, version, event_data):
+    def __init__(
+        self,
+        prefix,
+        user,
+        channel,
+        irc_command,
+        irc_args,
+        text,
+        text_command,
+        text_args,
+    ):
         &#34;&#34;&#34;
         Args:
-            id (str): The distinct ID of the event
-            event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-            event_timestamp (str): RFC3339 formatted timestamp of event
-            version (str): Returns the version of the endpoint
-            event_data (dict): The event data
+            prefix (str): Message&#39;s prefix
+            user (str): User who has sent the message
+            channel (str): Channel on which the message was sent
+            irc_command (str): IRC command related to the message
+            irc_args (str): IRC command&#39;s arguments
+            text (str): Message&#39;s text
+            text_command (str): Command related to the message
+            text_args (str): Command&#39;s arguments
         &#34;&#34;&#34;
 
-        self.id = id
-        self.event_type = event_type
-        self.event_timestamp = event_timestamp
-        self.version = version
-        self.event_data = event_data</code></pre>
+        self.prefix = prefix
+        self.user = user
+        self.channel = channel
+        self.irc_command = irc_command
+        self.irc_args = irc_args
+        self.text = text
+        self.text_command = text_command
+        self.text_args = text_args</code></pre>
 </details>
 </section>
 <section>
@@ -57,49 +73,71 @@
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.hypetrain_event.HypeTrainEvent"><code class="flex name class">
-<span>class <span class="ident">HypeTrainEvent</span></span>
-<span>(</span><span>id, event_type, event_timestamp, version, event_data)</span>
+<dt id="twitchpy.dataclasses.message.Message"><code class="flex name class">
+<span>class <span class="ident">Message</span></span>
+<span>(</span><span>prefix, user, channel, irc_command, irc_args, text, text_command, text_args)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a Hype Train event</p>
+<div class="desc"><p>Represents a message</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The distinct ID of the event</dd>
-<dt><strong><code>event_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>Displays hypetrain.{event_name}, currently only hypetrain.progression</dd>
-<dt><strong><code>event_timestamp</code></strong> :&ensp;<code>str</code></dt>
-<dd>RFC3339 formatted timestamp of event</dd>
-<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
-<dd>Returns the version of the endpoint</dd>
-<dt><strong><code>event_data</code></strong> :&ensp;<code>dict</code></dt>
-<dd>The event data</dd>
+<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>Message's prefix</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
+<dd>User who has sent the message</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
+<dd>Channel on which the message was sent</dd>
+<dt><strong><code>irc_command</code></strong> :&ensp;<code>str</code></dt>
+<dd>IRC command related to the message</dd>
+<dt><strong><code>irc_args</code></strong> :&ensp;<code>str</code></dt>
+<dd>IRC command's arguments</dd>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Message's text</dd>
+<dt><strong><code>text_command</code></strong> :&ensp;<code>str</code></dt>
+<dd>Command related to the message</dd>
+<dt><strong><code>text_args</code></strong> :&ensp;<code>str</code></dt>
+<dd>Command's arguments</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class HypeTrainEvent:
+<pre><code class="python">class Message:
     &#34;&#34;&#34;
-    Represents a Hype Train event
+    Represents a message
     &#34;&#34;&#34;
 
-    def __init__(self, id, event_type, event_timestamp, version, event_data):
+    def __init__(
+        self,
+        prefix,
+        user,
+        channel,
+        irc_command,
+        irc_args,
+        text,
+        text_command,
+        text_args,
+    ):
         &#34;&#34;&#34;
         Args:
-            id (str): The distinct ID of the event
-            event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-            event_timestamp (str): RFC3339 formatted timestamp of event
-            version (str): Returns the version of the endpoint
-            event_data (dict): The event data
+            prefix (str): Message&#39;s prefix
+            user (str): User who has sent the message
+            channel (str): Channel on which the message was sent
+            irc_command (str): IRC command related to the message
+            irc_args (str): IRC command&#39;s arguments
+            text (str): Message&#39;s text
+            text_command (str): Command related to the message
+            text_args (str): Command&#39;s arguments
         &#34;&#34;&#34;
 
-        self.id = id
-        self.event_type = event_type
-        self.event_timestamp = event_timestamp
-        self.version = version
-        self.event_data = event_data</code></pre>
+        self.prefix = prefix
+        self.user = user
+        self.channel = channel
+        self.irc_command = irc_command
+        self.irc_args = irc_args
+        self.text = text
+        self.text_command = text_command
+        self.text_args = text_args</code></pre>
 </details>
 </dd>
 </dl>
@@ -113,13 +151,13 @@
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="twitchpy" href="index.html">twitchpy</a></code></li>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.hypetrain_event.HypeTrainEvent" href="#twitchpy.hypetrain_event.HypeTrainEvent">HypeTrainEvent</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.message.Message" href="#twitchpy.dataclasses.message.Message">Message</a></code></h4>
 </li>
 </ul>
 </li>
