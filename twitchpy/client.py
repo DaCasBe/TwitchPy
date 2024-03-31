@@ -5,27 +5,29 @@ import os
 import requests
 
 from . import errors
-from .dataclasses import Channel
-from .dataclasses import Reward
-from .dataclasses import Redemption
-from .dataclasses import CharityCampaign
-from .dataclasses import CharityCampaignDonation
-from .dataclasses import User
-from .dataclasses import Emote
-from .dataclasses import Badge
-from .dataclasses import Clip
-from .dataclasses import Extension
-from .dataclasses import EventSubSubscription
-from .dataclasses import Game
-from .dataclasses import GuestStarSession
-from .dataclasses import HypeTrainEvent
-from .dataclasses import Poll
-from .dataclasses import Prediction
-from .dataclasses import StreamSchedule
-from .dataclasses import Stream
-from .dataclasses import Tag
-from .dataclasses import Team
-from .dataclasses import Video
+from .dataclasses import (
+    Badge,
+    Channel,
+    CharityCampaign,
+    CharityCampaignDonation,
+    Clip,
+    Emote,
+    EventSubSubscription,
+    Extension,
+    Game,
+    GuestStarSession,
+    HypeTrainEvent,
+    Poll,
+    Prediction,
+    Redemption,
+    Reward,
+    Stream,
+    StreamSchedule,
+    Tag,
+    Team,
+    User,
+    Video,
+)
 
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"

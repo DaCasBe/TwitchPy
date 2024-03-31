@@ -1,2 +1,2 @@
-from .client import Client
 from .bot import Bot
+from .client import Client

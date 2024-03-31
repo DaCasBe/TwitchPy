@@ -2,18 +2,20 @@ import socket
 import ssl
 
 from .client import Client
-from .dataclasses import Message
-from .dataclasses import Channel
-from .dataclasses import CharityCampaign
-from .dataclasses import CharityCampaignDonation
-from .dataclasses import User
-from .dataclasses import EventSubSubscription
-from .dataclasses import Game
-from .dataclasses import GuestStarSession
-from .dataclasses import HypeTrainEvent
-from .dataclasses import Poll
-from .dataclasses import Prediction
-from .dataclasses import Stream
+from .dataclasses import (
+    Channel,
+    CharityCampaign,
+    CharityCampaignDonation,
+    EventSubSubscription,
+    Game,
+    GuestStarSession,
+    HypeTrainEvent,
+    Message,
+    Poll,
+    Prediction,
+    Stream,
+    User,
+)
 
 
 class Bot:
