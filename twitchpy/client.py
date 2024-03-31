@@ -4,28 +4,28 @@ import os
 
 import requests
 
-import twitchpy.errors
-from twitchpy.badge import Badge
-from twitchpy.channel import Channel
-from twitchpy.charity_campaign import CharityCampaign
-from twitchpy.charity_campaign_donation import CharityCampaignDonation
-from twitchpy.clip import Clip
-from twitchpy.emote import Emote
-from twitchpy.eventsub_subscription import EventSubSubscription
-from twitchpy.extension import Extension
-from twitchpy.game import Game
-from twitchpy.guest_star_session import GuestStarSession
-from twitchpy.hypetrain_event import HypeTrainEvent
-from twitchpy.poll import Poll
-from twitchpy.prediction import Prediction
-from twitchpy.redemption import Redemption
-from twitchpy.reward import Reward
-from twitchpy.stream import Stream
-from twitchpy.stream_schedule import StreamSchedule
-from twitchpy.tag import Tag
-from twitchpy.team import Team
-from twitchpy.user import User
-from twitchpy.video import Video
+from . import errors
+from .dataclasses import Channel
+from .dataclasses import Reward
+from .dataclasses import Redemption
+from .dataclasses import CharityCampaign
+from .dataclasses import CharityCampaignDonation
+from .dataclasses import User
+from .dataclasses import Emote
+from .dataclasses import Badge
+from .dataclasses import Clip
+from .dataclasses import Extension
+from .dataclasses import EventSubSubscription
+from .dataclasses import Game
+from .dataclasses import GuestStarSession
+from .dataclasses import HypeTrainEvent
+from .dataclasses import Poll
+from .dataclasses import Prediction
+from .dataclasses import StreamSchedule
+from .dataclasses import Stream
+from .dataclasses import Tag
+from .dataclasses import Team
+from .dataclasses import Video
 
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
@@ -101,7 +101,7 @@ class Client:
             return response.json()["access_token"]
 
         else:
-            raise twitchpy.errors.AppTokenError("Error obtaining app token")
+            raise errors.AppTokenError("Error obtaining app token")
 
     def __is_last_code_used(self, code):
         try:
@@ -173,7 +173,7 @@ class Client:
             return response["access_token"], response["refresh_token"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def __refresh_user_tokens(self, refresh_user_token):
         url = URL_OAUTH2_TOKEN
@@ -191,7 +191,7 @@ class Client:
             return response["access_token"], response["refresh_token"]
 
         else:
-            raise twitchpy.errors.UserTokenError("Error obtaining user token")
+            raise errors.UserTokenError("Error obtaining user token")
 
     def __get_user_token(self, code):
         if self.__is_last_code_used(code) or (
@@ -224,7 +224,7 @@ class Client:
                           Valid options are 30, 60, 90, 120, 150 and 180
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -245,7 +245,7 @@ class Client:
             return response["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_ad_schedule(self, broadcaster_id: str) -> dict:
         """
@@ -255,7 +255,7 @@ class Client:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -274,7 +274,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def snooze_next_ad(self, broadcaster_id) -> dict:
         """
@@ -284,7 +284,7 @@ class Client:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -303,7 +303,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_extension_analytics(
         self, ended_at="", extension_id="", first=20, started_at="", type=""
@@ -325,7 +325,7 @@ class Client:
                                   Valid values: "overview_v2"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -370,7 +370,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return extension_analytics
 
@@ -393,7 +393,7 @@ class Client:
                                   Valid values: "overview_v2"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -438,7 +438,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return game_analytics
 
@@ -461,7 +461,7 @@ class Client:
                                      As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -492,7 +492,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_cheermotes(self, broadcaster_id=""):
         """
@@ -503,7 +503,7 @@ class Client:
             broadcaster_id (str, optional): ID for the broadcaster who might own specialized Cheermotes
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -525,7 +525,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_extension_transactions(self, extension_id, id=[], first=20):
         """
@@ -540,7 +540,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -583,7 +583,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return extension_transactions
 
@@ -596,7 +596,7 @@ class Client:
                 Maximum: 100
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Channel
@@ -630,7 +630,7 @@ class Client:
             return channel
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def modify_channel_information(
         self,
@@ -701,7 +701,7 @@ class Client:
             broadcaster_id (str): Broadcaster’s user ID associated with the channel
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -727,7 +727,7 @@ class Client:
             return users
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_followed_channels(
         self, user_id: str, broadcaster_id: str = "", first: int = 20
@@ -746,7 +746,7 @@ class Client:
                 Minimum: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Channel]
@@ -787,7 +787,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return channels
 
@@ -808,7 +808,7 @@ class Client:
                 Minimum: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Channel]
@@ -849,7 +849,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return channels
 
@@ -900,7 +900,7 @@ class Client:
                                                                     Default: false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Reward
@@ -985,7 +985,7 @@ class Client:
             return reward
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def delete_custom_reward(self, broadcaster_id, id):
         """
@@ -1020,7 +1020,7 @@ class Client:
                                                       Default: false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1078,7 +1078,7 @@ class Client:
             return rewards
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_custom_reward_redemption(
         self, broadcaster_id, reward_id, id=[], status="", sort="OLDEST", first=20
@@ -1101,7 +1101,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1160,7 +1160,7 @@ class Client:
                     )
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return redemptions
 
@@ -1213,7 +1213,7 @@ class Client:
             should_redemptions_skip_request_queue (bool, optional): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Reward
@@ -1307,7 +1307,7 @@ class Client:
             return reward
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_redemption_status(self, id, broadcaster_id, reward_id, status=""):
         """
@@ -1325,7 +1325,7 @@ class Client:
                                     Updating to CANCELED will refund the user their Channel Points
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Redemption
@@ -1368,7 +1368,7 @@ class Client:
             return redemption
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_charity_campaign(self, broadcaster_id: str) -> CharityCampaign:
         """
@@ -1379,7 +1379,7 @@ class Client:
                 This ID must match the user ID in the access token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             CharityCampaign
@@ -1409,7 +1409,7 @@ class Client:
             )
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_charity_campaign_donations(
         self, broadcaster_id: str, first: int = 20
@@ -1425,7 +1425,7 @@ class Client:
                 Minimum: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[CharityCampaignDonation]
@@ -1469,7 +1469,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return donations
 
@@ -1489,7 +1489,7 @@ class Client:
                 Maximum: 1000
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[User]
@@ -1525,7 +1525,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return users
 
@@ -1538,7 +1538,7 @@ class Client:
             broadcaster_id (str): The broadcaster whose emotes are being requested
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1574,7 +1574,7 @@ class Client:
             return emotes
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_global_emotes(self):
         """
@@ -1582,7 +1582,7 @@ class Client:
         Global emotes are Twitch-specific emoticons that every user can use in Twitch chat
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1614,7 +1614,7 @@ class Client:
             return emotes
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_emote_sets(self, emote_set_id):
         """
@@ -1625,7 +1625,7 @@ class Client:
                                  Maximum: 25
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1660,7 +1660,7 @@ class Client:
             return emotes
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_channel_chat_badges(self, broadcaster_id):
         """
@@ -1672,7 +1672,7 @@ class Client:
                                   Provided broadcaster_id must match the user_id in the user OAuth token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1696,14 +1696,14 @@ class Client:
             return badges
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_global_chat_badges(self):
         """
         Gets a list of chat badges that can be used in chat for any channel
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -1726,7 +1726,7 @@ class Client:
             return badges
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_chat_settings(self, broadcaster_id, moderator_id=""):
         """
@@ -1740,7 +1740,7 @@ class Client:
                                           If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -1759,7 +1759,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_chat_settings(
         self,
@@ -1813,7 +1813,7 @@ class Client:
                                                Default is false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -1861,7 +1861,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def send_chat_announcement(
         self, broadcaster_id: str, moderator_id: str, message: str, color: str = ""
@@ -1932,7 +1932,7 @@ class Client:
                 Maximum: 100
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -1951,7 +1951,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_user_chat_color(self, user_id: str, color: str) -> None:
         """
@@ -1984,7 +1984,7 @@ class Client:
                                         Default: false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2006,7 +2006,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_clips(
         self,
@@ -2033,7 +2033,7 @@ class Client:
             is_featured (bool): A Boolean value that determines whether the response includes featured clips
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Clip]
@@ -2106,7 +2106,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return clips
 
@@ -2115,7 +2115,7 @@ class Client:
         Gets the conduits for a client ID
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -2133,7 +2133,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def create_conduits(self, shard_count: int) -> dict:
         """
@@ -2143,7 +2143,7 @@ class Client:
             shard_count (int): The number of shards to create for this conduit
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2163,7 +2163,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_conduits(self, id: str, shard_count: int) -> dict:
         """
@@ -2175,7 +2175,7 @@ class Client:
             shard_count (int): The new number of shards for this conduit
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2195,7 +2195,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def delete_conduit(self, id: str) -> None:
         """
@@ -2205,7 +2205,7 @@ class Client:
             id (str): Conduit ID
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
         """
 
         url = ENDPOINT_CONDUITS
@@ -2218,7 +2218,7 @@ class Client:
         response = requests.delete(url, headers=headers, data=data)
 
         if not response.ok:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
         """
@@ -2229,7 +2229,7 @@ class Client:
             status (str): Status to filter by
 
         Raise:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -2256,7 +2256,7 @@ class Client:
             response = requests.get(url, headers=headers, params=params)
 
         if not response.ok:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
         return conduit_shards
 
@@ -2273,7 +2273,7 @@ class Client:
                 Specify this field only if method is set to websocket
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2296,7 +2296,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
         """
@@ -2307,7 +2307,7 @@ class Client:
                 Possible values: "bg-BG", "cs-CZ", "da-DK", "da-DK", "de-DE", "el-GR", "en-GB", "en-US", "es-ES", "es-MX", "fi-FI", "fr-FR", "hu-HU", "it-IT", "ja-JP", "ko-KR", "nl-NL", "no-NO", "pl-PL", "pt-BT", "pt-PT", "ro-RO", "ru-RU", "sk-SK", "sv-SE", "th-TH", "tr-TR", "vi-VN", "zh-CN", "zh-TW"
 
         Raise:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -2329,7 +2329,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_drops_entitlements(
         self, id="", user_id="", game_id="", fulfillment_status="", first=20
@@ -2347,7 +2347,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2392,7 +2392,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return drops_entitlements
 
@@ -2407,7 +2407,7 @@ class Client:
                                                 Valid values are "CLAIMED" or "FULFILLED"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2433,7 +2433,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_extension_configuration_segment(
         self, broadcaster_id, extension_id, segment
@@ -2451,7 +2451,7 @@ class Client:
                            Valid values are: "broadcaster", "developer", "global"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2474,7 +2474,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def set_extension_configuration_segment(
         self, extension_id, segment, broadcaster_id="", content="", version=""
@@ -2579,7 +2579,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2614,7 +2614,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return channels
 
@@ -2624,7 +2624,7 @@ class Client:
         Each secret object contains a base64-encoded secret, a UTC timestamp when the secret becomes active, and a timestamp when the secret expires
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2642,7 +2642,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def create_extension_secret(self, delay=300):
         """
@@ -2655,7 +2655,7 @@ class Client:
                                    Default: 300
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2677,7 +2677,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def send_extension_chat_message(
         self, broadcaster_id, text, extension_id, extension_version
@@ -2720,7 +2720,7 @@ class Client:
                                                If not provided, the current version is returned
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2773,7 +2773,7 @@ class Client:
             return extensions
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_released_extensions(self, extension_id, extension_version=""):
         """
@@ -2785,7 +2785,7 @@ class Client:
                                                If not provided, the current version is returned
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2838,7 +2838,7 @@ class Client:
             return extensions
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_extension_bits_products(
         self, extension_client_id, should_include_all=False
@@ -2852,7 +2852,7 @@ class Client:
                                                  Default: false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -2874,7 +2874,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_extension_bits_product(
         self,
@@ -2907,7 +2907,7 @@ class Client:
                                            Default: false
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -2935,7 +2935,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def create_eventsub_subscription(self, type, version, condition, transport):
         """
@@ -2952,7 +2952,7 @@ class Client:
                               In addition to the method string, a webhook transport must include the callback and secret information
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             EventSubSubscription
@@ -2989,7 +2989,7 @@ class Client:
             return subscription
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def delete_eventsub_subscription(self, id):
         """
@@ -3022,7 +3022,7 @@ class Client:
             user_id (str, optional): Filter subscriptions by user ID
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[EventSubSubscription]
@@ -3066,7 +3066,7 @@ class Client:
             return subscriptions
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_top_games(self, first=20):
         """
@@ -3077,7 +3077,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -3119,7 +3119,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return games
 
@@ -3138,7 +3138,7 @@ class Client:
                 Maximum: 100
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Game]
@@ -3171,7 +3171,7 @@ class Client:
                 )
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
         return games
 
@@ -3184,7 +3184,7 @@ class Client:
             broadcaster_id (str): The ID of the broadcaster that created the goals
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -3203,7 +3203,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_channel_guest_star_settings(
         self, broadcaster_id: str, moderator_id: str
@@ -3217,7 +3217,7 @@ class Client:
                 This ID must match the user ID in the user access token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -3236,7 +3236,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_channel_guest_star_settings(
         self,
@@ -3297,7 +3297,7 @@ class Client:
                 This ID must match the user ID in the user access token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             GuestStarSession
@@ -3318,7 +3318,7 @@ class Client:
             return GuestStarSession(response["id"], response["guests"])
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["data"]["message"])
+            raise errors.ClientError(response.json()["data"]["message"])
 
     def create_guest_star_session(self, broadcaster_id: str) -> GuestStarSession:
         """
@@ -3329,7 +3329,7 @@ class Client:
                 Provided broadcaster_id must match the user_id in the auth token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             GuestStarSession
@@ -3350,7 +3350,7 @@ class Client:
             return GuestStarSession(response["id"], response["guests"])
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["data"]["message"])
+            raise errors.ClientError(response.json()["data"]["message"])
 
     def end_guest_star_session(
         self, broadcaster_id: str, session_id: str
@@ -3364,7 +3364,7 @@ class Client:
             session_id (str): ID for the session to end on behalf of the broadcaster
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             GuestStarSession
@@ -3385,7 +3385,7 @@ class Client:
             return GuestStarSession(response["id"], response["guests"])
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["data"]["message"])
+            raise errors.ClientError(response.json()["data"]["message"])
 
     def get_guest_star_invites(
         self, broadcaster_id: str, moderator_id: str, session_id: str
@@ -3400,7 +3400,7 @@ class Client:
             session_id (str): The session ID to query for invite status
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -3423,7 +3423,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def send_guest_star_invite(
         self, broadcaster_id: str, moderator_id: str, session_id: str, guest_id: str
@@ -3663,7 +3663,7 @@ class Client:
                 Default: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[HypeTrainEvent]
@@ -3706,7 +3706,7 @@ class Client:
                     cursor = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return events
 
@@ -3722,7 +3722,7 @@ class Client:
             msg_user (str): Message text
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[dict]
@@ -3744,7 +3744,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def manage_held_automod_messages(self, user_id, msg_id, action):
         """
@@ -3778,7 +3778,7 @@ class Client:
                                 If the broadcaster wants to get their own AutoMod settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -3797,7 +3797,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_automod_settings(
         self,
@@ -3832,7 +3832,7 @@ class Client:
             swearing (int, optional): The Automod level for profanity
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -3879,7 +3879,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_banned_users(self, broadcaster_id, user_id=[], first=20):
         """
@@ -3893,7 +3893,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -3936,7 +3936,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return users
 
@@ -3960,7 +3960,7 @@ class Client:
                                       To end a user’s timeout early, set this field to 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -3986,7 +3986,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def unban_user(self, broadcaster_id, moderator_id, user_id):
         """
@@ -4000,7 +4000,7 @@ class Client:
             user_id (str): The ID of the user to remove the ban or timeout from
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
         """
 
         url = "https://api.twitch.tv/helix/moderation/bans"
@@ -4031,7 +4031,7 @@ class Client:
                                    The default is 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -4071,7 +4071,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return blocked_terms
 
@@ -4091,7 +4091,7 @@ class Client:
                         The wildcard character must appear at the beginning or end of a word, or set of characters
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -4115,7 +4115,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def remove_blocked_term(self, broadcaster_id, id, moderator_id):
         """
@@ -4180,7 +4180,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -4218,7 +4218,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return self.get_users(id=ids)
 
@@ -4276,7 +4276,7 @@ class Client:
                 Maximum: 100
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[User]
@@ -4318,7 +4318,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return users
 
@@ -4372,7 +4372,7 @@ class Client:
             is_active (bool): A Boolean value that determines whether to activate Shield Mode
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -4396,7 +4396,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            twitchpy.errors.ClientError(response.json()["message"])
+            errors.ClientError(response.json()["message"])
 
     def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
         """
@@ -4408,7 +4408,7 @@ class Client:
                 This ID must match the user ID in the access token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -4427,7 +4427,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            twitchpy.errors.ClientError(response.json()["message"])
+            errors.ClientError(response.json()["message"])
 
     def get_polls(self, broadcaster_id, id=[], first=20):
         """
@@ -4443,7 +4443,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -4498,7 +4498,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return polls
 
@@ -4532,7 +4532,7 @@ class Client:
                 Maximum: 1000000
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Poll
@@ -4584,7 +4584,7 @@ class Client:
             return poll
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def end_poll(self, broadcaster_id, id, status):
         """
@@ -4598,7 +4598,7 @@ class Client:
                           Valid values: "TERMINATED", "ARCHIVED"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Poll
@@ -4634,7 +4634,7 @@ class Client:
             return poll
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_predictions(self, broadcaster_id, id=[], first=20):
         """
@@ -4649,7 +4649,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -4702,7 +4702,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return predictions
 
@@ -4729,7 +4729,7 @@ class Client:
                 Maximum: 1800
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Prediction
@@ -4776,7 +4776,7 @@ class Client:
             return prediction
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def end_prediction(self, broadcaster_id, id, status, winning_outcome_id=""):
         """
@@ -4794,7 +4794,7 @@ class Client:
                                                 This parameter is required if status is being set to RESOLVED
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Prediction
@@ -4832,7 +4832,7 @@ class Client:
             return prediction
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
         """
@@ -4863,7 +4863,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def cancel_raid(self, broadcaster_id: str) -> None:
         """
@@ -4903,7 +4903,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -4955,7 +4955,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return schedules
 
@@ -4979,7 +4979,7 @@ class Client:
             return response.text
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_channel_stream_schedule(
         self,
@@ -5006,7 +5006,7 @@ class Client:
                                       Required if is_vacation_enabled is set to true
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
         """
 
         url = "https://api.twitch.tv/helix/schedule/settings"
@@ -5056,7 +5056,7 @@ class Client:
                                    Maximum: 140 characters
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             StreamSchedule
@@ -5098,7 +5098,7 @@ class Client:
             return schedule
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_channel_stream_schedule_segment(
         self,
@@ -5128,7 +5128,7 @@ class Client:
             timezone (str, optional): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             StreamSchedule
@@ -5174,7 +5174,7 @@ class Client:
             return schedule
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def delete_channel_stream_schedule_segment(self, broadcaster_id, id):
         """
@@ -5205,7 +5205,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5242,7 +5242,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return games
 
@@ -5260,7 +5260,7 @@ class Client:
             live_only (bool): A Boolean value that determines whether the response includes only channels that are currently streaming live
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Channel]
@@ -5308,7 +5308,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return channels
 
@@ -5320,7 +5320,7 @@ class Client:
             broadcaster_id (str): User ID of the broadcaster
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             str
@@ -5339,7 +5339,7 @@ class Client:
             return response.json()["data"][0]["stream_key"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_streams(
         self,
@@ -5369,7 +5369,7 @@ class Client:
                 Minimum: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Stream]
@@ -5436,7 +5436,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return streams
 
@@ -5451,7 +5451,7 @@ class Client:
                 Minimum: 1
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list[Stream]
@@ -5503,7 +5503,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return streams
 
@@ -5519,7 +5519,7 @@ class Client:
                                          Max length is 140 characters
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5542,7 +5542,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_stream_markers(self, user_id="", video_id="", first=20):
         """
@@ -5558,7 +5558,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5597,7 +5597,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return markers
 
@@ -5614,7 +5614,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5657,7 +5657,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return subscriptions
 
@@ -5670,7 +5670,7 @@ class Client:
             user_id (str): User ID of a Twitch viewer
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             dict
@@ -5689,7 +5689,7 @@ class Client:
             return response.json()["data"][0]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_all_stream_tags(self, first=20, tag_id=[]):
         """
@@ -5701,7 +5701,7 @@ class Client:
             tag_id (list, optional): ID of a tag
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5746,7 +5746,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return tags
 
@@ -5758,7 +5758,7 @@ class Client:
             broadcaster_id (str): User ID of the channel to get tags
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5790,7 +5790,7 @@ class Client:
             return tags
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_channel_teams(self, broadcaster_id):
         """
@@ -5800,7 +5800,7 @@ class Client:
             broadcaster_id (str): User ID for a Twitch user
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5824,7 +5824,7 @@ class Client:
             return teams
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_teams(self, name="", id=""):
         """
@@ -5836,7 +5836,7 @@ class Client:
             id (str, optional): Team ID
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             Team
@@ -5882,7 +5882,7 @@ class Client:
             return team
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_users(self, id=[], login=[]):
         """
@@ -5897,7 +5897,7 @@ class Client:
                                     Limit: 100
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -5944,7 +5944,7 @@ class Client:
             return users
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_user(self, description=""):
         """
@@ -5955,7 +5955,7 @@ class Client:
             description (str, optional): User’s account description
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             User
@@ -5990,7 +5990,7 @@ class Client:
             return user
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_user_block_list(self, broadcaster_id, first=20):
         """
@@ -6002,7 +6002,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6039,7 +6039,7 @@ class Client:
                     ids.append(user["user_id"])
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return self.get_users(id=ids)
 
@@ -6092,7 +6092,7 @@ class Client:
         Gets a list of all extensions (both active and inactive) for a specified user, identified by a Bearer token
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6110,7 +6110,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_user_active_extensions(self, user_id=""):
         """
@@ -6120,7 +6120,7 @@ class Client:
             user_id (str, optional): ID of the user whose installed extensions will be returned
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6142,7 +6142,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def update_user_extensions(self):
         """
@@ -6150,7 +6150,7 @@ class Client:
         If you try to activate a given extension under multiple extension types, the last write wins (and there is no guarantee of write order)
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6169,7 +6169,7 @@ class Client:
             return response.json()["data"]
 
         else:
-            raise twitchpy.errors.ClientError(response.json()["message"])
+            raise errors.ClientError(response.json()["message"])
 
     def get_videos(
         self,
@@ -6206,7 +6206,7 @@ class Client:
                                   Default: "all"
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6279,7 +6279,7 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return videos
 
@@ -6338,7 +6338,7 @@ class Client:
                                    Default: 20
 
         Raises:
-            twitchpy.errors.ClientError
+            errors.ClientError
 
         Returns:
             list
@@ -6378,6 +6378,6 @@ class Client:
                     after = response["pagination"]["cursor"]
 
             else:
-                raise twitchpy.errors.ClientError(response.json()["message"])
+                raise errors.ClientError(response.json()["message"])
 
         return subscriptions

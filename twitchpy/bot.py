@@ -1,19 +1,19 @@
 import socket
 import ssl
 
-from twitchpy.channel import Channel
-from twitchpy.charity_campaign import CharityCampaign
-from twitchpy.charity_campaign_donation import CharityCampaignDonation
-from twitchpy.client import Client
-from twitchpy.eventsub_subscription import EventSubSubscription
-from twitchpy.game import Game
-from twitchpy.guest_star_session import GuestStarSession
-from twitchpy.hypetrain_event import HypeTrainEvent
-from twitchpy.message import Message
-from twitchpy.poll import Poll
-from twitchpy.prediction import Prediction
-from twitchpy.stream import Stream
-from twitchpy.user import User
+from .client import Client
+from .dataclasses import Message
+from .dataclasses import Channel
+from .dataclasses import CharityCampaign
+from .dataclasses import CharityCampaignDonation
+from .dataclasses import User
+from .dataclasses import EventSubSubscription
+from .dataclasses import Game
+from .dataclasses import GuestStarSession
+from .dataclasses import HypeTrainEvent
+from .dataclasses import Poll
+from .dataclasses import Prediction
+from .dataclasses import Stream
 
 
 class Bot:
