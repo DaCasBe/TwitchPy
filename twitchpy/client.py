@@ -1160,6 +1160,40 @@ class Client:
             moderator_id,
         )
 
+    def send_chat_message(
+        self,
+        broadcaster_id: str,
+        sender_id: str,
+        message: str,
+        reply_parent_message_id: str = "",
+    ) -> dict:
+        """
+        Sends a message to the broadcaster’s chat room
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose chat room the message will be sent to
+            sender_id (str): The ID of the user sending the message
+                This ID must match the user ID in the user access token
+            message (str): The message to send
+                The message is limited to a maximum of 500 characters
+            reply_parent_message_id (str): The ID of the chat message being replied to
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            dict
+        """
+
+        return chats.send_chat_message(
+            self.__app_token if self.__user_token == "" else self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            sender_id,
+            message,
+            reply_parent_message_id,
+        )
+
     def get_user_chat_color(self, user_id: str | list[str]) -> dict | list[dict]:
         """
         Gets the color used for the user’s name in chat
