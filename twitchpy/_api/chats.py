@@ -230,6 +230,32 @@ def send_a_shoutout(
     http.send_post(url, headers, payload)
 
 
+def send_chat_message(
+    token: str,
+    client_id: str,
+    broadcaster_id: str,
+    sender_id: str,
+    message: str,
+    reply_parent_message_id: str = "",
+) -> dict:
+    url = "https://api.twitch.tv/helix/chat/messages"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "broadcaster_id": broadcaster_id,
+        "sender_id": sender_id,
+        "message": message,
+    }
+
+    if reply_parent_message_id != "":
+        payload["reply_parent_message_id"] = reply_parent_message_id
+
+    return http.send_post_get_result(url, headers, payload)[0]
+
+
 def get_user_chat_color(
     token: str, client_id: str, user_id: str | list[str]
 ) -> dict | list[dict]:
