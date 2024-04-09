@@ -200,6 +200,33 @@ def get_unban_requests(
     return http.send_get_with_pagination(url, headers, params, first, 100)
 
 
+def resolve_unban_requests(
+    token: str,
+    client_id: str,
+    broadcaster_id: str,
+    moderator_id: str,
+    unban_request_id: str,
+    status: str,
+    resolution_text: str = "",
+) -> list[dict]:
+    url = "https://api.twitch.tv/helix/moderation/unban_requests"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+    }
+    data = {
+        "broadcaster_id": broadcaster_id,
+        "moderator_id": moderator_id,
+        "unban_request_id": unban_request_id,
+        "status": status,
+    }
+
+    if resolution_text != "":
+        data["resolution_text"] = resolution_text
+
+    return http.send_patch_get_result(url, headers, data)
+
+
 def get_blocked_terms(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, first: int = 20
 ) -> list[dict]:

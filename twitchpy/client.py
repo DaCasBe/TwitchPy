@@ -2544,6 +2544,45 @@ class Client:
             first,
         )
 
+    def resolve_unban_requests(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        unban_request_id: str,
+        status: str,
+        resolution_text: str = "",
+    ) -> list[dict]:
+        """
+        Resolves an unban request by approving or denying it.
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose channel is approving or denying the unban request
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token
+            unban_request_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token.
+            status (str): Resolution status
+                Possible values: approved, denied
+            resolution_text (str): Message supplied by the unban request resolver
+                The message is limited to a maximum of 500 characters.
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return moderation.resolve_unban_requests(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            unban_request_id,
+            status,
+            resolution_text,
+        )
+
     def get_blocked_terms(
         self, broadcaster_id: str, moderator_id: str, first: int = 20
     ) -> list[dict]:
