@@ -174,6 +174,32 @@ def unban_user(
     http.send_delete(url, headers, data)
 
 
+def get_unban_requests(
+    token: str,
+    client_id: str,
+    broadcaster_id: str,
+    moderator_id: str,
+    status: str,
+    user_id: str = "",
+    first: int = 20,
+) -> list[dict]:
+    url = "https://api.twitch.tv/helix/moderation/unban_requests"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+    }
+    params = {
+        "broadcaster_id": broadcaster_id,
+        "moderator_id": moderator_id,
+        "status": status,
+    }
+
+    if user_id != "":
+        params["user_id"] = user_id
+
+    return http.send_get_with_pagination(url, headers, params, first, 100)
+
+
 def get_blocked_terms(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, first: int = 20
 ) -> list[dict]:

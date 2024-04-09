@@ -2507,6 +2507,43 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, user_id
         )
 
+    def get_unban_requests(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        status: str,
+        user_id: str = "",
+        first: int = 20,
+    ) -> list[dict]:
+        """
+        Gets a list of unban requests for a broadcaster’s channel
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose channel is receiving unban requests
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token
+            status (str): Filter by a status
+                Possible values: pending, approved, denied, acknowledged, canceled
+            user_id (str): The ID used to filter what unban requests are returned
+            first (int): The maximum number of items to return per page in response
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return moderation.get_unban_requests(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            status,
+            user_id,
+            first,
+        )
+
     def get_blocked_terms(
         self, broadcaster_id: str, moderator_id: str, first: int = 20
     ) -> list[dict]:
