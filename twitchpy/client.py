@@ -2507,6 +2507,82 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, user_id
         )
 
+    def get_unban_requests(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        status: str,
+        user_id: str = "",
+        first: int = 20,
+    ) -> list[dict]:
+        """
+        Gets a list of unban requests for a broadcaster’s channel
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose channel is receiving unban requests
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token
+            status (str): Filter by a status
+                Possible values: pending, approved, denied, acknowledged, canceled
+            user_id (str): The ID used to filter what unban requests are returned
+            first (int): The maximum number of items to return per page in response
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return moderation.get_unban_requests(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            status,
+            user_id,
+            first,
+        )
+
+    def resolve_unban_requests(
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        unban_request_id: str,
+        status: str,
+        resolution_text: str = "",
+    ) -> list[dict]:
+        """
+        Resolves an unban request by approving or denying it.
+
+        Args:
+            broadcaster_id (str): The ID of the broadcaster whose channel is approving or denying the unban request
+            moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token
+            unban_request_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s unban requests
+                This ID must match the user ID in the user access token.
+            status (str): Resolution status
+                Possible values: approved, denied
+            resolution_text (str): Message supplied by the unban request resolver
+                The message is limited to a maximum of 500 characters.
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return moderation.resolve_unban_requests(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            unban_request_id,
+            status,
+            resolution_text,
+        )
+
     def get_blocked_terms(
         self, broadcaster_id: str, moderator_id: str, first: int = 20
     ) -> list[dict]:
