@@ -2608,6 +2608,27 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, message_id
         )
 
+    def get_moderated_channels(self, user_id: str, first: int = 20) -> list[dict]:
+        """
+        Gets a list of channels that the specified user has moderator privileges in
+
+        Args:
+            user_id (str): A user’s ID
+                This ID must match the user ID in the user OAuth token
+            first (int): The number of items to return
+                Default: 20
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return moderation.get_moderated_channels(
+            self.__user_token, self.client_id, user_id, first
+        )
+
     def get_moderators(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
     ) -> list[dict]:

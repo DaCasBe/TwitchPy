@@ -251,6 +251,19 @@ def delete_chat_messages(
     http.send_delete(url, headers, data)
 
 
+def get_moderated_channels(
+    token: str, client_id: str, user_id: str, first: int = 20
+) -> list[dict]:
+    url = "https://api.twitch.tv/helix/moderation/channels"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+    }
+    params = {"user_id": user_id}
+
+    return http.send_get_with_pagination(url, headers, params, first, 100)
+
+
 def get_moderators(
     token: str,
     client_id: str,

@@ -2636,6 +2636,27 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, message_id
         )
 
+    def get_moderated_channels(self, user_id: str, first: int = 20) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets a list of channels that the specified user has moderator privileges in
+
+        Args:
+            user_id (str): A user’s ID
+                This ID must match the user ID in the user OAuth token
+            first (int): The number of items to return
+                Default: 20
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        return moderation.get_moderated_channels(
+            self.__user_token, self.client_id, user_id, first
+        )
+
     def get_moderators(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
     ) -&gt; list[dict]:
@@ -6325,6 +6346,27 @@ class Client:
 
         moderation.delete_chat_messages(
             self.__user_token, self.client_id, broadcaster_id, moderator_id, message_id
+        )
+
+    def get_moderated_channels(self, user_id: str, first: int = 20) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Gets a list of channels that the specified user has moderator privileges in
+
+        Args:
+            user_id (str): A user’s ID
+                This ID must match the user ID in the user OAuth token
+            first (int): The number of items to return
+                Default: 20
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        return moderation.get_moderated_channels(
+            self.__user_token, self.client_id, user_id, first
         )
 
     def get_moderators(
@@ -11208,6 +11250,50 @@ Default: 1</dd>
     )</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.get_moderated_channels"><code class="name flex">
+<span>def <span class="ident">get_moderated_channels</span></span>(<span>self, user_id: str, first: int = 20) ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a list of channels that the specified user has moderator privileges in</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>A user’s ID
+This ID must match the user ID in the user OAuth token</dd>
+<dt><strong><code>first</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of items to return
+Default: 20</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>list[dict]</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_moderated_channels(self, user_id: str, first: int = 20) -&gt; list[dict]:
+    &#34;&#34;&#34;
+    Gets a list of channels that the specified user has moderator privileges in
+
+    Args:
+        user_id (str): A user’s ID
+            This ID must match the user ID in the user OAuth token
+        first (int): The number of items to return
+            Default: 20
+
+    Raises:
+        errors.ClientError
+
+    Returns:
+        list[dict]
+    &#34;&#34;&#34;
+
+    return moderation.get_moderated_channels(
+        self.__user_token, self.client_id, user_id, first
+    )</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.get_moderators"><code class="name flex">
 <span>def <span class="ident">get_moderators</span></span>(<span>self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20) ‑> list[dict]</span>
 </code></dt>
@@ -14282,6 +14368,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.get_guest_star_invites" href="#twitchpy.client.Client.get_guest_star_invites">get_guest_star_invites</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_guest_star_session" href="#twitchpy.client.Client.get_guest_star_session">get_guest_star_session</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_hype_train_events" href="#twitchpy.client.Client.get_hype_train_events">get_hype_train_events</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_moderated_channels" href="#twitchpy.client.Client.get_moderated_channels">get_moderated_channels</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_moderators" href="#twitchpy.client.Client.get_moderators">get_moderators</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_polls" href="#twitchpy.client.Client.get_polls">get_polls</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_predictions" href="#twitchpy.client.Client.get_predictions">get_predictions</a></code></li>
