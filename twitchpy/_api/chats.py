@@ -128,6 +128,17 @@ def get_chat_settings(
     return http.send_get(url, headers, params)[0]
 
 
+def get_user_emotes(token: str, client_id: str, user_id: str) -> list[dict]:
+    url = "https://api.twitch.tv/helix/chat/emotes/user"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+    }
+    params = {"user_id": user_id}
+
+    return http.send_get_with_infinite_pagination(url, headers, params)
+
+
 def update_chat_settings(
     token: str,
     client_id: str,

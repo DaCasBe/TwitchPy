@@ -1061,6 +1061,23 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
+    def get_user_emotes(self, user_id: str) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Retrieves emotes available to the user across all channels
+
+        Args:
+            user_id (str): The ID of the user
+                This ID must match the user ID in the user access token
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
+
     def update_chat_settings(
         self,
         broadcaster_id: str,
@@ -4848,6 +4865,23 @@ class Client:
         return chats.get_chat_settings(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
+
+    def get_user_emotes(self, user_id: str) -&gt; list[dict]:
+        &#34;&#34;&#34;
+        Retrieves emotes available to the user across all channels
+
+        Args:
+            user_id (str): The ID of the user
+                This ID must match the user ID in the user access token
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        &#34;&#34;&#34;
+
+        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
 
     def update_chat_settings(
         self,
@@ -12138,6 +12172,43 @@ Maximum: 100</p>
     return chats.get_user_chat_color(self.__app_token, self.client_id, user_id)</code></pre>
 </details>
 </dd>
+<dt id="twitchpy.client.Client.get_user_emotes"><code class="name flex">
+<span>def <span class="ident">get_user_emotes</span></span>(<span>self, user_id: str) ‑> list[dict]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves emotes available to the user across all channels</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the user
+This ID must match the user ID in the user access token</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>list[dict]</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_user_emotes(self, user_id: str) -&gt; list[dict]:
+    &#34;&#34;&#34;
+    Retrieves emotes available to the user across all channels
+
+    Args:
+        user_id (str): The ID of the user
+            This ID must match the user ID in the user access token
+
+    Raises:
+        errors.ClientError
+
+    Returns:
+        list[dict]
+    &#34;&#34;&#34;
+
+    return chats.get_user_emotes(self.__user_token, self.client_id, user_id)</code></pre>
+</details>
+</dd>
 <dt id="twitchpy.client.Client.get_user_extensions"><code class="name flex">
 <span>def <span class="ident">get_user_extensions</span></span>(<span>self) ‑> list[dict]</span>
 </code></dt>
@@ -14672,6 +14743,7 @@ If you try to activate a given extension under multiple extension types, the las
 <li><code><a title="twitchpy.client.Client.get_user_active_extensions" href="#twitchpy.client.Client.get_user_active_extensions">get_user_active_extensions</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_user_block_list" href="#twitchpy.client.Client.get_user_block_list">get_user_block_list</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_user_chat_color" href="#twitchpy.client.Client.get_user_chat_color">get_user_chat_color</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_user_emotes" href="#twitchpy.client.Client.get_user_emotes">get_user_emotes</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_user_extensions" href="#twitchpy.client.Client.get_user_extensions">get_user_extensions</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_users" href="#twitchpy.client.Client.get_users">get_users</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_videos" href="#twitchpy.client.Client.get_videos">get_videos</a></code></li>
