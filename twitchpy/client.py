@@ -1872,8 +1872,8 @@ class Client:
         Only include one filter query parameter
 
         Args:
-            status (str): Filters subscriptions by one status type
-                Valid values: "enabled", "webhook_callback_verification_pending", "webhook_callback_verification_failed", "notification_failures_exceeded", "authorization_revoked", "moderator_removed", "user_removed", "version_removed", "websocket_disconnected", "websocket_failed_ping_pong", "websocket_received_inbound_traffic", "websocket_connection_unused", "websocket_internal_error", "websocket_network_timeout", "websocket_network_error"
+            status (str): Filter subscriptions by its status
+                Valid values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, moderator_removed, user_removed, chat_user_banned, version_removed, beta_maintenance, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_connection_unused, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect
             subscription_type (str): Filters subscriptions by subscription type name
             user_id (str): Filter subscriptions by user ID
 
