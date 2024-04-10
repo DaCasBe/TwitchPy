@@ -1033,6 +1033,23 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
+    def get_user_emotes(self, user_id: str) -> list[dict]:
+        """
+        Retrieves emotes available to the user across all channels
+
+        Args:
+            user_id (str): The ID of the user
+                This ID must match the user ID in the user access token
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            list[dict]
+        """
+
+        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
+
     def update_chat_settings(
         self,
         broadcaster_id: str,
