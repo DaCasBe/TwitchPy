@@ -26,58 +26,45 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Prediction:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Prediction:
     &#34;&#34;&#34;
     Represents a prediction
+
+    Args:
+        prediction_id (str): ID of the Prediction
+        broadcaster_id (str): ID of the broadcaster
+        broadcaster_name (str): Name of the broadcaster
+        broadcaster_login (str): Login of the broadcaster
+        title (str): Title for the Prediction
+        winning_outcome_id (str): ID of the winning outcome
+            If the status is ACTIVE, this is set to null
+        outcomes (list): Possible outcomes for the Prediction
+        prediction_window (int): Total duration for the Prediction (in seconds)
+        status (str): Status of the Prediction
+            Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
+        created_at (str): UTC timestamp for the Prediction’s start time
+        ended_at (str): UTC timestamp for when the Prediction ended
+            If the status is ACTIVE, this is set to null
+        locked_at (str): UTC timestamp for when the Prediction was locked
+            If the status is not LOCKED, this is set to null
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        prediction_id,
-        broadcaster_id,
-        broadcaster_name,
-        broadcaster_login,
-        title,
-        winning_outcome_id,
-        outcomes,
-        prediction_window,
-        status,
-        created_at,
-        ended_at,
-        locked_at,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            prediction_id (str): ID of the Prediction
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
-            broadcaster_login (str): Login of the broadcaster
-            title (str): Title for the Prediction
-            winning_outcome_id (str): ID of the winning outcome
-                                      If the status is ACTIVE, this is set to null
-            outcomes (list): Possible outcomes for the Prediction
-            prediction_window (int): Total duration for the Prediction (in seconds)
-            status (str): Status of the Prediction
-                          Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-            created_at (str): UTC timestamp for the Prediction’s start time
-            ended_at (str): UTC timestamp for when the Prediction ended
-                            If the status is ACTIVE, this is set to null
-            locked_at (str): UTC timestamp for when the Prediction was locked
-                             If the status is not LOCKED, this is set to null
-        &#34;&#34;&#34;
-
-        self.id = prediction_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.winning_outcome_id = winning_outcome_id
-        self.outcomes = outcomes
-        self.prediction_window = prediction_window
-        self.status = status
-        self.created_at = created_at
-        self.ended_at = ended_at
-        self.locked_at = locked_at</code></pre>
+    prediction_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    title: str
+    winning_outcome_id: str
+    outcomes: list[dict]
+    prediction_window: int
+    status: str
+    created_at: str
+    ended_at: str
+    locked_at: str</code></pre>
 </details>
 </section>
 <section>
@@ -91,7 +78,7 @@
 <dl>
 <dt id="twitchpy.dataclasses.prediction.Prediction"><code class="flex name class">
 <span>class <span class="ident">Prediction</span></span>
-<span>(</span><span>prediction_id, broadcaster_id, broadcaster_name, broadcaster_login, title, winning_outcome_id, outcomes, prediction_window, status, created_at, ended_at, locked_at)</span>
+<span>(</span><span>prediction_id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, winning_outcome_id: str, outcomes: list[dict], prediction_window: int, status: str, created_at: str, ended_at: str, locked_at: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a prediction</p>
@@ -130,59 +117,94 @@ If the status is not LOCKED, this is set to null</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Prediction:
+<pre><code class="python">@dataclass
+class Prediction:
     &#34;&#34;&#34;
     Represents a prediction
+
+    Args:
+        prediction_id (str): ID of the Prediction
+        broadcaster_id (str): ID of the broadcaster
+        broadcaster_name (str): Name of the broadcaster
+        broadcaster_login (str): Login of the broadcaster
+        title (str): Title for the Prediction
+        winning_outcome_id (str): ID of the winning outcome
+            If the status is ACTIVE, this is set to null
+        outcomes (list): Possible outcomes for the Prediction
+        prediction_window (int): Total duration for the Prediction (in seconds)
+        status (str): Status of the Prediction
+            Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
+        created_at (str): UTC timestamp for the Prediction’s start time
+        ended_at (str): UTC timestamp for when the Prediction ended
+            If the status is ACTIVE, this is set to null
+        locked_at (str): UTC timestamp for when the Prediction was locked
+            If the status is not LOCKED, this is set to null
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        prediction_id,
-        broadcaster_id,
-        broadcaster_name,
-        broadcaster_login,
-        title,
-        winning_outcome_id,
-        outcomes,
-        prediction_window,
-        status,
-        created_at,
-        ended_at,
-        locked_at,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            prediction_id (str): ID of the Prediction
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
-            broadcaster_login (str): Login of the broadcaster
-            title (str): Title for the Prediction
-            winning_outcome_id (str): ID of the winning outcome
-                                      If the status is ACTIVE, this is set to null
-            outcomes (list): Possible outcomes for the Prediction
-            prediction_window (int): Total duration for the Prediction (in seconds)
-            status (str): Status of the Prediction
-                          Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-            created_at (str): UTC timestamp for the Prediction’s start time
-            ended_at (str): UTC timestamp for when the Prediction ended
-                            If the status is ACTIVE, this is set to null
-            locked_at (str): UTC timestamp for when the Prediction was locked
-                             If the status is not LOCKED, this is set to null
-        &#34;&#34;&#34;
-
-        self.id = prediction_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.winning_outcome_id = winning_outcome_id
-        self.outcomes = outcomes
-        self.prediction_window = prediction_window
-        self.status = status
-        self.created_at = created_at
-        self.ended_at = ended_at
-        self.locked_at = locked_at</code></pre>
+    prediction_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    title: str
+    winning_outcome_id: str
+    outcomes: list[dict]
+    prediction_window: int
+    status: str
+    created_at: str
+    ended_at: str
+    locked_at: str</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.ended_at"><code class="name">var <span class="ident">ended_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.locked_at"><code class="name">var <span class="ident">locked_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.outcomes"><code class="name">var <span class="ident">outcomes</span> : list[dict]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.prediction_id"><code class="name">var <span class="ident">prediction_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.prediction_window"><code class="name">var <span class="ident">prediction_window</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.status"><code class="name">var <span class="ident">status</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.prediction.Prediction.winning_outcome_id"><code class="name">var <span class="ident">winning_outcome_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -202,6 +224,20 @@ If the status is not LOCKED, this is set to null</dd>
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.prediction.Prediction" href="#twitchpy.dataclasses.prediction.Prediction">Prediction</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_id" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_login" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_login">broadcaster_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_name" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.created_at" href="#twitchpy.dataclasses.prediction.Prediction.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.ended_at" href="#twitchpy.dataclasses.prediction.Prediction.ended_at">ended_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.locked_at" href="#twitchpy.dataclasses.prediction.Prediction.locked_at">locked_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.outcomes" href="#twitchpy.dataclasses.prediction.Prediction.outcomes">outcomes</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.prediction_id" href="#twitchpy.dataclasses.prediction.Prediction.prediction_id">prediction_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.prediction_window" href="#twitchpy.dataclasses.prediction.Prediction.prediction_window">prediction_window</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.status" href="#twitchpy.dataclasses.prediction.Prediction.status">status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.title" href="#twitchpy.dataclasses.prediction.Prediction.title">title</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.winning_outcome_id" href="#twitchpy.dataclasses.prediction.Prediction.winning_outcome_id">winning_outcome_id</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

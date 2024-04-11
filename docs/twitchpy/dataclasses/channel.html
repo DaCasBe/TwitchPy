@@ -26,50 +26,39 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Channel:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Channel:
     &#34;&#34;&#34;
     Represents a channel
+
+    Attributes:
+        broadcaster_id (str): An ID that uniquely identifies the broadcaster
+        broadcaster_login (str): The broadcaster’s login name
+        broadcaster_name (str): The broadcaster’s display name
+        broadcaster_language (str): The broadcaster’s preferred language
+        game_name (str): The name of the game that the broadcaster is playing or last played
+        game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
+        title (str): The title of the stream that the broadcaster is currently streaming or last streamed
+        tags (list[str]): The tags applied to the channel
+        delay (int): The value of the broadcaster’s stream delay setting, in seconds
+        content_classification_labels (list[str]): The CCLs applied to the channel
+        is_branded_content (bool): Boolean flag indicating if the channel has branded content
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        broadcaster_id: str,
-        broadcaster_login: str,
-        broadcaster_name: str,
-        broadcaster_language: str,
-        game_name: str,
-        game_id: str,
-        title: str,
-        tags: list[str],
-        delay: int = None,
-        content_classification_labels: list[str] = None,
-        is_branded_content: bool = None,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            broadcaster_id (str): An ID that uniquely identifies the broadcaster
-            broadcaster_login (str): The broadcaster’s login name
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_language (str): The broadcaster’s preferred language
-            game_name (str): The name of the game that the broadcaster is playing or last played
-            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
-            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            tags (list[str]): The tags applied to the channel
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
-            content_classification_labels (list[str]): The CCLs applied to the channel
-            is_branded_content (bool): Boolean flag indicating if the channel has branded content
-        &#34;&#34;&#34;
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_login = broadcaster_login
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_language = broadcaster_language
-        self.game_name = game_name
-        self.game_id = game_id
-        self.title = title
-        self.delay = delay
-        self.tags = tags
-        self.content_classification_labels = content_classification_labels
-        self.is_branded_content = is_branded_content</code></pre>
+    broadcaster_id: str
+    broadcaster_login: str
+    broadcaster_name: str
+    broadcaster_language: str
+    game_name: str
+    game_id: str
+    title: str
+    tags: list[str]
+    delay: int | None = None
+    content_classification_labels: list[str] | None = None
+    is_branded_content: bool | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -83,11 +72,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.channel.Channel"><code class="flex name class">
 <span>class <span class="ident">Channel</span></span>
-<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, tags: list[str], delay: int = None, content_classification_labels: list[str] = None, is_branded_content: bool = None)</span>
+<span>(</span><span>broadcaster_id: str, broadcaster_login: str, broadcaster_name: str, broadcaster_language: str, game_name: str, game_id: str, title: str, tags: list[str], delay: int | None = None, content_classification_labels: list[str] | None = None, is_branded_content: bool | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a channel</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that uniquely identifies the broadcaster</dd>
@@ -116,51 +105,84 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Channel:
+<pre><code class="python">@dataclass
+class Channel:
     &#34;&#34;&#34;
     Represents a channel
+
+    Attributes:
+        broadcaster_id (str): An ID that uniquely identifies the broadcaster
+        broadcaster_login (str): The broadcaster’s login name
+        broadcaster_name (str): The broadcaster’s display name
+        broadcaster_language (str): The broadcaster’s preferred language
+        game_name (str): The name of the game that the broadcaster is playing or last played
+        game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
+        title (str): The title of the stream that the broadcaster is currently streaming or last streamed
+        tags (list[str]): The tags applied to the channel
+        delay (int): The value of the broadcaster’s stream delay setting, in seconds
+        content_classification_labels (list[str]): The CCLs applied to the channel
+        is_branded_content (bool): Boolean flag indicating if the channel has branded content
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        broadcaster_id: str,
-        broadcaster_login: str,
-        broadcaster_name: str,
-        broadcaster_language: str,
-        game_name: str,
-        game_id: str,
-        title: str,
-        tags: list[str],
-        delay: int = None,
-        content_classification_labels: list[str] = None,
-        is_branded_content: bool = None,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            broadcaster_id (str): An ID that uniquely identifies the broadcaster
-            broadcaster_login (str): The broadcaster’s login name
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_language (str): The broadcaster’s preferred language
-            game_name (str): The name of the game that the broadcaster is playing or last played
-            game_id (str): An ID that uniquely identifies the game that the broadcaster is playing or last played
-            title (str): The title of the stream that the broadcaster is currently streaming or last streamed
-            tags (list[str]): The tags applied to the channel
-            delay (int): The value of the broadcaster’s stream delay setting, in seconds
-            content_classification_labels (list[str]): The CCLs applied to the channel
-            is_branded_content (bool): Boolean flag indicating if the channel has branded content
-        &#34;&#34;&#34;
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_login = broadcaster_login
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_language = broadcaster_language
-        self.game_name = game_name
-        self.game_id = game_id
-        self.title = title
-        self.delay = delay
-        self.tags = tags
-        self.content_classification_labels = content_classification_labels
-        self.is_branded_content = is_branded_content</code></pre>
+    broadcaster_id: str
+    broadcaster_login: str
+    broadcaster_name: str
+    broadcaster_language: str
+    game_name: str
+    game_id: str
+    title: str
+    tags: list[str]
+    delay: int | None = None
+    content_classification_labels: list[str] | None = None
+    is_branded_content: bool | None = None</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.channel.Channel.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.broadcaster_language"><code class="name">var <span class="ident">broadcaster_language</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.content_classification_labels"><code class="name">var <span class="ident">content_classification_labels</span> : list[str] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.delay"><code class="name">var <span class="ident">delay</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.game_id"><code class="name">var <span class="ident">game_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.game_name"><code class="name">var <span class="ident">game_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.is_branded_content"><code class="name">var <span class="ident">is_branded_content</span> : bool | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.tags"><code class="name">var <span class="ident">tags</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.channel.Channel.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -180,6 +202,19 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.channel.Channel" href="#twitchpy.dataclasses.channel.Channel">Channel</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.channel.Channel.broadcaster_id" href="#twitchpy.dataclasses.channel.Channel.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.broadcaster_language" href="#twitchpy.dataclasses.channel.Channel.broadcaster_language">broadcaster_language</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.broadcaster_login" href="#twitchpy.dataclasses.channel.Channel.broadcaster_login">broadcaster_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.broadcaster_name" href="#twitchpy.dataclasses.channel.Channel.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.content_classification_labels" href="#twitchpy.dataclasses.channel.Channel.content_classification_labels">content_classification_labels</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.delay" href="#twitchpy.dataclasses.channel.Channel.delay">delay</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.game_id" href="#twitchpy.dataclasses.channel.Channel.game_id">game_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.game_name" href="#twitchpy.dataclasses.channel.Channel.game_name">game_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.is_branded_content" href="#twitchpy.dataclasses.channel.Channel.is_branded_content">is_branded_content</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.tags" href="#twitchpy.dataclasses.channel.Channel.tags">tags</a></code></li>
+<li><code><a title="twitchpy.dataclasses.channel.Channel.title" href="#twitchpy.dataclasses.channel.Channel.title">title</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

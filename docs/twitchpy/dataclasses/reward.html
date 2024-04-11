@@ -26,87 +26,55 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Reward:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Reward:
     &#34;&#34;&#34;
     Represents a reward
+
+    Attributes:
+        broadcaster_name (str): Name of the channel owner of the reward
+        broadcaster_id (str): ID of the channel owner of the reward
+        reward_id (str): ID of the reward
+        image (str): Image of the reward
+        background_color (str): Background color of the reward
+        is_enabled (bool): Is the reward currently enabled
+        cost (int): The cost of the reward
+        title (str): The title of the reward
+        prompt (str): The prompt for the viewer when they are redeeming the reward
+        is_user_input_required (bool): Does the user need to enter information when redeeming the reward
+        max_per_stream_setting (dict): Settings about maximum uses per stream
+        max_per_user_per_stream_setting (dict): Settings about maximum uses per stream and user
+        global_cooldown_setting (dict): Settings about global cooldown
+        is_paused (bool): Is the reward currently paused
+        is_in_stock (bool): Is the reward currently in stock
+        default_image (dict): Default images of the reward
+        should_redemptions_skip_request_queue (bool): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
+        redemptions_redeemed_current_stream (int): The number of redemptions redeemed during the current live stream
+        cooldown_expires_at (int): Timestamp of the cooldown expiration
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        broadcaster_name,
-        broadcaster_id,
-        reward_id,
-        image=&#34;&#34;,
-        background_color=&#34;&#34;,
-        is_enabled=True,
-        cost=0,
-        title=&#34;&#34;,
-        prompt=&#34;&#34;,
-        is_user_input_required=False,
-        max_per_stream_setting=None,
-        max_per_user_per_stream_setting=None,
-        global_cooldown_setting=None,
-        is_paused=False,
-        is_in_stock=True,
-        default_image=None,
-        should_redemptions_skip_request_queue=False,
-        redemptions_redeemed_current_stream=0,
-        cooldown_expires_at=None,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            broadcaster_name (str): Name of the channel owner of the reward
-            broadcaster_id (str): ID of the channel owner of the reward
-            reward_id (str): ID of the reward
-            image (str): Image of the reward
-            background_color (str): Background color of the reward
-            is_enabled (bool): Is the reward currently enabled
-            cost (int): The cost of the reward
-            title (str): The title of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
-            is_user_input_required (bool): Does the user need to enter information when redeeming the reward
-            max_per_stream_setting (dict): Settings about maximum uses per stream
-            max_per_user_per_stream_setting (dict): Settings about maximum uses per stream and user
-            global_cooldown_setting (dict): Settings about global cooldown
-            is_paused (bool): Is the reward currently paused
-            is_in_stock (bool): Is the reward currently in stock
-            default_image (dict): Default images of the reward
-            should_redemptions_skip_request_queue (bool): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
-            redemptions_redeemed_current_stream (int): The number of redemptions redeemed during the current live stream
-            cooldown_expires_at (int): Timestamp of the cooldown expiration
-        &#34;&#34;&#34;
-
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_id = broadcaster_id
-        self.id = reward_id
-        self.image = image
-        self.background_color = background_color
-        self.is_enabled = is_enabled
-        self.cost = cost
-        self.title = title
-        self.prompt = prompt
-        self.is_user_input_required = is_user_input_required
-
-        if max_per_stream_setting is None:
-            self.max_per_stream_setting = dict()
-
-        if max_per_user_per_stream_setting is None:
-            self.max_per_user_per_stream_setting = dict()
-
-        if global_cooldown_setting is None:
-            self.global_cooldown_setting = dict()
-
-        self.is_paused = is_paused
-        self.is_in_stock = is_in_stock
-
-        if default_image is None:
-            self.default_image = dict()
-
-        self.should_redemptions_skip_request_queue = (
-            should_redemptions_skip_request_queue
-        )
-        self.redemptions_redeemed_current_stream = redemptions_redeemed_current_stream
-        self.cooldown_expires_at = cooldown_expires_at</code></pre>
+    broadcaster_name: str
+    broadcaster_id: str
+    reward_id: str
+    image: str = &#34;&#34;
+    background_color: str = &#34;&#34;
+    is_enabled: bool = True
+    cost: int = 0
+    title: str = &#34;&#34;
+    prompt: str = &#34;&#34;
+    is_user_input_required: bool = False
+    max_per_stream_setting: dict | None = None
+    max_per_user_per_stream_setting: dict | None = None
+    global_cooldown_setting: dict | None = None
+    is_paused: bool = False
+    is_in_stock: bool = True
+    default_image: dict | None = None
+    should_redemptions_skip_request_queue: bool = False
+    redemptions_redeemed_current_stream: int = 0
+    cooldown_expires_at: int | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -120,11 +88,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.reward.Reward"><code class="flex name class">
 <span>class <span class="ident">Reward</span></span>
-<span>(</span><span>broadcaster_name, broadcaster_id, reward_id, image='', background_color='', is_enabled=True, cost=0, title='', prompt='', is_user_input_required=False, max_per_stream_setting=None, max_per_user_per_stream_setting=None, global_cooldown_setting=None, is_paused=False, is_in_stock=True, default_image=None, should_redemptions_skip_request_queue=False, redemptions_redeemed_current_stream=0, cooldown_expires_at=None)</span>
+<span>(</span><span>broadcaster_name: str, broadcaster_id: str, reward_id: str, image: str = '', background_color: str = '', is_enabled: bool = True, cost: int = 0, title: str = '', prompt: str = '', is_user_input_required: bool = False, max_per_stream_setting: dict | None = None, max_per_user_per_stream_setting: dict | None = None, global_cooldown_setting: dict | None = None, is_paused: bool = False, is_in_stock: bool = True, default_image: dict | None = None, should_redemptions_skip_request_queue: bool = False, redemptions_redeemed_current_stream: int = 0, cooldown_expires_at: int | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a reward</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>Name of the channel owner of the reward</dd>
@@ -169,88 +137,132 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Reward:
+<pre><code class="python">@dataclass
+class Reward:
     &#34;&#34;&#34;
     Represents a reward
+
+    Attributes:
+        broadcaster_name (str): Name of the channel owner of the reward
+        broadcaster_id (str): ID of the channel owner of the reward
+        reward_id (str): ID of the reward
+        image (str): Image of the reward
+        background_color (str): Background color of the reward
+        is_enabled (bool): Is the reward currently enabled
+        cost (int): The cost of the reward
+        title (str): The title of the reward
+        prompt (str): The prompt for the viewer when they are redeeming the reward
+        is_user_input_required (bool): Does the user need to enter information when redeeming the reward
+        max_per_stream_setting (dict): Settings about maximum uses per stream
+        max_per_user_per_stream_setting (dict): Settings about maximum uses per stream and user
+        global_cooldown_setting (dict): Settings about global cooldown
+        is_paused (bool): Is the reward currently paused
+        is_in_stock (bool): Is the reward currently in stock
+        default_image (dict): Default images of the reward
+        should_redemptions_skip_request_queue (bool): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
+        redemptions_redeemed_current_stream (int): The number of redemptions redeemed during the current live stream
+        cooldown_expires_at (int): Timestamp of the cooldown expiration
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        broadcaster_name,
-        broadcaster_id,
-        reward_id,
-        image=&#34;&#34;,
-        background_color=&#34;&#34;,
-        is_enabled=True,
-        cost=0,
-        title=&#34;&#34;,
-        prompt=&#34;&#34;,
-        is_user_input_required=False,
-        max_per_stream_setting=None,
-        max_per_user_per_stream_setting=None,
-        global_cooldown_setting=None,
-        is_paused=False,
-        is_in_stock=True,
-        default_image=None,
-        should_redemptions_skip_request_queue=False,
-        redemptions_redeemed_current_stream=0,
-        cooldown_expires_at=None,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            broadcaster_name (str): Name of the channel owner of the reward
-            broadcaster_id (str): ID of the channel owner of the reward
-            reward_id (str): ID of the reward
-            image (str): Image of the reward
-            background_color (str): Background color of the reward
-            is_enabled (bool): Is the reward currently enabled
-            cost (int): The cost of the reward
-            title (str): The title of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
-            is_user_input_required (bool): Does the user need to enter information when redeeming the reward
-            max_per_stream_setting (dict): Settings about maximum uses per stream
-            max_per_user_per_stream_setting (dict): Settings about maximum uses per stream and user
-            global_cooldown_setting (dict): Settings about global cooldown
-            is_paused (bool): Is the reward currently paused
-            is_in_stock (bool): Is the reward currently in stock
-            default_image (dict): Default images of the reward
-            should_redemptions_skip_request_queue (bool): Should redemptions be set to FULFILLED status immediately when redeemed and skip the request queue instead of the normal UNFULFILLED status
-            redemptions_redeemed_current_stream (int): The number of redemptions redeemed during the current live stream
-            cooldown_expires_at (int): Timestamp of the cooldown expiration
-        &#34;&#34;&#34;
-
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_id = broadcaster_id
-        self.id = reward_id
-        self.image = image
-        self.background_color = background_color
-        self.is_enabled = is_enabled
-        self.cost = cost
-        self.title = title
-        self.prompt = prompt
-        self.is_user_input_required = is_user_input_required
-
-        if max_per_stream_setting is None:
-            self.max_per_stream_setting = dict()
-
-        if max_per_user_per_stream_setting is None:
-            self.max_per_user_per_stream_setting = dict()
-
-        if global_cooldown_setting is None:
-            self.global_cooldown_setting = dict()
-
-        self.is_paused = is_paused
-        self.is_in_stock = is_in_stock
-
-        if default_image is None:
-            self.default_image = dict()
-
-        self.should_redemptions_skip_request_queue = (
-            should_redemptions_skip_request_queue
-        )
-        self.redemptions_redeemed_current_stream = redemptions_redeemed_current_stream
-        self.cooldown_expires_at = cooldown_expires_at</code></pre>
+    broadcaster_name: str
+    broadcaster_id: str
+    reward_id: str
+    image: str = &#34;&#34;
+    background_color: str = &#34;&#34;
+    is_enabled: bool = True
+    cost: int = 0
+    title: str = &#34;&#34;
+    prompt: str = &#34;&#34;
+    is_user_input_required: bool = False
+    max_per_stream_setting: dict | None = None
+    max_per_user_per_stream_setting: dict | None = None
+    global_cooldown_setting: dict | None = None
+    is_paused: bool = False
+    is_in_stock: bool = True
+    default_image: dict | None = None
+    should_redemptions_skip_request_queue: bool = False
+    redemptions_redeemed_current_stream: int = 0
+    cooldown_expires_at: int | None = None</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.reward.Reward.background_color"><code class="name">var <span class="ident">background_color</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.cooldown_expires_at"><code class="name">var <span class="ident">cooldown_expires_at</span> : int | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.cost"><code class="name">var <span class="ident">cost</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.default_image"><code class="name">var <span class="ident">default_image</span> : dict | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.global_cooldown_setting"><code class="name">var <span class="ident">global_cooldown_setting</span> : dict | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.image"><code class="name">var <span class="ident">image</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.is_enabled"><code class="name">var <span class="ident">is_enabled</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.is_in_stock"><code class="name">var <span class="ident">is_in_stock</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.is_paused"><code class="name">var <span class="ident">is_paused</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.is_user_input_required"><code class="name">var <span class="ident">is_user_input_required</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.max_per_stream_setting"><code class="name">var <span class="ident">max_per_stream_setting</span> : dict | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.max_per_user_per_stream_setting"><code class="name">var <span class="ident">max_per_user_per_stream_setting</span> : dict | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.prompt"><code class="name">var <span class="ident">prompt</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.redemptions_redeemed_current_stream"><code class="name">var <span class="ident">redemptions_redeemed_current_stream</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.reward_id"><code class="name">var <span class="ident">reward_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.should_redemptions_skip_request_queue"><code class="name">var <span class="ident">should_redemptions_skip_request_queue</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.reward.Reward.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -270,6 +282,27 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.reward.Reward" href="#twitchpy.dataclasses.reward.Reward">Reward</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.reward.Reward.background_color" href="#twitchpy.dataclasses.reward.Reward.background_color">background_color</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.broadcaster_id" href="#twitchpy.dataclasses.reward.Reward.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.broadcaster_name" href="#twitchpy.dataclasses.reward.Reward.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.cooldown_expires_at" href="#twitchpy.dataclasses.reward.Reward.cooldown_expires_at">cooldown_expires_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.cost" href="#twitchpy.dataclasses.reward.Reward.cost">cost</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.default_image" href="#twitchpy.dataclasses.reward.Reward.default_image">default_image</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.global_cooldown_setting" href="#twitchpy.dataclasses.reward.Reward.global_cooldown_setting">global_cooldown_setting</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.image" href="#twitchpy.dataclasses.reward.Reward.image">image</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.is_enabled" href="#twitchpy.dataclasses.reward.Reward.is_enabled">is_enabled</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.is_in_stock" href="#twitchpy.dataclasses.reward.Reward.is_in_stock">is_in_stock</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.is_paused" href="#twitchpy.dataclasses.reward.Reward.is_paused">is_paused</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.is_user_input_required" href="#twitchpy.dataclasses.reward.Reward.is_user_input_required">is_user_input_required</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.max_per_stream_setting" href="#twitchpy.dataclasses.reward.Reward.max_per_stream_setting">max_per_stream_setting</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.max_per_user_per_stream_setting" href="#twitchpy.dataclasses.reward.Reward.max_per_user_per_stream_setting">max_per_user_per_stream_setting</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.prompt" href="#twitchpy.dataclasses.reward.Reward.prompt">prompt</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.redemptions_redeemed_current_stream" href="#twitchpy.dataclasses.reward.Reward.redemptions_redeemed_current_stream">redemptions_redeemed_current_stream</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.reward_id" href="#twitchpy.dataclasses.reward.Reward.reward_id">reward_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.should_redemptions_skip_request_queue" href="#twitchpy.dataclasses.reward.Reward.should_redemptions_skip_request_queue">should_redemptions_skip_request_queue</a></code></li>
+<li><code><a title="twitchpy.dataclasses.reward.Reward.title" href="#twitchpy.dataclasses.reward.Reward.title">title</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

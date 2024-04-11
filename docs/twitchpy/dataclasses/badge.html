@@ -26,20 +26,21 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Badge:
     &#34;&#34;&#34;
     Represents a chat badge
+
+    Attributes:
+        set_id (str): ID for the chat badge set
+        versions (list[dict]): Chat badge versions for the set
     &#34;&#34;&#34;
 
-    def __init__(self, set_id, versions):
-        &#34;&#34;&#34;
-        Args:
-            set_id (str): ID for the chat badge set
-            versions (list): Chat badge versions for the set
-        &#34;&#34;&#34;
-
-        self.set_id = set_id
-        self.versions = versions</code></pre>
+    set_id: str
+    versions: list[dict]</code></pre>
 </details>
 </section>
 <section>
@@ -53,36 +54,45 @@
 <dl>
 <dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
 <span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id, versions)</span>
+<span>(</span><span>set_id: str, versions: list[dict])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a chat badge</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list</code></dt>
+<dt><strong><code>versions</code></strong> :&ensp;<code>list[dict]</code></dt>
 <dd>Chat badge versions for the set</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">@dataclass
+class Badge:
     &#34;&#34;&#34;
     Represents a chat badge
+
+    Attributes:
+        set_id (str): ID for the chat badge set
+        versions (list[dict]): Chat badge versions for the set
     &#34;&#34;&#34;
 
-    def __init__(self, set_id, versions):
-        &#34;&#34;&#34;
-        Args:
-            set_id (str): ID for the chat badge set
-            versions (list): Chat badge versions for the set
-        &#34;&#34;&#34;
-
-        self.set_id = set_id
-        self.versions = versions</code></pre>
+    set_id: str
+    versions: list[dict]</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.badge.Badge.set_id"><code class="name">var <span class="ident">set_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[dict]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -102,6 +112,10 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.badge.Badge" href="#twitchpy.dataclasses.badge.Badge">Badge</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.badge.Badge.set_id" href="#twitchpy.dataclasses.badge.Badge.set_id">set_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.badge.Badge.versions" href="#twitchpy.dataclasses.badge.Badge.versions">versions</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

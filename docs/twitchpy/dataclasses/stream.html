@@ -26,60 +26,45 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Stream:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Stream:
     &#34;&#34;&#34;
     Represents a stream
+
+    Attributes:
+        stream_id (str): An ID that identifies the stream
+        user_id (str): The ID of the user that’s broadcasting the stream
+        user_login (str): The user’s login name
+        user_name (str): The user’s display name
+        game_id (str): The ID of the category or game being played
+        game_name (str): The name of the category or game being played
+        stream_type (str): The type of stream
+        title (str): The stream’s title
+        tags (list[str]): The tags applied to the stream
+        viewer_count (int): The number of users watching the stream
+        started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
+        language (str): The language that the stream uses
+        thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
+        is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        stream_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        game_id: str,
-        game_name: str,
-        stream_type: str,
-        title: str,
-        tags: list[str],
-        viewer_count: int,
-        started_at: str,
-        language: str,
-        thumbnail_url: str,
-        is_mature: bool,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            stream_id (str): An ID that identifies the stream
-            user_id (str): The ID of the user that’s broadcasting the stream
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            game_id (str): The ID of the category or game being played
-            game_name (str): The name of the category or game being played
-            stream_type (str): The type of stream
-            title (str): The stream’s title
-            tags (list[str]): The tags applied to the stream
-            viewer_count (int): The number of users watching the stream
-            started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
-            language (str): The language that the stream uses
-            thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
-            is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
-        &#34;&#34;&#34;
-
-        self.id = stream_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.game_id = game_id
-        self.game_name = game_name
-        self.type = stream_type
-        self.title = title
-        self.tags = tags
-        self.viewer_count = viewer_count
-        self.started_at = started_at
-        self.language = language
-        self.thumbnail_url = thumbnail_url
-        self.is_mature = is_mature</code></pre>
+    stream_id: str
+    user_id: str
+    user_login: str
+    user_name: str
+    game_id: str
+    game_name: str
+    stream_type: str
+    title: str
+    tags: list[str]
+    viewer_count: int
+    started_at: str
+    language: str
+    thumbnail_url: str
+    is_mature: bool</code></pre>
 </details>
 </section>
 <section>
@@ -97,7 +82,7 @@
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a stream</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>stream_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the stream</dd>
@@ -132,61 +117,102 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Stream:
+<pre><code class="python">@dataclass
+class Stream:
     &#34;&#34;&#34;
     Represents a stream
+
+    Attributes:
+        stream_id (str): An ID that identifies the stream
+        user_id (str): The ID of the user that’s broadcasting the stream
+        user_login (str): The user’s login name
+        user_name (str): The user’s display name
+        game_id (str): The ID of the category or game being played
+        game_name (str): The name of the category or game being played
+        stream_type (str): The type of stream
+        title (str): The stream’s title
+        tags (list[str]): The tags applied to the stream
+        viewer_count (int): The number of users watching the stream
+        started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
+        language (str): The language that the stream uses
+        thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
+        is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        stream_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        game_id: str,
-        game_name: str,
-        stream_type: str,
-        title: str,
-        tags: list[str],
-        viewer_count: int,
-        started_at: str,
-        language: str,
-        thumbnail_url: str,
-        is_mature: bool,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            stream_id (str): An ID that identifies the stream
-            user_id (str): The ID of the user that’s broadcasting the stream
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            game_id (str): The ID of the category or game being played
-            game_name (str): The name of the category or game being played
-            stream_type (str): The type of stream
-            title (str): The stream’s title
-            tags (list[str]): The tags applied to the stream
-            viewer_count (int): The number of users watching the stream
-            started_at (str): The UTC date and time (in RFC3339 format) of when the broadcast began
-            language (str): The language that the stream uses
-            thumbnail_url (str): A URL to an image of a frame from the last 5 minutes of the stream
-            is_mature (bool): A Boolean value that indicates whether the stream is meant for mature audiences
-        &#34;&#34;&#34;
-
-        self.id = stream_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.game_id = game_id
-        self.game_name = game_name
-        self.type = stream_type
-        self.title = title
-        self.tags = tags
-        self.viewer_count = viewer_count
-        self.started_at = started_at
-        self.language = language
-        self.thumbnail_url = thumbnail_url
-        self.is_mature = is_mature</code></pre>
+    stream_id: str
+    user_id: str
+    user_login: str
+    user_name: str
+    game_id: str
+    game_name: str
+    stream_type: str
+    title: str
+    tags: list[str]
+    viewer_count: int
+    started_at: str
+    language: str
+    thumbnail_url: str
+    is_mature: bool</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.stream.Stream.game_id"><code class="name">var <span class="ident">game_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.game_name"><code class="name">var <span class="ident">game_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.is_mature"><code class="name">var <span class="ident">is_mature</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.language"><code class="name">var <span class="ident">language</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.started_at"><code class="name">var <span class="ident">started_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.stream_id"><code class="name">var <span class="ident">stream_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.stream_type"><code class="name">var <span class="ident">stream_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.tags"><code class="name">var <span class="ident">tags</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.thumbnail_url"><code class="name">var <span class="ident">thumbnail_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.user_login"><code class="name">var <span class="ident">user_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.user_name"><code class="name">var <span class="ident">user_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.stream.Stream.viewer_count"><code class="name">var <span class="ident">viewer_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -206,6 +232,22 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.stream.Stream" href="#twitchpy.dataclasses.stream.Stream">Stream</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.stream.Stream.game_id" href="#twitchpy.dataclasses.stream.Stream.game_id">game_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.game_name" href="#twitchpy.dataclasses.stream.Stream.game_name">game_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.is_mature" href="#twitchpy.dataclasses.stream.Stream.is_mature">is_mature</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.language" href="#twitchpy.dataclasses.stream.Stream.language">language</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.started_at" href="#twitchpy.dataclasses.stream.Stream.started_at">started_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.stream_id" href="#twitchpy.dataclasses.stream.Stream.stream_id">stream_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.stream_type" href="#twitchpy.dataclasses.stream.Stream.stream_type">stream_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.tags" href="#twitchpy.dataclasses.stream.Stream.tags">tags</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.thumbnail_url" href="#twitchpy.dataclasses.stream.Stream.thumbnail_url">thumbnail_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.title" href="#twitchpy.dataclasses.stream.Stream.title">title</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.user_id" href="#twitchpy.dataclasses.stream.Stream.user_id">user_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.user_login" href="#twitchpy.dataclasses.stream.Stream.user_login">user_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.user_name" href="#twitchpy.dataclasses.stream.Stream.user_name">user_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.viewer_count" href="#twitchpy.dataclasses.stream.Stream.viewer_count">viewer_count</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

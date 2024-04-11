@@ -26,45 +26,35 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class User:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class User:
     &#34;&#34;&#34;
     Represents an user
+
+    Attributes:
+        id (int): User&#39;s ID
+        login (str): User&#39;s login
+        display_name (str): User&#39;s name
+        type (str): User type
+        broadcaster_type (str): User&#39;s range
+        description (str): User&#39;s description
+        profile_image_url (str): URL of the user&#39;s profile image
+        offline_image_url (str): URL of the image that is displayed when the user is not on stream
+        view_count (int): Number of user viewers
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        user_id,
-        login,
-        display_name,
-        user_type=&#34;&#34;,
-        broadcaster_type=&#34;&#34;,
-        description=&#34;&#34;,
-        profile_image_url=&#34;&#34;,
-        offline_image_url=&#34;&#34;,
-        view_count=0,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (int): User&#39;s ID
-            login (str): User&#39;s login
-            display_name (str): User&#39;s name
-            type (str): User type
-            broadcaster_type (str): User&#39;s range
-            description (str): User&#39;s description
-            profile_image_url (str): URL of the user&#39;s profile image
-            offline_image_url (str): URL of the image that is displayed when the user is not on stream
-            view_count (int): Number of user viewers
-        &#34;&#34;&#34;
-
-        self.id = user_id
-        self.login = login
-        self.display_name = display_name
-        self.type = user_type
-        self.broadcaster_type = broadcaster_type
-        self.description = description
-        self.profile_image_url = profile_image_url
-        self.offline_image_url = offline_image_url
-        self.view_count = view_count</code></pre>
+    user_id: int
+    login: str
+    display_name: str
+    user_type: str = &#34;&#34;
+    broadcaster_type: str = &#34;&#34;
+    description: str = &#34;&#34;
+    profile_image_url: str = &#34;&#34;
+    offline_image_url: str = &#34;&#34;
+    view_count: int = 0</code></pre>
 </details>
 </section>
 <section>
@@ -78,11 +68,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.user.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>user_id, login, display_name, user_type='', broadcaster_type='', description='', profile_image_url='', offline_image_url='', view_count=0)</span>
+<span>(</span><span>user_id: int, login: str, display_name: str, user_type: str = '', broadcaster_type: str = '', description: str = '', profile_image_url: str = '', offline_image_url: str = '', view_count: int = 0)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an user</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>int</code></dt>
 <dd>User's ID</dd>
@@ -107,46 +97,72 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class User:
+<pre><code class="python">@dataclass
+class User:
     &#34;&#34;&#34;
     Represents an user
+
+    Attributes:
+        id (int): User&#39;s ID
+        login (str): User&#39;s login
+        display_name (str): User&#39;s name
+        type (str): User type
+        broadcaster_type (str): User&#39;s range
+        description (str): User&#39;s description
+        profile_image_url (str): URL of the user&#39;s profile image
+        offline_image_url (str): URL of the image that is displayed when the user is not on stream
+        view_count (int): Number of user viewers
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        user_id,
-        login,
-        display_name,
-        user_type=&#34;&#34;,
-        broadcaster_type=&#34;&#34;,
-        description=&#34;&#34;,
-        profile_image_url=&#34;&#34;,
-        offline_image_url=&#34;&#34;,
-        view_count=0,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (int): User&#39;s ID
-            login (str): User&#39;s login
-            display_name (str): User&#39;s name
-            type (str): User type
-            broadcaster_type (str): User&#39;s range
-            description (str): User&#39;s description
-            profile_image_url (str): URL of the user&#39;s profile image
-            offline_image_url (str): URL of the image that is displayed when the user is not on stream
-            view_count (int): Number of user viewers
-        &#34;&#34;&#34;
-
-        self.id = user_id
-        self.login = login
-        self.display_name = display_name
-        self.type = user_type
-        self.broadcaster_type = broadcaster_type
-        self.description = description
-        self.profile_image_url = profile_image_url
-        self.offline_image_url = offline_image_url
-        self.view_count = view_count</code></pre>
+    user_id: int
+    login: str
+    display_name: str
+    user_type: str = &#34;&#34;
+    broadcaster_type: str = &#34;&#34;
+    description: str = &#34;&#34;
+    profile_image_url: str = &#34;&#34;
+    offline_image_url: str = &#34;&#34;
+    view_count: int = 0</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.user.User.broadcaster_type"><code class="name">var <span class="ident">broadcaster_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.description"><code class="name">var <span class="ident">description</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.display_name"><code class="name">var <span class="ident">display_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.login"><code class="name">var <span class="ident">login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.offline_image_url"><code class="name">var <span class="ident">offline_image_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.profile_image_url"><code class="name">var <span class="ident">profile_image_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.user_id"><code class="name">var <span class="ident">user_id</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.user_type"><code class="name">var <span class="ident">user_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.view_count"><code class="name">var <span class="ident">view_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -166,6 +182,17 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.user.User" href="#twitchpy.dataclasses.user.User">User</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.user.User.broadcaster_type" href="#twitchpy.dataclasses.user.User.broadcaster_type">broadcaster_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.description" href="#twitchpy.dataclasses.user.User.description">description</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.display_name" href="#twitchpy.dataclasses.user.User.display_name">display_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.login" href="#twitchpy.dataclasses.user.User.login">login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.offline_image_url" href="#twitchpy.dataclasses.user.User.offline_image_url">offline_image_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.profile_image_url" href="#twitchpy.dataclasses.user.User.profile_image_url">profile_image_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.user_id" href="#twitchpy.dataclasses.user.User.user_id">user_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.user_type" href="#twitchpy.dataclasses.user.User.user_type">user_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.view_count" href="#twitchpy.dataclasses.user.User.view_count">view_count</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

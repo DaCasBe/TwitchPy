@@ -26,26 +26,27 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class HypeTrainEvent:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class HypeTrainEvent:
     &#34;&#34;&#34;
     Represents a Hype Train event
+
+    Attributes:
+        event_id (str): The distinct ID of the event
+        event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
+        event_timestamp (str): RFC3339 formatted timestamp of event
+        version (str): Returns the version of the endpoint
+        event_data (dict): The event data
     &#34;&#34;&#34;
 
-    def __init__(self, event_id, event_type, event_timestamp, version, event_data):
-        &#34;&#34;&#34;
-        Args:
-            event_id (str): The distinct ID of the event
-            event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-            event_timestamp (str): RFC3339 formatted timestamp of event
-            version (str): Returns the version of the endpoint
-            event_data (dict): The event data
-        &#34;&#34;&#34;
-
-        self.id = event_id
-        self.event_type = event_type
-        self.event_timestamp = event_timestamp
-        self.version = version
-        self.event_data = event_data</code></pre>
+    event_id: str
+    event_type: str
+    event_timestamp: str
+    version: str
+    event_data: dict</code></pre>
 </details>
 </section>
 <section>
@@ -59,11 +60,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent"><code class="flex name class">
 <span>class <span class="ident">HypeTrainEvent</span></span>
-<span>(</span><span>event_id, event_type, event_timestamp, version, event_data)</span>
+<span>(</span><span>event_id: str, event_type: str, event_timestamp: str, version: str, event_data: dict)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Hype Train event</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>event_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The distinct ID of the event</dd>
@@ -80,27 +81,48 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class HypeTrainEvent:
+<pre><code class="python">@dataclass
+class HypeTrainEvent:
     &#34;&#34;&#34;
     Represents a Hype Train event
+
+    Attributes:
+        event_id (str): The distinct ID of the event
+        event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
+        event_timestamp (str): RFC3339 formatted timestamp of event
+        version (str): Returns the version of the endpoint
+        event_data (dict): The event data
     &#34;&#34;&#34;
 
-    def __init__(self, event_id, event_type, event_timestamp, version, event_data):
-        &#34;&#34;&#34;
-        Args:
-            event_id (str): The distinct ID of the event
-            event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-            event_timestamp (str): RFC3339 formatted timestamp of event
-            version (str): Returns the version of the endpoint
-            event_data (dict): The event data
-        &#34;&#34;&#34;
-
-        self.id = event_id
-        self.event_type = event_type
-        self.event_timestamp = event_timestamp
-        self.version = version
-        self.event_data = event_data</code></pre>
+    event_id: str
+    event_type: str
+    event_timestamp: str
+    version: str
+    event_data: dict</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_data"><code class="name">var <span class="ident">event_data</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_id"><code class="name">var <span class="ident">event_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_timestamp"><code class="name">var <span class="ident">event_timestamp</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_type"><code class="name">var <span class="ident">event_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -120,6 +142,13 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent">HypeTrainEvent</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_data" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_data">event_data</a></code></li>
+<li><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_id" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_id">event_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_timestamp" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_timestamp">event_timestamp</a></code></li>
+<li><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_type" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_type">event_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.version" href="#twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.version">version</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

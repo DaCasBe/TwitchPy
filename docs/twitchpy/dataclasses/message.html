@@ -26,42 +26,33 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Message:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Message:
     &#34;&#34;&#34;
     Represents a message
+
+    Attributes:
+        prefix (str): Message&#39;s prefix
+        user (str): User who has sent the message
+        channel (str): Channel on which the message was sent
+        irc_command (str): IRC command related to the message
+        irc_args (str): IRC command&#39;s arguments
+        text (str): Message&#39;s text
+        text_command (str): Command related to the message
+        text_args (str): Command&#39;s arguments
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        prefix,
-        user,
-        channel,
-        irc_command,
-        irc_args,
-        text,
-        text_command,
-        text_args,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            prefix (str): Message&#39;s prefix
-            user (str): User who has sent the message
-            channel (str): Channel on which the message was sent
-            irc_command (str): IRC command related to the message
-            irc_args (str): IRC command&#39;s arguments
-            text (str): Message&#39;s text
-            text_command (str): Command related to the message
-            text_args (str): Command&#39;s arguments
-        &#34;&#34;&#34;
-
-        self.prefix = prefix
-        self.user = user
-        self.channel = channel
-        self.irc_command = irc_command
-        self.irc_args = irc_args
-        self.text = text
-        self.text_command = text_command
-        self.text_args = text_args</code></pre>
+    prefix: str
+    user: str
+    channel: str
+    irc_command: str
+    irc_args: str
+    text: str
+    text_command: str
+    text_args: str</code></pre>
 </details>
 </section>
 <section>
@@ -75,11 +66,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.message.Message"><code class="flex name class">
 <span>class <span class="ident">Message</span></span>
-<span>(</span><span>prefix, user, channel, irc_command, irc_args, text, text_command, text_args)</span>
+<span>(</span><span>prefix: str, user: str, channel: str, irc_command: str, irc_args: str, text: str, text_command: str, text_args: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a message</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
 <dd>Message's prefix</dd>
@@ -102,43 +93,66 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Message:
+<pre><code class="python">@dataclass
+class Message:
     &#34;&#34;&#34;
     Represents a message
+
+    Attributes:
+        prefix (str): Message&#39;s prefix
+        user (str): User who has sent the message
+        channel (str): Channel on which the message was sent
+        irc_command (str): IRC command related to the message
+        irc_args (str): IRC command&#39;s arguments
+        text (str): Message&#39;s text
+        text_command (str): Command related to the message
+        text_args (str): Command&#39;s arguments
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        prefix,
-        user,
-        channel,
-        irc_command,
-        irc_args,
-        text,
-        text_command,
-        text_args,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            prefix (str): Message&#39;s prefix
-            user (str): User who has sent the message
-            channel (str): Channel on which the message was sent
-            irc_command (str): IRC command related to the message
-            irc_args (str): IRC command&#39;s arguments
-            text (str): Message&#39;s text
-            text_command (str): Command related to the message
-            text_args (str): Command&#39;s arguments
-        &#34;&#34;&#34;
-
-        self.prefix = prefix
-        self.user = user
-        self.channel = channel
-        self.irc_command = irc_command
-        self.irc_args = irc_args
-        self.text = text
-        self.text_command = text_command
-        self.text_args = text_args</code></pre>
+    prefix: str
+    user: str
+    channel: str
+    irc_command: str
+    irc_args: str
+    text: str
+    text_command: str
+    text_args: str</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.message.Message.channel"><code class="name">var <span class="ident">channel</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.irc_args"><code class="name">var <span class="ident">irc_args</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.irc_command"><code class="name">var <span class="ident">irc_command</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.prefix"><code class="name">var <span class="ident">prefix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.text_args"><code class="name">var <span class="ident">text_args</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.text_command"><code class="name">var <span class="ident">text_command</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.message.Message.user"><code class="name">var <span class="ident">user</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -158,6 +172,16 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.message.Message" href="#twitchpy.dataclasses.message.Message">Message</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.message.Message.channel" href="#twitchpy.dataclasses.message.Message.channel">channel</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.irc_args" href="#twitchpy.dataclasses.message.Message.irc_args">irc_args</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.irc_command" href="#twitchpy.dataclasses.message.Message.irc_command">irc_command</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.prefix" href="#twitchpy.dataclasses.message.Message.prefix">prefix</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.text" href="#twitchpy.dataclasses.message.Message.text">text</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.text_args" href="#twitchpy.dataclasses.message.Message.text_args">text_args</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.text_command" href="#twitchpy.dataclasses.message.Message.text_command">text_command</a></code></li>
+<li><code><a title="twitchpy.dataclasses.message.Message.user" href="#twitchpy.dataclasses.message.Message.user">user</a></code></li>
+</ul>
 </li>
 </ul>
 </li>
