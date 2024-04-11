@@ -36,11 +36,13 @@ from ._api import (
     whispers,
 )
 from .dataclasses import (
+    AdSchedule,
     Badge,
     Channel,
     CharityCampaign,
     CharityCampaignDonation,
     Clip,
+    Commercial,
     Emote,
     EventSubSubscription,
     Extension,
@@ -239,7 +241,7 @@ class Client:
 
         return user_token
 
-    def start_commercial(self, broadcaster_id: int, length: int) -> dict:
+    def start_commercial(self, broadcaster_id: int, length: int) -> Commercial:
         """
         Starts a commercial on a specified channel
 
@@ -252,14 +254,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Commercial
         """
 
         return ads.start_commercial(
             self.__user_token, self.client_id, broadcaster_id, length
         )
 
-    def get_ad_schedule(self, broadcaster_id: str) -> dict:
+    def get_ad_schedule(self, broadcaster_id: str) -> AdSchedule:
         """
         Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
 
@@ -270,12 +272,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AdSchedule
         """
 
         return ads.get_ad_schedule(self.__user_token, self.client_id, broadcaster_id)
 
-    def snooze_next_ad(self, broadcaster_id: str) -> dict:
+    def snooze_next_ad(self, broadcaster_id: str) -> AdSchedule:
         """
         If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
 
@@ -286,7 +288,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AdSchedule
         """
 
         return ads.snooze_next_ad(self.__user_token, self.client_id, broadcaster_id)

@@ -1,11 +1,15 @@
+from datetime import datetime
+
 from .._utils import http
+from ..dataclasses import AdSchedule, Commercial
 
 DEFAULT_TIMEOUT: int = 10
+RFC3339_FORMAT: str = "%Y-%m-%dT%H:%M:%S%z"
 
 
 def start_commercial(
     token: str, client_id: str, broadcaster_id: int, length: int
-) -> dict:
+) -> Commercial:
     url = "https://api.twitch.tv/helix/channels/commercial"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -14,10 +18,14 @@ def start_commercial(
     }
     payload = {"broadcaster_id": broadcaster_id, "length": length}
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    commercial = http.send_post_get_result(url, headers, payload)[0]
+
+    return Commercial(
+        commercial["length"], commercial["message"], commercial["retry_after"]
+    )
 
 
-def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> dict:
+def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> AdSchedule:
     url = "https://api.twitch.tv/helix/channels/ads"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -25,10 +33,19 @@ def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> dict:
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get(url, headers, params)[0]
+    ad_schedule = http.send_get(url, headers, params)[0]
+
+    return AdSchedule(
+        ad_schedule["snooze_count"],
+        datetime.strptime(ad_schedule["snooze_refresh_at"], RFC3339_FORMAT),
+        datetime.strptime(ad_schedule["next_ad_at"], RFC3339_FORMAT),
+        ad_schedule["duration"],
+        datetime.strptime(ad_schedule["last_ad_at"], RFC3339_FORMAT),
+        ad_schedule["preroll_free_time"],
+    )
 
 
-def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> dict:
+def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> AdSchedule:
     url = "https://api.twitch.tv/helix/channels/ads/schedule/snooze"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -36,4 +53,10 @@ def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> dict:
     }
     payload = {"broadcaster_id": broadcaster_id}
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    ad_schedule = http.send_post_get_result(url, headers, payload)[0]
+
+    return AdSchedule(
+        ad_schedule["snooze_count"],
+        datetime.strptime(ad_schedule["snooze_refresh_at"], RFC3339_FORMAT),
+        datetime.strptime(ad_schedule["next_ad_at"], RFC3339_FORMAT),
+    )
