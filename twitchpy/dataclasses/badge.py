@@ -1,14 +1,15 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class Badge:
     """
     Represents a chat badge
+
+    Attributes:
+        set_id (str): ID for the chat badge set
+        versions (list[dict]): Chat badge versions for the set
     """
 
-    def __init__(self, set_id, versions):
-        """
-        Args:
-            set_id (str): ID for the chat badge set
-            versions (list): Chat badge versions for the set
-        """
-
-        self.set_id = set_id
-        self.versions = versions
+    set_id: str
+    versions: list[dict]
