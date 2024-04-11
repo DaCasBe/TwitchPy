@@ -75,7 +75,7 @@ class Client:
         client_secret: str,
         redirect_uri: str,
         tokens_path: str,
-        code: str = "",
+        authorization_code: str = "",
         jwt_token: str = "",
     ):
         """
@@ -85,7 +85,7 @@ class Client:
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
             tokens_path (str): Path of tokens file (file included)
-            code (str, optional): Authorization code for getting an user token
+            authorization_code (str, optional): Authorization code for getting an user token
             jwt_token (str, optional): JWT Token
         """
 
@@ -96,8 +96,8 @@ class Client:
         self.tokens_path = tokens_path
         self.__app_token = self.__get_app_token()
 
-        if code != "":
-            self.__user_token = self.__get_user_token(code)
+        if authorization_code != "":
+            self.__user_token = self.__get_user_token(authorization_code)
 
         else:
             self.__user_token = ""
@@ -120,7 +120,7 @@ class Client:
         else:
             raise errors.AppTokenError("Error obtaining app token")
 
-    def __is_last_code_used(self, code: str) -> bool:
+    def __is_last_code_used(self, authorization_code: str) -> bool:
         with open(self.tokens_path, encoding="UTF-8") as tokens_file:
             tokens = tokens_file.readlines()
 
@@ -128,7 +128,7 @@ class Client:
             token = token.replace(" ", "").replace("\n", "")
             token = token.split("=")
 
-            if token[0] == "CODE" and token[1] == code:
+            if token[0] == "CODE" and token[1] == authorization_code:
                 return True
 
         return False
@@ -158,20 +158,26 @@ class Client:
         return user_token, refresh_user_token
 
     def __save_user_tokens_in_file(
-        self, file: str, user_token: str, user_refresh_token: str, code: str
+        self,
+        file: str,
+        user_token: str,
+        user_refresh_token: str,
+        authorization_code: str,
     ) -> None:
-        data = f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={code}"
+        data = f"USER_TOKEN={user_token}\nREFRESH_USER_TOKEN={user_refresh_token}\nCODE={authorization_code}"
 
         secret_file = open(file, "wt", encoding="UTF-8")
         secret_file.write(data)
         secret_file.close()
 
-    def __generate_user_tokens(self, code: str, file: str) -> tuple[str, str]:
+    def __generate_user_tokens(
+        self, authorization_code: str, file: str
+    ) -> tuple[str, str]:
         url = URL_OAUTH2_TOKEN
         payload = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
-            "code": code,
+            "code": authorization_code,
             "grant_type": "authorization_code",
             "redirect_uri": self.redirect_uri,
         }
@@ -181,7 +187,10 @@ class Client:
         if response.ok:
             response = response.json()
             self.__save_user_tokens_in_file(
-                file, response["access_token"], response["refresh_token"], code
+                file,
+                response["access_token"],
+                response["refresh_token"],
+                authorization_code,
             )
 
             return response["access_token"], response["refresh_token"]
@@ -207,10 +216,12 @@ class Client:
         else:
             raise errors.UserTokenError("Error obtaining user token")
 
-    def __get_user_token(self, code: str) -> str:
-        if self.__is_last_code_used(code) or (
-            not self.__is_last_code_used(code) and os.path.isfile(self.tokens_path)
-        ):
+    def __get_user_token(self, authorization_code: str) -> str:
+        if not os.path.isfile(self.tokens_path):
+            file = open(self.tokens_path, "w", encoding="UTF-8")
+            file.close()
+
+        if self.__is_last_code_used(authorization_code):
             user_token, refresh_user_token = self.__read_user_tokens_from_file(
                 self.tokens_path
             )
@@ -218,12 +229,12 @@ class Client:
                 refresh_user_token
             )
             self.__save_user_tokens_in_file(
-                self.tokens_path, user_token, refresh_user_token, code
+                self.tokens_path, user_token, refresh_user_token, authorization_code
             )
 
         else:
             user_token, refresh_user_token = self.__generate_user_tokens(
-                code, self.tokens_path
+                authorization_code, self.tokens_path
             )
 
         return user_token
