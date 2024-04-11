@@ -26,39 +26,29 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaignDonation:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class CharityCampaignDonation:
     &#34;&#34;&#34;
     Represents a donation made to a charity campaign
+
+    Attributes:
+        donation_id (str): An ID that identifies the donation
+        campaign_id (str): An ID that identifies the charity campaign that the donation applies to
+        user_id (str): An ID that identifies a user that donated money to the campaign
+        user_login (str): The user’s login name
+        user_name (str): The user’s display name
+        amount (dict): The amount of money that the user donated
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        donation_id: str,
-        campaign_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        amount: dict,
-    ):
-        &#34;&#34;&#34;
-        The function initializes an object with the given parameters.
-
-        Args:
-            donation_id (str): An ID that identifies the donation
-            campaign_id (str): An ID that identifies the charity campaign that the donation applies to
-            user_id (str): An ID that identifies a user that donated money to the campaign
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            amount (dict): The amount of money that the user donated
-        used.
-        &#34;&#34;&#34;
-
-        self.id = donation_id
-        self.campaign_id = campaign_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.amount = amount</code></pre>
+    donation_id: str
+    campaign_id: str
+    user_id: str
+    user_login: str
+    user_name: str
+    amount: dict</code></pre>
 </details>
 </section>
 <section>
@@ -76,8 +66,7 @@
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a donation made to a charity campaign</p>
-<p>The function initializes an object with the given parameters.</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>donation_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the donation</dd>
@@ -91,46 +80,59 @@
 <dd>The user’s display name</dd>
 <dt><strong><code>amount</code></strong> :&ensp;<code>dict</code></dt>
 <dd>The amount of money that the user donated</dd>
-</dl>
-<p>used.</p></div>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaignDonation:
+<pre><code class="python">@dataclass
+class CharityCampaignDonation:
     &#34;&#34;&#34;
     Represents a donation made to a charity campaign
+
+    Attributes:
+        donation_id (str): An ID that identifies the donation
+        campaign_id (str): An ID that identifies the charity campaign that the donation applies to
+        user_id (str): An ID that identifies a user that donated money to the campaign
+        user_login (str): The user’s login name
+        user_name (str): The user’s display name
+        amount (dict): The amount of money that the user donated
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        donation_id: str,
-        campaign_id: str,
-        user_id: str,
-        user_login: str,
-        user_name: str,
-        amount: dict,
-    ):
-        &#34;&#34;&#34;
-        The function initializes an object with the given parameters.
-
-        Args:
-            donation_id (str): An ID that identifies the donation
-            campaign_id (str): An ID that identifies the charity campaign that the donation applies to
-            user_id (str): An ID that identifies a user that donated money to the campaign
-            user_login (str): The user’s login name
-            user_name (str): The user’s display name
-            amount (dict): The amount of money that the user donated
-        used.
-        &#34;&#34;&#34;
-
-        self.id = donation_id
-        self.campaign_id = campaign_id
-        self.user_id = user_id
-        self.user_login = user_login
-        self.user_name = user_name
-        self.amount = amount</code></pre>
+    donation_id: str
+    campaign_id: str
+    user_id: str
+    user_login: str
+    user_name: str
+    amount: dict</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.amount"><code class="name">var <span class="ident">amount</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.campaign_id"><code class="name">var <span class="ident">campaign_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.donation_id"><code class="name">var <span class="ident">donation_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_login"><code class="name">var <span class="ident">user_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_name"><code class="name">var <span class="ident">user_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -150,6 +152,14 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation">CharityCampaignDonation</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.amount" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.amount">amount</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.campaign_id" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.campaign_id">campaign_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.donation_id" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.donation_id">donation_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_id" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_id">user_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_login" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_login">user_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_name" href="#twitchpy.dataclasses.charity_campaign_donation.CharityCampaignDonation.user_name">user_name</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

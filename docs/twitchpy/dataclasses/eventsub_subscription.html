@@ -26,43 +26,34 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class EventSubSubscription:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class EventSubSubscription:
     &#34;&#34;&#34;
     Represents an EventSub subscription
+
+    Attributes:
+        id (str): An ID that identifies the subscription
+        status (str): The subscription’s status
+            Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
+        type (str): The subscription’s type
+        version (str): The version of the subscription type
+        condition (dict): The subscription’s parameter values
+        created_at (str): The RFC 3339 timestamp indicating when the subscription was created
+        transport (dict): The transport details used to send you notifications
+        cost (int): The amount that the subscription counts against your limit
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        subscription_id,
-        status,
-        subscription_type,
-        version,
-        condition,
-        created_at,
-        transport,
-        cost,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (str): An ID that identifies the subscription
-            status (str): The subscription’s status
-                          Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
-            type (str): The subscription’s type
-            version (str): The version of the subscription type
-            condition (dict): The subscription’s parameter values
-            created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-            transport (dict): The transport details used to send you notifications
-            cost (int): The amount that the subscription counts against your limit
-        &#34;&#34;&#34;
-
-        self.id = subscription_id
-        self.status = status
-        self.type = subscription_type
-        self.version = version
-        self.condition = condition
-        self.created_at = created_at
-        self.transport = transport
-        self.cost = cost</code></pre>
+    subscription_id: str
+    status: str
+    subscription_type: str
+    version: str
+    condition: dict
+    created_at: str
+    transport: dict
+    cost: int</code></pre>
 </details>
 </section>
 <section>
@@ -76,11 +67,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription"><code class="flex name class">
 <span>class <span class="ident">EventSubSubscription</span></span>
-<span>(</span><span>subscription_id, status, subscription_type, version, condition, created_at, transport, cost)</span>
+<span>(</span><span>subscription_id: str, status: str, subscription_type: str, version: str, condition: dict, created_at: str, transport: dict, cost: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an EventSub subscription</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the subscription</dd>
@@ -104,44 +95,67 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class EventSubSubscription:
+<pre><code class="python">@dataclass
+class EventSubSubscription:
     &#34;&#34;&#34;
     Represents an EventSub subscription
+
+    Attributes:
+        id (str): An ID that identifies the subscription
+        status (str): The subscription’s status
+            Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
+        type (str): The subscription’s type
+        version (str): The version of the subscription type
+        condition (dict): The subscription’s parameter values
+        created_at (str): The RFC 3339 timestamp indicating when the subscription was created
+        transport (dict): The transport details used to send you notifications
+        cost (int): The amount that the subscription counts against your limit
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        subscription_id,
-        status,
-        subscription_type,
-        version,
-        condition,
-        created_at,
-        transport,
-        cost,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (str): An ID that identifies the subscription
-            status (str): The subscription’s status
-                          Possible values are: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, user_removed
-            type (str): The subscription’s type
-            version (str): The version of the subscription type
-            condition (dict): The subscription’s parameter values
-            created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-            transport (dict): The transport details used to send you notifications
-            cost (int): The amount that the subscription counts against your limit
-        &#34;&#34;&#34;
-
-        self.id = subscription_id
-        self.status = status
-        self.type = subscription_type
-        self.version = version
-        self.condition = condition
-        self.created_at = created_at
-        self.transport = transport
-        self.cost = cost</code></pre>
+    subscription_id: str
+    status: str
+    subscription_type: str
+    version: str
+    condition: dict
+    created_at: str
+    transport: dict
+    cost: int</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.condition"><code class="name">var <span class="ident">condition</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.cost"><code class="name">var <span class="ident">cost</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.status"><code class="name">var <span class="ident">status</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_id"><code class="name">var <span class="ident">subscription_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_type"><code class="name">var <span class="ident">subscription_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.transport"><code class="name">var <span class="ident">transport</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -161,6 +175,16 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription">EventSubSubscription</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.condition" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.condition">condition</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.cost" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.cost">cost</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.created_at" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.status" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.status">status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_id" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_id">subscription_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_type" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.subscription_type">subscription_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.transport" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.transport">transport</a></code></li>
+<li><code><a title="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.version" href="#twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.version">version</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

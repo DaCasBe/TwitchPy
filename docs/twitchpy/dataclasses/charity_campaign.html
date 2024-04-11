@@ -26,48 +26,37 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaign:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class CharityCampaign:
     &#34;&#34;&#34;
     Represents a charity campaign
+
+    Attributes:
+        campaign_id (str): An ID that identifies the charity campaign
+        broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
+        broadcaster_name (str): The broadcaster’s display name
+        broadcaster_login (str): The broadcaster’s login name
+        charity_name (str): The charity’s name
+        charity_description (str): A description of the charity
+        charity_logo (str): A URL to an image of the charity’s logo
+        charity_website (str): A URL to the charity’s website
+        current_amount (dict): The current amount of donations that the campaign has received
+        target_amount (dict): The campaign’s fundraising goal
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        campaign_id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        charity_name: str,
-        charity_description: str,
-        charity_logo: str,
-        charity_website: str,
-        current_amount: dict,
-        target_amount: dict,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            campaign_id (str): An ID that identifies the charity campaign
-            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_login (str): The broadcaster’s login name
-            charity_name (str): The charity’s name
-            charity_description (str): A description of the charity
-            charity_logo (str): A URL to an image of the charity’s logo
-            charity_website (str): A URL to the charity’s website
-            current_amount (dict): The current amount of donations that the campaign has received
-            target_amount (dict): The campaign’s fundraising goal
-        &#34;&#34;&#34;
-
-        self.id = campaign_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.charity_name = charity_name
-        self.charity_description = charity_description
-        self.charity_logo = charity_logo
-        self.charity_website = charity_website
-        self.current_amount = current_amount
-        self.target_amount = target_amount</code></pre>
+    campaign_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    charity_name: str
+    charity_description: str
+    charity_logo: str
+    charity_website: str
+    current_amount: dict
+    target_amount: dict</code></pre>
 </details>
 </section>
 <section>
@@ -85,7 +74,7 @@
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a charity campaign</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>campaign_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the charity campaign</dd>
@@ -112,49 +101,78 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class CharityCampaign:
+<pre><code class="python">@dataclass
+class CharityCampaign:
     &#34;&#34;&#34;
     Represents a charity campaign
+
+    Attributes:
+        campaign_id (str): An ID that identifies the charity campaign
+        broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
+        broadcaster_name (str): The broadcaster’s display name
+        broadcaster_login (str): The broadcaster’s login name
+        charity_name (str): The charity’s name
+        charity_description (str): A description of the charity
+        charity_logo (str): A URL to an image of the charity’s logo
+        charity_website (str): A URL to the charity’s website
+        current_amount (dict): The current amount of donations that the campaign has received
+        target_amount (dict): The campaign’s fundraising goal
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        campaign_id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        charity_name: str,
-        charity_description: str,
-        charity_logo: str,
-        charity_website: str,
-        current_amount: dict,
-        target_amount: dict,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            campaign_id (str): An ID that identifies the charity campaign
-            broadcaster_id (str): An ID that identifies the broadcaster that’s running the campaign
-            broadcaster_name (str): The broadcaster’s display name
-            broadcaster_login (str): The broadcaster’s login name
-            charity_name (str): The charity’s name
-            charity_description (str): A description of the charity
-            charity_logo (str): A URL to an image of the charity’s logo
-            charity_website (str): A URL to the charity’s website
-            current_amount (dict): The current amount of donations that the campaign has received
-            target_amount (dict): The campaign’s fundraising goal
-        &#34;&#34;&#34;
-
-        self.id = campaign_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.charity_name = charity_name
-        self.charity_description = charity_description
-        self.charity_logo = charity_logo
-        self.charity_website = charity_website
-        self.current_amount = current_amount
-        self.target_amount = target_amount</code></pre>
+    campaign_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    charity_name: str
+    charity_description: str
+    charity_logo: str
+    charity_website: str
+    current_amount: dict
+    target_amount: dict</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.campaign_id"><code class="name">var <span class="ident">campaign_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_description"><code class="name">var <span class="ident">charity_description</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_logo"><code class="name">var <span class="ident">charity_logo</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_name"><code class="name">var <span class="ident">charity_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_website"><code class="name">var <span class="ident">charity_website</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.current_amount"><code class="name">var <span class="ident">current_amount</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.charity_campaign.CharityCampaign.target_amount"><code class="name">var <span class="ident">target_amount</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -174,6 +192,18 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign">CharityCampaign</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_id" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_login" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_login">broadcaster_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_name" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.campaign_id" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.campaign_id">campaign_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_description" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_description">charity_description</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_logo" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_logo">charity_logo</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_name" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_name">charity_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_website" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.charity_website">charity_website</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.current_amount" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.current_amount">current_amount</a></code></li>
+<li><code><a title="twitchpy.dataclasses.charity_campaign.CharityCampaign.target_amount" href="#twitchpy.dataclasses.charity_campaign.CharityCampaign.target_amount">target_amount</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

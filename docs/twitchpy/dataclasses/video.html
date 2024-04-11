@@ -26,60 +26,45 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Video:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Video:
     &#34;&#34;&#34;
     Represents a video
+
+    Attributes:
+        id (str): ID of the video
+        user_id (str): ID of the owner of the video
+        user_name (str): User name of the owner of the video
+        title (str): Title of the video
+        description (str): Description of the video
+        created_at (str): Date of creation of the video
+        published_at (str): Date of publication of the video
+        url (str): URL of the video
+        thumbnail_url (str): URL of the preview image of the video
+        viewable (str): Indicates whether the video is publicly viewable
+        view_count (int): Number of times the video has been viewed
+        language (str): Language of the video
+        type (str): Type of the video
+        duration (str): Duration of the video
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        video_id,
-        user_id,
-        user_name,
-        title,
-        description,
-        created_at,
-        published_at,
-        url,
-        thumbnail_url,
-        viewable,
-        view_count,
-        language,
-        video_type,
-        duration,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (str): ID of the video
-            user_id (str): ID of the owner of the video
-            user_name (str): User name of the owner of the video
-            title (str): Title of the video
-            description (str): Description of the video
-            created_at (str): Date of creation of the video
-            published_at (str): Date of publication of the video
-            url (str): URL of the video
-            thumbnail_url (str): URL of the preview image of the video
-            viewable (str): Indicates whether the video is publicly viewable
-            view_count (int): Number of times the video has been viewed
-            language (str): Language of the video
-            type (str): Type of the video
-            duration (str): Duration of the video
-        &#34;&#34;&#34;
-
-        self.id = video_id
-        self.user_id = user_id
-        self.user_name = user_name
-        self.title = title
-        self.description = description
-        self.created_at = created_at
-        self.published_at = published_at
-        self.url = url
-        self.thumbnail_url = thumbnail_url
-        self.viewable = viewable
-        self.view_count = view_count
-        self.language = language
-        self.type = video_type
-        self.duration = duration</code></pre>
+    video_id: str
+    user_id: str
+    user_name: str
+    title: str
+    description: str
+    created_at: str
+    published_at: str
+    url: str
+    thumbnail_url: str
+    viewable: str
+    view_count: int
+    language: str
+    video_type: str
+    duration: str</code></pre>
 </details>
 </section>
 <section>
@@ -93,11 +78,11 @@
 <dl>
 <dt id="twitchpy.dataclasses.video.Video"><code class="flex name class">
 <span>class <span class="ident">Video</span></span>
-<span>(</span><span>video_id, user_id, user_name, title, description, created_at, published_at, url, thumbnail_url, viewable, view_count, language, video_type, duration)</span>
+<span>(</span><span>video_id: str, user_id: str, user_name: str, title: str, description: str, created_at: str, published_at: str, url: str, thumbnail_url: str, viewable: str, view_count: int, language: str, video_type: str, duration: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a video</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
 <dt><strong><code>id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID of the video</dd>
@@ -132,61 +117,102 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Video:
+<pre><code class="python">@dataclass
+class Video:
     &#34;&#34;&#34;
     Represents a video
+
+    Attributes:
+        id (str): ID of the video
+        user_id (str): ID of the owner of the video
+        user_name (str): User name of the owner of the video
+        title (str): Title of the video
+        description (str): Description of the video
+        created_at (str): Date of creation of the video
+        published_at (str): Date of publication of the video
+        url (str): URL of the video
+        thumbnail_url (str): URL of the preview image of the video
+        viewable (str): Indicates whether the video is publicly viewable
+        view_count (int): Number of times the video has been viewed
+        language (str): Language of the video
+        type (str): Type of the video
+        duration (str): Duration of the video
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        video_id,
-        user_id,
-        user_name,
-        title,
-        description,
-        created_at,
-        published_at,
-        url,
-        thumbnail_url,
-        viewable,
-        view_count,
-        language,
-        video_type,
-        duration,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            id (str): ID of the video
-            user_id (str): ID of the owner of the video
-            user_name (str): User name of the owner of the video
-            title (str): Title of the video
-            description (str): Description of the video
-            created_at (str): Date of creation of the video
-            published_at (str): Date of publication of the video
-            url (str): URL of the video
-            thumbnail_url (str): URL of the preview image of the video
-            viewable (str): Indicates whether the video is publicly viewable
-            view_count (int): Number of times the video has been viewed
-            language (str): Language of the video
-            type (str): Type of the video
-            duration (str): Duration of the video
-        &#34;&#34;&#34;
-
-        self.id = video_id
-        self.user_id = user_id
-        self.user_name = user_name
-        self.title = title
-        self.description = description
-        self.created_at = created_at
-        self.published_at = published_at
-        self.url = url
-        self.thumbnail_url = thumbnail_url
-        self.viewable = viewable
-        self.view_count = view_count
-        self.language = language
-        self.type = video_type
-        self.duration = duration</code></pre>
+    video_id: str
+    user_id: str
+    user_name: str
+    title: str
+    description: str
+    created_at: str
+    published_at: str
+    url: str
+    thumbnail_url: str
+    viewable: str
+    view_count: int
+    language: str
+    video_type: str
+    duration: str</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.video.Video.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.description"><code class="name">var <span class="ident">description</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.duration"><code class="name">var <span class="ident">duration</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.language"><code class="name">var <span class="ident">language</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.published_at"><code class="name">var <span class="ident">published_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.thumbnail_url"><code class="name">var <span class="ident">thumbnail_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.url"><code class="name">var <span class="ident">url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.user_name"><code class="name">var <span class="ident">user_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.video_id"><code class="name">var <span class="ident">video_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.video_type"><code class="name">var <span class="ident">video_type</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.view_count"><code class="name">var <span class="ident">view_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.video.Video.viewable"><code class="name">var <span class="ident">viewable</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -206,6 +232,22 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.video.Video" href="#twitchpy.dataclasses.video.Video">Video</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.video.Video.created_at" href="#twitchpy.dataclasses.video.Video.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.description" href="#twitchpy.dataclasses.video.Video.description">description</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.duration" href="#twitchpy.dataclasses.video.Video.duration">duration</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.language" href="#twitchpy.dataclasses.video.Video.language">language</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.published_at" href="#twitchpy.dataclasses.video.Video.published_at">published_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.thumbnail_url" href="#twitchpy.dataclasses.video.Video.thumbnail_url">thumbnail_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.title" href="#twitchpy.dataclasses.video.Video.title">title</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.url" href="#twitchpy.dataclasses.video.Video.url">url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.user_id" href="#twitchpy.dataclasses.video.Video.user_id">user_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.user_name" href="#twitchpy.dataclasses.video.Video.user_name">user_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.video_id" href="#twitchpy.dataclasses.video.Video.video_id">video_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.video_type" href="#twitchpy.dataclasses.video.Video.video_type">video_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.view_count" href="#twitchpy.dataclasses.video.Video.view_count">view_count</a></code></li>
+<li><code><a title="twitchpy.dataclasses.video.Video.viewable" href="#twitchpy.dataclasses.video.Video.viewable">viewable</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

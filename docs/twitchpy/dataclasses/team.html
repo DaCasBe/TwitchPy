@@ -26,48 +26,39 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Team:
+<pre><code class="python">from dataclasses import dataclass
+
+from ..dataclasses import User
+
+
+@dataclass
+class Team:
     &#34;&#34;&#34;
     Represents a team
+
+    Attributes:
+        users (list[User]): Users in the team
+        background_image_url (str): URL of the team background image
+        banner (str): URL for the team banner
+        created_at (str): Date and time the team was created
+        updated_at (str): Date and time the team was last updated
+        info (str): Team description
+        thumbnail_url (str): Image URL for the team logo
+        team_name (str): Team name
+        team_display_name (str): Team display name
+        team_id (str): Team ID
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        users,
-        background_image_url,
-        banner,
-        created_at,
-        updated_at,
-        info,
-        thumbnail_url,
-        team_name,
-        team_display_name,
-        team_id,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            users (list): Users in the team
-            background_image_url (str): URL of the team background image
-            banner (str): URL for the team banner
-            created_at (str): Date and time the team was created
-            updated_at (str): Date and time the team was last updated
-            info (str): Team description
-            thumbnail_url (str): Image URL for the team logo
-            team_name (str): Team name
-            team_display_name (str): Team display name
-            team_id (str): Team ID
-        &#34;&#34;&#34;
-
-        self.users = users
-        self.background_image_url = background_image_url
-        self.banner = banner
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.info = info
-        self.thumbnail_url = thumbnail_url
-        self.team_name = team_name
-        self.team_display_name = team_display_name
-        self.id = team_id</code></pre>
+    users: list[User]
+    background_image_url: str
+    banner: str
+    created_at: str
+    updated_at: str
+    info: str
+    thumbnail_url: str
+    team_name: str
+    team_display_name: str
+    team_id: str</code></pre>
 </details>
 </section>
 <section>
@@ -81,13 +72,13 @@
 <dl>
 <dt id="twitchpy.dataclasses.team.Team"><code class="flex name class">
 <span>class <span class="ident">Team</span></span>
-<span>(</span><span>users, background_image_url, banner, created_at, updated_at, info, thumbnail_url, team_name, team_display_name, team_id)</span>
+<span>(</span><span>users: list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>], background_image_url: str, banner: str, created_at: str, updated_at: str, info: str, thumbnail_url: str, team_name: str, team_display_name: str, team_id: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a team</p>
-<h2 id="args">Args</h2>
+<h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>users</code></strong> :&ensp;<code>list</code></dt>
+<dt><strong><code>users</code></strong> :&ensp;<code>list[User]</code></dt>
 <dd>Users in the team</dd>
 <dt><strong><code>background_image_url</code></strong> :&ensp;<code>str</code></dt>
 <dd>URL of the team background image</dd>
@@ -112,49 +103,78 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Team:
+<pre><code class="python">@dataclass
+class Team:
     &#34;&#34;&#34;
     Represents a team
+
+    Attributes:
+        users (list[User]): Users in the team
+        background_image_url (str): URL of the team background image
+        banner (str): URL for the team banner
+        created_at (str): Date and time the team was created
+        updated_at (str): Date and time the team was last updated
+        info (str): Team description
+        thumbnail_url (str): Image URL for the team logo
+        team_name (str): Team name
+        team_display_name (str): Team display name
+        team_id (str): Team ID
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        users,
-        background_image_url,
-        banner,
-        created_at,
-        updated_at,
-        info,
-        thumbnail_url,
-        team_name,
-        team_display_name,
-        team_id,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            users (list): Users in the team
-            background_image_url (str): URL of the team background image
-            banner (str): URL for the team banner
-            created_at (str): Date and time the team was created
-            updated_at (str): Date and time the team was last updated
-            info (str): Team description
-            thumbnail_url (str): Image URL for the team logo
-            team_name (str): Team name
-            team_display_name (str): Team display name
-            team_id (str): Team ID
-        &#34;&#34;&#34;
-
-        self.users = users
-        self.background_image_url = background_image_url
-        self.banner = banner
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.info = info
-        self.thumbnail_url = thumbnail_url
-        self.team_name = team_name
-        self.team_display_name = team_display_name
-        self.id = team_id</code></pre>
+    users: list[User]
+    background_image_url: str
+    banner: str
+    created_at: str
+    updated_at: str
+    info: str
+    thumbnail_url: str
+    team_name: str
+    team_display_name: str
+    team_id: str</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.team.Team.background_image_url"><code class="name">var <span class="ident">background_image_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.banner"><code class="name">var <span class="ident">banner</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.info"><code class="name">var <span class="ident">info</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.team_display_name"><code class="name">var <span class="ident">team_display_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.team_id"><code class="name">var <span class="ident">team_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.team_name"><code class="name">var <span class="ident">team_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.thumbnail_url"><code class="name">var <span class="ident">thumbnail_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.updated_at"><code class="name">var <span class="ident">updated_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.team.Team.users"><code class="name">var <span class="ident">users</span> : list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -174,6 +194,18 @@
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.team.Team" href="#twitchpy.dataclasses.team.Team">Team</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.team.Team.background_image_url" href="#twitchpy.dataclasses.team.Team.background_image_url">background_image_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.banner" href="#twitchpy.dataclasses.team.Team.banner">banner</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.created_at" href="#twitchpy.dataclasses.team.Team.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.info" href="#twitchpy.dataclasses.team.Team.info">info</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.team_display_name" href="#twitchpy.dataclasses.team.Team.team_display_name">team_display_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.team_id" href="#twitchpy.dataclasses.team.Team.team_id">team_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.team_name" href="#twitchpy.dataclasses.team.Team.team_name">team_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.thumbnail_url" href="#twitchpy.dataclasses.team.Team.thumbnail_url">thumbnail_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.updated_at" href="#twitchpy.dataclasses.team.Team.updated_at">updated_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.team.Team.users" href="#twitchpy.dataclasses.team.Team.users">users</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

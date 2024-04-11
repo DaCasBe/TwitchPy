@@ -26,55 +26,42 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Poll:
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Poll:
     &#34;&#34;&#34;
     Represents a poll
+
+    Args:
+        poll_id (str): ID of the poll
+        broadcaster_id (str): ID of the broadcaster
+        broadcaster_name (str): Name of the broadcaster
+        broadcaster_login (str): Login of the broadcaster
+        title (str): Question displayed for the poll
+        choices (list): The poll choices
+        channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
+        channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
+        status (str): Poll status
+            Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
+        duration (int): Total duration for the poll (in seconds)
+        started_at (str): UTC timestamp for the poll’s start time
+        ended_at (str): UTC timestamp for the poll’s end time
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        poll_id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        title: str,
-        choices: list[dict],
-        channel_points_voting_enabled: bool,
-        channel_points_per_vote: int,
-        status: str,
-        duration: int,
-        started_at: str,
-        ended_at: str = &#34;&#34;,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            poll_id (str): ID of the poll
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
-            broadcaster_login (str): Login of the broadcaster
-            title (str): Question displayed for the poll
-            choices (list): The poll choices
-            channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
-            channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
-            status (str): Poll status
-                Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
-            duration (int): Total duration for the poll (in seconds)
-            started_at (str): UTC timestamp for the poll’s start time
-            ended_at (str): UTC timestamp for the poll’s end time
-        &#34;&#34;&#34;
-
-        self.id = poll_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.choices = choices
-        self.channel_points_voting_enabled = channel_points_voting_enabled
-        self.channel_points_per_vote = channel_points_per_vote
-        self.status = status
-        self.duration = duration
-        self.started_at = started_at
-        self.ended_at = ended_at</code></pre>
+    poll_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    title: str
+    choices: list[dict]
+    channel_points_voting_enabled: bool
+    channel_points_per_vote: int
+    status: str
+    duration: int
+    started_at: str
+    ended_at: str = &#34;&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -124,56 +111,91 @@ Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</d
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Poll:
+<pre><code class="python">@dataclass
+class Poll:
     &#34;&#34;&#34;
     Represents a poll
+
+    Args:
+        poll_id (str): ID of the poll
+        broadcaster_id (str): ID of the broadcaster
+        broadcaster_name (str): Name of the broadcaster
+        broadcaster_login (str): Login of the broadcaster
+        title (str): Question displayed for the poll
+        choices (list): The poll choices
+        channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
+        channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
+        status (str): Poll status
+            Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
+        duration (int): Total duration for the poll (in seconds)
+        started_at (str): UTC timestamp for the poll’s start time
+        ended_at (str): UTC timestamp for the poll’s end time
     &#34;&#34;&#34;
 
-    def __init__(
-        self,
-        poll_id: str,
-        broadcaster_id: str,
-        broadcaster_name: str,
-        broadcaster_login: str,
-        title: str,
-        choices: list[dict],
-        channel_points_voting_enabled: bool,
-        channel_points_per_vote: int,
-        status: str,
-        duration: int,
-        started_at: str,
-        ended_at: str = &#34;&#34;,
-    ):
-        &#34;&#34;&#34;
-        Args:
-            poll_id (str): ID of the poll
-            broadcaster_id (str): ID of the broadcaster
-            broadcaster_name (str): Name of the broadcaster
-            broadcaster_login (str): Login of the broadcaster
-            title (str): Question displayed for the poll
-            choices (list): The poll choices
-            channel_points_voting_enabled (bool): Indicates if Channel Points can be used for voting
-            channel_points_per_vote (int): Number of Channel Points required to vote once with Channel Points
-            status (str): Poll status
-                Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID
-            duration (int): Total duration for the poll (in seconds)
-            started_at (str): UTC timestamp for the poll’s start time
-            ended_at (str): UTC timestamp for the poll’s end time
-        &#34;&#34;&#34;
-
-        self.id = poll_id
-        self.broadcaster_id = broadcaster_id
-        self.broadcaster_name = broadcaster_name
-        self.broadcaster_login = broadcaster_login
-        self.title = title
-        self.choices = choices
-        self.channel_points_voting_enabled = channel_points_voting_enabled
-        self.channel_points_per_vote = channel_points_per_vote
-        self.status = status
-        self.duration = duration
-        self.started_at = started_at
-        self.ended_at = ended_at</code></pre>
+    poll_id: str
+    broadcaster_id: str
+    broadcaster_name: str
+    broadcaster_login: str
+    title: str
+    choices: list[dict]
+    channel_points_voting_enabled: bool
+    channel_points_per_vote: int
+    status: str
+    duration: int
+    started_at: str
+    ended_at: str = &#34;&#34;</code></pre>
 </details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.channel_points_per_vote"><code class="name">var <span class="ident">channel_points_per_vote</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.channel_points_voting_enabled"><code class="name">var <span class="ident">channel_points_voting_enabled</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.choices"><code class="name">var <span class="ident">choices</span> : list[dict]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.duration"><code class="name">var <span class="ident">duration</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.ended_at"><code class="name">var <span class="ident">ended_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.poll_id"><code class="name">var <span class="ident">poll_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.started_at"><code class="name">var <span class="ident">started_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.status"><code class="name">var <span class="ident">status</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.poll.Poll.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -193,6 +215,20 @@ Valid values are: ACTIVE, COMPLETED, TERMINATED, ARCHIVED, MODERATED, INVALID</d
 <ul>
 <li>
 <h4><code><a title="twitchpy.dataclasses.poll.Poll" href="#twitchpy.dataclasses.poll.Poll">Poll</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_id" href="#twitchpy.dataclasses.poll.Poll.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_login" href="#twitchpy.dataclasses.poll.Poll.broadcaster_login">broadcaster_login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_name" href="#twitchpy.dataclasses.poll.Poll.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.channel_points_per_vote" href="#twitchpy.dataclasses.poll.Poll.channel_points_per_vote">channel_points_per_vote</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.channel_points_voting_enabled" href="#twitchpy.dataclasses.poll.Poll.channel_points_voting_enabled">channel_points_voting_enabled</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.choices" href="#twitchpy.dataclasses.poll.Poll.choices">choices</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.duration" href="#twitchpy.dataclasses.poll.Poll.duration">duration</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.ended_at" href="#twitchpy.dataclasses.poll.Poll.ended_at">ended_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.poll_id" href="#twitchpy.dataclasses.poll.Poll.poll_id">poll_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.started_at" href="#twitchpy.dataclasses.poll.Poll.started_at">started_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.status" href="#twitchpy.dataclasses.poll.Poll.status">status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.title" href="#twitchpy.dataclasses.poll.Poll.title">title</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

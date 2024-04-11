@@ -12,11 +12,11 @@ from .hypetrain_event import HypeTrainEvent
 from .message import Message
 from .poll import Poll
 from .prediction import Prediction
-from .redemption import Redemption
 from .reward import Reward
+from .redemption import Redemption
 from .stream import Stream
 from .stream_schedule import StreamSchedule
 from .tag import Tag
-from .team import Team
 from .user import User
+from .team import Team
 from .video import Video
