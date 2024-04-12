@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 
 import requests
 
@@ -46,7 +47,9 @@ from .dataclasses import (
     Emote,
     EventSubSubscription,
     Extension,
+    ExtensionAnalyticsReport,
     Game,
+    GameAnalyticsReport,
     GuestStarSession,
     HypeTrainEvent,
     Poll,
@@ -295,83 +298,83 @@ class Client:
 
     def get_extension_analytics(
         self,
-        ended_at: str = "",
-        extension_id: str = "",
+        extension_id: str | None = None,
+        report_type: str | None = None,
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        started_at: str = "",
-        report_type: str = "",
-    ) -> list[dict]:
+    ) -> list[ExtensionAnalyticsReport]:
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
 
         Args:
-            ended_at (str): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
-                If this is provided, started_at also must be specified
-            extension_id (str): Client ID value assigned to the extension when it is created
-            first (int): Maximum number of objects to return
-                Default: 20
-            started_at (str): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+            extension_id (str | None): Client ID value assigned to the extension when it is created
+            report_type (str | None): Type of analytics report that is returned
+                Valid values: "overview_v2"
+            started_at (datetime | None): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                 This must be on or after January 31, 2018
                 If this is provided, ended_at also must be specified
-            report_type (str): Type of analytics report that is returned
-                Valid values: "overview_v2"
+            ended_at (datetime | None): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                If this is provided, started_at also must be specified
+            first (int): Maximum number of objects to return
+                Default: 20
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ExtensionAnalyticsReport]
         """
 
         return analytics.get_extension_analytics(
             self.__user_token,
             self.client_id,
-            ended_at,
             extension_id,
-            first,
-            started_at,
             report_type,
+            started_at,
+            ended_at,
+            first,
         )
 
     def get_game_analytics(
         self,
-        ended_at: str = "",
+        game_id: str | None = None,
+        report_type: str | None = None,
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        game_id: str = "",
-        started_at: str = "",
-        report_type: str = "",
-    ) -> list[dict]:
+    ) -> list[GameAnalyticsReport]:
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
 
         Args:
-            ended_at (str): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+            game_id (str | None): Game ID
+            report_type (str | None): Type of analytics report that is returned
+                Valid values: "overview_v2"
+            started_at (datetime | None): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                If this is provided, ended_at also must be specified
+            ended_at (datetime | None): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                 If this is provided, started_at also must be specified
             first (int): Maximum number of objects to return
                 Default: 20
-            game_id (str): Game ID
-            started_at (str): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
-                If this is provided, ended_at also must be specified
-            report_type (str): Type of analytics report that is returned
-                Valid values: "overview_v2"
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[GameAnalyticsReport]
         """
 
         return analytics.get_game_analytics(
             self.__user_token,
             self.client_id,
+            game_id,
+            report_type,
+            started_at,
             ended_at,
             first,
-            game_id,
-            started_at,
-            report_type,
         )
 
     def get_bits_leaderboard(

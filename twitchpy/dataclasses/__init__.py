@@ -8,7 +8,9 @@ from .commercial import Commercial
 from .emote import Emote
 from .eventsub_subscription import EventSubSubscription
 from .extension import Extension
+from .extension_analytics_report import ExtensionAnalyticsReport
 from .game import Game
+from .game_analytics_report import GameAnalyticsReport
 from .guest_star_session import GuestStarSession
 from .hypetrain_event import HypeTrainEvent
 from .message import Message
