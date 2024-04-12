@@ -39,9 +39,11 @@ from ._api import (
 from .dataclasses import (
     AdSchedule,
     Badge,
+    BitsLeaderboardLeader,
     Channel,
     CharityCampaign,
     CharityCampaignDonation,
+    Cheermote,
     Clip,
     Commercial,
     Emote,
@@ -381,9 +383,9 @@ class Client:
         self,
         count: int = 10,
         period: str = "all",
-        started_at: str = "",
-        user_id: str = "",
-    ) -> list[dict]:
+        started_at: datetime | None = None,
+        user_id: str | None = None,
+    ) -> list[BitsLeaderboardLeader]:
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -395,36 +397,36 @@ class Client:
                 This parameter interacts with started_at
                 Default: "all"
                 Valid values: "day", "week", "month", "year", "all"
-            started_at (str): Timestamp for the period over which the returned data is aggregated
+            started_at (datetime | None): Timestamp for the period over which the returned data is aggregated
                 Must be in RFC 3339 format
                 This value is ignored if period is "all"
-            user_id (str): ID of the user whose results are returned
+            user_id (str | None): ID of the user whose results are returned
                 As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BitsLeaderboardLeader]
         """
 
         return bits.get_bits_leaderboard(
             self.__user_token, self.client_id, count, period, started_at, user_id
         )
 
-    def get_cheermotes(self, broadcaster_id: str = "") -> list[dict]:
+    def get_cheermotes(self, broadcaster_id: str | None = None) -> list[Cheermote]:
         """
         Retrieves the list of available Cheermotes
         Cheermotes returned are available throughout Twitch, in all Bits-enabled channels
 
         Args:
-            broadcaster_id (str): ID for the broadcaster who might own specialized Cheermotes
+            broadcaster_id (str | None): ID for the broadcaster who might own specialized Cheermotes
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Cheermote]
         """
 
         return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
