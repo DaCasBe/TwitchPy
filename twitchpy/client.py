@@ -46,6 +46,7 @@ from .dataclasses import (
     Cheermote,
     Clip,
     Commercial,
+    ContentClassificationLabel,
     Emote,
     EventSubSubscription,
     Extension,
@@ -459,22 +460,22 @@ class Client:
             self.__app_token, self.client_id, extension_id, transaction_ids, first
         )
 
-    def get_channel(self, broadcaster_id: str | list[str]) -> Channel | list[Channel]:
+    def get_channel_information(self, broadcaster_id: list[str]) -> list[Channel]:
         """
         Gets one or more channels
 
         Args:
-            broadcaster_id (str | list[str]): The ID of the broadcaster whose channel you want to get
+            broadcaster_id (list[str]): The ID of the broadcaster whose channel you want to get
                 Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            Channel | list[Channel]
+            list[Channel]
         """
 
-        return channels.get_channels(
+        return channels.get_channel_information(
             self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
@@ -488,7 +489,7 @@ class Client:
         title: str | None = None,
         delay: int | None = None,
         channel_tags: list[str] | None = None,
-        cc_labels: list[dict] | None = None,
+        cc_labels: list[ContentClassificationLabel] | None = None,
         is_branded_content: bool | None = None,
     ) -> None:
         """
@@ -507,7 +508,7 @@ class Client:
                 Maximum: 900 seconds
             channel_tags (list[str] | None): A list of channel-defined tags to apply to the channel
                 Maximum: 10
-            cc_labels (list[dict] | None): List of labels that should be set as the Channel’s CCLs
+            cc_labels (list[ContentClassificationLabel] | None): List of labels that should be set as the Channel’s CCLs
             is_branded_content (bool | None): Boolean flag indicating if the channel has branded content
 
         Raises:
@@ -527,7 +528,7 @@ class Client:
             is_branded_content,
         )
 
-    def get_channel_editors(self, broadcaster_id: str) -> list[dict]:
+    def get_channel_editors(self, broadcaster_id: str) -> list[User]:
         """
         Gets a list of users who have editor permissions for a specific channel
 
@@ -538,7 +539,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return channels.get_channel_editors(
@@ -546,8 +547,8 @@ class Client:
         )
 
     def get_followed_channels(
-        self, user_id: str, broadcaster_id: str = "", first: int = 20
-    ) -> list[dict]:
+        self, user_id: str, broadcaster_id: str | None = None, first: int = 20
+    ) -> list[tuple[Channel, datetime]]:
         """
         Gets a list of broadcasters that the specified user follows
 
@@ -555,7 +556,7 @@ class Client:
             user_id (str): A user’s ID
                 Returns the list of broadcasters that this user follows
                 This ID must match the user ID in the user OAuth token
-            broadcaster_id (str): A broadcaster’s ID
+            broadcaster_id (str | None): A broadcaster’s ID
                 Use this parameter to see whether the user follows this broadcaster
             first (int): The maximum number of items to return
                 Default: 20
@@ -565,7 +566,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[Channel, datetime]]
         """
 
         return channels.get_followed_channels(
@@ -573,8 +574,8 @@ class Client:
         )
 
     def get_channel_followers(
-        self, broadcaster_id: str, user_id: str = "", first: int = 20
-    ) -> list[dict]:
+        self, broadcaster_id: str, user_id: str | None = None, first: int = 20
+    ) -> list[tuple[Channel, datetime]]:
         """
         The function `get_channel_followers` retrieves a list of channels that are following a specific
         broadcaster on Twitch.
@@ -582,7 +583,7 @@ class Client:
         Args:
             broadcaster_id (str): The broadcaster’s ID
                 Returns the list of users that follow this broadcaster
-            user_id (str): A user’s ID
+            user_id (str | None): A user’s ID
                 Use this parameter to see whether the user follows this broadcaster
             first (int): The maximum number of items to return
                 Default: 20
@@ -592,7 +593,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[Channel, datetime]]
         """
 
         return channels.get_channel_followers(
@@ -2800,7 +2801,7 @@ class Client:
 
     def get_vips(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
 
@@ -2817,7 +2818,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return channels.get_vips(
