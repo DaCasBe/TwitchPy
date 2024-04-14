@@ -43,6 +43,7 @@ from .dataclasses import (
     Channel,
     CharityCampaign,
     CharityCampaignDonation,
+    ChatSettings,
     Cheermote,
     Clip,
     Commercial,
@@ -924,7 +925,7 @@ class Client:
 
     def get_chatters(
         self, broadcaster_id: str, moderator_id: str, first: int = 100
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Gets the list of users that are connected to the broadcaster’s chat session
 
@@ -940,7 +941,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return chats.get_chatters(
@@ -1030,13 +1031,15 @@ class Client:
 
         return chats.get_global_chat_badges(self.__app_token, self.client_id)
 
-    def get_chat_settings(self, broadcaster_id: str, moderator_id: str = "") -> dict:
+    def get_chat_settings(
+        self, broadcaster_id: str, moderator_id: str | None = None
+    ) -> ChatSettings:
         """
         Gets the broadcaster’s chat settings
 
         Args:
             broadcaster_id (str): The ID of the broadcaster whose chat settings you want to get
-            moderator_id (str): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings
+            moderator_id (str | None): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings
                 The ID of a user that has permission to moderate the broadcaster’s chat room
                 This ID must match the user ID associated with the user OAuth token
                 If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
@@ -1045,14 +1048,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ChatSettings
         """
 
         return chats.get_chat_settings(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
-    def get_user_emotes(self, user_id: str) -> list[dict]:
+    def get_user_emotes(self, user_id: str) -> list[Emote]:
         """
         Retrieves emotes available to the user across all channels
 
@@ -1064,7 +1067,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Emote]
         """
 
         return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
@@ -1075,14 +1078,14 @@ class Client:
         moderator_id: str,
         emote_mode: bool | None = None,
         follower_mode: bool | None = None,
-        follower_mode_duration: int = 0,
+        follower_mode_duration: int | None = None,
         non_moderator_chat_delay: bool | None = None,
-        non_moderator_chat_delay_duration: int = 0,
+        non_moderator_chat_delay_duration: int | None = None,
         slow_mode: bool | None = None,
-        slow_mode_wait_time: int = 30,
+        slow_mode_wait_time: int | None = None,
         subscriber_mode: bool | None = None,
         unique_chat_mode: bool | None = None,
-    ) -> dict:
+    ) -> ChatSettings:
         """
         Updates the broadcaster’s chat settings
 
@@ -1098,19 +1101,19 @@ class Client:
             follower_mode (bool | None): A Boolean value that determines whether the broadcaster restricts the chat room to followers only, based on how long they’ve followed
                 Set to true, if the broadcaster restricts the chat room to followers only; otherwise, false
                 Default is false
-            follower_mode_duration (int): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room
+            follower_mode_duration (int | None): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room
                 You may specify a value in the range: 0 (no restriction) through 129600 (3 months)
                 The default is 0
             non_moderator_chat_delay (bool | None): A Boolean value that determines whether the broadcaster adds a short delay before chat messages appear in the chat room
                 This gives chat moderators and bots a chance to remove them before viewers can see the message
                 Set to true, if the broadcaster applies a delay; otherwise, false
                 Default is false
-            non_moderator_chat_delay_duration (int): The amount of time, in seconds, that messages are delayed from appearing in chat
+            non_moderator_chat_delay_duration (int | None): The amount of time, in seconds, that messages are delayed from appearing in chat
                 Possible values are: 2, 4, 6
             slow_mode (bool | None): A Boolean value that determines whether the broadcaster limits how often users in the chat room are allowed to send messages
                 Set to true, if the broadcaster applies a wait period messages; otherwise, false
                 Default is false
-            slow_mode_wait_time (int): The amount of time, in seconds, that users need to wait between sending messages
+            slow_mode_wait_time (int | None): The amount of time, in seconds, that users need to wait between sending messages
                 You may specify a value in the range: 3 (3 second delay) through 120 (2 minute delay)
                 The default is 30 seconds
             subscriber_mode (bool | None): A Boolean value that determines whether only users that subscribe to the broadcaster’s channel can talk in the chat room
@@ -1124,7 +1127,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ChatSettings
         """
 
         return chats.update_chat_settings(
@@ -1144,7 +1147,11 @@ class Client:
         )
 
     def send_chat_announcement(
-        self, broadcaster_id: str, moderator_id: str, message: str, color: str = ""
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        message: str,
+        color: str | None = None,
     ) -> None:
         """
         Sends an announcement to the broadcaster’s chat room
@@ -1155,7 +1162,7 @@ class Client:
                 This ID must match the user ID in the user access token
             message (str): The announcement to make in the broadcaster’s chat
                 Announcements are limited to a maximum of 500 characters
-            color (str): Announcements are limited to a maximum of 500 characters
+            color (str | None): Announcements are limited to a maximum of 500 characters
                 Possible case-sensitive values are: blue, green, orange, purple, primary (default)
                 If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement
 
@@ -1201,7 +1208,7 @@ class Client:
         broadcaster_id: str,
         sender_id: str,
         message: str,
-        reply_parent_message_id: str = "",
+        reply_parent_message_id: str | None = None,
     ) -> dict:
         """
         Sends a message to the broadcaster’s chat room
@@ -1212,7 +1219,7 @@ class Client:
                 This ID must match the user ID in the user access token
             message (str): The message to send
                 The message is limited to a maximum of 500 characters
-            reply_parent_message_id (str): The ID of the chat message being replied to
+            reply_parent_message_id (str | None): The ID of the chat message being replied to
 
         Raises:
             errors.ClientError
@@ -1230,19 +1237,19 @@ class Client:
             reply_parent_message_id,
         )
 
-    def get_user_chat_color(self, user_id: str | list[str]) -> dict | list[dict]:
+    def get_user_chat_color(self, user_id: list[str]) -> list[tuple[User, str]]:
         """
         Gets the color used for the user’s name in chat
 
         Args:
-            user_id (str | list[str]): The ID of the user whose username color you want to get
+            user_id (list[str]): The ID of the user whose username color you want to get
                 Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            dict | list[dict]
+            list[tuple[User, str]]
         """
 
         return chats.get_user_chat_color(self.__app_token, self.client_id, user_id)
