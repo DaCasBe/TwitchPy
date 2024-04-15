@@ -48,6 +48,7 @@ from .dataclasses import (
     Clip,
     Commercial,
     ContentClassificationLabel,
+    DropEntitlement,
     Emote,
     EventSubSubscription,
     Extension,
@@ -1463,20 +1464,20 @@ class Client:
 
     def get_drops_entitlements(
         self,
-        entitlement_id: str = "",
-        user_id: str = "",
-        game_id: str = "",
-        fulfillment_status: str = "",
+        entitlement_id: list[str] | None = None,
+        user_id: str | None = None,
+        game_id: str | None = None,
+        fulfillment_status: str | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[DropEntitlement]:
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
         Args:
-            entitlement_id (str): ID of the entitlement
-            user_id (str): A Twitch User ID
-            game_id (str): A Twitch Game ID
-            fulfillment_status (str): An optional fulfillment status used to filter entitlements
+            entitlement_id (list[str] | None): ID of the entitlement
+            user_id (str | None): A Twitch User ID
+            game_id (str | None): A Twitch Game ID
+            fulfillment_status (str | None): An optional fulfillment status used to filter entitlements
                 Valid values are "CLAIMED" or "FULFILLED"
             first (int): Maximum number of entitlements to return
                 Default: 20
@@ -1485,7 +1486,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[DropEntitlement]
         """
 
         return drops.get_drops_entitlements(
@@ -1499,22 +1500,24 @@ class Client:
         )
 
     def update_drops_entitlements(
-        self, entitlement_ids: list[str] | None = None, fulfillment_status: str = ""
-    ) -> list[dict]:
+        self,
+        entitlement_ids: list[str] | None = None,
+        fulfillment_status: str | None = None,
+    ) -> list[tuple[str, list[str]]]:
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
         Args:
             entitlement_ids (list[str] | None): An array of unique identifiers of the entitlements to update
                 Maximum: 100
-            fulfillment_status (str): A fulfillment status
+            fulfillment_status (str | None): A fulfillment status
                 Valid values are "CLAIMED" or "FULFILLED"
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[str]]]
         """
 
         return drops.update_drops_entitlements(

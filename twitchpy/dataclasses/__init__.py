@@ -7,6 +7,7 @@ from .cheermote_tier import CheermoteTier
 from .cheermote import Cheermote
 from .commercial import Commercial
 from .content_classification_label import ContentClassificationLabel
+from .drop_entitlement import DropEntitlement
 from .emote import Emote
 from .eventsub_subscription import EventSubSubscription
 from .extension import Extension
