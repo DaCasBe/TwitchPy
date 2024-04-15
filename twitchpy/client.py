@@ -1440,7 +1440,9 @@ class Client:
             self.__app_token, self.client_id, conduit_id, shards, session_id
         )
 
-    def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
+    def get_content_classification_labels(
+        self, locale: str = "en-US"
+    ) -> list[ContentClassificationLabel]:
         """
         Gets information about Twitch content classification labels
 
