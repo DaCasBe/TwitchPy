@@ -1,34 +1,34 @@
+from datetime import datetime
+
 from .._utils import http
-from ..dataclasses import Clip
+from ..dataclasses import Channel, Clip, User
 
 
 def create_clip(
     token: str, client_id: str, broadcaster_id: str, has_delay: bool = False
-) -> dict:
+) -> tuple[str, str]:
     url = "https://api.twitch.tv/helix/clips"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
-    payload = {}
-    payload["broadcaster_id"] = broadcaster_id
+    payload = {"broadcaster_id": broadcaster_id, "has_delay": has_delay}
 
-    if has_delay is not False:
-        payload["has_delay"] = has_delay
+    clip_creation = http.send_post_get_result(url, headers, payload)[0]
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    return (clip_creation["id"], clip_creation["edit_url"])
 
 
 def get_clips(
     token: str,
     client_id: str,
-    broadcaster_id: str = "",
-    game_id: str = "",
+    broadcaster_id: str | None = None,
+    game_id: str | None = None,
     clip_ids: list[str] | None = None,
-    started_at: str = "",
-    ended_at: str = "",
+    started_at: datetime | None = None,
+    ended_at: datetime | None = None,
     first: int = 20,
-    is_featured: bool = False,
+    is_featured: bool | None = None,
 ) -> list[Clip]:
     url = "https://api.twitch.tv/helix/clips"
     headers = {
@@ -37,22 +37,22 @@ def get_clips(
     }
     params = {}
 
-    if broadcaster_id != "":
+    if broadcaster_id is not None:
         params["broadcaster_id"] = broadcaster_id
 
-    if game_id != "":
+    if game_id is not None:
         params["game_id"] = game_id
 
     if clip_ids is not None and len(clip_ids) > 0:
         params["id"] = clip_ids
 
-    if started_at != "":
+    if started_at is not None:
         params["started_at"] = started_at
 
-    if ended_at != "":
+    if ended_at is not None:
         params["ended_at"] = ended_at
 
-    if is_featured is not False:
+    if is_featured is not None:
         params["is_featured"] = is_featured
 
     clips = http.send_get_with_pagination(url, headers, params, first, 100)
@@ -62,10 +62,16 @@ def get_clips(
             clip["id"],
             clip["url"],
             clip["embed_url"],
-            clip["broadcaster_id"],
-            clip["broadcaster_name"],
-            clip["creator_id"],
-            clip["creator_name"],
+            Channel(
+                User(
+                    clip["broadcaster_id"],
+                    clip["broadcaster_name"].lower(),
+                    clip["broadcaster_name"],
+                )
+            ),
+            User(
+                clip["creator_id"], clip["creator_name"].lower(), clip["creator_name"]
+            ),
             clip["video_id"],
             clip["game_id"],
             clip["language"],

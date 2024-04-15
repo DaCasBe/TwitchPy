@@ -5,7 +5,6 @@ from .charity_campaign_amount import CharityCampaignAmount
 from .chat_settings import ChatSettings
 from .cheermote_tier import CheermoteTier
 from .cheermote import Cheermote
-from .clip import Clip
 from .commercial import Commercial
 from .content_classification_label import ContentClassificationLabel
 from .emote import Emote
@@ -27,6 +26,7 @@ from .tag import Tag
 from .user import User
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .clip import Clip
 from .charity_campaign import CharityCampaign
 from .bits_leaderboard_leader import BitsLeaderboardLeader
 from .team import Team

@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from ..dataclasses import Channel, User
+
 
 @dataclass
 class Clip:
@@ -10,10 +12,8 @@ class Clip:
         clip_id (str): An ID that uniquely identifies the clip
         url (str): A URL to the clip
         embed_url (str): A URL that you can use in an iframe to embed the clip
-        broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
-        broadcaster_name (str): The broadcaster’s display name
-        creator_id (str): An ID that identifies the user that created the clip
-        creator_name (str): The user’s display name
+        channel (Channel): The channel that the video was clipped from
+        creator (User): The user that created the clip
         video_id (str): An ID that identifies the video that the clip came from
         game_id (str): The ID of the game that was being played when the clip was created
         language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
@@ -30,10 +30,8 @@ class Clip:
     clip_id: str
     url: str
     embed_url: str
-    broadcaster_id: str
-    broadcaster_name: str
-    creator_id: str
-    creator_name: str
+    channel: Channel
+    creator: User
     video_id: str
     game_id: str
     language: str

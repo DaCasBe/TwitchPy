@@ -1271,7 +1271,9 @@ class Client:
 
         chats.update_user_chat_color(self.__user_token, self.client_id, user_id, color)
 
-    def create_clip(self, broadcaster_id: str, has_delay: bool = False) -> dict:
+    def create_clip(
+        self, broadcaster_id: str, has_delay: bool = False
+    ) -> tuple[str, str]:
         """
         This returns both an ID and an edit URL for a new clip
 
@@ -1284,7 +1286,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            tuple[str, str]
         """
 
         return clips.create_clip(
@@ -1293,27 +1295,27 @@ class Client:
 
     def get_clips(
         self,
-        broadcaster_id: str = "",
-        game_id: str = "",
+        broadcaster_id: str | None = None,
+        game_id: str | None = None,
         clip_ids: list[str] | None = None,
-        started_at: str = "",
-        ended_at: str = "",
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        is_featured: bool = False,
+        is_featured: bool | None = None,
     ) -> list[Clip]:
         """
         Gets one or more video clips that were captured from streams
         The id, game_id, and broadcaster_id query parameters are mutually exclusive
 
         Args:
-            broadcaster_id (str): An ID that identifies the broadcaster whose video clips you want to get
-            game_id (str): An ID that identifies the game whose clips you want to get
+            broadcaster_id (str | None): An ID that identifies the broadcaster whose video clips you want to get
+            game_id (str | None): An ID that identifies the game whose clips you want to get
             clip_ids (list[str] | None): An ID that identifies the clip to get
-            started_at (str): The start date used to filter clips
-            ended_at (str): The end date used to filter clips
+            started_at (str | None): The start date used to filter clips
+            ended_at (str | None): The end date used to filter clips
             first (int): The maximum number of clips to return
-                Minimum: 1
-            is_featured (bool): A Boolean value that determines whether the response includes featured clips
+                Default: 20
+            is_featured (bool | None): A Boolean value that determines whether the response includes featured clips
 
         Raises:
             errors.ClientError
