@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Transport
 
 
 @dataclass
@@ -14,7 +17,7 @@ class EventSubSubscription:
         version (str): The version of the subscription type
         condition (dict): The subscription’s parameter values
         created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-        transport (dict): The transport details used to send you notifications
+        transport (Transport): The transport details used to send you notifications
         cost (int): The amount that the subscription counts against your limit
     """
 
@@ -23,6 +26,6 @@ class EventSubSubscription:
     subscription_type: str
     version: str
     condition: dict
-    created_at: str
-    transport: dict
+    created_at: datetime
+    transport: Transport
     cost: int

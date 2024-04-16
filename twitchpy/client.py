@@ -47,6 +47,8 @@ from .dataclasses import (
     Cheermote,
     Clip,
     Commercial,
+    Conduit,
+    ConduitShard,
     ContentClassificationLabel,
     DropEntitlement,
     Emote,
@@ -65,6 +67,7 @@ from .dataclasses import (
     StreamSchedule,
     Tag,
     Team,
+    Transport,
     User,
     Video,
 )
@@ -1337,7 +1340,7 @@ class Client:
             is_featured,
         )
 
-    def get_conduits(self) -> list[dict]:
+    def get_conduits(self) -> list[Conduit]:
         """
         Gets the conduits for a client ID
 
@@ -1345,12 +1348,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Conduit]
         """
 
         return eventsubs.get_conduits(self.__app_token, self.client_id)
 
-    def create_conduits(self, shard_count: int) -> dict:
+    def create_conduits(self, shard_count: int) -> Conduit:
         """
         Creates a new conduit
 
@@ -1361,12 +1364,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Conduit
         """
 
         return eventsubs.create_conduits(self.__app_token, self.client_id, shard_count)
 
-    def update_conduits(self, conduit_id: str, shard_count: int) -> dict:
+    def update_conduits(self, conduit_id: str, shard_count: int) -> Conduit:
         """
         Updates a conduit’s shard count
         To delete shards, update the count to a lower number, and the shards above the count will be deleted
@@ -1379,7 +1382,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Conduit
         """
 
         return eventsubs.update_conduits(
@@ -1399,19 +1402,21 @@ class Client:
 
         eventsubs.delete_conduit(self.__app_token, self.client_id, conduit_id)
 
-    def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
+    def get_conduit_shards(
+        self, conduit_id: str, status: str | None = None
+    ) -> list[ConduitShard]:
         """
         Gets a lists of all shards for a conduit
 
         Args:
             conduit_id (str): Conduit ID
-            status (str): Status to filter by
+            status (str | None): Status to filter by
 
         Raise:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ConduitShard]
         """
 
         return eventsubs.get_conduit_shards(
@@ -1419,22 +1424,22 @@ class Client:
         )
 
     def update_conduit_shards(
-        self, conduit_id: str, shards: list[dict], session_id: str = ""
-    ) -> list[dict]:
+        self, conduit_id: str, shards: list[ConduitShard], session_id: str | None = None
+    ) -> list[ConduitShard]:
         """
         Updates shard(s) for a conduit
 
         Args:
             conduit_id (str): Conduit ID
-            shards (list[dict]): List of shards to update
-            session_id (str): An ID that identifies the WebSocket to send notifications to
+            shards (list[ConduitShard]): List of shards to update
+            session_id (str | None): An ID that identifies the WebSocket to send notifications to
                 Specify this field only if method is set to websocket
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ConduitShard]
         """
 
         return eventsubs.update_conduit_shards(
@@ -1851,7 +1856,11 @@ class Client:
         )
 
     def create_eventsub_subscription(
-        self, subscription_type: str, version: str, condition: dict, transport: dict
+        self,
+        subscription_type: str,
+        version: str,
+        condition: dict,
+        transport: Transport,
     ) -> EventSubSubscription:
         """
         Creates an EventSub subscription
@@ -1862,7 +1871,7 @@ class Client:
             version (str): The version of the subscription type that is being created
                 Each subscription type has independent versioning
             condition (dict): Custom parameters for the subscription
-            transport (dict): Notification delivery specific configuration including a method string
+            transport (Transport): Notification delivery specific configuration including a method string
                 Valid transport methods include: webhook
                 In addition to the method string, a webhook transport must include the callback and secret information
 
@@ -1898,17 +1907,20 @@ class Client:
         )
 
     def get_eventsub_subscriptions(
-        self, status: str = "", subscription_type: str = "", user_id: str = ""
+        self,
+        status: str | None = None,
+        subscription_type: str | None = None,
+        user_id: str | None = None,
     ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
         Only include one filter query parameter
 
         Args:
-            status (str): Filter subscriptions by its status
+            status (str | None): Filter subscriptions by its status
                 Valid values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, moderator_removed, user_removed, chat_user_banned, version_removed, beta_maintenance, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_connection_unused, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect
-            subscription_type (str): Filters subscriptions by subscription type name
-            user_id (str): Filter subscriptions by user ID
+            subscription_type (str | None): Filters subscriptions by subscription type name
+            user_id (str | None): Filter subscriptions by user ID
 
         Raises:
             errors.ClientError

@@ -6,10 +6,10 @@ from .chat_settings import ChatSettings
 from .cheermote_tier import CheermoteTier
 from .cheermote import Cheermote
 from .commercial import Commercial
+from .conduit import Conduit
 from .content_classification_label import ContentClassificationLabel
 from .drop_entitlement import DropEntitlement
 from .emote import Emote
-from .eventsub_subscription import EventSubSubscription
 from .extension import Extension
 from .extension_analytics_report import ExtensionAnalyticsReport
 from .game import Game
@@ -31,4 +31,7 @@ from .clip import Clip
 from .charity_campaign import CharityCampaign
 from .bits_leaderboard_leader import BitsLeaderboardLeader
 from .team import Team
+from .transport import Transport
+from .eventsub_subscription import EventSubSubscription
+from .conduit_shard import ConduitShard
 from .video import Video
