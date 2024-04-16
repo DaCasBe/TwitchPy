@@ -55,12 +55,16 @@ from .dataclasses import (
     EventSubSubscription,
     Extension,
     ExtensionAnalyticsReport,
+    ExtensionConfigurationSegment,
+    ExtensionSecret,
+    ExtensionTransaction,
     Game,
     GameAnalyticsReport,
     GuestStarSession,
     HypeTrainEvent,
     Poll,
     Prediction,
+    Product,
     Redemption,
     Reward,
     Stream,
@@ -442,7 +446,7 @@ class Client:
         extension_id: str,
         transaction_ids: list[str] | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[ExtensionTransaction]:
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
@@ -458,7 +462,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ExtensionTransaction]
         """
 
         return extensions.get_extension_transactions(
@@ -1534,7 +1538,7 @@ class Client:
 
     def get_extension_configuration_segment(
         self, broadcaster_id: str, extension_id: str, segment: str
-    ) -> dict:
+    ) -> ExtensionConfigurationSegment:
         """
         Gets the specified configuration segment from the specified extension
         You can retrieve each segment a maximum of 20 times per minute
@@ -1551,7 +1555,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ExtensionConfigurationSegment
         """
 
         return extensions.get_extension_configuration_segment(
@@ -1562,9 +1566,9 @@ class Client:
         self,
         extension_id: str,
         segment: str,
-        broadcaster_id: str = "",
-        content: str = "",
-        version: str = "",
+        broadcaster_id: str | None = None,
+        content: str | None = None,
+        version: str | None = None,
     ) -> None:
         """
         Sets a single configuration segment of any type
@@ -1575,10 +1579,10 @@ class Client:
             extension_id (str): ID for the Extension which the configuration is for
             segment (str): Configuration type
                 Valid values are "global", "developer", or "broadcaster"
-            broadcaster_id (str): User ID of the broadcaster
+            broadcaster_id (str | None): User ID of the broadcaster
                 Required if the segment type is "developer" or "broadcaster"
-            content (str): Configuration in a string-encoded format
-            version (str): Configuration version with the segment type
+            content (str | None): Configuration in a string-encoded format
+            version (str | None): Configuration version with the segment type
 
         Raises:
             errors.ClientError
@@ -1656,7 +1660,7 @@ class Client:
 
     def get_extension_live_channels(
         self, extension_id: str, first: int = 20
-    ) -> list[dict]:
+    ) -> list[Channel]:
         """
         Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
         A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
@@ -1670,14 +1674,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Channel]
         """
 
         return extensions.get_extension_live_channels(
             self.__app_token, self.client_id, extension_id, first
         )
 
-    def get_extension_secrets(self) -> list[dict]:
+    def get_extension_secrets(self) -> list[tuple[str, list[ExtensionSecret]]]:
         """
         Retrieves a specified Extension’s secret data consisting of a version and an array of secret objects
         Each secret object contains a base64-encoded secret, a UTC timestamp when the secret becomes active, and a timestamp when the secret expires
@@ -1686,12 +1690,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[ExtensionSecret]]]
         """
 
         return extensions.get_extension_secrets(self.__jwt_token, self.client_id)
 
-    def create_extension_secret(self, delay: int = 300) -> list[dict]:
+    def create_extension_secret(
+        self, delay: int = 300
+    ) -> list[tuple[str, list[ExtensionSecret]]]:
         """
         Creates a JWT signing secret for a specific Extension
         Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
@@ -1705,7 +1711,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[ExtensionSecret]]]
         """
 
         return extensions.create_extension_secret(
@@ -1742,14 +1748,14 @@ class Client:
         )
 
     def get_extensions(
-        self, extension_id: str, extension_version: str = ""
+        self, extension_id: str, extension_version: str | None = None
     ) -> Extension:
         """
         Gets information about your Extensions; either the current version or a specified version
 
         Args:
             extension_id (str): ID of the Extension
-            extension_version (str): The specific version of the Extension to return
+            extension_version (str | None): The specific version of the Extension to return
                 If not provided, the current version is returned
 
         Raises:
@@ -1764,14 +1770,14 @@ class Client:
         )
 
     def get_released_extensions(
-        self, extension_id: str, extension_version: str = ""
+        self, extension_id: str, extension_version: str | None = None
     ) -> Extension:
         """
         Gets information about a released Extension; either the current version or a specified version
 
         Args:
             extension_id (str): ID of the Extension
-            extension_version (str): The specific version of the Extension to return
+            extension_version (str | None): The specific version of the Extension to return
                 If not provided, the current version is returned
 
         Raises:
@@ -1787,7 +1793,7 @@ class Client:
 
     def get_extension_bits_products(
         self, extension_client_id: str, should_include_all: bool = False
-    ) -> list[dict]:
+    ) -> list[Product]:
         """
         Gets a list of Bits products that belongs to an Extension
 
@@ -1800,7 +1806,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Product]
         """
 
         return extensions.get_extension_bits_products(
@@ -1813,10 +1819,10 @@ class Client:
         sku: str,
         cost: dict,
         display_name: str,
-        in_development: bool = False,
-        expiration: str = "",
-        is_broadcast: bool = False,
-    ) -> list[dict]:
+        in_development: bool | None = None,
+        expiration: str | None = None,
+        is_broadcast: bool | None = None,
+    ) -> list[Product]:
         """
         Add or update a Bits products that belongs to an Extension
 
@@ -1829,19 +1835,19 @@ class Client:
             cost (dict): Object containing cost information
             display_name (str): Name of the product to be displayed in the Extension
                 Maximum: 255 characters
-            in_development (bool): Set to true if the product is in development and not yet released for public use
+            in_development (bool | None): Set to true if the product is in development and not yet released for public use
                 Default: false
-            expiration (str): Expiration time for the product in RFC3339 format
+            expiration (str | None): Expiration time for the product in RFC3339 format
                 If not provided, the Bits product will not have an expiration date
                 Setting an expiration in the past will disable the product
-            is_broadcast (bool): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback
+            is_broadcast (bool | None): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback
                 Default: false
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Product]
         """
 
         return extensions.update_extension_bits_product(

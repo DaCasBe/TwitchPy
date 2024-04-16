@@ -12,6 +12,8 @@ from .drop_entitlement import DropEntitlement
 from .emote import Emote
 from .extension import Extension
 from .extension_analytics_report import ExtensionAnalyticsReport
+from .extension_configuration_segment import ExtensionConfigurationSegment
+from .extension_secret import ExtensionSecret
 from .game import Game
 from .game_analytics_report import GameAnalyticsReport
 from .guest_star_session import GuestStarSession
@@ -19,6 +21,8 @@ from .hypetrain_event import HypeTrainEvent
 from .message import Message
 from .poll import Poll
 from .prediction import Prediction
+from .product_cost import ProductCost
+from .product import Product
 from .reward import Reward
 from .redemption import Redemption
 from .stream import Stream
@@ -27,6 +31,7 @@ from .tag import Tag
 from .user import User
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .extension_transaction import ExtensionTransaction
 from .clip import Clip
 from .charity_campaign import CharityCampaign
 from .bits_leaderboard_leader import BitsLeaderboardLeader
