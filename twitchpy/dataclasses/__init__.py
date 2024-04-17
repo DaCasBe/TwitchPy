@@ -18,6 +18,8 @@ from .game import Game
 from .game_analytics_report import GameAnalyticsReport
 from .guest_star_invite import GuestStarInvite
 from .guest_star_settings import GuestStarSettings
+from .hype_train_contribution import HypeTrainContribution
+from .hype_train_event_data import HypeTrainEventData
 from .hypetrain_event import HypeTrainEvent
 from .message import Message
 from .poll import Poll
