@@ -8,6 +8,7 @@ from .cheermote import Cheermote
 from .commercial import Commercial
 from .conduit import Conduit
 from .content_classification_label import ContentClassificationLabel
+from .creator_goal import CreatorGoal
 from .drop_entitlement import DropEntitlement
 from .emote import Emote
 from .extension import Extension

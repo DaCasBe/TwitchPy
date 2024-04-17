@@ -50,6 +50,7 @@ from .dataclasses import (
     Conduit,
     ConduitShard,
     ContentClassificationLabel,
+    CreatorGoal,
     DropEntitlement,
     Emote,
     EventSubSubscription,
@@ -1982,7 +1983,7 @@ class Client:
 
         return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
 
-    def get_creator_goals(self, broadcaster_id: str) -> list[dict]:
+    def get_creator_goals(self, broadcaster_id: str) -> list[CreatorGoal]:
         """
         Gets the broadcaster’s list of active goals
         Use this to get the current progress of each goal
@@ -1994,7 +1995,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[CreatorGoal]
         """
 
         return goals.get_creator_goals(
