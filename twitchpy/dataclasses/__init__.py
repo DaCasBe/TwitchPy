@@ -8,7 +8,6 @@ from .cheermote import Cheermote
 from .commercial import Commercial
 from .conduit import Conduit
 from .content_classification_label import ContentClassificationLabel
-from .creator_goal import CreatorGoal
 from .drop_entitlement import DropEntitlement
 from .emote import Emote
 from .extension import Extension
@@ -17,7 +16,8 @@ from .extension_configuration_segment import ExtensionConfigurationSegment
 from .extension_secret import ExtensionSecret
 from .game import Game
 from .game_analytics_report import GameAnalyticsReport
-from .guest_star_session import GuestStarSession
+from .guest_star_invite import GuestStarInvite
+from .guest_star_settings import GuestStarSettings
 from .hypetrain_event import HypeTrainEvent
 from .message import Message
 from .poll import Poll
@@ -30,8 +30,11 @@ from .stream import Stream
 from .stream_schedule import StreamSchedule
 from .tag import Tag
 from .user import User
+from .guest import Guest
+from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .creator_goal import CreatorGoal
 from .extension_transaction import ExtensionTransaction
 from .clip import Clip
 from .charity_campaign import CharityCampaign

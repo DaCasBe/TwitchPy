@@ -61,7 +61,9 @@ from .dataclasses import (
     ExtensionTransaction,
     Game,
     GameAnalyticsReport,
+    GuestStarInvite,
     GuestStarSession,
+    GuestStarSettings,
     HypeTrainEvent,
     Poll,
     Prediction,
@@ -2004,7 +2006,7 @@ class Client:
 
     def get_channel_guest_star_settings(
         self, broadcaster_id: str, moderator_id: str
-    ) -> dict:
+    ) -> GuestStarSettings:
         """
         Gets the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -2017,7 +2019,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            GuestStarSettings
         """
 
         return guest_stars.get_channel_guest_star_settings(
@@ -2030,7 +2032,7 @@ class Client:
         is_moderator_send_live_enabled: bool | None = None,
         slot_count: int | None = None,
         is_browser_source_audio_enabled: bool | None = None,
-        group_layout: str = "",
+        group_layout: str | None = None,
         regenerate_browser_sources: bool | None = None,
     ) -> None:
         """
@@ -2042,7 +2044,7 @@ class Client:
             slot_count (int | None): Number of slots the Guest Star call interface will allow the host to add to a call.
                 Required to be between 1 and 6
             is_browser_source_audio_enabled (bool | None): Flag determining if Browser Sources subscribed to sessions on this channel should output audio
-            group_layout (str): This setting determines how the guests within a session should be laid out within the browser source
+            group_layout (str | None): This setting determines how the guests within a session should be laid out within the browser source
                 Possible values: TILED_LAYOUT, SCREENSHARE_LAYOUT, HORIZONTAL_LAYOUT, VERTICAL_LAYOUT
             regenerate_browser_sources (bool | None): Flag determining if Guest Star should regenerate the auth token associated with the channel’s browser sources
 
@@ -2126,7 +2128,7 @@ class Client:
 
     def get_guest_star_invites(
         self, broadcaster_id: str, moderator_id: str, session_id: str
-    ) -> list[dict]:
+    ) -> list[GuestStarInvite]:
         """
         Provides a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
 
@@ -2140,7 +2142,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[GuestStarInvite]
         """
 
         return guest_stars.get_guest_star_invites(
