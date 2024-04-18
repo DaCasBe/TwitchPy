@@ -24,7 +24,6 @@ from .hype_train_contribution import HypeTrainContribution
 from .hype_train_event_data import HypeTrainEventData
 from .hypetrain_event import HypeTrainEvent
 from .message import Message
-from .poll import Poll
 from .prediction import Prediction
 from .product_cost import ProductCost
 from .product import Product
@@ -40,6 +39,8 @@ from .guest import Guest
 from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .poll_choice import PollChoice
+from .poll import Poll
 from .creator_goal import CreatorGoal
 from .extension_transaction import ExtensionTransaction
 from .clip import Clip

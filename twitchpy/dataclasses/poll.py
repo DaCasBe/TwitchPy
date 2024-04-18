@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel, PollChoice
 
 
 @dataclass
@@ -23,14 +26,12 @@ class Poll:
     """
 
     poll_id: str
-    broadcaster_id: str
-    broadcaster_name: str
-    broadcaster_login: str
+    channel: Channel
     title: str
-    choices: list[dict]
+    choices: list[PollChoice]
     channel_points_voting_enabled: bool
     channel_points_per_vote: int
     status: str
     duration: int
-    started_at: str
-    ended_at: str = ""
+    started_at: datetime
+    ended_at: datetime | None = None
