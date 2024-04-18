@@ -38,8 +38,11 @@ from ._api import (
 )
 from .dataclasses import (
     AdSchedule,
+    AutoModSettings,
     Badge,
+    BannedUser,
     BitsLeaderboardLeader,
+    BlockedTerm,
     Channel,
     CharityCampaign,
     CharityCampaignDonation,
@@ -70,11 +73,13 @@ from .dataclasses import (
     Product,
     Redemption,
     Reward,
+    ShieldModeStatus,
     Stream,
     StreamSchedule,
     Tag,
     Team,
     Transport,
+    UnbanRequest,
     User,
     Video,
 )
@@ -2374,25 +2379,26 @@ class Client:
         )
 
     def check_automod_status(
-        self, broadcaster_id: str, msg_id: str, msg_user: str
-    ) -> list[dict]:
+        self, broadcaster_id: str, data: list[tuple[str, str]]
+    ) -> list[tuple[str, bool]]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            msg_id (str): Developer-generated identifier for mapping messages to results
-            msg_user (str): Message text
+            data (list[tuple[str, str]]): The list of messages to check
+                Minimum: 1
+                Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, bool]]
         """
 
         return moderation.check_automod_status(
-            self.__user_token, self.client_id, broadcaster_id, msg_id, msg_user
+            self.__user_token, self.client_id, broadcaster_id, data
         )
 
     def manage_held_automod_messages(
@@ -2416,7 +2422,9 @@ class Client:
             self.__user_token, self.client_id, user_id, msg_id, action
         )
 
-    def get_automod_settings(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_automod_settings(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> AutoModSettings:
         """
         Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2430,7 +2438,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AutoModSettings
         """
 
         return moderation.get_automod_settings(
@@ -2450,7 +2458,7 @@ class Client:
         sex_based_terms: int | None = None,
         sexuality_sex_or_gender: int | None = None,
         swearing: int | None = None,
-    ) -> dict:
+    ) -> AutoModSettings:
         """
         Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2473,7 +2481,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AutoModSettings
         """
 
         return moderation.update_automod_settings(
@@ -2494,7 +2502,7 @@ class Client:
 
     def get_banned_users(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[BannedUser]:
         """
         Returns all banned and timed-out users in a channel
 
@@ -2509,7 +2517,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BannedUser]
         """
 
         return moderation.get_banned_users(
@@ -2583,9 +2591,9 @@ class Client:
         broadcaster_id: str,
         moderator_id: str,
         status: str,
-        user_id: str = "",
+        user_id: str | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[UnbanRequest]:
         """
         Gets a list of unban requests for a broadcaster’s channel
 
@@ -2595,14 +2603,14 @@ class Client:
                 This ID must match the user ID in the user access token
             status (str): Filter by a status
                 Possible values: pending, approved, denied, acknowledged, canceled
-            user_id (str): The ID used to filter what unban requests are returned
+            user_id (str | None): The ID used to filter what unban requests are returned
             first (int): The maximum number of items to return per page in response
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[UnbanRequest]
         """
 
         return moderation.get_unban_requests(
@@ -2622,7 +2630,7 @@ class Client:
         unban_request_id: str,
         status: str,
         resolution_text: str = "",
-    ) -> list[dict]:
+    ) -> UnbanRequest:
         """
         Resolves an unban request by approving or denying it.
 
@@ -2641,7 +2649,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            UnbanRequest
         """
 
         return moderation.resolve_unban_requests(
@@ -2656,7 +2664,7 @@ class Client:
 
     def get_blocked_terms(
         self, broadcaster_id: str, moderator_id: str, first: int = 20
-    ) -> list[dict]:
+    ) -> list[BlockedTerm]:
         """
         Gets the broadcaster’s list of non-private, blocked words or phrases
         These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
@@ -2674,7 +2682,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BlockedTerm]
         """
 
         return moderation.get_blocked_terms(
@@ -2683,7 +2691,7 @@ class Client:
 
     def add_blocked_term(
         self, broadcaster_id: str, moderator_id: str, text: str
-    ) -> dict:
+    ) -> BlockedTerm:
         """
         Adds a word or phrase to the broadcaster’s list of blocked terms
         These are the terms that broadcasters don’t want used in their chat room
@@ -2702,7 +2710,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            BlockedTerm
         """
 
         return moderation.add_blocked_term(
@@ -2735,7 +2743,7 @@ class Client:
         )
 
     def delete_chat_messages(
-        self, broadcaster_id: str, moderator_id: str, message_id: str = ""
+        self, broadcaster_id: str, moderator_id: str, message_id: str | None = None
     ) -> None:
         """
         Removes a single chat message or all chat messages from the broadcaster’s chat room
@@ -2744,7 +2752,7 @@ class Client:
             broadcaster_id (str): The ID of the broadcaster that owns the chat room to remove messages from
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
                 This ID must match the user ID in the user access token
-            message_id (str, optional): The ID of the message to remove
+            message_id (str | None): The ID of the message to remove
                 If not specified, the request removes all messages in the broadcaster’s chat room
 
         Raises:
@@ -2755,7 +2763,7 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, message_id
         )
 
-    def get_moderated_channels(self, user_id: str, first: int = 20) -> list[dict]:
+    def get_moderated_channels(self, user_id: str, first: int = 20) -> list[Channel]:
         """
         Gets a list of channels that the specified user has moderator privileges in
 
@@ -2769,7 +2777,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Channel]
         """
 
         return moderation.get_moderated_channels(
@@ -2778,7 +2786,7 @@ class Client:
 
     def get_moderators(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Returns all moderators in a channel
 
@@ -2793,7 +2801,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return moderation.get_moderators(
@@ -2895,7 +2903,7 @@ class Client:
 
     def update_shield_mode_status(
         self, broadcaster_id: str, moderator_id: str, is_active: bool
-    ) -> dict:
+    ) -> ShieldModeStatus:
         """
         Activates or deactivates the broadcaster’s Shield Mode
 
@@ -2909,14 +2917,16 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ShieldModeStatus
         """
 
         return moderation.update_shield_mode_status(
             self.__user_token, self.client_id, broadcaster_id, moderator_id, is_active
         )
 
-    def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_shield_mode_status(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> ShieldModeStatus:
         """
         Gets the broadcaster’s Shield Mode activation status
 
@@ -2929,7 +2939,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ShieldModeStatus
         """
 
         return moderation.get_shield_mode_status(

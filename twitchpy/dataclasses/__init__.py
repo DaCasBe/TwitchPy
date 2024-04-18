@@ -1,6 +1,8 @@
 from .ad_schedule import AdSchedule
+from .automod_settings import AutoModSettings
 from .badge_version import BadgeVersion
 from .badge import Badge
+from .blocked_term import BlockedTerm
 from .charity_campaign_amount import CharityCampaignAmount
 from .chat_settings import ChatSettings
 from .cheermote_tier import CheermoteTier
@@ -32,6 +34,8 @@ from .stream import Stream
 from .stream_schedule import StreamSchedule
 from .tag import Tag
 from .user import User
+from .shield_mode_status import ShieldModeStatus
+from .banned_user import BannedUser
 from .guest import Guest
 from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
@@ -45,4 +49,5 @@ from .team import Team
 from .transport import Transport
 from .eventsub_subscription import EventSubSubscription
 from .conduit_shard import ConduitShard
+from .unban_request import UnbanRequest
 from .video import Video
