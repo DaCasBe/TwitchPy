@@ -75,6 +75,7 @@ from .dataclasses import (
     Reward,
     ShieldModeStatus,
     Stream,
+    StreamMarker,
     StreamSchedule,
     Tag,
     Team,
@@ -3438,11 +3439,11 @@ class Client:
 
     def get_streams(
         self,
-        user_id: str | list[str] = "",
-        user_login: str | list[str] = "",
-        game_id: str | list[str] = "",
+        user_id: list[str] | None = None,
+        user_login: list[str] | None = None,
+        game_id: list[str] | None = None,
         stream_type: str = "all",
-        language: str | list[str] = "",
+        language: list[str] | None = None,
         first: int = 20,
     ) -> list[Stream]:
         """
@@ -3450,15 +3451,15 @@ class Client:
         The list is in descending order by the number of viewers watching the stream
 
         Args:
-            user_id (str | list[str]): A user ID used to filter the list of streams
+            user_id (list[str] | None): A user ID used to filter the list of streams
                 Maximum: 100
-            user_login (str | list[str]): A user login name used to filter the list of streams
+            user_login (list[str] | None): A user login name used to filter the list of streams
                 Maximum: 100
-            game_id (str | list[str]): A game (category) ID used to filter the list of streams
+            game_id (list[str] | None): A game (category) ID used to filter the list of streams
                 Maximum: 100
             stream_type (str): The type of stream to filter the list of streams by
                 Possible values: all, live
-            language (str | list[str]): A language code used to filter the list of streams
+            language (list[str] | None): A language code used to filter the list of streams
                 Maximum: 100
             first (int): The maximum number of items to return
                 Minimum: 1
@@ -3502,7 +3503,9 @@ class Client:
             self.__user_token, self.client_id, user_id, first
         )
 
-    def create_stream_marker(self, user_id: str, description: str = "") -> dict:
+    def create_stream_marker(
+        self, user_id: str, description: str | None = None
+    ) -> StreamMarker:
         """
         Creates a marker in the stream of a user specified by user ID
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -3510,14 +3513,14 @@ class Client:
 
         Args:
             user_id (str): ID of the broadcaster in whose live stream the marker is created
-            description (str): Description of or comments on the marker
+            description (str | None): Description of or comments on the marker
                 Max length is 140 characters
 
         Raises:
             errors.ClientError
 
         Returns:
-            dict
+            StreamMarker
         """
 
         return streams.create_stream_marker(
@@ -3525,7 +3528,7 @@ class Client:
         )
 
     def get_stream_markers(
-        self, user_id: str = "", video_id: str = "", first: int = 20
+        self, user_id: str | None = None, video_id: str | None = None, first: int = 20
     ) -> list[dict]:
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
@@ -3534,8 +3537,8 @@ class Client:
         Only one of user_id and video_id must be specified
 
         Args:
-            user_id (str): ID of the broadcaster from whose stream markers are returned
-            video_id (str): ID of the VOD/video whose stream markers are returned
+            user_id (str | None): ID of the broadcaster from whose stream markers are returned
+            video_id (str | None): ID of the VOD/video whose stream markers are returned
             first (int): Number of values to be returned when getting videos by user or game ID
                 Default: 20
 
