@@ -3824,10 +3824,10 @@ class Client:
     def get_videos(
         self,
         video_ids: list[str] | None = None,
-        user_id: str = "",
-        game_id: str = "",
+        user_id: str | None = None,
+        game_id: str | None = None,
         first: int = 20,
-        language: str = "",
+        language: str | None = None,
         period: str = "all",
         sort: str = "time",
         video_type: str = "all",
@@ -3840,11 +3840,11 @@ class Client:
             video_ids (list[str] | None): ID of the video being queried
                 Limit: 100
                 If this is specified, you cannot use first, language, period, sort and type
-            user_id (str): ID of the user who owns the video
-            game_id (str): ID of the game the video is of
+            user_id (str | None): ID of the user who owns the video
+            game_id (str | None): ID of the game the video is of
             first (int): Number of values to be returned when getting videos by user or game ID
                 Default: 20
-            language (str): Language of the video being queried
+            language (str | None): Language of the video being queried
                 A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
             period (str): Period during which the video was created
                 Valid values: "all", "day", "week", "month"

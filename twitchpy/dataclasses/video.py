@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel
 
 
 @dataclass
@@ -7,13 +10,13 @@ class Video:
     Represents a video
 
     Attributes:
-        id (str): ID of the video
-        user_id (str): ID of the owner of the video
-        user_name (str): User name of the owner of the video
+        video_id (str): ID of the video
+        stream_id (str): The ID of the stream that the video originated from
+        channel (Channel): The channel that owns the video
         title (str): Title of the video
         description (str): Description of the video
-        created_at (str): Date of creation of the video
-        published_at (str): Date of publication of the video
+        created_at (datetime): Date of creation of the video
+        published_at (datetime): Date of publication of the video
         url (str): URL of the video
         thumbnail_url (str): URL of the preview image of the video
         viewable (str): Indicates whether the video is publicly viewable
@@ -21,15 +24,16 @@ class Video:
         language (str): Language of the video
         type (str): Type of the video
         duration (str): Duration of the video
+        muted_segments (list[tuple[int, int]]): The segments that Twitch Audio Recognition muted
     """
 
     video_id: str
-    user_id: str
-    user_name: str
+    stream_id: str
+    channel: Channel
     title: str
     description: str
-    created_at: str
-    published_at: str
+    created_at: datetime
+    published_at: datetime
     url: str
     thumbnail_url: str
     viewable: str
@@ -37,3 +41,4 @@ class Video:
     language: str
     video_type: str
     duration: str
+    muted_segments: list[tuple[int, int]]
