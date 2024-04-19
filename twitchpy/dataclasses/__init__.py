@@ -24,7 +24,6 @@ from .hype_train_contribution import HypeTrainContribution
 from .hype_train_event_data import HypeTrainEventData
 from .hypetrain_event import HypeTrainEvent
 from .message import Message
-from .prediction import Prediction
 from .product_cost import ProductCost
 from .product import Product
 from .reward import Reward
@@ -33,12 +32,15 @@ from .stream import Stream
 from .stream_schedule import StreamSchedule
 from .tag import Tag
 from .user import User
+from .predictor import Predictor
+from .prediction_outcome import PredictionOutcome
 from .shield_mode_status import ShieldModeStatus
 from .banned_user import BannedUser
 from .guest import Guest
 from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .prediction import Prediction
 from .poll_choice import PollChoice
 from .poll import Poll
 from .creator_goal import CreatorGoal
