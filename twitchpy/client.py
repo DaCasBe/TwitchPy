@@ -3142,7 +3142,9 @@ class Client:
             winning_outcome_id,
         )
 
-    def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
+    def start_raid(
+        self, from_broadcaster_id: str, to_broadcaster_id: str
+    ) -> tuple[datetime, bool]:
         """
         Raid another channel by sending the broadcaster’s viewers to the targeted channel
 
@@ -3155,7 +3157,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            tuple[datetime, bool]
         """
 
         return raids.start_raid(
