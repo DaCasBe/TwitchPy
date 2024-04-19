@@ -3636,7 +3636,7 @@ class Client:
 
         return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)
 
-    def get_channel_teams(self, broadcaster_id: str) -> list[dict]:
+    def get_channel_teams(self, broadcaster_id: str) -> list[Team]:
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
 
@@ -3647,19 +3647,19 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Team]
         """
 
         return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
 
-    def get_teams(self, name: str = "", team_id: str = "") -> Team:
+    def get_teams(self, name: str | None = None, team_id: str | None = None) -> Team:
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
 
         Args:
-            name (str): Team name
-            team_id (str): Team ID
+            name (str | None): Team name
+            team_id (str | None): Team ID
 
         Raises:
             errors.ClientError
