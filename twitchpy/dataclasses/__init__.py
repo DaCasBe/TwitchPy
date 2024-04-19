@@ -40,6 +40,7 @@ from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
 from .stream import Stream
 from .stream_schedule import StreamSchedule
+from .subscription import Subscription
 from .reward import Reward
 from .redemption import Redemption
 from .prediction import Prediction

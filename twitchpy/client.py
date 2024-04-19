@@ -77,6 +77,7 @@ from .dataclasses import (
     Stream,
     StreamMarker,
     StreamSchedule,
+    Subscription,
     Tag,
     Team,
     Transport,
@@ -3555,7 +3556,7 @@ class Client:
 
     def get_broadcaster_subscriptions(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[Subscription]:
         """
         Get all of a broadcaster’s subscriptions
 
@@ -3571,14 +3572,16 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Subscription]
         """
 
         return subscriptions.get_broadcaster_subscriptions(
             self.__user_token, self.client_id, broadcaster_id, user_id, first
         )
 
-    def check_user_subscription(self, broadcaster_id: str, user_id: str) -> dict:
+    def check_user_subscription(
+        self, broadcaster_id: str, user_id: str
+    ) -> Subscription:
         """
         Checks if a specific user (user_id) is subscribed to a specific channel (broadcaster_id)
 
@@ -3590,7 +3593,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Subscription
         """
 
         return subscriptions.check_user_subscription(
