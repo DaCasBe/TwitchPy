@@ -27,7 +27,7 @@ from .message import Message
 from .product_cost import ProductCost
 from .product import Product
 from .stream import Stream
-from .stream_schedule import StreamSchedule
+from .stream_schedule_segment import StreamScheduleSegment
 from .tag import Tag
 from .user import User
 from .predictor import Predictor
@@ -38,6 +38,7 @@ from .guest import Guest
 from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .stream_schedule import StreamSchedule
 from .reward import Reward
 from .redemption import Redemption
 from .prediction import Prediction

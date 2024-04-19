@@ -3182,8 +3182,7 @@ class Client:
         self,
         broadcaster_id: str,
         stream_segment_id: list[str] | None = None,
-        start_time: str = "",
-        utc_offset: str = "0",
+        start_time: datetime | None = None,
         first: int = 20,
     ) -> list[StreamSchedule]:
         """
@@ -3195,10 +3194,8 @@ class Client:
                 Provided broadcaster_id must match the user_id in the user OAuth token
             stream_segment_id (list[str] | None): The ID of the stream segment to return
                 Maximum: 100
-            start_time (str): A timestamp in RFC3339 format to start returning stream segments from
+            start_time (datetime | None): A timestamp in RFC3339 format to start returning stream segments from
                 If not specified, the current date and time is used
-            utc_offset (str): A timezone offset for the requester specified in minutes
-                If not specified, "0" is used for GMT
             first (int): Maximum number of stream segments to return
                 Default: 20
 
@@ -3215,7 +3212,6 @@ class Client:
             broadcaster_id,
             stream_segment_id,
             start_time,
-            utc_offset,
             first,
         )
 
@@ -3238,10 +3234,10 @@ class Client:
     def update_channel_stream_schedule(
         self,
         broadcaster_id: str,
-        is_vacation_enabled: bool = False,
-        vacation_start_time: str = "",
-        vacation_end_time: str = "",
-        timezone: str = "",
+        is_vacation_enabled: bool | None = None,
+        vacation_start_time: datetime | None = None,
+        vacation_end_time: datetime | None = None,
+        timezone: str | None = None,
     ) -> None:
         """
         Update the settings for a channel’s stream schedule
@@ -3250,13 +3246,13 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
-            is_vacation_enabled (bool): Indicates if Vacation Mode is enabled
+            is_vacation_enabled (bool | None): Indicates if Vacation Mode is enabled
                 Set to true to add a vacation or false to remove vacation from the channel streaming schedule
-            vacation_start_time (str): Start time for vacation specified in RFC3339 format
+            vacation_start_time (str | None): Start time for vacation specified in RFC3339 format
                 Required if is_vacation_enabled is set to true
-            vacation_end_time (str): End time for vacation specified in RFC3339 format
+            vacation_end_time (str | None): End time for vacation specified in RFC3339 format
                 Required if is_vacation_enabled is set to true
-            timezone (str): The timezone for when the vacation is being scheduled using the IANA time zone database format
+            timezone (str | None): The timezone for when the vacation is being scheduled using the IANA time zone database format
                 Required if is_vacation_enabled is set to true
 
         Raises:
@@ -3276,12 +3272,12 @@ class Client:
     def create_channel_stream_schedule_segment(
         self,
         broadcaster_id: str,
-        start_time: str,
+        start_time: datetime,
         timezone: str,
         is_recurring: bool,
         duration: int = 240,
-        category_id: str = "",
-        title: str = "",
+        category_id: str | None = None,
+        title: str | None = None,
     ) -> StreamSchedule:
         """
         Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
@@ -3289,13 +3285,13 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
-            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
+            start_time (datetime): Start time for the scheduled broadcast specified in RFC3339 format
             timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
             is_recurring (bool): Indicates if the scheduled broadcast is recurring weekly
             duration (int): Duration of the scheduled broadcast in minutes from the start_time
                 Default: 240
-            category_id (str): Game/Category ID for the scheduled broadcast
-            title (str): Title for the scheduled broadcast
+            category_id (str | None): Game/Category ID for the scheduled broadcast
+            title (str | None): Title for the scheduled broadcast
                 Maximum: 140 characters
 
         Raises:
@@ -3321,12 +3317,12 @@ class Client:
         self,
         broadcaster_id: str,
         stream_segment_id: str,
-        start_time: str = "",
-        duration: int = 240,
-        category_id: str = "",
-        title: str = "",
-        is_canceled: bool = False,
-        timezone: str = "",
+        start_time: datetime | None = None,
+        duration: int | None = None,
+        category_id: str | None = None,
+        title: str | None = None,
+        is_canceled: bool | None = None,
+        timezone: str | None = None,
     ) -> StreamSchedule:
         """
         Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
@@ -3335,14 +3331,13 @@ class Client:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
             stream_segment_id (str): The ID of the streaming segment to update
-            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
-            duration (int): Duration of the scheduled broadcast in minutes from the start_time
-                Default: 240
-            category_id (str): Game/Category ID for the scheduled broadcast
-            title (str): Title for the scheduled broadcast
+            start_time (datetime | None): Start time for the scheduled broadcast specified in RFC3339 format
+            duration (int | None): Duration of the scheduled broadcast in minutes from the start_time
+            category_id (str | None): Game/Category ID for the scheduled broadcast
+            title (str | None): Title for the scheduled broadcast
                 Maximum: 140 characters
-            is_canceled (bool): Indicated if the scheduled broadcast is canceled
-            timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+            is_canceled (bool | None): Indicated if the scheduled broadcast is canceled
+            timezone (str | None): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
 
         Raises:
             errors.ClientError
