@@ -622,9 +622,9 @@ class Client:
         broadcaster_id: str,
         title: str,
         cost: int,
-        prompt: str = "",
+        prompt: str | None = None,
         is_enabled: bool = True,
-        background_color: str = "",
+        background_color: str | None = None,
         is_user_input_required: bool = False,
         is_max_per_stream_enabled: bool = False,
         max_per_stream: int | None = None,
@@ -641,10 +641,10 @@ class Client:
             broadcaster_id (str): ID of the channel creating a reward
             title (str): The title of the reward
             cost (int): The cost of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
+            prompt (str | None): The prompt for the viewer when they are redeeming the reward
             is_enabled (bool): Is the reward currently enabled, if false the reward won’t show up to viewers
                 Default: true
-            background_color (str): Custom background color for the reward
+            background_color (str | None): Custom background color for the reward
                 Format: Hex with # prefix
             is_user_input_required (bool): Does the user need to enter information when redeeming the reward
                 Default: false
@@ -744,7 +744,7 @@ class Client:
         broadcaster_id: str,
         reward_id: str,
         redemption_ids: list[str] | None = None,
-        status: str = "",
+        status: str | None = None,
         sort: str = "OLDEST",
         first: int = 20,
     ) -> list[Redemption]:
@@ -757,7 +757,7 @@ class Client:
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
             redemption_ids (list[str] | None): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
                 Maximum: 50
-            status (str): This param filters the Custom Reward Redemption objects for redemptions with the matching status
+            status (str | None): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                 Can be one of UNFULFILLED, FULFILLED or CANCELED
             sort (str): Sort order of redemptions returned when getting the Custom Reward Redemption objects for a reward
                 One of: OLDEST, NEWEST
@@ -787,10 +787,10 @@ class Client:
         self,
         broadcaster_id: str,
         reward_id: str,
-        title: str = "",
-        prompt: str = "",
+        title: str | None = None,
+        prompt: str | None = None,
         cost: int | None = None,
-        background_color: str = "",
+        background_color: str | None = None,
         is_enabled: bool | None = None,
         is_user_input_required: bool | None = None,
         is_max_per_stream_enabled: bool | None = None,
@@ -810,8 +810,8 @@ class Client:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward to update
                 Must match a Custom Reward on the channel of the broadcaster_id
-            title (str): The title of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
+            title (str | None): The title of the reward
+            prompt (str | None): The prompt for the viewer when they are redeeming the reward
             cost (int | None): The cost of the reward
             background_color (str | None): Custom background color for the reward as a hexadecimal value
             is_enabled (bool | None): Is the reward currently enabled, if false the reward won’t show up to viewers
@@ -864,7 +864,7 @@ class Client:
         redemption_id: list[str],
         broadcaster_id: str,
         reward_id: str,
-        status: str = "",
+        status: str | None = None,
     ) -> list[Redemption]:
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
@@ -876,7 +876,7 @@ class Client:
                 Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward the redemptions to be updated are for
-            status (str): The new status to set redemptions to
+            status (str | None): The new status to set redemptions to
                 Can be either FULFILLED or CANCELED
                 Updating to CANCELED will refund the user their Channel Points
 

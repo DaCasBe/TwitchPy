@@ -26,8 +26,6 @@ from .hypetrain_event import HypeTrainEvent
 from .message import Message
 from .product_cost import ProductCost
 from .product import Product
-from .reward import Reward
-from .redemption import Redemption
 from .stream import Stream
 from .stream_schedule import StreamSchedule
 from .tag import Tag
@@ -40,6 +38,8 @@ from .guest import Guest
 from .guest_star_session import GuestStarSession
 from .charity_campaign_donation import CharityCampaignDonation
 from .channel import Channel
+from .reward import Reward
+from .redemption import Redemption
 from .prediction import Prediction
 from .poll_choice import PollChoice
 from .poll import Poll

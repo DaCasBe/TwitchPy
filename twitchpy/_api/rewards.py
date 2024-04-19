@@ -1,5 +1,7 @@
-from .._utils import http
-from ..dataclasses import Redemption, Reward
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, Redemption, Reward, User
 
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
 
@@ -10,9 +12,9 @@ def create_custom_reward(
     broadcaster_id: str,
     title: str,
     cost: int,
-    prompt: str = "",
+    prompt: str | None = None,
     is_enabled: bool = True,
-    background_color: str = "",
+    background_color: str | None = None,
     is_user_input_required: bool = False,
     is_max_per_stream_enabled: bool = False,
     max_per_stream: int | None = None,
@@ -20,78 +22,76 @@ def create_custom_reward(
     max_per_user_per_stream: int | None = None,
     is_global_cooldown_enabled: bool = False,
     global_cooldown_seconds: int | None = None,
-    should_redemptions_skip_request_queue: bool | None = False,
+    should_redemptions_skip_request_queue: bool = False,
 ) -> Reward:
     url = ENDPOINT_CUSTOM_REWARDS
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
-    params = {"broadcaster_id": broadcaster_id, "title": title, "cost": cost}
+    params = {
+        "broadcaster_id": broadcaster_id,
+        "title": title,
+        "cost": cost,
+        "is_enabled": is_enabled,
+        "is_user_input_required": is_user_input_required,
+        "is_max_per_stream_enabled": is_max_per_stream_enabled,
+        "is_max_per_user_per_stream_enabled": is_max_per_user_per_stream_enabled,
+        "is_global_cooldown_enabled": is_global_cooldown_enabled,
+        "should_redemptions_skip_request_queue": should_redemptions_skip_request_queue,
+    }
 
-    if prompt != "":
+    if prompt is not None:
         params["prompt"] = prompt
 
-    if is_enabled is not True:
-        params["is_enabled"] = is_enabled
-
-    if background_color != "":
+    if background_color is not None:
         params["background_color"] = background_color
-
-    if is_user_input_required is not False:
-        params["is_user_input_required"] = is_user_input_required
-
-    if is_max_per_stream_enabled is not False:
-        params["is_max_per_stream_enabled"] = is_max_per_stream_enabled
 
     if max_per_stream is not None:
         params["max_per_stream"] = max_per_stream
 
-    if is_max_per_user_per_stream_enabled is not False:
-        params["is_max_per_user_per_stream_enabled"] = (
-            is_max_per_user_per_stream_enabled
-        )
-
     if max_per_user_per_stream is not None:
         params["max_per_user_per_stream"] = max_per_user_per_stream
-
-    if is_global_cooldown_enabled is not False:
-        params["is_global_cooldown_enabled"] = is_global_cooldown_enabled
 
     if global_cooldown_seconds is not None:
         params["global_cooldown_seconds"] = global_cooldown_seconds
 
-    if should_redemptions_skip_request_queue is not False:
-        params["should_redemptions_skip_request_queue"] = (
-            should_redemptions_skip_request_queue
-        )
-
     reward = http.send_get(url, headers, params)[0]
 
     return Reward(
-        reward["broadcaster_name"],
-        reward["broadcaster_id"],
+        Channel(
+            User(
+                reward["broadcaster_id"],
+                reward["broadcaster_login"],
+                reward["broadcaster_name"],
+            )
+        ),
         reward["id"],
-        image=reward["image"],
-        background_color=reward["background_color"],
-        is_enabled=reward["is_enabled"],
-        cost=reward["cost"],
-        title=reward["title"],
-        prompt=reward["prompt"],
-        is_user_input_required=reward["is_user_input_required"],
-        max_per_stream_setting=reward["max_per_stream_setting"],
-        max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],
-        global_cooldown_setting=reward["global_cooldown_setting"],
-        is_paused=reward["is_paused"],
-        is_in_stock=reward["is_in_stock"],
-        default_image=reward["default_image"],
-        should_redemptions_skip_request_queue=reward[
-            "should_redemptions_skip_request_queue"
-        ],
-        redemptions_redeemed_current_stream=reward[
-            "redemptions_redeemed_current_stream"
-        ],
-        cooldown_expires_at=reward["cooldown_expires_at"],
+        reward["title"],
+        reward["prompt"],
+        reward["cost"],
+        reward["image"],
+        reward["default_image"],
+        reward["background_color"],
+        reward["is_enabled"],
+        reward["is_user_input_required"],
+        (
+            reward["max_per_stream_setting"]["is_enabled"],
+            reward["max_per_stream_setting"]["max_per_stream"],
+        ),
+        (
+            reward["max_per_user_per_stream_setting"]["is_enabled"],
+            reward["max_per_user_per_stream_setting"]["max_per_user_per_stream"],
+        ),
+        (
+            reward["global_cooldown_setting"]["is_enabled"],
+            reward["global_cooldown_setting"]["global_cooldown_seconds"],
+        ),
+        reward["is_paused"],
+        reward["is_in_stock"],
+        reward["should_redemptions_skip_request_queue"],
+        reward["redemptions_redeemed_current_stream"],
+        datetime.strptime(reward["cooldown_expires_at"], date.RFC3339_FORMAT),
     )
 
 
@@ -120,42 +120,51 @@ def get_custom_reward(
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
-    params = {}
-    params["broadcaster_id"] = broadcaster_id
+    params = {
+        "broadcaster_id": broadcaster_id,
+        "only_manageable_rewards": only_manageable_rewards,
+    }
 
     if reward_ids is not None and len(reward_ids) > 0:
         params["id"] = reward_ids
-
-    if only_manageable_rewards is not False:
-        params["only_manageable_rewards"] = only_manageable_rewards
 
     rewards = http.send_get(url, headers, params)
 
     return [
         Reward(
-            reward["broadcaster_name"],
-            reward["broadcaster_id"],
+            Channel(
+                User(
+                    reward["broadcaster_id"],
+                    reward["broadcaster_login"],
+                    reward["broadcaster_name"],
+                )
+            ),
             reward["id"],
-            image=reward["image"],
-            background_color=reward["background_color"],
-            is_enabled=reward["is_enabled"],
-            cost=reward["cost"],
-            title=reward["title"],
-            prompt=reward["prompt"],
-            is_user_input_required=reward["is_user_input_required"],
-            max_per_stream_setting=reward["max_per_stream_setting"],
-            max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],
-            global_cooldown_setting=reward["global_cooldown_setting"],
-            is_paused=reward["is_paused"],
-            is_in_stock=reward["is_in_stock"],
-            default_image=reward["default_image"],
-            should_redemptions_skip_request_queue=reward[
-                "should_redemptions_skip_request_queue"
-            ],
-            redemptions_redeemed_current_stream=reward[
-                "redemptions_redeemed_current_stream"
-            ],
-            cooldown_expires_at=reward["cooldown_expires_at"],
+            reward["title"],
+            reward["prompt"],
+            reward["cost"],
+            reward["image"],
+            reward["default_image"],
+            reward["background_color"],
+            reward["is_enabled"],
+            reward["is_user_input_required"],
+            (
+                reward["max_per_stream_setting"]["is_enabled"],
+                reward["max_per_stream_setting"]["max_per_stream"],
+            ),
+            (
+                reward["max_per_user_per_stream_setting"]["is_enabled"],
+                reward["max_per_user_per_stream_setting"]["max_per_user_per_stream"],
+            ),
+            (
+                reward["global_cooldown_setting"]["is_enabled"],
+                reward["global_cooldown_setting"]["global_cooldown_seconds"],
+            ),
+            reward["is_paused"],
+            reward["is_in_stock"],
+            reward["should_redemptions_skip_request_queue"],
+            reward["redemptions_redeemed_current_stream"],
+            datetime.strptime(reward["cooldown_expires_at"], date.RFC3339_FORMAT),
         )
         for reward in rewards
     ]
@@ -167,7 +176,7 @@ def get_custom_reward_redemption(
     broadcaster_id: str,
     reward_id: str,
     redemption_ids: list[str] | None = None,
-    status: str = "",
+    status: str | None = None,
     sort: str = "OLDEST",
     first: int = 20,
 ) -> list[Redemption]:
@@ -179,35 +188,44 @@ def get_custom_reward_redemption(
     params = {}
     params["broadcaster_id"] = broadcaster_id
     params["reward_id"] = reward_id
+    params["sort"] = sort
 
     if redemption_ids is not None and len(redemption_ids) > 0:
         params["id"] = redemption_ids
 
-    if status != "":
+    if status is not None:
         params["status"] = status
-
-    if sort != "OLDEST":
-        params["sort"] = sort
 
     redemptions = http.send_get_with_pagination(url, headers, params, first, 50)
 
     return [
         Redemption(
-            redemption["broadcaster_name"],
-            redemption["broadcaster_id"],
+            Channel(
+                User(
+                    redemption["broadcaster_id"],
+                    redemption["broadcaster_login"],
+                    redemption["broadcaster_name"],
+                )
+            ),
             redemption["id"],
-            redemption["user_id"],
-            redemption["user_name"],
+            User(
+                redemption["user_id"], redemption["user_login"], redemption["user_name"]
+            ),
             redemption["user_input"],
             redemption["status"],
-            redemption["redeemed_at"],
+            datetime.strptime(redemption["redeemed_at"], date.RFC3339_FORMAT),
             Reward(
-                redemption["broadcaster_name"],
-                redemption["broadcaster_id"],
+                Channel(
+                    User(
+                        redemption["broadcaster_id"],
+                        redemption["broadcaster_login"],
+                        redemption["broadcaster_name"],
+                    )
+                ),
                 redemption["reward"]["id"],
-                cost=redemption["reward"]["cost"],
-                title=redemption["reward"]["title"],
-                prompt=redemption["reward"]["prompt"],
+                redemption["reward"]["title"],
+                redemption["reward"]["prompt"],
+                redemption["reward"]["cost"],
             ),
         )
         for redemption in redemptions
@@ -219,10 +237,10 @@ def update_custom_reward(
     client_id: str,
     broadcaster_id: str,
     reward_id: str,
-    title: str = "",
-    prompt: str = "",
+    title: str | None = None,
+    prompt: str | None = None,
     cost: int | None = None,
-    background_color: str = "",
+    background_color: str | None = None,
     is_enabled: bool | None = None,
     is_user_input_required: bool | None = None,
     is_max_per_stream_enabled: bool | None = None,
@@ -243,16 +261,16 @@ def update_custom_reward(
     data["broadcaster_id"] = broadcaster_id
     data["id"] = reward_id
 
-    if title != "":
+    if title is not None:
         data["title"] = title
 
-    if prompt != "":
+    if prompt is not None:
         data["prompt"] = prompt
 
     if cost is not None:
         data["cost"] = cost
 
-    if background_color != "":
+    if background_color is not None:
         data["background_color"] = background_color
 
     if is_enabled is not None:
@@ -290,29 +308,39 @@ def update_custom_reward(
     reward = http.send_patch_get_result(url, headers, data)[0]
 
     return Reward(
-        reward["broadcaster_name"],
-        reward["broadcaster_id"],
+        Channel(
+            User(
+                reward["broadcaster_id"],
+                reward["broadcaster_login"],
+                reward["broadcaster_name"],
+            )
+        ),
         reward["id"],
-        image=reward["image"],
-        background_color=reward["background_color"],
-        is_enabled=reward["is_enabled"],
-        cost=reward["cost"],
-        title=reward["title"],
-        prompt=reward["prompt"],
-        is_user_input_required=reward["is_user_input_required"],
-        max_per_stream_setting=reward["max_per_stream_setting"],
-        max_per_user_per_stream_setting=reward["max_per_user_per_stream_setting"],
-        global_cooldown_setting=reward["global_cooldown_setting"],
-        is_paused=reward["is_paused"],
-        is_in_stock=reward["is_in_stock"],
-        default_image=reward["default_image"],
-        should_redemptions_skip_request_queue=reward[
-            "should_redemptions_skip_request_queue"
-        ],
-        redemptions_redeemed_current_stream=reward[
-            "redemptions_redeemed_current_stream"
-        ],
-        cooldown_expires_at=reward["cooldown_expires_at"],
+        reward["title"],
+        reward["prompt"],
+        reward["cost"],
+        reward["image"],
+        reward["default_image"],
+        reward["background_color"],
+        reward["is_enabled"],
+        reward["is_user_input_required"],
+        (
+            reward["max_per_stream_setting"]["is_enabled"],
+            reward["max_per_stream_setting"]["max_per_stream"],
+        ),
+        (
+            reward["max_per_user_per_stream_setting"]["is_enabled"],
+            reward["max_per_user_per_stream_setting"]["max_per_user_per_stream"],
+        ),
+        (
+            reward["global_cooldown_setting"]["is_enabled"],
+            reward["global_cooldown_setting"]["global_cooldown_seconds"],
+        ),
+        reward["is_paused"],
+        reward["is_in_stock"],
+        reward["should_redemptions_skip_request_queue"],
+        reward["redemptions_redeemed_current_stream"],
+        datetime.strptime(reward["cooldown_expires_at"], date.RFC3339_FORMAT),
     )
 
 
@@ -322,7 +350,7 @@ def update_redemption_status(
     redemption_id: list[str],
     broadcaster_id: str,
     reward_id: str,
-    status: str = "",
+    status: str | None = None,
 ) -> list[Redemption]:
     url = "https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions"
     headers = {
@@ -335,28 +363,39 @@ def update_redemption_status(
         "reward_id": reward_id,
     }
 
-    if status != "":
+    if status is not None:
         data["status"] = status
 
     redemptions = http.send_patch_get_result(url, headers, data)
 
     return [
         Redemption(
-            redemption["broadcaster_name"],
-            redemption["broadcaster_id"],
+            Channel(
+                User(
+                    redemption["broadcaster_id"],
+                    redemption["broadcaster_login"],
+                    redemption["broadcaster_name"],
+                )
+            ),
             redemption["id"],
-            redemption["user_id"],
-            redemption["user_name"],
+            User(
+                redemption["user_id"], redemption["user_login"], redemption["user_name"]
+            ),
             redemption["user_input"],
             redemption["status"],
-            redemption["redeemed_at"],
+            datetime.strptime(redemption["redeemed_at"], date.RFC3339_FORMAT),
             Reward(
-                redemption["broadcaster_name"],
-                redemption["broadcaster_id"],
+                Channel(
+                    User(
+                        redemption["broadcaster_id"],
+                        redemption["broadcaster_login"],
+                        redemption["broadcaster_name"],
+                    )
+                ),
                 redemption["reward"]["id"],
-                cost=redemption["reward"]["cost"],
-                title=redemption["reward"]["title"],
-                prompt=redemption["reward"]["prompt"],
+                redemption["reward"]["title"],
+                redemption["reward"]["prompt"],
+                redemption["reward"]["cost"],
             ),
         )
         for redemption in redemptions
