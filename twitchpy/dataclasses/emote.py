@@ -1,15 +1,5 @@
 from dataclasses import dataclass
 
-FORMAT_ANIMATED = "animated"
-FORMAT_STATIC = "static"
-
-THEME_MODE_DARK = "dark"
-THEME_MODE_LIGHT = "light"
-
-TYPE_BITSTIER = "bitstier"
-TYPE_FOLLOWER = "follower"
-TYPE_SUBSCRIPTIONS = "subscriptions"
-
 
 @dataclass
 class Emote:

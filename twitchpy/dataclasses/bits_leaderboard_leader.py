@@ -2,12 +2,6 @@ from dataclasses import dataclass
 
 from ..dataclasses import User
 
-PERIOD_DAY = "day"
-PERIOD_WEEK = "week"
-PERIOD_MONTH = "month"
-PERIOD_YEAR = "year"
-PERIOD_ALL = "all"
-
 
 @dataclass
 class BitsLeaderboardLeader:

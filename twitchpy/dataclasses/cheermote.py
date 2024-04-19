@@ -3,12 +3,6 @@ from datetime import datetime
 
 from ..dataclasses import CheermoteTier
 
-TYPE_GLOBAL_FIRST_PARTY = "global_first_party"
-TYPE_GLOBAL_THIRD_PARTY = "global_third_party"
-TYPE_CHANNEL_CUSTOM = "channel_custom"
-TYPE_DISPLAY_ONLY = "display_only"
-TYPE_SPONSORED = "sponsored"
-
 
 @dataclass
 class Cheermote:
