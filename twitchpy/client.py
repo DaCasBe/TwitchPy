@@ -3693,13 +3693,13 @@ class Client:
 
         return users.get_users(self.__app_token, self.client_id, user_ids, login)
 
-    def update_user(self, description: str = "") -> User:
+    def update_user(self, description: str | None = None) -> User:
         """
         Updates the description of a user specified by the bearer token
         If the description parameter is not provided, no update will occur and the current user data is returned
 
         Args:
-            description (str): User’s account description
+            description (str | None): User’s account description
 
         Raises:
             errors.ClientError
@@ -3710,7 +3710,7 @@ class Client:
 
         return users.update_user(self.__user_token, self.client_id, description)
 
-    def get_user_block_list(self, broadcaster_id: str, first: int = 20) -> list[dict]:
+    def get_user_block_list(self, broadcaster_id: str, first: int = 20) -> list[User]:
         """
         Gets a specified user’s block list
 
@@ -3723,7 +3723,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return users.get_user_block_list(
@@ -3731,16 +3731,19 @@ class Client:
         )
 
     def block_user(
-        self, target_user_id: str, source_context: str = "", reason: str = ""
+        self,
+        target_user_id: str,
+        source_context: str | None = None,
+        reason: str | None = None,
     ) -> None:
         """
         Blocks the specified user on behalf of the authenticated user
 
         Args:
             target_user_id (str): User ID of the user to be blocked
-            source_context (str): Source context for blocking the user
+            source_context (str | None): Source context for blocking the user
                 Valid values: "chat", "whisper"
-            reason (str): Reason for blocking the user
+            reason (str | None): Reason for blocking the user
                 Valid values: "spam", "harassment", or "other"
 
         Raises:
@@ -3777,12 +3780,12 @@ class Client:
 
         return users.get_user_extensions(self.__user_token, self.client_id)
 
-    def get_user_active_extensions(self, user_id: str = "") -> list[dict]:
+    def get_user_active_extensions(self, user_id: str | None = None) -> list[dict]:
         """
         Gets information about active extensions installed by a specified user, identified by a user ID or Bearer token
 
         Args:
-            user_id (str): ID of the user whose installed extensions will be returned
+            user_id (str | None): ID of the user whose installed extensions will be returned
 
         Raises:
             errors.ClientError
@@ -3795,10 +3798,19 @@ class Client:
             self.__user_token, self.client_id, user_id
         )
 
-    def update_user_extensions(self) -> list[dict]:
+    def update_user_extensions(self, data: dict) -> list[dict]:
         """
         Updates the activation state, extension ID, and/or version number of installed extensions for a specified user, identified by a Bearer token
         If you try to activate a given extension under multiple extension types, the last write wins (and there is no guarantee of write order)
+
+        Args:
+            data (dict): The extensions to update
+                The data field is a dictionary of extension types
+                The dictionary’s possible keys are: panel, overlay, or component
+                The key’s value is a dictionary of extensions
+                For the extension’s dictionary, the key is a sequential number beginning with 1
+                For panel and overlay extensions, the key’s value is an object that contains the following fields: active (true/false), id (the extension’s ID), and version (the extension’s version)
+                For component extensions, the key’s value includes the above fields plus the x and y fields, which identify the coordinate where the extension is placed
 
         Raises:
             errors.ClientError
@@ -3807,7 +3819,7 @@ class Client:
             list[dict]
         """
 
-        return users.update_user_extensions(self.__user_token, self.client_id)
+        return users.update_user_extensions(self.__user_token, self.client_id, data)
 
     def get_videos(
         self,
