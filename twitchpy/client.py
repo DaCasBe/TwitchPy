@@ -86,8 +86,8 @@ from .dataclasses import (
     Video,
 )
 
-URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
-DEFAULT_TIMEOUT = 10
+_URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
+_DEFAULT_TIMEOUT = 10
 
 
 class Client:
@@ -97,17 +97,15 @@ class Client:
 
     def __init__(
         self,
-        oauth_token: str,
         client_id: str,
         client_secret: str,
         redirect_uri: str,
         tokens_path: str,
-        authorization_code: str = "",
-        jwt_token: str = "",
+        authorization_code: str | None = None,
+        jwt_token: str | None = None,
     ):
         """
         Args:
-            oauth_token (str): OAuth Token
             client_id (str): Client ID
             client_secret (str): Client secret
             redirect_uri (str): Redirect URI
@@ -116,30 +114,29 @@ class Client:
             jwt_token (str, optional): JWT Token
         """
 
-        self.oauth_token = oauth_token
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
         self.tokens_path = tokens_path
         self.__app_token = self.__get_app_token()
 
-        if authorization_code != "":
+        if authorization_code is not None:
             self.__user_token = self.__get_user_token(authorization_code)
 
         else:
             self.__user_token = ""
 
-        self.__jwt_token = jwt_token
+        self.__jwt_token = jwt_token if jwt_token is not None else ""
 
     def __get_app_token(self) -> str:
-        url = URL_OAUTH2_TOKEN
+        url = _URL_OAUTH2_TOKEN
         payload = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "grant_type": "client_credentials",
         }
 
-        response = requests.post(url, json=payload, timeout=DEFAULT_TIMEOUT)
+        response = requests.post(url, json=payload, timeout=_DEFAULT_TIMEOUT)
 
         if response.ok:
             return response.json()["access_token"]
@@ -200,7 +197,7 @@ class Client:
     def __generate_user_tokens(
         self, authorization_code: str, file: str
     ) -> tuple[str, str]:
-        url = URL_OAUTH2_TOKEN
+        url = _URL_OAUTH2_TOKEN
         payload = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
@@ -209,7 +206,7 @@ class Client:
             "redirect_uri": self.redirect_uri,
         }
 
-        response = requests.post(url, payload, timeout=DEFAULT_TIMEOUT)
+        response = requests.post(url, payload, timeout=_DEFAULT_TIMEOUT)
 
         if response.ok:
             response = response.json()
@@ -226,7 +223,7 @@ class Client:
             raise errors.ClientError(response.json()["message"])
 
     def __refresh_user_tokens(self, refresh_user_token: str) -> tuple[str, str]:
-        url = URL_OAUTH2_TOKEN
+        url = _URL_OAUTH2_TOKEN
         payload = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_user_token,
@@ -234,7 +231,7 @@ class Client:
             "client_secret": self.client_secret,
         }
 
-        response = requests.post(url, json=payload, timeout=DEFAULT_TIMEOUT)
+        response = requests.post(url, json=payload, timeout=_DEFAULT_TIMEOUT)
 
         if response.ok:
             response = response.json()
