@@ -5,7 +5,10 @@ from typing import Callable
 from .client import Client
 from .dataclasses import Message
 
-DEFAULT_TIMEOUT = 10
+_IRC_SERVER = "irc.chat.twitch.tv"
+_IRC_PORT = 6697
+
+_DEFAULT_TIMEOUT = 10
 
 
 class Bot:
@@ -23,9 +26,9 @@ class Bot:
         username: str,
         channels: list[str],
         command_prefix: str,
-        code: str = "",
-        jwt_token: str = "",
-        ready_message: str = "",
+        authorization_code: str | None = None,
+        jwt_token: str | None = None,
+        ready_message: str | None = None,
     ):
         """
         Args:
@@ -42,15 +45,12 @@ class Bot:
             ready_message (str): Message that the bot will send through the chats of the channels it access
         """
 
-        self.__irc_server = "irc.chat.twitch.tv"
-        self.__irc_port = 6697
         self.client = Client(
-            oauth_token,
             client_id,
             client_secret,
             redirect_uri,
             tokens_path,
-            code,
+            authorization_code,
             jwt_token,
         )
         self.__oauth_token = oauth_token
@@ -63,7 +63,7 @@ class Bot:
             self.channels.append(channel.replace("@", "").lower())
 
         self.command_prefix = command_prefix
-        self.ready_message = ready_message
+        self.ready_message = ready_message if ready_message is not None else ""
         self.custom_checks = {}
         self.custom_listeners = {}
         self.listeners_to_remove = []
@@ -93,8 +93,8 @@ class Bot:
         self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self) -> None:
-        self.irc.settimeout(DEFAULT_TIMEOUT)
-        self.irc.connect((self.__irc_server, self.__irc_port))
+        self.irc.settimeout(_DEFAULT_TIMEOUT)
+        self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
         self.__login()
 
