@@ -33,7 +33,10 @@ from typing import Callable
 from .client import Client
 from .dataclasses import Message
 
-DEFAULT_TIMEOUT = 10
+_IRC_SERVER = &#34;irc.chat.twitch.tv&#34;
+_IRC_PORT = 6697
+
+_DEFAULT_TIMEOUT = 10
 
 
 class Bot:
@@ -51,9 +54,9 @@ class Bot:
         username: str,
         channels: list[str],
         command_prefix: str,
-        code: str = &#34;&#34;,
-        jwt_token: str = &#34;&#34;,
-        ready_message: str = &#34;&#34;,
+        authorization_code: str | None = None,
+        jwt_token: str | None = None,
+        ready_message: str | None = None,
     ):
         &#34;&#34;&#34;
         Args:
@@ -70,15 +73,12 @@ class Bot:
             ready_message (str): Message that the bot will send through the chats of the channels it access
         &#34;&#34;&#34;
 
-        self.__irc_server = &#34;irc.chat.twitch.tv&#34;
-        self.__irc_port = 6697
         self.client = Client(
-            oauth_token,
             client_id,
             client_secret,
             redirect_uri,
             tokens_path,
-            code,
+            authorization_code,
             jwt_token,
         )
         self.__oauth_token = oauth_token
@@ -91,7 +91,7 @@ class Bot:
             self.channels.append(channel.replace(&#34;@&#34;, &#34;&#34;).lower())
 
         self.command_prefix = command_prefix
-        self.ready_message = ready_message
+        self.ready_message = ready_message if ready_message is not None else &#34;&#34;
         self.custom_checks = {}
         self.custom_listeners = {}
         self.listeners_to_remove = []
@@ -121,8 +121,8 @@ class Bot:
         self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self) -&gt; None:
-        self.irc.settimeout(DEFAULT_TIMEOUT)
-        self.irc.connect((self.__irc_server, self.__irc_port))
+        self.irc.settimeout(_DEFAULT_TIMEOUT)
+        self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
         self.__login()
 
@@ -846,7 +846,7 @@ class Bot:
 <dl>
 <dt id="twitchpy.bot.Bot"><code class="flex name class">
 <span>class <span class="ident">Bot</span></span>
-<span>(</span><span>oauth_token: str, client_id: str, client_secret: str, redirect_uri: str, tokens_path: str, username: str, channels: list[str], command_prefix: str, code: str = '', jwt_token: str = '', ready_message: str = '')</span>
+<span>(</span><span>oauth_token: str, client_id: str, client_secret: str, redirect_uri: str, tokens_path: str, username: str, channels: list[str], command_prefix: str, authorization_code: str | None = None, jwt_token: str | None = None, ready_message: str | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a bot</p>
@@ -894,9 +894,9 @@ class Bot:
         username: str,
         channels: list[str],
         command_prefix: str,
-        code: str = &#34;&#34;,
-        jwt_token: str = &#34;&#34;,
-        ready_message: str = &#34;&#34;,
+        authorization_code: str | None = None,
+        jwt_token: str | None = None,
+        ready_message: str | None = None,
     ):
         &#34;&#34;&#34;
         Args:
@@ -913,15 +913,12 @@ class Bot:
             ready_message (str): Message that the bot will send through the chats of the channels it access
         &#34;&#34;&#34;
 
-        self.__irc_server = &#34;irc.chat.twitch.tv&#34;
-        self.__irc_port = 6697
         self.client = Client(
-            oauth_token,
             client_id,
             client_secret,
             redirect_uri,
             tokens_path,
-            code,
+            authorization_code,
             jwt_token,
         )
         self.__oauth_token = oauth_token
@@ -934,7 +931,7 @@ class Bot:
             self.channels.append(channel.replace(&#34;@&#34;, &#34;&#34;).lower())
 
         self.command_prefix = command_prefix
-        self.ready_message = ready_message
+        self.ready_message = ready_message if ready_message is not None else &#34;&#34;
         self.custom_checks = {}
         self.custom_listeners = {}
         self.listeners_to_remove = []
@@ -964,8 +961,8 @@ class Bot:
         self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self) -&gt; None:
-        self.irc.settimeout(DEFAULT_TIMEOUT)
-        self.irc.connect((self.__irc_server, self.__irc_port))
+        self.irc.settimeout(_DEFAULT_TIMEOUT)
+        self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
         self.__login()
 
