@@ -1,15 +1,17 @@
-from .._utils import http
-from ..dataclasses import Video
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, User, Video
 
 
 def get_videos(
     token: str,
     client_id: str,
     video_ids: list[str] | None = None,
-    user_id: str = "",
-    game_id: str = "",
+    user_id: str | None = None,
+    game_id: str | None = None,
     first: int = 20,
-    language: str = "",
+    language: str | None = None,
     period: str = "all",
     sort: str = "time",
     video_type: str = "all",
@@ -20,39 +22,33 @@ def get_videos(
         "Client-Id": client_id,
     }
     params = {}
+    params["period"] = period
+    params["sort"] = sort
+    params["type"] = video_type
 
     if video_ids is not None and len(video_ids) > 0:
         params["id"] = video_ids
 
-    if user_id != "":
+    if user_id is not None:
         params["user_id"] = user_id
 
-    if game_id != "":
+    if game_id is not None:
         params["game_id"] = game_id
 
-    if language != "":
+    if language is not None:
         params["language"] = language
-
-    if period != "all":
-        params["period"] = period
-
-    if sort != "time":
-        params["sort"] = sort
-
-    if video_type != "all":
-        params["type"] = video_type
 
     videos = http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Video(
             video["id"],
-            video["user_id"],
-            video["user_name"],
+            video["stream_id"],
+            Channel(User(video["user_id"], video["user_login"], video["user_name"])),
             video["title"],
             video["description"],
-            video["created_at"],
-            video["published_at"],
+            datetime.strptime(video["created_at"], date.RFC3339_FORMAT),
+            datetime.strptime(video["published_at"], date.RFC3339_FORMAT),
             video["url"],
             video["thumbnail_url"],
             video["viewable"],
@@ -60,6 +56,10 @@ def get_videos(
             video["language"],
             video["type"],
             video["duration"],
+            [
+                (segment["duration"], segment["offset"])
+                for segment in video["muted_segments"]
+            ],
         )
         for video in videos
     ]

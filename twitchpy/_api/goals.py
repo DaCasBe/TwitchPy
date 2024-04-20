@@ -1,7 +1,12 @@
-from .._utils import http
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, CreatorGoal, User
 
 
-def get_creator_goals(token: str, client_id: str, broadcaster_id: str) -> list[dict]:
+def get_creator_goals(
+    token: str, client_id: str, broadcaster_id: str
+) -> list[CreatorGoal]:
     url = "https://api.twitch.tv/helix/goals"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -9,4 +14,23 @@ def get_creator_goals(token: str, client_id: str, broadcaster_id: str) -> list[d
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get(url, headers, params)
+    goals = http.send_get(url, headers, params)
+
+    return [
+        CreatorGoal(
+            goal["id"],
+            Channel(
+                User(
+                    goal["broadcaster_id"],
+                    goal["broadcaster_login"],
+                    goal["broadcaster_name"],
+                )
+            ),
+            goal["type"],
+            goal["description"],
+            goal["current_amount"],
+            goal["target_amount"],
+            datetime.strptime(goal["created_at"], date.RFC3339_FORMAT),
+        )
+        for goal in goals
+    ]

@@ -1,5 +1,7 @@
-from .._utils import http
-from ..dataclasses import Poll
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, Poll, PollChoice, User
 
 ENDPOINT_POLLS = "https://api.twitch.tv/helix/polls"
 
@@ -27,16 +29,29 @@ def get_polls(
     return [
         Poll(
             poll["id"],
-            poll["broadcaster_id"],
-            poll["broadcaster_name"],
-            poll["broadcaster_login"],
+            Channel(
+                User(
+                    poll["broadcaster_id"],
+                    poll["broadcaster_login"],
+                    poll["broadcaster_name"],
+                )
+            ),
             poll["title"],
-            poll["choices"],
+            [
+                PollChoice(
+                    choice["id"],
+                    choice["title"],
+                    choice["votes"],
+                    choice["channel_points_votes"],
+                )
+                for choice in poll["choices"]
+            ],
             poll["channel_points_voting_enabled"],
             poll["channel_points_per_vote"],
             poll["status"],
             poll["duration"],
-            poll["started_at"],
+            datetime.strptime(poll["started_at"], date.RFC3339_FORMAT),
+            datetime.strptime(poll["ended_at"], date.RFC3339_FORMAT),
         )
         for poll in polls
     ]
@@ -59,38 +74,44 @@ def create_poll(
         "Content-Type": "application/json",
     }
 
-    choices_dicts = []
-
-    for choice in choices:
-        choices_dicts.append({"title": choice})
+    choices_dicts = [{"title": choice} for choice in choices]
 
     payload = {
         "broadcaster_id": broadcaster_id,
         "title": title,
         "choices": choices_dicts,
         "duration": duration,
+        "channel_points_voting_enabled": channel_points_voting_enabled,
+        "channel_points_per_vote": channel_points_per_vote,
     }
-
-    if channel_points_voting_enabled is not False:
-        payload["channel_points_voting_enabled"] = channel_points_voting_enabled
-
-    if channel_points_per_vote != 0:
-        payload["channel_points_per_vote"] = channel_points_per_vote
 
     poll = http.send_post_get_result(url, headers, payload)[0]
 
     return Poll(
         poll["id"],
-        poll["broadcaster_id"],
-        poll["broadcaster_name"],
-        poll["broadcaster_login"],
+        Channel(
+            User(
+                poll["broadcaster_id"],
+                poll["broadcaster_login"],
+                poll["broadcaster_name"],
+            )
+        ),
         poll["title"],
-        poll["choices"],
+        [
+            PollChoice(
+                choice["id"],
+                choice["title"],
+                choice["votes"],
+                choice["channel_points_votes"],
+            )
+            for choice in poll["choices"]
+        ],
         poll["channel_points_voting_enabled"],
         poll["channel_points_per_vote"],
         poll["status"],
         poll["duration"],
-        poll["started_at"],
+        datetime.strptime(poll["started_at"], date.RFC3339_FORMAT),
+        datetime.strptime(poll["ended_at"], date.RFC3339_FORMAT),
     )
 
 
@@ -108,14 +129,27 @@ def end_poll(
 
     return Poll(
         poll["id"],
-        poll["broadcaster_id"],
-        poll["broadcaster_name"],
-        poll["broadcaster_login"],
+        Channel(
+            User(
+                poll["broadcaster_id"],
+                poll["broadcaster_login"],
+                poll["broadcaster_name"],
+            )
+        ),
         poll["title"],
-        poll["choices"],
+        [
+            PollChoice(
+                choice["id"],
+                choice["title"],
+                choice["votes"],
+                choice["channel_points_votes"],
+            )
+            for choice in poll["choices"]
+        ],
         poll["channel_points_voting_enabled"],
         poll["channel_points_per_vote"],
         poll["status"],
         poll["duration"],
-        poll["started_at"],
+        datetime.strptime(poll["started_at"], date.RFC3339_FORMAT),
+        datetime.strptime(poll["ended_at"], date.RFC3339_FORMAT),
     )

@@ -1,5 +1,7 @@
-from .._utils import http
-from ..dataclasses import Prediction
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, Prediction, PredictionOutcome, Predictor, User
 
 ENDPOINT_PREDICTIONS = "https://api.twitch.tv/helix/predictions"
 
@@ -27,17 +29,42 @@ def get_predictions(
     return [
         Prediction(
             prediction["id"],
-            prediction["broadcaster_id"],
-            prediction["broadcaster_name"],
-            prediction["broadcaster_login"],
+            Channel(
+                User(
+                    prediction["broadcaster_id"],
+                    prediction["broadcaster_login"],
+                    prediction["broadcaster_name"],
+                )
+            ),
             prediction["title"],
             prediction["winning_outcome_id"],
-            prediction["outcomes"],
+            [
+                PredictionOutcome(
+                    outcome["id"],
+                    outcome["title"],
+                    outcome["users"],
+                    outcome["channel_points"],
+                    [
+                        Predictor(
+                            User(
+                                predictor["user_id"],
+                                predictor["user_login"],
+                                predictor["user_name"],
+                            ),
+                            predictor["channel_points_used"],
+                            predictor["channel_points_won"],
+                        )
+                        for predictor in outcome["top_predictors"]
+                    ],
+                    outcome["color"],
+                )
+                for outcome in prediction["outcomes"]
+            ],
             prediction["prediction_window"],
             prediction["status"],
-            prediction["created_at"],
-            prediction["ended_at"],
-            prediction["locked_at"],
+            datetime.strptime(prediction["created_at"], date.RFC3339_FORMAT),
+            datetime.strptime(prediction["ended_at"], date.RFC3339_FORMAT),
+            datetime.strptime(prediction["locked_at"], date.RFC3339_FORMAT),
         )
         for prediction in predictions
     ]
@@ -74,17 +101,42 @@ def create_prediction(
 
     return Prediction(
         prediction["id"],
-        prediction["broadcaster_id"],
-        prediction["broadcaster_name"],
-        prediction["broadcaster_login"],
+        Channel(
+            User(
+                prediction["broadcaster_id"],
+                prediction["broadcaster_login"],
+                prediction["broadcaster_name"],
+            )
+        ),
         prediction["title"],
         prediction["winning_outcome_id"],
-        prediction["outcomes"],
+        [
+            PredictionOutcome(
+                outcome["id"],
+                outcome["title"],
+                outcome["users"],
+                outcome["channel_points"],
+                [
+                    Predictor(
+                        User(
+                            predictor["user_id"],
+                            predictor["user_login"],
+                            predictor["user_name"],
+                        ),
+                        predictor["channel_points_used"],
+                        predictor["channel_points_won"],
+                    )
+                    for predictor in outcome["top_predictors"]
+                ],
+                outcome["color"],
+            )
+            for outcome in prediction["outcomes"]
+        ],
         prediction["prediction_window"],
         prediction["status"],
-        prediction["created_at"],
-        prediction["ended_at"],
-        prediction["locked_at"],
+        datetime.strptime(prediction["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(prediction["ended_at"], date.RFC3339_FORMAT),
+        datetime.strptime(prediction["locked_at"], date.RFC3339_FORMAT),
     )
 
 
@@ -110,15 +162,40 @@ def end_prediction(
 
     return Prediction(
         prediction["id"],
-        prediction["broadcaster_id"],
-        prediction["broadcaster_name"],
-        prediction["broadcaster_login"],
+        Channel(
+            User(
+                prediction["broadcaster_id"],
+                prediction["broadcaster_login"],
+                prediction["broadcaster_name"],
+            )
+        ),
         prediction["title"],
         prediction["winning_outcome_id"],
-        prediction["outcomes"],
+        [
+            PredictionOutcome(
+                outcome["id"],
+                outcome["title"],
+                outcome["users"],
+                outcome["channel_points"],
+                [
+                    Predictor(
+                        User(
+                            predictor["user_id"],
+                            predictor["user_login"],
+                            predictor["user_name"],
+                        ),
+                        predictor["channel_points_used"],
+                        predictor["channel_points_won"],
+                    )
+                    for predictor in outcome["top_predictors"]
+                ],
+                outcome["color"],
+            )
+            for outcome in prediction["outcomes"]
+        ],
         prediction["prediction_window"],
         prediction["status"],
-        prediction["created_at"],
-        prediction["ended_at"],
-        prediction["locked_at"],
+        datetime.strptime(prediction["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(prediction["ended_at"], date.RFC3339_FORMAT),
+        datetime.strptime(prediction["locked_at"], date.RFC3339_FORMAT),
     )

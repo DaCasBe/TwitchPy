@@ -1,5 +1,17 @@
-from .._utils import http
-from ..dataclasses import Extension
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import (
+    Channel,
+    Extension,
+    ExtensionConfigurationSegment,
+    ExtensionSecret,
+    ExtensionTransaction,
+    Game,
+    Product,
+    ProductCost,
+    User,
+)
 
 
 def get_extension_transactions(
@@ -8,7 +20,7 @@ def get_extension_transactions(
     extension_id: str,
     transaction_ids: list[str] | None = None,
     first: int = 20,
-) -> list[dict]:
+) -> list[ExtensionTransaction]:
     url = "https://api.twitch.tv/helix/extensions/transactions"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -20,12 +32,45 @@ def get_extension_transactions(
     if transaction_ids is not None and len(transaction_ids) > 0:
         params["id"] = transaction_ids
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    transactions = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        ExtensionTransaction(
+            transaction["id"],
+            datetime.strptime(transaction["timestamp"], date.RFC3339_FORMAT),
+            Channel(
+                User(
+                    transaction["broadcaster_id"],
+                    transaction["broadcaster_login"],
+                    transaction["broadcaster_name"],
+                )
+            ),
+            User(
+                transaction["user_id"],
+                transaction["user_login"],
+                transaction["user_name"],
+            ),
+            transaction["product_type"],
+            Product(
+                transaction["product_data"]["sku"],
+                ProductCost(
+                    transaction["product_data"]["cost"]["amount"],
+                    transaction["product_data"]["cost"]["type"],
+                ),
+                transaction["product_data"]["inDevelopment"],
+                transaction["product_data"]["displayName"],
+                transaction["product_data"]["expiration"],
+                transaction["product_data"]["broadcast"],
+                transaction["product_data"]["domain"],
+            ),
+        )
+        for transaction in transactions
+    ]
 
 
 def get_extension_configuration_segment(
     token: str, client_id: str, broadcaster_id: str, extension_id: str, segment: str
-) -> dict:
+) -> ExtensionConfigurationSegment:
     url = "https://api.twitch.tv/helix/extensions/configurations"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -37,7 +82,14 @@ def get_extension_configuration_segment(
         "segment": segment,
     }
 
-    return http.send_get(url, headers, params)[0]
+    configuration_segment = http.send_get(url, headers, params)[0]
+
+    return ExtensionConfigurationSegment(
+        configuration_segment["segment"],
+        configuration_segment["broadcaster_id"],
+        configuration_segment["content"],
+        configuration_segment["version"],
+    )
 
 
 def set_extension_configuration_segment(
@@ -45,9 +97,9 @@ def set_extension_configuration_segment(
     client_id: str,
     extension_id: str,
     segment: str,
-    broadcaster_id: str = "",
-    content: str = "",
-    version: str = "",
+    broadcaster_id: str | None = None,
+    content: str | None = None,
+    version: str | None = None,
 ) -> None:
     url = "https://api.twitch.tv/helix/extensions/configurations"
     headers = {
@@ -56,13 +108,13 @@ def set_extension_configuration_segment(
     }
     data = {"extension_id": extension_id, "segment": segment}
 
-    if broadcaster_id != "":
+    if broadcaster_id is not None:
         data["broadcaster_id"] = broadcaster_id
 
-    if content != "":
+    if content is not None:
         data["content"] = content
 
-    if version != "":
+    if version is not None:
         data["version"] = version
 
     http.send_put(url, headers, data)
@@ -116,7 +168,7 @@ def send_extension_pubsub_message(
 
 def get_extension_live_channels(
     token: str, client_id: str, extension_id: str, first: int = 20
-) -> list[dict]:
+) -> list[Channel]:
     url = "https://api.twitch.tv/helix/extensions/live"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -124,31 +176,71 @@ def get_extension_live_channels(
     }
     params = {"extension_id": extension_id}
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    channels = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        Channel(
+            User(
+                channel["broadcaster_id"],
+                channel["broadcaster_name"].lower(),
+                channel["broadcaster_name"],
+            ),
+            game=Game(channel["game_id"], channel["game_name"]),
+            title=channel["title"],
+        )
+        for channel in channels
+    ]
 
 
-def get_extension_secrets(token: str, client_id: str) -> list[dict]:
+def get_extension_secrets(
+    token: str, client_id: str
+) -> list[tuple[str, list[ExtensionSecret]]]:
     url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
 
-    return http.send_get(url, headers, {})
+    extension_secrets = http.send_get(url, headers, {})
+
+    return [
+        (
+            extension_secret["format_version"],
+            [
+                ExtensionSecret(
+                    secret["content"], secret["active_at"], secret["expires_at"]
+                )
+                for secret in extension_secret["secrets"]
+            ],
+        )
+        for extension_secret in extension_secrets
+    ]
 
 
-def create_extension_secret(token: str, client_id: str, delay: int = 300) -> list[dict]:
+def create_extension_secret(
+    token: str, client_id: str, delay: int = 300
+) -> list[tuple[str, list[ExtensionSecret]]]:
     url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
-    payload = {}
+    payload = {"delay": delay}
 
-    if delay != 300:
-        payload["delay"] = delay
+    extension_secrets = http.send_post_get_result(url, headers, payload)
 
-    return http.send_post_get_result(url, headers, payload)
+    return [
+        (
+            extension_secret["format_version"],
+            [
+                ExtensionSecret(
+                    secret["content"], secret["active_at"], secret["expires_at"]
+                )
+                for secret in extension_secret["secrets"]
+            ],
+        )
+        for extension_secret in extension_secrets
+    ]
 
 
 def send_extension_chat_message(
@@ -175,7 +267,7 @@ def send_extension_chat_message(
 
 
 def get_extensions(
-    token: str, client_id: str, extension_id: str, extension_version: str = ""
+    token: str, client_id: str, extension_id: str, extension_version: str | None = None
 ) -> Extension:
     url = "https://api.twitch.tv/helix/extensions"
     headers = {
@@ -184,7 +276,7 @@ def get_extensions(
     }
     params = {"extension_id": extension_id}
 
-    if extension_version != "":
+    if extension_version is not None:
         params["extension_version"] = extension_version
 
     extension = http.send_get(url, headers, params)[0]
@@ -217,7 +309,7 @@ def get_extensions(
 
 
 def get_released_extensions(
-    token: str, client_id: str, extension_id: str, extension_version: str = ""
+    token: str, client_id: str, extension_id: str, extension_version: str | None = None
 ) -> Extension:
     url = "https://api.twitch.tv/helix/extensions/released"
     headers = {
@@ -226,7 +318,7 @@ def get_released_extensions(
     }
     params = {"extension_id": extension_id}
 
-    if extension_version != "":
+    if extension_version is not None:
         params["extension_version"] = extension_version
 
     extension = http.send_get(url, headers, params)[0]
@@ -260,18 +352,27 @@ def get_released_extensions(
 
 def get_extension_bits_products(
     token: str, extension_client_id: str, should_include_all: bool = False
-) -> list[dict]:
+) -> list[Product]:
     url = "https://api.twitch.tv/helix/bits/extensions"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": extension_client_id,
     }
-    params = {}
+    params = {"should_include_all": should_include_all}
 
-    if should_include_all is not False:
-        params["should_include_all"] = should_include_all
+    products = http.send_get(url, headers, params)
 
-    return http.send_get(url, headers, params)
+    return [
+        Product(
+            product["sku"],
+            ProductCost(product["cost"]["amount"], product["cost"]["type"]),
+            product["in_development"],
+            product["display_name"],
+            product["expiration"],
+            product["is_broadcast"],
+        )
+        for product in products
+    ]
 
 
 def update_extension_bits_product(
@@ -280,10 +381,10 @@ def update_extension_bits_product(
     sku: str,
     cost: dict,
     display_name: str,
-    in_development: bool = False,
-    expiration: str = "",
-    is_broadcast: bool = False,
-) -> list[dict]:
+    in_development: bool | None = None,
+    expiration: str | None = None,
+    is_broadcast: bool | None = None,
+) -> list[Product]:
     url = "https://api.twitch.tv/helix/bits/extensions"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -291,13 +392,25 @@ def update_extension_bits_product(
     }
     data = {"sku": sku, "cost": cost, "display_name": display_name}
 
-    if in_development is not False:
+    if in_development is not None:
         data["in_development"] = in_development
 
-    if expiration != "":
+    if expiration is not None:
         data["expiration"] = expiration
 
-    if is_broadcast is not False:
+    if is_broadcast is not None:
         data["is_broadcast"] = is_broadcast
 
-    return http.send_put_get_result(url, headers, data)
+    products = http.send_put_get_result(url, headers, data)
+
+    return [
+        Product(
+            product["sku"],
+            ProductCost(product["cost"]["amount"], product["cost"]["type"]),
+            product["in_development"],
+            product["display_name"],
+            product["expiration"],
+            product["is_broadcast"],
+        )
+        for product in products
+    ]

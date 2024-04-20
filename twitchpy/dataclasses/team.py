@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from ..dataclasses import User
 
@@ -12,8 +13,8 @@ class Team:
         users (list[User]): Users in the team
         background_image_url (str): URL of the team background image
         banner (str): URL for the team banner
-        created_at (str): Date and time the team was created
-        updated_at (str): Date and time the team was last updated
+        created_at (datetime): Date and time the team was created
+        updated_at (datetime): Date and time the team was last updated
         info (str): Team description
         thumbnail_url (str): Image URL for the team logo
         team_name (str): Team name
@@ -24,8 +25,8 @@ class Team:
     users: list[User]
     background_image_url: str
     banner: str
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     info: str
     thumbnail_url: str
     team_name: str

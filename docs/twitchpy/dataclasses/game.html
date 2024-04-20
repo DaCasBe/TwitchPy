@@ -37,14 +37,14 @@ class Game:
     Attributes:
         game_id (int): An ID that identifies the category or game
         name (str): The category’s or game’s name
-        box_art_url (str): A URL to the category’s or game’s box art
-        igdb_id (str): The ID that IGDB uses to identify this game
+        box_art_url (str | None): A URL to the category’s or game’s box art
+        igdb_id (str | None): The ID that IGDB uses to identify this game
     &#34;&#34;&#34;
 
     game_id: str
     name: str
-    box_art_url: str = &#34;&#34;
-    igdb_id: str = &#34;&#34;</code></pre>
+    box_art_url: str | None = None
+    igdb_id: str | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -58,7 +58,7 @@ class Game:
 <dl>
 <dt id="twitchpy.dataclasses.game.Game"><code class="flex name class">
 <span>class <span class="ident">Game</span></span>
-<span>(</span><span>game_id: str, name: str, box_art_url: str = '', igdb_id: str = '')</span>
+<span>(</span><span>game_id: str, name: str, box_art_url: str | None = None, igdb_id: str | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Twitch category</p>
@@ -68,11 +68,9 @@ class Game:
 <dd>An ID that identifies the category or game</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The category’s or game’s name</dd>
-<dt><strong><code>box_art_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>A URL to the category’s or game’s box art</dd>
-<dt><strong><code>igdb_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID that IGDB uses to identify this game</dd>
-</dl></div>
+</dl>
+<p>box_art_url (str | None): A URL to the category’s or game’s box art
+igdb_id (str | None): The ID that IGDB uses to identify this game</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -85,18 +83,18 @@ class Game:
     Attributes:
         game_id (int): An ID that identifies the category or game
         name (str): The category’s or game’s name
-        box_art_url (str): A URL to the category’s or game’s box art
-        igdb_id (str): The ID that IGDB uses to identify this game
+        box_art_url (str | None): A URL to the category’s or game’s box art
+        igdb_id (str | None): The ID that IGDB uses to identify this game
     &#34;&#34;&#34;
 
     game_id: str
     name: str
-    box_art_url: str = &#34;&#34;
-    igdb_id: str = &#34;&#34;</code></pre>
+    box_art_url: str | None = None
+    igdb_id: str | None = None</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.game.Game.box_art_url"><code class="name">var <span class="ident">box_art_url</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.game.Game.box_art_url"><code class="name">var <span class="ident">box_art_url</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -104,7 +102,7 @@ class Game:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.game.Game.igdb_id"><code class="name">var <span class="ident">igdb_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.game.Game.igdb_id"><code class="name">var <span class="ident">igdb_id</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

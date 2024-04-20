@@ -1,5 +1,7 @@
-from .._utils import http
-from ..dataclasses import Stream
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, Game, Stream, StreamMarker, User
 
 
 def get_stream_key(token: str, client_id: str, broadcaster_id: str) -> str:
@@ -16,11 +18,11 @@ def get_stream_key(token: str, client_id: str, broadcaster_id: str) -> str:
 def get_streams(
     token: str,
     client_id: str,
-    user_id: str | list[str] = "",
-    user_login: str | list[str] = "",
-    game_id: str | list[str] = "",
+    user_id: list[str] | None = None,
+    user_login: list[str] | None = None,
+    game_id: list[str] | None = None,
     stream_type: str = "all",
-    language: str | list[str] = "",
+    language: list[str] | None = None,
     first: int = 20,
 ) -> list[Stream]:
     url = "https://api.twitch.tv/helix/streams"
@@ -29,20 +31,18 @@ def get_streams(
         "Client-Id": client_id,
     }
     params = {}
+    params["stream_type"] = stream_type
 
-    if user_id != "":
+    if user_id is not None:
         params["user_id"] = user_id
 
-    if user_login != "":
+    if user_login is not None:
         params["user_login"] = user_login
 
-    if game_id != "":
+    if game_id is not None:
         params["game_id"] = game_id
 
-    if stream_type != "all":
-        params["type"] = stream_type
-
-    if language != "":
+    if language is not None:
         params["language"] = language
 
     streams = http.send_get_with_pagination(url, headers, params, first, 100)
@@ -50,16 +50,13 @@ def get_streams(
     return [
         Stream(
             stream["id"],
-            stream["user_id"],
-            stream["user_login"],
-            stream["user_name"],
-            stream["game_id"],
-            stream["game_name"],
+            Channel(User(stream["user_id"], stream["user_login"], stream["user_name"])),
+            Game(stream["game_id"], stream["game_name"]),
             stream["type"],
             stream["title"],
             stream["tags"],
             stream["viewer_count"],
-            stream["started_at"],
+            datetime.strptime(stream["started_at"], date.RFC3339_FORMAT),
             stream["language"],
             stream["thumbnail_url"],
             stream["is_mature"],
@@ -83,16 +80,13 @@ def get_followed_streams(
     return [
         Stream(
             stream["id"],
-            stream["user_id"],
-            stream["user_login"],
-            stream["user_name"],
-            stream["game_id"],
-            stream["game_name"],
+            Channel(User(stream["user_id"], stream["user_login"], stream["user_name"])),
+            Game(stream["game_id"], stream["game_name"]),
             stream["type"],
             stream["title"],
             stream["tags"],
             stream["viewer_count"],
-            stream["started_at"],
+            datetime.strptime(stream["started_at"], date.RFC3339_FORMAT),
             stream["language"],
             stream["thumbnail_url"],
             stream["is_mature"],
@@ -102,8 +96,8 @@ def get_followed_streams(
 
 
 def create_stream_marker(
-    token: str, client_id: str, user_id: str, description: str = ""
-) -> dict:
+    token: str, client_id: str, user_id: str, description: str | None = None
+) -> StreamMarker:
     url = "https://api.twitch.tv/helix/streams/markers"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -112,14 +106,25 @@ def create_stream_marker(
     }
     payload = {"user_id": user_id}
 
-    if description != "":
+    if description is not None:
         payload["description"] = description
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    marker = http.send_post_get_result(url, headers, payload)[0]
+
+    return StreamMarker(
+        marker["id"],
+        datetime.strptime(marker["created_at"], date.RFC3339_FORMAT),
+        marker["position_seconds"],
+        marker["description"],
+    )
 
 
 def get_stream_markers(
-    token: str, client_id: str, user_id: str = "", video_id: str = "", first: int = 20
+    token: str,
+    client_id: str,
+    user_id: str | None = None,
+    video_id: str | None = None,
+    first: int = 20,
 ) -> list[dict]:
     url = "https://api.twitch.tv/helix/streams/markers"
     headers = {
@@ -128,10 +133,10 @@ def get_stream_markers(
     }
     params = {}
 
-    if user_id != "":
+    if user_id is not None:
         params["user_id"] = user_id
 
-    if video_id != "":
+    if video_id is not None:
         params["video_id"] = video_id
 
     return http.send_get_with_pagination(url, headers, params, first, 100)

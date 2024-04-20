@@ -1,5 +1,7 @@
-from .._utils import http
-from ..dataclasses import StreamSchedule
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, Game, StreamSchedule, StreamScheduleSegment, User
 
 ENDPOINT_SEGMENTS = "https://api.twitch.tv/helix/schedule/segment"
 
@@ -9,8 +11,7 @@ def get_channel_stream_schedule(
     client_id: str,
     broadcaster_id: str,
     stream_segment_id: list[str] | None = None,
-    start_time: str = "",
-    utc_offset: str = "0",
+    start_time: datetime | None = None,
     first: int = 20,
 ) -> list[StreamSchedule]:
     url = "https://api.twitch.tv/helix/schedule"
@@ -24,21 +25,40 @@ def get_channel_stream_schedule(
     if stream_segment_id is not None and len(stream_segment_id) > 0:
         params["id"] = stream_segment_id
 
-    if start_time != "":
+    if start_time is not None:
         params["start_time"] = start_time
-
-    if utc_offset != "0":
-        params["utc_offset"] = utc_offset
 
     schedules = http.send_get_with_pagination(url, headers, params, first, 25)
 
     return [
         StreamSchedule(
-            schedule["segments"],
-            schedule["broadcaster_id"],
-            schedule["broadcaster_name"],
-            schedule["broadcaster_login"],
-            schedule["vacation"],
+            [
+                StreamScheduleSegment(
+                    segment["id"],
+                    datetime.strptime(segment["start_time"], date.RFC3339_FORMAT),
+                    datetime.strptime(segment["end_time"], date.RFC3339_FORMAT),
+                    segment["title"],
+                    datetime.strptime(segment["canceled_until"], date.RFC3339_FORMAT),
+                    Game(segment["category"]["id"], segment["category"]["name"]),
+                    segment["is_recurring"],
+                )
+                for segment in schedule["segments"]
+            ],
+            Channel(
+                User(
+                    schedule["broadcaster_id"],
+                    schedule["broadcaster_login"],
+                    schedule["broadcaster_name"],
+                )
+            ),
+            (
+                datetime.strptime(
+                    schedule["vacation"]["start_time"], date.RFC3339_FORMAT
+                ),
+                datetime.strptime(
+                    schedule["vacation"]["end_time"], date.RFC3339_FORMAT
+                ),
+            ),
         )
         for schedule in schedules
     ]
@@ -65,10 +85,10 @@ def update_channel_stream_schedule(
     token: str,
     client_id: str,
     broadcaster_id: str,
-    is_vacation_enabled: bool = False,
-    vacation_start_time: str = "",
-    vacation_end_time: str = "",
-    timezone: str = "",
+    is_vacation_enabled: bool | None = None,
+    vacation_start_time: datetime | None = None,
+    vacation_end_time: datetime | None = None,
+    timezone: str | None = None,
 ) -> None:
     url = "https://api.twitch.tv/helix/schedule/settings"
     headers = {
@@ -78,16 +98,16 @@ def update_channel_stream_schedule(
     data = {}
     data["broadcaster_id"] = broadcaster_id
 
-    if is_vacation_enabled:
-        data["is_vacation_enabled"] = True
+    if is_vacation_enabled is not None:
+        data["is_vacation_enabled"] = is_vacation_enabled
 
-    if vacation_start_time != "":
+    if vacation_start_time is not None:
         data["vacation_start_time"] = vacation_start_time
 
-    if vacation_end_time != "":
+    if vacation_end_time is not None:
         data["vacation_end_time"] = vacation_end_time
 
-    if timezone != "":
+    if timezone is not None:
         data["timezone"] = timezone
 
     http.send_patch(url, headers, data)
@@ -97,12 +117,12 @@ def create_channel_stream_schedule_segment(
     token: str,
     client_id: str,
     broadcaster_id: str,
-    start_time: str,
+    start_time: datetime,
     timezone: str,
     is_recurring: bool,
     duration: int = 240,
-    category_id: str = "",
-    title: str = "",
+    category_id: str | None = None,
+    title: str | None = None,
 ) -> StreamSchedule:
     url = ENDPOINT_SEGMENTS
     headers = {
@@ -114,25 +134,41 @@ def create_channel_stream_schedule_segment(
         "start_time": start_time,
         "timezone": timezone,
         "is_recurring": is_recurring,
+        "duration": duration,
     }
 
-    if duration != 240:
-        payload["duration"] = duration
-
-    if category_id != "":
+    if category_id is not None:
         payload["category_id"] = category_id
 
-    if title != "":
+    if title is not None:
         payload["title"] = title
 
     schedule = http.send_post_get_result(url, headers, payload)[0]
 
     return StreamSchedule(
-        schedule["segments"],
-        schedule["broadcaster_id"],
-        schedule["broadcaster_name"],
-        schedule["broadcaster_login"],
-        schedule["vacation"],
+        [
+            StreamScheduleSegment(
+                segment["id"],
+                datetime.strptime(segment["start_time"], date.RFC3339_FORMAT),
+                datetime.strptime(segment["end_time"], date.RFC3339_FORMAT),
+                segment["title"],
+                datetime.strptime(segment["canceled_until"], date.RFC3339_FORMAT),
+                Game(segment["category"]["id"], segment["category"]["name"]),
+                segment["is_recurring"],
+            )
+            for segment in schedule["segments"]
+        ],
+        Channel(
+            User(
+                schedule["broadcaster_id"],
+                schedule["broadcaster_login"],
+                schedule["broadcaster_name"],
+            )
+        ),
+        (
+            datetime.strptime(schedule["vacation"]["start_time"], date.RFC3339_FORMAT),
+            datetime.strptime(schedule["vacation"]["end_time"], date.RFC3339_FORMAT),
+        ),
     )
 
 
@@ -141,12 +177,12 @@ def update_channel_stream_schedule_segment(
     client_id: str,
     broadcaster_id: str,
     stream_segment_id: str,
-    start_time: str = "",
-    duration: int = 240,
-    category_id: str = "",
-    title: str = "",
-    is_canceled: bool = False,
-    timezone: str = "",
+    start_time: datetime | None = None,
+    duration: int | None = None,
+    category_id: str | None = None,
+    title: str | None = None,
+    is_canceled: bool | None = None,
+    timezone: str | None = None,
 ) -> StreamSchedule:
     url = ENDPOINT_SEGMENTS
     headers = {
@@ -157,32 +193,50 @@ def update_channel_stream_schedule_segment(
     data["broadcaster_id"] = broadcaster_id
     data["id"] = stream_segment_id
 
-    if start_time != "":
+    if start_time is not None:
         data["start_time"] = start_time
 
-    if duration != 240:
+    if duration is not None:
         data["duration"] = duration
 
-    if category_id != "":
+    if category_id is not None:
         data["category_id"] = category_id
 
-    if title != "":
+    if title is not None:
         data["title"] = title
 
-    if is_canceled is not False:
+    if is_canceled is not None:
         data["is_canceled"] = is_canceled
 
-    if timezone != "":
+    if timezone is not None:
         data["timezone"] = timezone
 
     schedule = http.send_patch_get_result(url, headers, data)[0]
 
     return StreamSchedule(
-        schedule["segments"],
-        schedule["broadcaster_id"],
-        schedule["broadcaster_name"],
-        schedule["broadcaster_login"],
-        schedule["vacation"],
+        [
+            StreamScheduleSegment(
+                segment["id"],
+                datetime.strptime(segment["start_time"], date.RFC3339_FORMAT),
+                datetime.strptime(segment["end_time"], date.RFC3339_FORMAT),
+                segment["title"],
+                datetime.strptime(segment["canceled_until"], date.RFC3339_FORMAT),
+                Game(segment["category"]["id"], segment["category"]["name"]),
+                segment["is_recurring"],
+            )
+            for segment in schedule["segments"]
+        ],
+        Channel(
+            User(
+                schedule["broadcaster_id"],
+                schedule["broadcaster_login"],
+                schedule["broadcaster_name"],
+            )
+        ),
+        (
+            datetime.strptime(schedule["vacation"]["start_time"], date.RFC3339_FORMAT),
+            datetime.strptime(schedule["vacation"]["end_time"], date.RFC3339_FORMAT),
+        ),
     )
 
 

@@ -1,4 +1,7 @@
 from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel, Game
 
 
 @dataclass
@@ -8,11 +11,8 @@ class Stream:
 
     Attributes:
         stream_id (str): An ID that identifies the stream
-        user_id (str): The ID of the user that’s broadcasting the stream
-        user_login (str): The user’s login name
-        user_name (str): The user’s display name
-        game_id (str): The ID of the category or game being played
-        game_name (str): The name of the category or game being played
+        channel (Channel): The channel that is broadcasting the stream
+        game (Game): The category or game being played
         stream_type (str): The type of stream
         title (str): The stream’s title
         tags (list[str]): The tags applied to the stream
@@ -24,16 +24,13 @@ class Stream:
     """
 
     stream_id: str
-    user_id: str
-    user_login: str
-    user_name: str
-    game_id: str
-    game_name: str
+    channel: Channel
+    game: Game
     stream_type: str
     title: str
     tags: list[str]
     viewer_count: int
-    started_at: str
+    started_at: datetime
     language: str
     thumbnail_url: str
     is_mature: bool

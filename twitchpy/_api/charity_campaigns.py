@@ -1,5 +1,11 @@
 from .._utils import http
-from ..dataclasses import CharityCampaign, CharityCampaignDonation
+from ..dataclasses import (
+    Channel,
+    CharityCampaign,
+    CharityCampaignAmount,
+    CharityCampaignDonation,
+    User,
+)
 
 
 def get_charity_campaign(
@@ -16,15 +22,27 @@ def get_charity_campaign(
 
     return CharityCampaign(
         charity_campaign["id"],
-        charity_campaign["broadcaster_id"],
-        charity_campaign["broadcaster_name"],
-        charity_campaign["broadcaster_login"],
+        Channel(
+            User(
+                charity_campaign["broadcaster_id"],
+                charity_campaign["broadcaster_login"],
+                charity_campaign["broadcaster_name"],
+            )
+        ),
         charity_campaign["charity_name"],
         charity_campaign["charity_description"],
         charity_campaign["charity_logo"],
         charity_campaign["charity_website"],
-        charity_campaign["current_amount"],
-        charity_campaign["target_amount"],
+        CharityCampaignAmount(
+            charity_campaign["current_amount"]["value"],
+            charity_campaign["current_amount"]["decimal_places"],
+            charity_campaign["current_amount"]["currency"],
+        ),
+        CharityCampaignAmount(
+            charity_campaign["target_amount"]["value"],
+            charity_campaign["target_amount"]["decimal_places"],
+            charity_campaign["target_amount"]["currency"],
+        ),
     )
 
 
@@ -44,10 +62,12 @@ def get_charity_campaign_donations(
         CharityCampaignDonation(
             donation["id"],
             donation["campaign_id"],
-            donation["user_id"],
-            donation["user_login"],
-            donation["user_name"],
-            donation["amount"],
+            User(donation["user_id"], donation["user_login"], donation["user_name"]),
+            CharityCampaignAmount(
+                donation["amount"]["value"],
+                donation["amount"]["decimal_places"],
+                donation["amount"]["currency"],
+            ),
         )
         for donation in donations
     ]

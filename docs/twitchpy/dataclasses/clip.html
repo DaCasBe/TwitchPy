@@ -28,6 +28,8 @@
 </summary>
 <pre><code class="python">from dataclasses import dataclass
 
+from ..dataclasses import Channel, User
+
 
 @dataclass
 class Clip:
@@ -38,10 +40,8 @@ class Clip:
         clip_id (str): An ID that uniquely identifies the clip
         url (str): A URL to the clip
         embed_url (str): A URL that you can use in an iframe to embed the clip
-        broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
-        broadcaster_name (str): The broadcaster’s display name
-        creator_id (str): An ID that identifies the user that created the clip
-        creator_name (str): The user’s display name
+        channel (Channel): The channel that the video was clipped from
+        creator (User): The user that created the clip
         video_id (str): An ID that identifies the video that the clip came from
         game_id (str): The ID of the game that was being played when the clip was created
         language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
@@ -58,10 +58,8 @@ class Clip:
     clip_id: str
     url: str
     embed_url: str
-    broadcaster_id: str
-    broadcaster_name: str
-    creator_id: str
-    creator_name: str
+    channel: Channel
+    creator: User
     video_id: str
     game_id: str
     language: str
@@ -85,7 +83,7 @@ class Clip:
 <dl>
 <dt id="twitchpy.dataclasses.clip.Clip"><code class="flex name class">
 <span>class <span class="ident">Clip</span></span>
-<span>(</span><span>clip_id: str, url: str, embed_url: str, broadcaster_id: str, broadcaster_name: str, creator_id: str, creator_name: str, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
+<span>(</span><span>clip_id: str, url: str, embed_url: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, creator: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a clip</p>
@@ -97,14 +95,10 @@ class Clip:
 <dd>A URL to the clip</dd>
 <dt><strong><code>embed_url</code></strong> :&ensp;<code>str</code></dt>
 <dd>A URL that you can use in an iframe to embed the clip</dd>
-<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the broadcaster that the video was clipped from</dd>
-<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The broadcaster’s display name</dd>
-<dt><strong><code>creator_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the user that created the clip</dd>
-<dt><strong><code>creator_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s display name</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>The channel that the video was clipped from</dd>
+<dt><strong><code>creator</code></strong> :&ensp;<code>User</code></dt>
+<dd>The user that created the clip</dd>
 <dt><strong><code>video_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the video that the clip came from</dd>
 <dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
@@ -140,10 +134,8 @@ class Clip:
         clip_id (str): An ID that uniquely identifies the clip
         url (str): A URL to the clip
         embed_url (str): A URL that you can use in an iframe to embed the clip
-        broadcaster_id (str): An ID that identifies the broadcaster that the video was clipped from
-        broadcaster_name (str): The broadcaster’s display name
-        creator_id (str): An ID that identifies the user that created the clip
-        creator_name (str): The user’s display name
+        channel (Channel): The channel that the video was clipped from
+        creator (User): The user that created the clip
         video_id (str): An ID that identifies the video that the clip came from
         game_id (str): The ID of the game that was being played when the clip was created
         language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
@@ -160,10 +152,8 @@ class Clip:
     clip_id: str
     url: str
     embed_url: str
-    broadcaster_id: str
-    broadcaster_name: str
-    creator_id: str
-    creator_name: str
+    channel: Channel
+    creator: User
     video_id: str
     game_id: str
     language: str
@@ -177,11 +167,7 @@ class Clip:
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.clip.Clip.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.clip.Clip.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.clip.Clip.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -193,11 +179,7 @@ class Clip:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.clip.Clip.creator_id"><code class="name">var <span class="ident">creator_id</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.clip.Clip.creator_name"><code class="name">var <span class="ident">creator_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.clip.Clip.creator"><code class="name">var <span class="ident">creator</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -266,12 +248,10 @@ class Clip:
 <li>
 <h4><code><a title="twitchpy.dataclasses.clip.Clip" href="#twitchpy.dataclasses.clip.Clip">Clip</a></code></h4>
 <ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.clip.Clip.broadcaster_id" href="#twitchpy.dataclasses.clip.Clip.broadcaster_id">broadcaster_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.clip.Clip.broadcaster_name" href="#twitchpy.dataclasses.clip.Clip.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.channel" href="#twitchpy.dataclasses.clip.Clip.channel">channel</a></code></li>
 <li><code><a title="twitchpy.dataclasses.clip.Clip.clip_id" href="#twitchpy.dataclasses.clip.Clip.clip_id">clip_id</a></code></li>
 <li><code><a title="twitchpy.dataclasses.clip.Clip.created_at" href="#twitchpy.dataclasses.clip.Clip.created_at">created_at</a></code></li>
-<li><code><a title="twitchpy.dataclasses.clip.Clip.creator_id" href="#twitchpy.dataclasses.clip.Clip.creator_id">creator_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.clip.Clip.creator_name" href="#twitchpy.dataclasses.clip.Clip.creator_name">creator_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.creator" href="#twitchpy.dataclasses.clip.Clip.creator">creator</a></code></li>
 <li><code><a title="twitchpy.dataclasses.clip.Clip.duration" href="#twitchpy.dataclasses.clip.Clip.duration">duration</a></code></li>
 <li><code><a title="twitchpy.dataclasses.clip.Clip.embed_url" href="#twitchpy.dataclasses.clip.Clip.embed_url">embed_url</a></code></li>
 <li><code><a title="twitchpy.dataclasses.clip.Clip.game_id" href="#twitchpy.dataclasses.clip.Clip.game_id">game_id</a></code></li>

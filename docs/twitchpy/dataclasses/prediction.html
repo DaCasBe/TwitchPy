@@ -27,6 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel, PredictionOutcome
 
 
 @dataclass
@@ -36,35 +39,31 @@ class Prediction:
 
     Args:
         prediction_id (str): ID of the Prediction
-        broadcaster_id (str): ID of the broadcaster
-        broadcaster_name (str): Name of the broadcaster
-        broadcaster_login (str): Login of the broadcaster
+        channel (Channel): The channel where the prediction was created
         title (str): Title for the Prediction
         winning_outcome_id (str): ID of the winning outcome
             If the status is ACTIVE, this is set to null
-        outcomes (list): Possible outcomes for the Prediction
+        outcomes (list[PredictionOutcome]): Possible outcomes for the Prediction
         prediction_window (int): Total duration for the Prediction (in seconds)
         status (str): Status of the Prediction
             Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-        created_at (str): UTC timestamp for the Prediction’s start time
-        ended_at (str): UTC timestamp for when the Prediction ended
+        created_at (datetime): UTC timestamp for the Prediction’s start time
+        ended_at (datetime): UTC timestamp for when the Prediction ended
             If the status is ACTIVE, this is set to null
-        locked_at (str): UTC timestamp for when the Prediction was locked
+        locked_at (datetime): UTC timestamp for when the Prediction was locked
             If the status is not LOCKED, this is set to null
     &#34;&#34;&#34;
 
     prediction_id: str
-    broadcaster_id: str
-    broadcaster_name: str
-    broadcaster_login: str
+    channel: Channel
     title: str
     winning_outcome_id: str
-    outcomes: list[dict]
+    outcomes: list[PredictionOutcome]
     prediction_window: int
     status: str
-    created_at: str
-    ended_at: str
-    locked_at: str</code></pre>
+    created_at: datetime
+    ended_at: datetime
+    locked_at: datetime</code></pre>
 </details>
 </section>
 <section>
@@ -78,7 +77,7 @@ class Prediction:
 <dl>
 <dt id="twitchpy.dataclasses.prediction.Prediction"><code class="flex name class">
 <span>class <span class="ident">Prediction</span></span>
-<span>(</span><span>prediction_id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, winning_outcome_id: str, outcomes: list[dict], prediction_window: int, status: str, created_at: str, ended_at: str, locked_at: str)</span>
+<span>(</span><span>prediction_id: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, title: str, winning_outcome_id: str, outcomes: list[<a title="twitchpy.dataclasses.prediction_outcome.PredictionOutcome" href="prediction_outcome.html#twitchpy.dataclasses.prediction_outcome.PredictionOutcome">PredictionOutcome</a>], prediction_window: int, status: str, created_at: datetime.datetime, ended_at: datetime.datetime, locked_at: datetime.datetime)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a prediction</p>
@@ -86,30 +85,26 @@ class Prediction:
 <dl>
 <dt><strong><code>prediction_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID of the Prediction</dd>
-<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID of the broadcaster</dd>
-<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of the broadcaster</dd>
-<dt><strong><code>broadcaster_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>Login of the broadcaster</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>The channel where the prediction was created</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
 <dd>Title for the Prediction</dd>
 <dt><strong><code>winning_outcome_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID of the winning outcome
 If the status is ACTIVE, this is set to null</dd>
-<dt><strong><code>outcomes</code></strong> :&ensp;<code>list</code></dt>
+<dt><strong><code>outcomes</code></strong> :&ensp;<code>list[PredictionOutcome]</code></dt>
 <dd>Possible outcomes for the Prediction</dd>
 <dt><strong><code>prediction_window</code></strong> :&ensp;<code>int</code></dt>
 <dd>Total duration for the Prediction (in seconds)</dd>
 <dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
 <dd>Status of the Prediction
 Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED</dd>
-<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>UTC timestamp for the Prediction’s start time</dd>
-<dt><strong><code>ended_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>ended_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>UTC timestamp for when the Prediction ended
 If the status is ACTIVE, this is set to null</dd>
-<dt><strong><code>locked_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>locked_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>UTC timestamp for when the Prediction was locked
 If the status is not LOCKED, this is set to null</dd>
 </dl></div>
@@ -124,63 +119,51 @@ class Prediction:
 
     Args:
         prediction_id (str): ID of the Prediction
-        broadcaster_id (str): ID of the broadcaster
-        broadcaster_name (str): Name of the broadcaster
-        broadcaster_login (str): Login of the broadcaster
+        channel (Channel): The channel where the prediction was created
         title (str): Title for the Prediction
         winning_outcome_id (str): ID of the winning outcome
             If the status is ACTIVE, this is set to null
-        outcomes (list): Possible outcomes for the Prediction
+        outcomes (list[PredictionOutcome]): Possible outcomes for the Prediction
         prediction_window (int): Total duration for the Prediction (in seconds)
         status (str): Status of the Prediction
             Valid values are: RESOLVED, ACTIVE, CANCELED, LOCKED
-        created_at (str): UTC timestamp for the Prediction’s start time
-        ended_at (str): UTC timestamp for when the Prediction ended
+        created_at (datetime): UTC timestamp for the Prediction’s start time
+        ended_at (datetime): UTC timestamp for when the Prediction ended
             If the status is ACTIVE, this is set to null
-        locked_at (str): UTC timestamp for when the Prediction was locked
+        locked_at (datetime): UTC timestamp for when the Prediction was locked
             If the status is not LOCKED, this is set to null
     &#34;&#34;&#34;
 
     prediction_id: str
-    broadcaster_id: str
-    broadcaster_name: str
-    broadcaster_login: str
+    channel: Channel
     title: str
     winning_outcome_id: str
-    outcomes: list[dict]
+    outcomes: list[PredictionOutcome]
     prediction_window: int
     status: str
-    created_at: str
-    ended_at: str
-    locked_at: str</code></pre>
+    created_at: datetime
+    ended_at: datetime
+    locked_at: datetime</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.prediction.Prediction.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.prediction.Prediction.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.prediction.Prediction.ended_at"><code class="name">var <span class="ident">ended_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.prediction.Prediction.locked_at"><code class="name">var <span class="ident">locked_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.ended_at"><code class="name">var <span class="ident">ended_at</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.locked_at"><code class="name">var <span class="ident">locked_at</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.prediction.Prediction.outcomes"><code class="name">var <span class="ident">outcomes</span> : list[dict]</code></dt>
+<dt id="twitchpy.dataclasses.prediction.Prediction.outcomes"><code class="name">var <span class="ident">outcomes</span> : list[<a title="twitchpy.dataclasses.prediction_outcome.PredictionOutcome" href="prediction_outcome.html#twitchpy.dataclasses.prediction_outcome.PredictionOutcome">PredictionOutcome</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -225,9 +208,7 @@ class Prediction:
 <li>
 <h4><code><a title="twitchpy.dataclasses.prediction.Prediction" href="#twitchpy.dataclasses.prediction.Prediction">Prediction</a></code></h4>
 <ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_id" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_id">broadcaster_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_login" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_login">broadcaster_login</a></code></li>
-<li><code><a title="twitchpy.dataclasses.prediction.Prediction.broadcaster_name" href="#twitchpy.dataclasses.prediction.Prediction.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.prediction.Prediction.channel" href="#twitchpy.dataclasses.prediction.Prediction.channel">channel</a></code></li>
 <li><code><a title="twitchpy.dataclasses.prediction.Prediction.created_at" href="#twitchpy.dataclasses.prediction.Prediction.created_at">created_at</a></code></li>
 <li><code><a title="twitchpy.dataclasses.prediction.Prediction.ended_at" href="#twitchpy.dataclasses.prediction.Prediction.ended_at">ended_at</a></code></li>
 <li><code><a title="twitchpy.dataclasses.prediction.Prediction.locked_at" href="#twitchpy.dataclasses.prediction.Prediction.locked_at">locked_at</a></code></li>

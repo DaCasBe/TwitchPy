@@ -1,8 +1,10 @@
-from .._utils import http
+from datetime import datetime
+
+from .._utils import date, http
 from ..dataclasses import Team, User
 
 
-def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[dict]:
+def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[Team]:
     url = "https://api.twitch.tv/helix/teams/channel"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -10,10 +12,34 @@ def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[d
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get(url, headers, params)
+    teams = http.send_get(url, headers, params)
+
+    return [
+        Team(
+            [
+                User(
+                    team["broadcaster_id"],
+                    team["broadcaster_login"],
+                    team["broadcaster_name"],
+                )
+            ],
+            team["background_image_url"],
+            team["banner"],
+            datetime.strptime(team["created_at"], date.RFC3339_FORMAT),
+            datetime.strptime(team["updated_at"], date.RFC3339_FORMAT),
+            team["info"],
+            team["thumbnail_url"],
+            team["team_name"],
+            team["team_display_name"],
+            team["id"],
+        )
+        for team in teams
+    ]
 
 
-def get_teams(token: str, client_id: str, name: str = "", team_id: str = "") -> Team:
+def get_teams(
+    token: str, client_id: str, name: str | None = None, team_id: str | None = None
+) -> Team:
     url = "https://api.twitch.tv/helix/teams"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -21,10 +47,10 @@ def get_teams(token: str, client_id: str, name: str = "", team_id: str = "") -> 
     }
     params = {}
 
-    if name != "":
+    if name is not None:
         params["name"] = name
 
-    if team_id != "":
+    if team_id is not None:
         params["id"] = team_id
 
     team = http.send_get(url, headers, params)[0]
@@ -36,8 +62,8 @@ def get_teams(token: str, client_id: str, name: str = "", team_id: str = "") -> 
         ],
         team["background_image_url"],
         team["banner"],
-        team["created_at"],
-        team["updated_at"],
+        datetime.strptime(team["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(team["updated_at"], date.RFC3339_FORMAT),
         team["info"],
         team["thumbnail_url"],
         team["team_name"],

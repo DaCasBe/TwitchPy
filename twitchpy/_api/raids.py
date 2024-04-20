@@ -1,9 +1,11 @@
-from .._utils import http
+from datetime import datetime
+
+from .._utils import date, http
 
 
 def start_raid(
     token: str, client_id: str, from_broadcaster_id: str, to_broadcaster_id: str
-) -> dict:
+) -> tuple[datetime, bool]:
     url = "https://api.twitch.tv/helix/raids"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -14,7 +16,12 @@ def start_raid(
         "to_broadcaster_id": to_broadcaster_id,
     }
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    raid = http.send_post_get_result(url, headers, payload)[0]
+
+    return (
+        datetime.strptime(raid["created_at"], date.RFC3339_FORMAT),
+        raid["is_mature"],
+    )
 
 
 def cancel_raid(token: str, client_id: str, broadcaster_id: str) -> None:

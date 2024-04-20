@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
 
 from ..dataclasses import User
 
@@ -40,8 +41,8 @@ class Team:
         users (list[User]): Users in the team
         background_image_url (str): URL of the team background image
         banner (str): URL for the team banner
-        created_at (str): Date and time the team was created
-        updated_at (str): Date and time the team was last updated
+        created_at (datetime): Date and time the team was created
+        updated_at (datetime): Date and time the team was last updated
         info (str): Team description
         thumbnail_url (str): Image URL for the team logo
         team_name (str): Team name
@@ -52,8 +53,8 @@ class Team:
     users: list[User]
     background_image_url: str
     banner: str
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     info: str
     thumbnail_url: str
     team_name: str
@@ -72,7 +73,7 @@ class Team:
 <dl>
 <dt id="twitchpy.dataclasses.team.Team"><code class="flex name class">
 <span>class <span class="ident">Team</span></span>
-<span>(</span><span>users: list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>], background_image_url: str, banner: str, created_at: str, updated_at: str, info: str, thumbnail_url: str, team_name: str, team_display_name: str, team_id: str)</span>
+<span>(</span><span>users: list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>], background_image_url: str, banner: str, created_at: datetime.datetime, updated_at: datetime.datetime, info: str, thumbnail_url: str, team_name: str, team_display_name: str, team_id: str)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a team</p>
@@ -84,9 +85,9 @@ class Team:
 <dd>URL of the team background image</dd>
 <dt><strong><code>banner</code></strong> :&ensp;<code>str</code></dt>
 <dd>URL for the team banner</dd>
-<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>Date and time the team was created</dd>
-<dt><strong><code>updated_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>updated_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>Date and time the team was last updated</dd>
 <dt><strong><code>info</code></strong> :&ensp;<code>str</code></dt>
 <dd>Team description</dd>
@@ -112,8 +113,8 @@ class Team:
         users (list[User]): Users in the team
         background_image_url (str): URL of the team background image
         banner (str): URL for the team banner
-        created_at (str): Date and time the team was created
-        updated_at (str): Date and time the team was last updated
+        created_at (datetime): Date and time the team was created
+        updated_at (datetime): Date and time the team was last updated
         info (str): Team description
         thumbnail_url (str): Image URL for the team logo
         team_name (str): Team name
@@ -124,8 +125,8 @@ class Team:
     users: list[User]
     background_image_url: str
     banner: str
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
     info: str
     thumbnail_url: str
     team_name: str
@@ -142,7 +143,7 @@ class Team:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.team.Team.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -166,7 +167,7 @@ class Team:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.updated_at"><code class="name">var <span class="ident">updated_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.team.Team.updated_at"><code class="name">var <span class="ident">updated_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

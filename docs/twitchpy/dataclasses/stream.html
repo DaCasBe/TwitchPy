@@ -27,6 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel, Game
 
 
 @dataclass
@@ -36,11 +39,8 @@ class Stream:
 
     Attributes:
         stream_id (str): An ID that identifies the stream
-        user_id (str): The ID of the user that’s broadcasting the stream
-        user_login (str): The user’s login name
-        user_name (str): The user’s display name
-        game_id (str): The ID of the category or game being played
-        game_name (str): The name of the category or game being played
+        channel (Channel): The channel that is broadcasting the stream
+        game (Game): The category or game being played
         stream_type (str): The type of stream
         title (str): The stream’s title
         tags (list[str]): The tags applied to the stream
@@ -52,16 +52,13 @@ class Stream:
     &#34;&#34;&#34;
 
     stream_id: str
-    user_id: str
-    user_login: str
-    user_name: str
-    game_id: str
-    game_name: str
+    channel: Channel
+    game: Game
     stream_type: str
     title: str
     tags: list[str]
     viewer_count: int
-    started_at: str
+    started_at: datetime
     language: str
     thumbnail_url: str
     is_mature: bool</code></pre>
@@ -78,7 +75,7 @@ class Stream:
 <dl>
 <dt id="twitchpy.dataclasses.stream.Stream"><code class="flex name class">
 <span>class <span class="ident">Stream</span></span>
-<span>(</span><span>stream_id: str, user_id: str, user_login: str, user_name: str, game_id: str, game_name: str, stream_type: str, title: str, tags: list[str], viewer_count: int, started_at: str, language: str, thumbnail_url: str, is_mature: bool)</span>
+<span>(</span><span>stream_id: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, game: <a title="twitchpy.dataclasses.game.Game" href="game.html#twitchpy.dataclasses.game.Game">Game</a>, stream_type: str, title: str, tags: list[str], viewer_count: int, started_at: datetime.datetime, language: str, thumbnail_url: str, is_mature: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a stream</p>
@@ -86,16 +83,10 @@ class Stream:
 <dl>
 <dt><strong><code>stream_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>An ID that identifies the stream</dd>
-<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID of the user that’s broadcasting the stream</dd>
-<dt><strong><code>user_login</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s login name</dd>
-<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The user’s display name</dd>
-<dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID of the category or game being played</dd>
-<dt><strong><code>game_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the category or game being played</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>The channel that is broadcasting the stream</dd>
+<dt><strong><code>game</code></strong> :&ensp;<code>Game</code></dt>
+<dd>The category or game being played</dd>
 <dt><strong><code>stream_type</code></strong> :&ensp;<code>str</code></dt>
 <dd>The type of stream</dd>
 <dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
@@ -124,11 +115,8 @@ class Stream:
 
     Attributes:
         stream_id (str): An ID that identifies the stream
-        user_id (str): The ID of the user that’s broadcasting the stream
-        user_login (str): The user’s login name
-        user_name (str): The user’s display name
-        game_id (str): The ID of the category or game being played
-        game_name (str): The name of the category or game being played
+        channel (Channel): The channel that is broadcasting the stream
+        game (Game): The category or game being played
         stream_type (str): The type of stream
         title (str): The stream’s title
         tags (list[str]): The tags applied to the stream
@@ -140,27 +128,24 @@ class Stream:
     &#34;&#34;&#34;
 
     stream_id: str
-    user_id: str
-    user_login: str
-    user_name: str
-    game_id: str
-    game_name: str
+    channel: Channel
+    game: Game
     stream_type: str
     title: str
     tags: list[str]
     viewer_count: int
-    started_at: str
+    started_at: datetime
     language: str
     thumbnail_url: str
     is_mature: bool</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.stream.Stream.game_id"><code class="name">var <span class="ident">game_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.stream.Stream.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.stream.Stream.game_name"><code class="name">var <span class="ident">game_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.stream.Stream.game"><code class="name">var <span class="ident">game</span> : <a title="twitchpy.dataclasses.game.Game" href="game.html#twitchpy.dataclasses.game.Game">Game</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -172,7 +157,7 @@ class Stream:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.stream.Stream.started_at"><code class="name">var <span class="ident">started_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.stream.Stream.started_at"><code class="name">var <span class="ident">started_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -193,18 +178,6 @@ class Stream:
 <div class="desc"></div>
 </dd>
 <dt id="twitchpy.dataclasses.stream.Stream.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.stream.Stream.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.stream.Stream.user_login"><code class="name">var <span class="ident">user_login</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.stream.Stream.user_name"><code class="name">var <span class="ident">user_name</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -233,8 +206,8 @@ class Stream:
 <li>
 <h4><code><a title="twitchpy.dataclasses.stream.Stream" href="#twitchpy.dataclasses.stream.Stream">Stream</a></code></h4>
 <ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.stream.Stream.game_id" href="#twitchpy.dataclasses.stream.Stream.game_id">game_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.stream.Stream.game_name" href="#twitchpy.dataclasses.stream.Stream.game_name">game_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.channel" href="#twitchpy.dataclasses.stream.Stream.channel">channel</a></code></li>
+<li><code><a title="twitchpy.dataclasses.stream.Stream.game" href="#twitchpy.dataclasses.stream.Stream.game">game</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.is_mature" href="#twitchpy.dataclasses.stream.Stream.is_mature">is_mature</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.language" href="#twitchpy.dataclasses.stream.Stream.language">language</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.started_at" href="#twitchpy.dataclasses.stream.Stream.started_at">started_at</a></code></li>
@@ -243,9 +216,6 @@ class Stream:
 <li><code><a title="twitchpy.dataclasses.stream.Stream.tags" href="#twitchpy.dataclasses.stream.Stream.tags">tags</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.thumbnail_url" href="#twitchpy.dataclasses.stream.Stream.thumbnail_url">thumbnail_url</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.title" href="#twitchpy.dataclasses.stream.Stream.title">title</a></code></li>
-<li><code><a title="twitchpy.dataclasses.stream.Stream.user_id" href="#twitchpy.dataclasses.stream.Stream.user_id">user_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.stream.Stream.user_login" href="#twitchpy.dataclasses.stream.Stream.user_login">user_login</a></code></li>
-<li><code><a title="twitchpy.dataclasses.stream.Stream.user_name" href="#twitchpy.dataclasses.stream.Stream.user_name">user_name</a></code></li>
 <li><code><a title="twitchpy.dataclasses.stream.Stream.viewer_count" href="#twitchpy.dataclasses.stream.Stream.viewer_count">viewer_count</a></code></li>
 </ul>
 </li>

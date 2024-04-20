@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 
 import requests
 
@@ -36,25 +37,51 @@ from ._api import (
     whispers,
 )
 from .dataclasses import (
+    AdSchedule,
+    AutoModSettings,
     Badge,
+    BannedUser,
+    BitsLeaderboardLeader,
+    BlockedTerm,
     Channel,
     CharityCampaign,
     CharityCampaignDonation,
+    ChatSettings,
+    Cheermote,
     Clip,
+    Commercial,
+    Conduit,
+    ConduitShard,
+    ContentClassificationLabel,
+    CreatorGoal,
+    DropEntitlement,
     Emote,
     EventSubSubscription,
     Extension,
+    ExtensionAnalyticsReport,
+    ExtensionConfigurationSegment,
+    ExtensionSecret,
+    ExtensionTransaction,
     Game,
+    GameAnalyticsReport,
+    GuestStarInvite,
     GuestStarSession,
+    GuestStarSettings,
     HypeTrainEvent,
     Poll,
     Prediction,
+    Product,
     Redemption,
     Reward,
+    ShieldModeStatus,
     Stream,
+    StreamMarker,
     StreamSchedule,
+    Subscription,
     Tag,
     Team,
+    Transport,
+    UnbanRequest,
     User,
     Video,
 )
@@ -239,7 +266,7 @@ class Client:
 
         return user_token
 
-    def start_commercial(self, broadcaster_id: int, length: int) -> dict:
+    def start_commercial(self, broadcaster_id: int, length: int) -> Commercial:
         """
         Starts a commercial on a specified channel
 
@@ -252,14 +279,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Commercial
         """
 
         return ads.start_commercial(
             self.__user_token, self.client_id, broadcaster_id, length
         )
 
-    def get_ad_schedule(self, broadcaster_id: str) -> dict:
+    def get_ad_schedule(self, broadcaster_id: str) -> AdSchedule:
         """
         Returns ad schedule related information, including snooze, when the last ad was run, when the next ad is scheduled, and if the channel is currently in pre-roll free time
 
@@ -270,12 +297,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AdSchedule
         """
 
         return ads.get_ad_schedule(self.__user_token, self.client_id, broadcaster_id)
 
-    def snooze_next_ad(self, broadcaster_id: str) -> dict:
+    def snooze_next_ad(self, broadcaster_id: str) -> AdSchedule:
         """
         If available, pushes back the timestamp of the upcoming automatic mid-roll ad by 5 minutes
 
@@ -286,99 +313,99 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AdSchedule
         """
 
         return ads.snooze_next_ad(self.__user_token, self.client_id, broadcaster_id)
 
     def get_extension_analytics(
         self,
-        ended_at: str = "",
-        extension_id: str = "",
+        extension_id: str | None = None,
+        report_type: str | None = None,
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        started_at: str = "",
-        report_type: str = "",
-    ) -> list[dict]:
+    ) -> list[ExtensionAnalyticsReport]:
         """
         Gets a URL that Extension developers can use to download analytics reports for their Extensions
         The URL is valid for 5 minutes
 
         Args:
-            ended_at (str): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
-                If this is provided, started_at also must be specified
-            extension_id (str): Client ID value assigned to the extension when it is created
-            first (int): Maximum number of objects to return
-                Default: 20
-            started_at (str): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+            extension_id (str | None): Client ID value assigned to the extension when it is created
+            report_type (str | None): Type of analytics report that is returned
+                Valid values: "overview_v2"
+            started_at (datetime | None): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                 This must be on or after January 31, 2018
                 If this is provided, ended_at also must be specified
-            report_type (str): Type of analytics report that is returned
-                Valid values: "overview_v2"
+            ended_at (datetime | None): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                If this is provided, started_at also must be specified
+            first (int): Maximum number of objects to return
+                Default: 20
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ExtensionAnalyticsReport]
         """
 
         return analytics.get_extension_analytics(
             self.__user_token,
             self.client_id,
-            ended_at,
             extension_id,
-            first,
-            started_at,
             report_type,
+            started_at,
+            ended_at,
+            first,
         )
 
     def get_game_analytics(
         self,
-        ended_at: str = "",
+        game_id: str | None = None,
+        report_type: str | None = None,
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        game_id: str = "",
-        started_at: str = "",
-        report_type: str = "",
-    ) -> list[dict]:
+    ) -> list[GameAnalyticsReport]:
         """
         Gets a URL that game developers can use to download analytics reports for their games
         The URL is valid for 5 minutes
 
         Args:
-            ended_at (str): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+            game_id (str | None): Game ID
+            report_type (str | None): Type of analytics report that is returned
+                Valid values: "overview_v2"
+            started_at (datetime | None): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
+                If this is provided, ended_at also must be specified
+            ended_at (datetime | None): Ending date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
                 If this is provided, started_at also must be specified
             first (int): Maximum number of objects to return
                 Default: 20
-            game_id (str): Game ID
-            started_at (str): Starting date/time for returned reports, in RFC3339 format with the hours, minutes, and seconds zeroed out and the UTC timezone: YYYY-MM-DDT00:00:00Z
-                If this is provided, ended_at also must be specified
-            report_type (str): Type of analytics report that is returned
-                Valid values: "overview_v2"
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[GameAnalyticsReport]
         """
 
         return analytics.get_game_analytics(
             self.__user_token,
             self.client_id,
+            game_id,
+            report_type,
+            started_at,
             ended_at,
             first,
-            game_id,
-            started_at,
-            report_type,
         )
 
     def get_bits_leaderboard(
         self,
         count: int = 10,
         period: str = "all",
-        started_at: str = "",
-        user_id: str = "",
-    ) -> list[dict]:
+        started_at: datetime | None = None,
+        user_id: str | None = None,
+    ) -> list[BitsLeaderboardLeader]:
         """
         Gets a ranked list of Bits leaderboard information for a broadcaster
 
@@ -390,36 +417,36 @@ class Client:
                 This parameter interacts with started_at
                 Default: "all"
                 Valid values: "day", "week", "month", "year", "all"
-            started_at (str): Timestamp for the period over which the returned data is aggregated
+            started_at (datetime | None): Timestamp for the period over which the returned data is aggregated
                 Must be in RFC 3339 format
                 This value is ignored if period is "all"
-            user_id (str): ID of the user whose results are returned
+            user_id (str | None): ID of the user whose results are returned
                 As long as count is greater than 1, the returned data includes additional users, with Bits amounts above and below the user specified
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BitsLeaderboardLeader]
         """
 
         return bits.get_bits_leaderboard(
             self.__user_token, self.client_id, count, period, started_at, user_id
         )
 
-    def get_cheermotes(self, broadcaster_id: str = "") -> list[dict]:
+    def get_cheermotes(self, broadcaster_id: str | None = None) -> list[Cheermote]:
         """
         Retrieves the list of available Cheermotes
         Cheermotes returned are available throughout Twitch, in all Bits-enabled channels
 
         Args:
-            broadcaster_id (str): ID for the broadcaster who might own specialized Cheermotes
+            broadcaster_id (str | None): ID for the broadcaster who might own specialized Cheermotes
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Cheermote]
         """
 
         return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
@@ -429,7 +456,7 @@ class Client:
         extension_id: str,
         transaction_ids: list[str] | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[ExtensionTransaction]:
         """
         Allows extension back-end servers to fetch a list of transactions that have occurred for their extension across all of Twitch
         A transaction is a record of a user exchanging Bits for an in-Extension digital good
@@ -445,29 +472,29 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ExtensionTransaction]
         """
 
         return extensions.get_extension_transactions(
             self.__app_token, self.client_id, extension_id, transaction_ids, first
         )
 
-    def get_channel(self, broadcaster_id: str | list[str]) -> Channel | list[Channel]:
+    def get_channel_information(self, broadcaster_id: list[str]) -> list[Channel]:
         """
         Gets one or more channels
 
         Args:
-            broadcaster_id (str | list[str]): The ID of the broadcaster whose channel you want to get
+            broadcaster_id (list[str]): The ID of the broadcaster whose channel you want to get
                 Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            Channel | list[Channel]
+            list[Channel]
         """
 
-        return channels.get_channels(
+        return channels.get_channel_information(
             self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
@@ -481,7 +508,7 @@ class Client:
         title: str | None = None,
         delay: int | None = None,
         channel_tags: list[str] | None = None,
-        cc_labels: list[dict] | None = None,
+        cc_labels: list[ContentClassificationLabel] | None = None,
         is_branded_content: bool | None = None,
     ) -> None:
         """
@@ -500,7 +527,7 @@ class Client:
                 Maximum: 900 seconds
             channel_tags (list[str] | None): A list of channel-defined tags to apply to the channel
                 Maximum: 10
-            cc_labels (list[dict] | None): List of labels that should be set as the Channel’s CCLs
+            cc_labels (list[ContentClassificationLabel] | None): List of labels that should be set as the Channel’s CCLs
             is_branded_content (bool | None): Boolean flag indicating if the channel has branded content
 
         Raises:
@@ -520,7 +547,7 @@ class Client:
             is_branded_content,
         )
 
-    def get_channel_editors(self, broadcaster_id: str) -> list[dict]:
+    def get_channel_editors(self, broadcaster_id: str) -> list[User]:
         """
         Gets a list of users who have editor permissions for a specific channel
 
@@ -531,7 +558,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return channels.get_channel_editors(
@@ -539,8 +566,8 @@ class Client:
         )
 
     def get_followed_channels(
-        self, user_id: str, broadcaster_id: str = "", first: int = 20
-    ) -> list[dict]:
+        self, user_id: str, broadcaster_id: str | None = None, first: int = 20
+    ) -> list[tuple[Channel, datetime]]:
         """
         Gets a list of broadcasters that the specified user follows
 
@@ -548,7 +575,7 @@ class Client:
             user_id (str): A user’s ID
                 Returns the list of broadcasters that this user follows
                 This ID must match the user ID in the user OAuth token
-            broadcaster_id (str): A broadcaster’s ID
+            broadcaster_id (str | None): A broadcaster’s ID
                 Use this parameter to see whether the user follows this broadcaster
             first (int): The maximum number of items to return
                 Default: 20
@@ -558,7 +585,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[Channel, datetime]]
         """
 
         return channels.get_followed_channels(
@@ -566,8 +593,8 @@ class Client:
         )
 
     def get_channel_followers(
-        self, broadcaster_id: str, user_id: str = "", first: int = 20
-    ) -> list[dict]:
+        self, broadcaster_id: str, user_id: str | None = None, first: int = 20
+    ) -> list[tuple[Channel, datetime]]:
         """
         The function `get_channel_followers` retrieves a list of channels that are following a specific
         broadcaster on Twitch.
@@ -575,7 +602,7 @@ class Client:
         Args:
             broadcaster_id (str): The broadcaster’s ID
                 Returns the list of users that follow this broadcaster
-            user_id (str): A user’s ID
+            user_id (str | None): A user’s ID
                 Use this parameter to see whether the user follows this broadcaster
             first (int): The maximum number of items to return
                 Default: 20
@@ -585,7 +612,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[Channel, datetime]]
         """
 
         return channels.get_channel_followers(
@@ -597,9 +624,9 @@ class Client:
         broadcaster_id: str,
         title: str,
         cost: int,
-        prompt: str = "",
+        prompt: str | None = None,
         is_enabled: bool = True,
-        background_color: str = "",
+        background_color: str | None = None,
         is_user_input_required: bool = False,
         is_max_per_stream_enabled: bool = False,
         max_per_stream: int | None = None,
@@ -616,10 +643,10 @@ class Client:
             broadcaster_id (str): ID of the channel creating a reward
             title (str): The title of the reward
             cost (int): The cost of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
+            prompt (str | None): The prompt for the viewer when they are redeeming the reward
             is_enabled (bool): Is the reward currently enabled, if false the reward won’t show up to viewers
                 Default: true
-            background_color (str): Custom background color for the reward
+            background_color (str | None): Custom background color for the reward
                 Format: Hex with # prefix
             is_user_input_required (bool): Does the user need to enter information when redeeming the reward
                 Default: false
@@ -719,7 +746,7 @@ class Client:
         broadcaster_id: str,
         reward_id: str,
         redemption_ids: list[str] | None = None,
-        status: str = "",
+        status: str | None = None,
         sort: str = "OLDEST",
         first: int = 20,
     ) -> list[Redemption]:
@@ -732,7 +759,7 @@ class Client:
             reward_id (str): When ID is not provided, this parameter returns Custom Reward Redemption objects for redemptions of the Custom Reward with ID reward_id
             redemption_ids (list[str] | None): When id is not provided, this param filters the results and only returns Custom Reward Redemption objects for the redemptions with matching ID
                 Maximum: 50
-            status (str): This param filters the Custom Reward Redemption objects for redemptions with the matching status
+            status (str | None): This param filters the Custom Reward Redemption objects for redemptions with the matching status
                 Can be one of UNFULFILLED, FULFILLED or CANCELED
             sort (str): Sort order of redemptions returned when getting the Custom Reward Redemption objects for a reward
                 One of: OLDEST, NEWEST
@@ -762,10 +789,10 @@ class Client:
         self,
         broadcaster_id: str,
         reward_id: str,
-        title: str = "",
-        prompt: str = "",
+        title: str | None = None,
+        prompt: str | None = None,
         cost: int | None = None,
-        background_color: str = "",
+        background_color: str | None = None,
         is_enabled: bool | None = None,
         is_user_input_required: bool | None = None,
         is_max_per_stream_enabled: bool | None = None,
@@ -785,8 +812,8 @@ class Client:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward to update
                 Must match a Custom Reward on the channel of the broadcaster_id
-            title (str): The title of the reward
-            prompt (str): The prompt for the viewer when they are redeeming the reward
+            title (str | None): The title of the reward
+            prompt (str | None): The prompt for the viewer when they are redeeming the reward
             cost (int | None): The cost of the reward
             background_color (str | None): Custom background color for the reward as a hexadecimal value
             is_enabled (bool | None): Is the reward currently enabled, if false the reward won’t show up to viewers
@@ -839,7 +866,7 @@ class Client:
         redemption_id: list[str],
         broadcaster_id: str,
         reward_id: str,
-        status: str = "",
+        status: str | None = None,
     ) -> list[Redemption]:
         """
         Updates the status of Custom Reward Redemption objects on a channel that are in the UNFULFILLED status
@@ -851,7 +878,7 @@ class Client:
                 Maximum: 50
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the user OAuth token
             reward_id (str): ID of the Custom Reward the redemptions to be updated are for
-            status (str): The new status to set redemptions to
+            status (str | None): The new status to set redemptions to
                 Can be either FULFILLED or CANCELED
                 Updating to CANCELED will refund the user their Channel Points
 
@@ -916,7 +943,7 @@ class Client:
 
     def get_chatters(
         self, broadcaster_id: str, moderator_id: str, first: int = 100
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Gets the list of users that are connected to the broadcaster’s chat session
 
@@ -932,7 +959,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return chats.get_chatters(
@@ -1022,13 +1049,15 @@ class Client:
 
         return chats.get_global_chat_badges(self.__app_token, self.client_id)
 
-    def get_chat_settings(self, broadcaster_id: str, moderator_id: str = "") -> dict:
+    def get_chat_settings(
+        self, broadcaster_id: str, moderator_id: str | None = None
+    ) -> ChatSettings:
         """
         Gets the broadcaster’s chat settings
 
         Args:
             broadcaster_id (str): The ID of the broadcaster whose chat settings you want to get
-            moderator_id (str): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings
+            moderator_id (str | None): Required only to access the non_moderator_chat_delay or non_moderator_chat_delay_duration settings
                 The ID of a user that has permission to moderate the broadcaster’s chat room
                 This ID must match the user ID associated with the user OAuth token
                 If the broadcaster wants to get their own settings (instead of having the moderator do it), set this parameter to the broadcaster’s ID, too
@@ -1037,14 +1066,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ChatSettings
         """
 
         return chats.get_chat_settings(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
-    def get_user_emotes(self, user_id: str) -> list[dict]:
+    def get_user_emotes(self, user_id: str) -> list[Emote]:
         """
         Retrieves emotes available to the user across all channels
 
@@ -1056,7 +1085,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Emote]
         """
 
         return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
@@ -1067,14 +1096,14 @@ class Client:
         moderator_id: str,
         emote_mode: bool | None = None,
         follower_mode: bool | None = None,
-        follower_mode_duration: int = 0,
+        follower_mode_duration: int | None = None,
         non_moderator_chat_delay: bool | None = None,
-        non_moderator_chat_delay_duration: int = 0,
+        non_moderator_chat_delay_duration: int | None = None,
         slow_mode: bool | None = None,
-        slow_mode_wait_time: int = 30,
+        slow_mode_wait_time: int | None = None,
         subscriber_mode: bool | None = None,
         unique_chat_mode: bool | None = None,
-    ) -> dict:
+    ) -> ChatSettings:
         """
         Updates the broadcaster’s chat settings
 
@@ -1090,19 +1119,19 @@ class Client:
             follower_mode (bool | None): A Boolean value that determines whether the broadcaster restricts the chat room to followers only, based on how long they’ve followed
                 Set to true, if the broadcaster restricts the chat room to followers only; otherwise, false
                 Default is false
-            follower_mode_duration (int): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room
+            follower_mode_duration (int | None): The length of time, in minutes, that the followers must have followed the broadcaster to participate in the chat room
                 You may specify a value in the range: 0 (no restriction) through 129600 (3 months)
                 The default is 0
             non_moderator_chat_delay (bool | None): A Boolean value that determines whether the broadcaster adds a short delay before chat messages appear in the chat room
                 This gives chat moderators and bots a chance to remove them before viewers can see the message
                 Set to true, if the broadcaster applies a delay; otherwise, false
                 Default is false
-            non_moderator_chat_delay_duration (int): The amount of time, in seconds, that messages are delayed from appearing in chat
+            non_moderator_chat_delay_duration (int | None): The amount of time, in seconds, that messages are delayed from appearing in chat
                 Possible values are: 2, 4, 6
             slow_mode (bool | None): A Boolean value that determines whether the broadcaster limits how often users in the chat room are allowed to send messages
                 Set to true, if the broadcaster applies a wait period messages; otherwise, false
                 Default is false
-            slow_mode_wait_time (int): The amount of time, in seconds, that users need to wait between sending messages
+            slow_mode_wait_time (int | None): The amount of time, in seconds, that users need to wait between sending messages
                 You may specify a value in the range: 3 (3 second delay) through 120 (2 minute delay)
                 The default is 30 seconds
             subscriber_mode (bool | None): A Boolean value that determines whether only users that subscribe to the broadcaster’s channel can talk in the chat room
@@ -1116,7 +1145,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ChatSettings
         """
 
         return chats.update_chat_settings(
@@ -1136,7 +1165,11 @@ class Client:
         )
 
     def send_chat_announcement(
-        self, broadcaster_id: str, moderator_id: str, message: str, color: str = ""
+        self,
+        broadcaster_id: str,
+        moderator_id: str,
+        message: str,
+        color: str | None = None,
     ) -> None:
         """
         Sends an announcement to the broadcaster’s chat room
@@ -1147,7 +1180,7 @@ class Client:
                 This ID must match the user ID in the user access token
             message (str): The announcement to make in the broadcaster’s chat
                 Announcements are limited to a maximum of 500 characters
-            color (str): Announcements are limited to a maximum of 500 characters
+            color (str | None): Announcements are limited to a maximum of 500 characters
                 Possible case-sensitive values are: blue, green, orange, purple, primary (default)
                 If color is set to primary or is not set, the channel’s accent color is used to highlight the announcement
 
@@ -1193,7 +1226,7 @@ class Client:
         broadcaster_id: str,
         sender_id: str,
         message: str,
-        reply_parent_message_id: str = "",
+        reply_parent_message_id: str | None = None,
     ) -> dict:
         """
         Sends a message to the broadcaster’s chat room
@@ -1204,7 +1237,7 @@ class Client:
                 This ID must match the user ID in the user access token
             message (str): The message to send
                 The message is limited to a maximum of 500 characters
-            reply_parent_message_id (str): The ID of the chat message being replied to
+            reply_parent_message_id (str | None): The ID of the chat message being replied to
 
         Raises:
             errors.ClientError
@@ -1222,19 +1255,19 @@ class Client:
             reply_parent_message_id,
         )
 
-    def get_user_chat_color(self, user_id: str | list[str]) -> dict | list[dict]:
+    def get_user_chat_color(self, user_id: list[str]) -> list[tuple[User, str]]:
         """
         Gets the color used for the user’s name in chat
 
         Args:
-            user_id (str | list[str]): The ID of the user whose username color you want to get
+            user_id (list[str]): The ID of the user whose username color you want to get
                 Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            dict | list[dict]
+            list[tuple[User, str]]
         """
 
         return chats.get_user_chat_color(self.__app_token, self.client_id, user_id)
@@ -1256,7 +1289,9 @@ class Client:
 
         chats.update_user_chat_color(self.__user_token, self.client_id, user_id, color)
 
-    def create_clip(self, broadcaster_id: str, has_delay: bool = False) -> dict:
+    def create_clip(
+        self, broadcaster_id: str, has_delay: bool = False
+    ) -> tuple[str, str]:
         """
         This returns both an ID and an edit URL for a new clip
 
@@ -1269,7 +1304,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            tuple[str, str]
         """
 
         return clips.create_clip(
@@ -1278,27 +1313,27 @@ class Client:
 
     def get_clips(
         self,
-        broadcaster_id: str = "",
-        game_id: str = "",
+        broadcaster_id: str | None = None,
+        game_id: str | None = None,
         clip_ids: list[str] | None = None,
-        started_at: str = "",
-        ended_at: str = "",
+        started_at: datetime | None = None,
+        ended_at: datetime | None = None,
         first: int = 20,
-        is_featured: bool = False,
+        is_featured: bool | None = None,
     ) -> list[Clip]:
         """
         Gets one or more video clips that were captured from streams
         The id, game_id, and broadcaster_id query parameters are mutually exclusive
 
         Args:
-            broadcaster_id (str): An ID that identifies the broadcaster whose video clips you want to get
-            game_id (str): An ID that identifies the game whose clips you want to get
+            broadcaster_id (str | None): An ID that identifies the broadcaster whose video clips you want to get
+            game_id (str | None): An ID that identifies the game whose clips you want to get
             clip_ids (list[str] | None): An ID that identifies the clip to get
-            started_at (str): The start date used to filter clips
-            ended_at (str): The end date used to filter clips
+            started_at (str | None): The start date used to filter clips
+            ended_at (str | None): The end date used to filter clips
             first (int): The maximum number of clips to return
-                Minimum: 1
-            is_featured (bool): A Boolean value that determines whether the response includes featured clips
+                Default: 20
+            is_featured (bool | None): A Boolean value that determines whether the response includes featured clips
 
         Raises:
             errors.ClientError
@@ -1319,7 +1354,7 @@ class Client:
             is_featured,
         )
 
-    def get_conduits(self) -> list[dict]:
+    def get_conduits(self) -> list[Conduit]:
         """
         Gets the conduits for a client ID
 
@@ -1327,12 +1362,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Conduit]
         """
 
         return eventsubs.get_conduits(self.__app_token, self.client_id)
 
-    def create_conduits(self, shard_count: int) -> dict:
+    def create_conduits(self, shard_count: int) -> Conduit:
         """
         Creates a new conduit
 
@@ -1343,12 +1378,12 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Conduit
         """
 
         return eventsubs.create_conduits(self.__app_token, self.client_id, shard_count)
 
-    def update_conduits(self, conduit_id: str, shard_count: int) -> dict:
+    def update_conduits(self, conduit_id: str, shard_count: int) -> Conduit:
         """
         Updates a conduit’s shard count
         To delete shards, update the count to a lower number, and the shards above the count will be deleted
@@ -1361,7 +1396,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Conduit
         """
 
         return eventsubs.update_conduits(
@@ -1381,19 +1416,21 @@ class Client:
 
         eventsubs.delete_conduit(self.__app_token, self.client_id, conduit_id)
 
-    def get_conduit_shards(self, conduit_id: str, status: str = "") -> list[dict]:
+    def get_conduit_shards(
+        self, conduit_id: str, status: str | None = None
+    ) -> list[ConduitShard]:
         """
         Gets a lists of all shards for a conduit
 
         Args:
             conduit_id (str): Conduit ID
-            status (str): Status to filter by
+            status (str | None): Status to filter by
 
         Raise:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ConduitShard]
         """
 
         return eventsubs.get_conduit_shards(
@@ -1401,29 +1438,31 @@ class Client:
         )
 
     def update_conduit_shards(
-        self, conduit_id: str, shards: list[dict], session_id: str = ""
-    ) -> list[dict]:
+        self, conduit_id: str, shards: list[ConduitShard], session_id: str | None = None
+    ) -> list[ConduitShard]:
         """
         Updates shard(s) for a conduit
 
         Args:
             conduit_id (str): Conduit ID
-            shards (list[dict]): List of shards to update
-            session_id (str): An ID that identifies the WebSocket to send notifications to
+            shards (list[ConduitShard]): List of shards to update
+            session_id (str | None): An ID that identifies the WebSocket to send notifications to
                 Specify this field only if method is set to websocket
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ConduitShard]
         """
 
         return eventsubs.update_conduit_shards(
             self.__app_token, self.client_id, conduit_id, shards, session_id
         )
 
-    def get_content_classification_labels(self, locale: str = "en-US") -> list[dict]:
+    def get_content_classification_labels(
+        self, locale: str = "en-US"
+    ) -> list[ContentClassificationLabel]:
         """
         Gets information about Twitch content classification labels
 
@@ -1444,20 +1483,20 @@ class Client:
 
     def get_drops_entitlements(
         self,
-        entitlement_id: str = "",
-        user_id: str = "",
-        game_id: str = "",
-        fulfillment_status: str = "",
+        entitlement_id: list[str] | None = None,
+        user_id: str | None = None,
+        game_id: str | None = None,
+        fulfillment_status: str | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[DropEntitlement]:
         """
         Gets a list of entitlements for a given organization that have been granted to a game, user, or both
 
         Args:
-            entitlement_id (str): ID of the entitlement
-            user_id (str): A Twitch User ID
-            game_id (str): A Twitch Game ID
-            fulfillment_status (str): An optional fulfillment status used to filter entitlements
+            entitlement_id (list[str] | None): ID of the entitlement
+            user_id (str | None): A Twitch User ID
+            game_id (str | None): A Twitch Game ID
+            fulfillment_status (str | None): An optional fulfillment status used to filter entitlements
                 Valid values are "CLAIMED" or "FULFILLED"
             first (int): Maximum number of entitlements to return
                 Default: 20
@@ -1466,7 +1505,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[DropEntitlement]
         """
 
         return drops.get_drops_entitlements(
@@ -1480,22 +1519,24 @@ class Client:
         )
 
     def update_drops_entitlements(
-        self, entitlement_ids: list[str] | None = None, fulfillment_status: str = ""
-    ) -> list[dict]:
+        self,
+        entitlement_ids: list[str] | None = None,
+        fulfillment_status: str | None = None,
+    ) -> list[tuple[str, list[str]]]:
         """
         Updates the fulfillment status on a set of Drops entitlements, specified by their entitlement IDs
 
         Args:
             entitlement_ids (list[str] | None): An array of unique identifiers of the entitlements to update
                 Maximum: 100
-            fulfillment_status (str): A fulfillment status
+            fulfillment_status (str | None): A fulfillment status
                 Valid values are "CLAIMED" or "FULFILLED"
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[str]]]
         """
 
         return drops.update_drops_entitlements(
@@ -1507,7 +1548,7 @@ class Client:
 
     def get_extension_configuration_segment(
         self, broadcaster_id: str, extension_id: str, segment: str
-    ) -> dict:
+    ) -> ExtensionConfigurationSegment:
         """
         Gets the specified configuration segment from the specified extension
         You can retrieve each segment a maximum of 20 times per minute
@@ -1524,7 +1565,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ExtensionConfigurationSegment
         """
 
         return extensions.get_extension_configuration_segment(
@@ -1535,9 +1576,9 @@ class Client:
         self,
         extension_id: str,
         segment: str,
-        broadcaster_id: str = "",
-        content: str = "",
-        version: str = "",
+        broadcaster_id: str | None = None,
+        content: str | None = None,
+        version: str | None = None,
     ) -> None:
         """
         Sets a single configuration segment of any type
@@ -1548,10 +1589,10 @@ class Client:
             extension_id (str): ID for the Extension which the configuration is for
             segment (str): Configuration type
                 Valid values are "global", "developer", or "broadcaster"
-            broadcaster_id (str): User ID of the broadcaster
+            broadcaster_id (str | None): User ID of the broadcaster
                 Required if the segment type is "developer" or "broadcaster"
-            content (str): Configuration in a string-encoded format
-            version (str): Configuration version with the segment type
+            content (str | None): Configuration in a string-encoded format
+            version (str | None): Configuration version with the segment type
 
         Raises:
             errors.ClientError
@@ -1629,7 +1670,7 @@ class Client:
 
     def get_extension_live_channels(
         self, extension_id: str, first: int = 20
-    ) -> list[dict]:
+    ) -> list[Channel]:
         """
         Returns one page of live channels that have installed or activated a specific Extension, identified by a client ID value assigned to the Extension when it is created
         A channel that recently went live may take a few minutes to appear in this list, and a channel may continue to appear on this list for a few minutes after it stops broadcasting
@@ -1643,14 +1684,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Channel]
         """
 
         return extensions.get_extension_live_channels(
             self.__app_token, self.client_id, extension_id, first
         )
 
-    def get_extension_secrets(self) -> list[dict]:
+    def get_extension_secrets(self) -> list[tuple[str, list[ExtensionSecret]]]:
         """
         Retrieves a specified Extension’s secret data consisting of a version and an array of secret objects
         Each secret object contains a base64-encoded secret, a UTC timestamp when the secret becomes active, and a timestamp when the secret expires
@@ -1659,12 +1700,14 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[ExtensionSecret]]]
         """
 
         return extensions.get_extension_secrets(self.__jwt_token, self.client_id)
 
-    def create_extension_secret(self, delay: int = 300) -> list[dict]:
+    def create_extension_secret(
+        self, delay: int = 300
+    ) -> list[tuple[str, list[ExtensionSecret]]]:
         """
         Creates a JWT signing secret for a specific Extension
         Also rotates any current secrets out of service, with enough time for instances of the Extension to gracefully switch over to the new secret
@@ -1678,7 +1721,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, list[ExtensionSecret]]]
         """
 
         return extensions.create_extension_secret(
@@ -1715,14 +1758,14 @@ class Client:
         )
 
     def get_extensions(
-        self, extension_id: str, extension_version: str = ""
+        self, extension_id: str, extension_version: str | None = None
     ) -> Extension:
         """
         Gets information about your Extensions; either the current version or a specified version
 
         Args:
             extension_id (str): ID of the Extension
-            extension_version (str): The specific version of the Extension to return
+            extension_version (str | None): The specific version of the Extension to return
                 If not provided, the current version is returned
 
         Raises:
@@ -1737,14 +1780,14 @@ class Client:
         )
 
     def get_released_extensions(
-        self, extension_id: str, extension_version: str = ""
+        self, extension_id: str, extension_version: str | None = None
     ) -> Extension:
         """
         Gets information about a released Extension; either the current version or a specified version
 
         Args:
             extension_id (str): ID of the Extension
-            extension_version (str): The specific version of the Extension to return
+            extension_version (str | None): The specific version of the Extension to return
                 If not provided, the current version is returned
 
         Raises:
@@ -1760,7 +1803,7 @@ class Client:
 
     def get_extension_bits_products(
         self, extension_client_id: str, should_include_all: bool = False
-    ) -> list[dict]:
+    ) -> list[Product]:
         """
         Gets a list of Bits products that belongs to an Extension
 
@@ -1773,7 +1816,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Product]
         """
 
         return extensions.get_extension_bits_products(
@@ -1786,10 +1829,10 @@ class Client:
         sku: str,
         cost: dict,
         display_name: str,
-        in_development: bool = False,
-        expiration: str = "",
-        is_broadcast: bool = False,
-    ) -> list[dict]:
+        in_development: bool | None = None,
+        expiration: str | None = None,
+        is_broadcast: bool | None = None,
+    ) -> list[Product]:
         """
         Add or update a Bits products that belongs to an Extension
 
@@ -1802,19 +1845,19 @@ class Client:
             cost (dict): Object containing cost information
             display_name (str): Name of the product to be displayed in the Extension
                 Maximum: 255 characters
-            in_development (bool): Set to true if the product is in development and not yet released for public use
+            in_development (bool | None): Set to true if the product is in development and not yet released for public use
                 Default: false
-            expiration (str): Expiration time for the product in RFC3339 format
+            expiration (str | None): Expiration time for the product in RFC3339 format
                 If not provided, the Bits product will not have an expiration date
                 Setting an expiration in the past will disable the product
-            is_broadcast (bool): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback
+            is_broadcast (bool | None): Indicates if Bits product purchase events are broadcast to all instances of an Extension on a channel via the “onTransactionComplete” helper callback
                 Default: false
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Product]
         """
 
         return extensions.update_extension_bits_product(
@@ -1829,7 +1872,11 @@ class Client:
         )
 
     def create_eventsub_subscription(
-        self, subscription_type: str, version: str, condition: dict, transport: dict
+        self,
+        subscription_type: str,
+        version: str,
+        condition: dict,
+        transport: Transport,
     ) -> EventSubSubscription:
         """
         Creates an EventSub subscription
@@ -1840,7 +1887,7 @@ class Client:
             version (str): The version of the subscription type that is being created
                 Each subscription type has independent versioning
             condition (dict): Custom parameters for the subscription
-            transport (dict): Notification delivery specific configuration including a method string
+            transport (Transport): Notification delivery specific configuration including a method string
                 Valid transport methods include: webhook
                 In addition to the method string, a webhook transport must include the callback and secret information
 
@@ -1876,17 +1923,20 @@ class Client:
         )
 
     def get_eventsub_subscriptions(
-        self, status: str = "", subscription_type: str = "", user_id: str = ""
+        self,
+        status: str | None = None,
+        subscription_type: str | None = None,
+        user_id: str | None = None,
     ) -> list[EventSubSubscription]:
         """
         Get a list of your EventSub subscriptions
         Only include one filter query parameter
 
         Args:
-            status (str): Filter subscriptions by its status
+            status (str | None): Filter subscriptions by its status
                 Valid values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, authorization_revoked, moderator_removed, user_removed, chat_user_banned, version_removed, beta_maintenance, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_connection_unused, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect
-            subscription_type (str): Filters subscriptions by subscription type name
-            user_id (str): Filter subscriptions by user ID
+            subscription_type (str | None): Filters subscriptions by subscription type name
+            user_id (str | None): Filter subscriptions by user ID
 
         Raises:
             errors.ClientError
@@ -1942,7 +1992,7 @@ class Client:
 
         return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
 
-    def get_creator_goals(self, broadcaster_id: str) -> list[dict]:
+    def get_creator_goals(self, broadcaster_id: str) -> list[CreatorGoal]:
         """
         Gets the broadcaster’s list of active goals
         Use this to get the current progress of each goal
@@ -1954,7 +2004,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[CreatorGoal]
         """
 
         return goals.get_creator_goals(
@@ -1963,7 +2013,7 @@ class Client:
 
     def get_channel_guest_star_settings(
         self, broadcaster_id: str, moderator_id: str
-    ) -> dict:
+    ) -> GuestStarSettings:
         """
         Gets the channel settings for configuration of the Guest Star feature for a particular host
 
@@ -1976,7 +2026,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            GuestStarSettings
         """
 
         return guest_stars.get_channel_guest_star_settings(
@@ -1989,7 +2039,7 @@ class Client:
         is_moderator_send_live_enabled: bool | None = None,
         slot_count: int | None = None,
         is_browser_source_audio_enabled: bool | None = None,
-        group_layout: str = "",
+        group_layout: str | None = None,
         regenerate_browser_sources: bool | None = None,
     ) -> None:
         """
@@ -2001,7 +2051,7 @@ class Client:
             slot_count (int | None): Number of slots the Guest Star call interface will allow the host to add to a call.
                 Required to be between 1 and 6
             is_browser_source_audio_enabled (bool | None): Flag determining if Browser Sources subscribed to sessions on this channel should output audio
-            group_layout (str): This setting determines how the guests within a session should be laid out within the browser source
+            group_layout (str | None): This setting determines how the guests within a session should be laid out within the browser source
                 Possible values: TILED_LAYOUT, SCREENSHARE_LAYOUT, HORIZONTAL_LAYOUT, VERTICAL_LAYOUT
             regenerate_browser_sources (bool | None): Flag determining if Guest Star should regenerate the auth token associated with the channel’s browser sources
 
@@ -2085,7 +2135,7 @@ class Client:
 
     def get_guest_star_invites(
         self, broadcaster_id: str, moderator_id: str, session_id: str
-    ) -> list[dict]:
+    ) -> list[GuestStarInvite]:
         """
         Provides a list of pending invites to a Guest Star session, including the invitee’s ready status while joining the waiting room
 
@@ -2099,7 +2149,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[GuestStarInvite]
         """
 
         return guest_stars.get_guest_star_invites(
@@ -2331,25 +2381,26 @@ class Client:
         )
 
     def check_automod_status(
-        self, broadcaster_id: str, msg_id: str, msg_user: str
-    ) -> list[dict]:
+        self, broadcaster_id: str, data: list[tuple[str, str]]
+    ) -> list[tuple[str, bool]]:
         """
         Determines whether a string message meets the channel’s AutoMod requirements
 
         Args:
             broadcaster_id (str): Provided broadcaster_id must match the user_id in the auth token
-            msg_id (str): Developer-generated identifier for mapping messages to results
-            msg_user (str): Message text
+            data (list[tuple[str, str]]): The list of messages to check
+                Minimum: 1
+                Maximum: 100
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[tuple[str, bool]]
         """
 
         return moderation.check_automod_status(
-            self.__user_token, self.client_id, broadcaster_id, msg_id, msg_user
+            self.__user_token, self.client_id, broadcaster_id, data
         )
 
     def manage_held_automod_messages(
@@ -2373,7 +2424,9 @@ class Client:
             self.__user_token, self.client_id, user_id, msg_id, action
         )
 
-    def get_automod_settings(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_automod_settings(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> AutoModSettings:
         """
         Gets the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2387,7 +2440,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AutoModSettings
         """
 
         return moderation.get_automod_settings(
@@ -2407,7 +2460,7 @@ class Client:
         sex_based_terms: int | None = None,
         sexuality_sex_or_gender: int | None = None,
         swearing: int | None = None,
-    ) -> dict:
+    ) -> AutoModSettings:
         """
         Updates the broadcaster’s AutoMod settings, which are used to automatically block inappropriate or harassing messages from appearing in the broadcaster’s chat room
 
@@ -2430,7 +2483,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            AutoModSettings
         """
 
         return moderation.update_automod_settings(
@@ -2451,7 +2504,7 @@ class Client:
 
     def get_banned_users(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[BannedUser]:
         """
         Returns all banned and timed-out users in a channel
 
@@ -2466,7 +2519,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BannedUser]
         """
 
         return moderation.get_banned_users(
@@ -2540,9 +2593,9 @@ class Client:
         broadcaster_id: str,
         moderator_id: str,
         status: str,
-        user_id: str = "",
+        user_id: str | None = None,
         first: int = 20,
-    ) -> list[dict]:
+    ) -> list[UnbanRequest]:
         """
         Gets a list of unban requests for a broadcaster’s channel
 
@@ -2552,14 +2605,14 @@ class Client:
                 This ID must match the user ID in the user access token
             status (str): Filter by a status
                 Possible values: pending, approved, denied, acknowledged, canceled
-            user_id (str): The ID used to filter what unban requests are returned
+            user_id (str | None): The ID used to filter what unban requests are returned
             first (int): The maximum number of items to return per page in response
 
         Raises:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[UnbanRequest]
         """
 
         return moderation.get_unban_requests(
@@ -2579,7 +2632,7 @@ class Client:
         unban_request_id: str,
         status: str,
         resolution_text: str = "",
-    ) -> list[dict]:
+    ) -> UnbanRequest:
         """
         Resolves an unban request by approving or denying it.
 
@@ -2598,7 +2651,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            UnbanRequest
         """
 
         return moderation.resolve_unban_requests(
@@ -2613,7 +2666,7 @@ class Client:
 
     def get_blocked_terms(
         self, broadcaster_id: str, moderator_id: str, first: int = 20
-    ) -> list[dict]:
+    ) -> list[BlockedTerm]:
         """
         Gets the broadcaster’s list of non-private, blocked words or phrases
         These are the terms that the broadcaster or moderator added manually, or that were denied by AutoMod
@@ -2631,7 +2684,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[BlockedTerm]
         """
 
         return moderation.get_blocked_terms(
@@ -2640,7 +2693,7 @@ class Client:
 
     def add_blocked_term(
         self, broadcaster_id: str, moderator_id: str, text: str
-    ) -> dict:
+    ) -> BlockedTerm:
         """
         Adds a word or phrase to the broadcaster’s list of blocked terms
         These are the terms that broadcasters don’t want used in their chat room
@@ -2659,7 +2712,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            BlockedTerm
         """
 
         return moderation.add_blocked_term(
@@ -2692,7 +2745,7 @@ class Client:
         )
 
     def delete_chat_messages(
-        self, broadcaster_id: str, moderator_id: str, message_id: str = ""
+        self, broadcaster_id: str, moderator_id: str, message_id: str | None = None
     ) -> None:
         """
         Removes a single chat message or all chat messages from the broadcaster’s chat room
@@ -2701,7 +2754,7 @@ class Client:
             broadcaster_id (str): The ID of the broadcaster that owns the chat room to remove messages from
             moderator_id (str): The ID of the broadcaster or a user that has permission to moderate the broadcaster’s chat room
                 This ID must match the user ID in the user access token
-            message_id (str, optional): The ID of the message to remove
+            message_id (str | None): The ID of the message to remove
                 If not specified, the request removes all messages in the broadcaster’s chat room
 
         Raises:
@@ -2712,7 +2765,7 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id, message_id
         )
 
-    def get_moderated_channels(self, user_id: str, first: int = 20) -> list[dict]:
+    def get_moderated_channels(self, user_id: str, first: int = 20) -> list[Channel]:
         """
         Gets a list of channels that the specified user has moderator privileges in
 
@@ -2726,7 +2779,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Channel]
         """
 
         return moderation.get_moderated_channels(
@@ -2735,7 +2788,7 @@ class Client:
 
     def get_moderators(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Returns all moderators in a channel
 
@@ -2750,7 +2803,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return moderation.get_moderators(
@@ -2793,7 +2846,7 @@ class Client:
 
     def get_vips(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[User]:
         """
         Gets a list of the broadcaster’s VIPs
 
@@ -2810,7 +2863,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return channels.get_vips(
@@ -2852,7 +2905,7 @@ class Client:
 
     def update_shield_mode_status(
         self, broadcaster_id: str, moderator_id: str, is_active: bool
-    ) -> dict:
+    ) -> ShieldModeStatus:
         """
         Activates or deactivates the broadcaster’s Shield Mode
 
@@ -2866,14 +2919,16 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ShieldModeStatus
         """
 
         return moderation.update_shield_mode_status(
             self.__user_token, self.client_id, broadcaster_id, moderator_id, is_active
         )
 
-    def get_shield_mode_status(self, broadcaster_id: str, moderator_id: str) -> dict:
+    def get_shield_mode_status(
+        self, broadcaster_id: str, moderator_id: str
+    ) -> ShieldModeStatus:
         """
         Gets the broadcaster’s Shield Mode activation status
 
@@ -2886,7 +2941,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            ShieldModeStatus
         """
 
         return moderation.get_shield_mode_status(
@@ -3089,7 +3144,9 @@ class Client:
             winning_outcome_id,
         )
 
-    def start_raid(self, from_broadcaster_id: str, to_broadcaster_id: str) -> dict:
+    def start_raid(
+        self, from_broadcaster_id: str, to_broadcaster_id: str
+    ) -> tuple[datetime, bool]:
         """
         Raid another channel by sending the broadcaster’s viewers to the targeted channel
 
@@ -3102,7 +3159,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            tuple[datetime, bool]
         """
 
         return raids.start_raid(
@@ -3127,8 +3184,7 @@ class Client:
         self,
         broadcaster_id: str,
         stream_segment_id: list[str] | None = None,
-        start_time: str = "",
-        utc_offset: str = "0",
+        start_time: datetime | None = None,
         first: int = 20,
     ) -> list[StreamSchedule]:
         """
@@ -3140,10 +3196,8 @@ class Client:
                 Provided broadcaster_id must match the user_id in the user OAuth token
             stream_segment_id (list[str] | None): The ID of the stream segment to return
                 Maximum: 100
-            start_time (str): A timestamp in RFC3339 format to start returning stream segments from
+            start_time (datetime | None): A timestamp in RFC3339 format to start returning stream segments from
                 If not specified, the current date and time is used
-            utc_offset (str): A timezone offset for the requester specified in minutes
-                If not specified, "0" is used for GMT
             first (int): Maximum number of stream segments to return
                 Default: 20
 
@@ -3160,7 +3214,6 @@ class Client:
             broadcaster_id,
             stream_segment_id,
             start_time,
-            utc_offset,
             first,
         )
 
@@ -3183,10 +3236,10 @@ class Client:
     def update_channel_stream_schedule(
         self,
         broadcaster_id: str,
-        is_vacation_enabled: bool = False,
-        vacation_start_time: str = "",
-        vacation_end_time: str = "",
-        timezone: str = "",
+        is_vacation_enabled: bool | None = None,
+        vacation_start_time: datetime | None = None,
+        vacation_end_time: datetime | None = None,
+        timezone: str | None = None,
     ) -> None:
         """
         Update the settings for a channel’s stream schedule
@@ -3195,13 +3248,13 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
-            is_vacation_enabled (bool): Indicates if Vacation Mode is enabled
+            is_vacation_enabled (bool | None): Indicates if Vacation Mode is enabled
                 Set to true to add a vacation or false to remove vacation from the channel streaming schedule
-            vacation_start_time (str): Start time for vacation specified in RFC3339 format
+            vacation_start_time (str | None): Start time for vacation specified in RFC3339 format
                 Required if is_vacation_enabled is set to true
-            vacation_end_time (str): End time for vacation specified in RFC3339 format
+            vacation_end_time (str | None): End time for vacation specified in RFC3339 format
                 Required if is_vacation_enabled is set to true
-            timezone (str): The timezone for when the vacation is being scheduled using the IANA time zone database format
+            timezone (str | None): The timezone for when the vacation is being scheduled using the IANA time zone database format
                 Required if is_vacation_enabled is set to true
 
         Raises:
@@ -3221,12 +3274,12 @@ class Client:
     def create_channel_stream_schedule_segment(
         self,
         broadcaster_id: str,
-        start_time: str,
+        start_time: datetime,
         timezone: str,
         is_recurring: bool,
         duration: int = 240,
-        category_id: str = "",
-        title: str = "",
+        category_id: str | None = None,
+        title: str | None = None,
     ) -> StreamSchedule:
         """
         Create a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
@@ -3234,13 +3287,13 @@ class Client:
         Args:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
-            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
+            start_time (datetime): Start time for the scheduled broadcast specified in RFC3339 format
             timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
             is_recurring (bool): Indicates if the scheduled broadcast is recurring weekly
             duration (int): Duration of the scheduled broadcast in minutes from the start_time
                 Default: 240
-            category_id (str): Game/Category ID for the scheduled broadcast
-            title (str): Title for the scheduled broadcast
+            category_id (str | None): Game/Category ID for the scheduled broadcast
+            title (str | None): Title for the scheduled broadcast
                 Maximum: 140 characters
 
         Raises:
@@ -3266,12 +3319,12 @@ class Client:
         self,
         broadcaster_id: str,
         stream_segment_id: str,
-        start_time: str = "",
-        duration: int = 240,
-        category_id: str = "",
-        title: str = "",
-        is_canceled: bool = False,
-        timezone: str = "",
+        start_time: datetime | None = None,
+        duration: int | None = None,
+        category_id: str | None = None,
+        title: str | None = None,
+        is_canceled: bool | None = None,
+        timezone: str | None = None,
     ) -> StreamSchedule:
         """
         Update a single scheduled broadcast or a recurring scheduled broadcast for a channel’s stream schedule
@@ -3280,14 +3333,13 @@ class Client:
             broadcaster_id (str): User ID of the broadcaster who owns the channel streaming schedule
                 Provided broadcaster_id must match the user_id in the user OAuth token
             stream_segment_id (str): The ID of the streaming segment to update
-            start_time (str): Start time for the scheduled broadcast specified in RFC3339 format
-            duration (int): Duration of the scheduled broadcast in minutes from the start_time
-                Default: 240
-            category_id (str): Game/Category ID for the scheduled broadcast
-            title (str): Title for the scheduled broadcast
+            start_time (datetime | None): Start time for the scheduled broadcast specified in RFC3339 format
+            duration (int | None): Duration of the scheduled broadcast in minutes from the start_time
+            category_id (str | None): Game/Category ID for the scheduled broadcast
+            title (str | None): Title for the scheduled broadcast
                 Maximum: 140 characters
-            is_canceled (bool): Indicated if the scheduled broadcast is canceled
-            timezone (str): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
+            is_canceled (bool | None): Indicated if the scheduled broadcast is canceled
+            timezone (str | None): The timezone of the application creating the scheduled broadcast using the IANA time zone database format
 
         Raises:
             errors.ClientError
@@ -3388,11 +3440,11 @@ class Client:
 
     def get_streams(
         self,
-        user_id: str | list[str] = "",
-        user_login: str | list[str] = "",
-        game_id: str | list[str] = "",
+        user_id: list[str] | None = None,
+        user_login: list[str] | None = None,
+        game_id: list[str] | None = None,
         stream_type: str = "all",
-        language: str | list[str] = "",
+        language: list[str] | None = None,
         first: int = 20,
     ) -> list[Stream]:
         """
@@ -3400,15 +3452,15 @@ class Client:
         The list is in descending order by the number of viewers watching the stream
 
         Args:
-            user_id (str | list[str]): A user ID used to filter the list of streams
+            user_id (list[str] | None): A user ID used to filter the list of streams
                 Maximum: 100
-            user_login (str | list[str]): A user login name used to filter the list of streams
+            user_login (list[str] | None): A user login name used to filter the list of streams
                 Maximum: 100
-            game_id (str | list[str]): A game (category) ID used to filter the list of streams
+            game_id (list[str] | None): A game (category) ID used to filter the list of streams
                 Maximum: 100
             stream_type (str): The type of stream to filter the list of streams by
                 Possible values: all, live
-            language (str | list[str]): A language code used to filter the list of streams
+            language (list[str] | None): A language code used to filter the list of streams
                 Maximum: 100
             first (int): The maximum number of items to return
                 Minimum: 1
@@ -3452,7 +3504,9 @@ class Client:
             self.__user_token, self.client_id, user_id, first
         )
 
-    def create_stream_marker(self, user_id: str, description: str = "") -> dict:
+    def create_stream_marker(
+        self, user_id: str, description: str | None = None
+    ) -> StreamMarker:
         """
         Creates a marker in the stream of a user specified by user ID
         A marker is an arbitrary point in a stream that the broadcaster wants to mark; e.g., to easily return to later
@@ -3460,14 +3514,14 @@ class Client:
 
         Args:
             user_id (str): ID of the broadcaster in whose live stream the marker is created
-            description (str): Description of or comments on the marker
+            description (str | None): Description of or comments on the marker
                 Max length is 140 characters
 
         Raises:
             errors.ClientError
 
         Returns:
-            dict
+            StreamMarker
         """
 
         return streams.create_stream_marker(
@@ -3475,7 +3529,7 @@ class Client:
         )
 
     def get_stream_markers(
-        self, user_id: str = "", video_id: str = "", first: int = 20
+        self, user_id: str | None = None, video_id: str | None = None, first: int = 20
     ) -> list[dict]:
         """
         Gets a list of markers for either a specified user’s most recent stream or a specified VOD/video (stream)
@@ -3484,8 +3538,8 @@ class Client:
         Only one of user_id and video_id must be specified
 
         Args:
-            user_id (str): ID of the broadcaster from whose stream markers are returned
-            video_id (str): ID of the VOD/video whose stream markers are returned
+            user_id (str | None): ID of the broadcaster from whose stream markers are returned
+            video_id (str | None): ID of the VOD/video whose stream markers are returned
             first (int): Number of values to be returned when getting videos by user or game ID
                 Default: 20
 
@@ -3502,7 +3556,7 @@ class Client:
 
     def get_broadcaster_subscriptions(
         self, broadcaster_id: str, user_id: list[str] | None = None, first: int = 20
-    ) -> list[dict]:
+    ) -> list[Subscription]:
         """
         Get all of a broadcaster’s subscriptions
 
@@ -3518,14 +3572,16 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Subscription]
         """
 
         return subscriptions.get_broadcaster_subscriptions(
             self.__user_token, self.client_id, broadcaster_id, user_id, first
         )
 
-    def check_user_subscription(self, broadcaster_id: str, user_id: str) -> dict:
+    def check_user_subscription(
+        self, broadcaster_id: str, user_id: str
+    ) -> Subscription:
         """
         Checks if a specific user (user_id) is subscribed to a specific channel (broadcaster_id)
 
@@ -3537,7 +3593,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            dict
+            Subscription
         """
 
         return subscriptions.check_user_subscription(
@@ -3580,7 +3636,7 @@ class Client:
 
         return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)
 
-    def get_channel_teams(self, broadcaster_id: str) -> list[dict]:
+    def get_channel_teams(self, broadcaster_id: str) -> list[Team]:
         """
         Retrieves a list of Twitch Teams of which the specified channel/broadcaster is a member
 
@@ -3591,19 +3647,19 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[Team]
         """
 
         return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
 
-    def get_teams(self, name: str = "", team_id: str = "") -> Team:
+    def get_teams(self, name: str | None = None, team_id: str | None = None) -> Team:
         """
         Gets information for a specific Twitch Team
         One of the two optional query parameters must be specified to return Team information
 
         Args:
-            name (str): Team name
-            team_id (str): Team ID
+            name (str | None): Team name
+            team_id (str | None): Team ID
 
         Raises:
             errors.ClientError
@@ -3637,13 +3693,13 @@ class Client:
 
         return users.get_users(self.__app_token, self.client_id, user_ids, login)
 
-    def update_user(self, description: str = "") -> User:
+    def update_user(self, description: str | None = None) -> User:
         """
         Updates the description of a user specified by the bearer token
         If the description parameter is not provided, no update will occur and the current user data is returned
 
         Args:
-            description (str): User’s account description
+            description (str | None): User’s account description
 
         Raises:
             errors.ClientError
@@ -3654,7 +3710,7 @@ class Client:
 
         return users.update_user(self.__user_token, self.client_id, description)
 
-    def get_user_block_list(self, broadcaster_id: str, first: int = 20) -> list[dict]:
+    def get_user_block_list(self, broadcaster_id: str, first: int = 20) -> list[User]:
         """
         Gets a specified user’s block list
 
@@ -3667,7 +3723,7 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[User]
         """
 
         return users.get_user_block_list(
@@ -3675,16 +3731,19 @@ class Client:
         )
 
     def block_user(
-        self, target_user_id: str, source_context: str = "", reason: str = ""
+        self,
+        target_user_id: str,
+        source_context: str | None = None,
+        reason: str | None = None,
     ) -> None:
         """
         Blocks the specified user on behalf of the authenticated user
 
         Args:
             target_user_id (str): User ID of the user to be blocked
-            source_context (str): Source context for blocking the user
+            source_context (str | None): Source context for blocking the user
                 Valid values: "chat", "whisper"
-            reason (str): Reason for blocking the user
+            reason (str | None): Reason for blocking the user
                 Valid values: "spam", "harassment", or "other"
 
         Raises:
@@ -3721,12 +3780,12 @@ class Client:
 
         return users.get_user_extensions(self.__user_token, self.client_id)
 
-    def get_user_active_extensions(self, user_id: str = "") -> list[dict]:
+    def get_user_active_extensions(self, user_id: str | None = None) -> list[dict]:
         """
         Gets information about active extensions installed by a specified user, identified by a user ID or Bearer token
 
         Args:
-            user_id (str): ID of the user whose installed extensions will be returned
+            user_id (str | None): ID of the user whose installed extensions will be returned
 
         Raises:
             errors.ClientError
@@ -3739,10 +3798,19 @@ class Client:
             self.__user_token, self.client_id, user_id
         )
 
-    def update_user_extensions(self) -> list[dict]:
+    def update_user_extensions(self, data: dict) -> list[dict]:
         """
         Updates the activation state, extension ID, and/or version number of installed extensions for a specified user, identified by a Bearer token
         If you try to activate a given extension under multiple extension types, the last write wins (and there is no guarantee of write order)
+
+        Args:
+            data (dict): The extensions to update
+                The data field is a dictionary of extension types
+                The dictionary’s possible keys are: panel, overlay, or component
+                The key’s value is a dictionary of extensions
+                For the extension’s dictionary, the key is a sequential number beginning with 1
+                For panel and overlay extensions, the key’s value is an object that contains the following fields: active (true/false), id (the extension’s ID), and version (the extension’s version)
+                For component extensions, the key’s value includes the above fields plus the x and y fields, which identify the coordinate where the extension is placed
 
         Raises:
             errors.ClientError
@@ -3751,15 +3819,15 @@ class Client:
             list[dict]
         """
 
-        return users.update_user_extensions(self.__user_token, self.client_id)
+        return users.update_user_extensions(self.__user_token, self.client_id, data)
 
     def get_videos(
         self,
         video_ids: list[str] | None = None,
-        user_id: str = "",
-        game_id: str = "",
+        user_id: str | None = None,
+        game_id: str | None = None,
         first: int = 20,
-        language: str = "",
+        language: str | None = None,
         period: str = "all",
         sort: str = "time",
         video_type: str = "all",
@@ -3772,11 +3840,11 @@ class Client:
             video_ids (list[str] | None): ID of the video being queried
                 Limit: 100
                 If this is specified, you cannot use first, language, period, sort and type
-            user_id (str): ID of the user who owns the video
-            game_id (str): ID of the game the video is of
+            user_id (str | None): ID of the user who owns the video
+            game_id (str | None): ID of the game the video is of
             first (int): Number of values to be returned when getting videos by user or game ID
                 Default: 20
-            language (str): Language of the video being queried
+            language (str | None): Language of the video being queried
                 A language value must be either the ISO 639-1 two-letter code for a supported stream language or "other"
             period (str): Period during which the video was created
                 Valid values: "all", "day", "week", "month"

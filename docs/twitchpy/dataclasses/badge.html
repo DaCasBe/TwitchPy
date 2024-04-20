@@ -28,6 +28,8 @@
 </summary>
 <pre><code class="python">from dataclasses import dataclass
 
+from ..dataclasses import BadgeVersion
+
 
 @dataclass
 class Badge:
@@ -36,11 +38,11 @@ class Badge:
 
     Attributes:
         set_id (str): ID for the chat badge set
-        versions (list[dict]): Chat badge versions for the set
+        versions (list[BadgeVersion]): Chat badge versions for the set
     &#34;&#34;&#34;
 
     set_id: str
-    versions: list[dict]</code></pre>
+    versions: list[BadgeVersion]</code></pre>
 </details>
 </section>
 <section>
@@ -54,7 +56,7 @@ class Badge:
 <dl>
 <dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
 <span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id: str, versions: list[dict])</span>
+<span>(</span><span>set_id: str, versions: list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a chat badge</p>
@@ -62,7 +64,7 @@ class Badge:
 <dl>
 <dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list[dict]</code></dt>
+<dt><strong><code>versions</code></strong> :&ensp;<code>list[BadgeVersion]</code></dt>
 <dd>Chat badge versions for the set</dd>
 </dl></div>
 <details class="source">
@@ -76,11 +78,11 @@ class Badge:
 
     Attributes:
         set_id (str): ID for the chat badge set
-        versions (list[dict]): Chat badge versions for the set
+        versions (list[BadgeVersion]): Chat badge versions for the set
     &#34;&#34;&#34;
 
     set_id: str
-    versions: list[dict]</code></pre>
+    versions: list[BadgeVersion]</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -88,7 +90,7 @@ class Badge:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[dict]</code></dt>
+<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

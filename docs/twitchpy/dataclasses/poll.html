@@ -27,6 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Channel, PollChoice
 
 
 @dataclass
@@ -51,17 +54,15 @@ class Poll:
     &#34;&#34;&#34;
 
     poll_id: str
-    broadcaster_id: str
-    broadcaster_name: str
-    broadcaster_login: str
+    channel: Channel
     title: str
-    choices: list[dict]
+    choices: list[PollChoice]
     channel_points_voting_enabled: bool
     channel_points_per_vote: int
     status: str
     duration: int
-    started_at: str
-    ended_at: str = &#34;&#34;</code></pre>
+    started_at: datetime
+    ended_at: datetime | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -75,7 +76,7 @@ class Poll:
 <dl>
 <dt id="twitchpy.dataclasses.poll.Poll"><code class="flex name class">
 <span>class <span class="ident">Poll</span></span>
-<span>(</span><span>poll_id: str, broadcaster_id: str, broadcaster_name: str, broadcaster_login: str, title: str, choices: list[dict], channel_points_voting_enabled: bool, channel_points_per_vote: int, status: str, duration: int, started_at: str, ended_at: str = '')</span>
+<span>(</span><span>poll_id: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, title: str, choices: list[<a title="twitchpy.dataclasses.poll_choice.PollChoice" href="poll_choice.html#twitchpy.dataclasses.poll_choice.PollChoice">PollChoice</a>], channel_points_voting_enabled: bool, channel_points_per_vote: int, status: str, duration: int, started_at: datetime.datetime, ended_at: datetime.datetime | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a poll</p>
@@ -133,29 +134,19 @@ class Poll:
     &#34;&#34;&#34;
 
     poll_id: str
-    broadcaster_id: str
-    broadcaster_name: str
-    broadcaster_login: str
+    channel: Channel
     title: str
-    choices: list[dict]
+    choices: list[PollChoice]
     channel_points_voting_enabled: bool
     channel_points_per_vote: int
     status: str
     duration: int
-    started_at: str
-    ended_at: str = &#34;&#34;</code></pre>
+    started_at: datetime
+    ended_at: datetime | None = None</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_login"><code class="name">var <span class="ident">broadcaster_login</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.poll.Poll.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.poll.Poll.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -167,7 +158,7 @@ class Poll:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.poll.Poll.choices"><code class="name">var <span class="ident">choices</span> : list[dict]</code></dt>
+<dt id="twitchpy.dataclasses.poll.Poll.choices"><code class="name">var <span class="ident">choices</span> : list[<a title="twitchpy.dataclasses.poll_choice.PollChoice" href="poll_choice.html#twitchpy.dataclasses.poll_choice.PollChoice">PollChoice</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -175,7 +166,7 @@ class Poll:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.poll.Poll.ended_at"><code class="name">var <span class="ident">ended_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.poll.Poll.ended_at"><code class="name">var <span class="ident">ended_at</span> : datetime.datetime | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -183,7 +174,7 @@ class Poll:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.poll.Poll.started_at"><code class="name">var <span class="ident">started_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.poll.Poll.started_at"><code class="name">var <span class="ident">started_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -216,9 +207,7 @@ class Poll:
 <li>
 <h4><code><a title="twitchpy.dataclasses.poll.Poll" href="#twitchpy.dataclasses.poll.Poll">Poll</a></code></h4>
 <ul class="">
-<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_id" href="#twitchpy.dataclasses.poll.Poll.broadcaster_id">broadcaster_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_login" href="#twitchpy.dataclasses.poll.Poll.broadcaster_login">broadcaster_login</a></code></li>
-<li><code><a title="twitchpy.dataclasses.poll.Poll.broadcaster_name" href="#twitchpy.dataclasses.poll.Poll.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.poll.Poll.channel" href="#twitchpy.dataclasses.poll.Poll.channel">channel</a></code></li>
 <li><code><a title="twitchpy.dataclasses.poll.Poll.channel_points_per_vote" href="#twitchpy.dataclasses.poll.Poll.channel_points_per_vote">channel_points_per_vote</a></code></li>
 <li><code><a title="twitchpy.dataclasses.poll.Poll.channel_points_voting_enabled" href="#twitchpy.dataclasses.poll.Poll.channel_points_voting_enabled">channel_points_voting_enabled</a></code></li>
 <li><code><a title="twitchpy.dataclasses.poll.Poll.choices" href="#twitchpy.dataclasses.poll.Poll.choices">choices</a></code></li>

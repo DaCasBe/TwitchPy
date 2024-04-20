@@ -1,12 +1,14 @@
-from .._utils import http
-from ..dataclasses import Channel
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import Channel, ContentClassificationLabel, Game, User
 
 ENDPOINT_VIPS = "https://api.twitch.tv/helix/channels/vips"
 
 
-def get_channels(
-    token: str, client_id: str, broadcaster_id: str | list[str]
-) -> Channel | list[Channel]:
+def get_channel_information(
+    token: str, client_id: str, broadcaster_id: list[str]
+) -> list[Channel]:
     url = "https://api.twitch.tv/helix/channels"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -16,29 +18,15 @@ def get_channels(
 
     channels = http.send_get(url, headers, params)
 
-    if len(channels) == 1:
-        return Channel(
-            channels[0]["broadcaster_id"],
-            channels[0]["broadcaster_login"],
-            channels[0]["broadcaster_name"],
-            channels[0]["broadcaster_language"],
-            channels[0]["game_name"],
-            channels[0]["game_id"],
-            channels[0]["title"],
-            channels[0]["tags"],
-            channels[0]["delay"],
-            channels[0]["content_classification_labels"],
-            channels[0]["is_branded_content"],
-        )
-
     return [
         Channel(
-            channel["broadcaster_id"],
-            channel["broadcaster_login"],
-            channel["broadcaster_name"],
+            User(
+                channel["broadcaster_id"],
+                channel["broadcaster_login"],
+                channel["broadcaster_name"],
+            ),
             channel["broadcaster_language"],
-            channel["game_name"],
-            channel["game_id"],
+            Game(channel["game_id"], channel["game_name"]),
             channel["title"],
             channel["tags"],
             channel["delay"],
@@ -58,7 +46,7 @@ def modify_channel_information(
     title: str | None = None,
     delay: int | None = None,
     tags: list[str] | None = None,
-    content_classification_labels: list[dict] | None = None,
+    content_classification_labels: list[ContentClassificationLabel] | None = None,
     is_branded_content: bool | None = None,
 ) -> None:
     url = "https://api.twitch.tv/helix/channels"
@@ -96,7 +84,7 @@ def modify_channel_information(
     http.send_patch(url, headers, data)
 
 
-def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list[dict]:
+def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list[User]:
     url = "https://api.twitch.tv/helix/channels/editors"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -104,12 +92,26 @@ def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get(url, headers, params)
+    editors = http.send_get(url, headers, params)
+
+    return [
+        User(
+            editor["user_id"],
+            editor["user_name"].lower(),
+            editor["user_name"],
+            created_at=datetime.strptime(editor["created_at"], date.RFC3339_FORMAT),
+        )
+        for editor in editors
+    ]
 
 
 def get_followed_channels(
-    token: str, client_id: str, user_id: str, broadcaster_id: str = "", first: int = 20
-) -> list[dict]:
+    token: str,
+    client_id: str,
+    user_id: str,
+    broadcaster_id: str | None = None,
+    first: int = 20,
+) -> list[tuple[Channel, datetime]]:
     url = "https://api.twitch.tv/helix/channels/followed"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -117,15 +119,33 @@ def get_followed_channels(
     }
     params = {"user_id": user_id}
 
-    if broadcaster_id != "":
+    if broadcaster_id is not None:
         params["broadcaster_id"] = broadcaster_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    followed_channels = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        (
+            Channel(
+                User(
+                    followed_channel["broadcaster_id"],
+                    followed_channel["broadcaster_login"],
+                    followed_channel["broadcaster_name"],
+                )
+            ),
+            datetime.strptime(followed_channel["followed_at"], date.RFC3339_FORMAT),
+        )
+        for followed_channel in followed_channels
+    ]
 
 
 def get_channel_followers(
-    token: str, client_id: str, broadcaster_id: str, user_id: str = "", first: int = 20
-) -> list[dict]:
+    token: str,
+    client_id: str,
+    broadcaster_id: str,
+    user_id: str | None = None,
+    first: int = 20,
+) -> list[tuple[Channel, datetime]]:
     url = "https://api.twitch.tv/helix/channels/followers"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -133,10 +153,20 @@ def get_channel_followers(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    if user_id != "":
+    if user_id is not None:
         params["user_id"] = user_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    followers = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        (
+            Channel(
+                User(follower["user_id"], follower["user_login"], follower["user_name"])
+            ),
+            datetime.strptime(follower["followed_at"], date.RFC3339_FORMAT),
+        )
+        for follower in followers
+    ]
 
 
 def get_vips(
@@ -145,7 +175,7 @@ def get_vips(
     broadcaster_id: str,
     user_id: list[str] | None = None,
     first: int = 20,
-) -> list[dict]:
+) -> list[User]:
     url = ENDPOINT_VIPS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -157,7 +187,9 @@ def get_vips(
     if user_id is not None and len(user_id) > 0:
         params["user_id"] = user_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 20)
+    vips = http.send_get_with_pagination(url, headers, params, first, 20)
+
+    return [User(vip["user_id"], vip["user_login"], vip["user_name"]) for vip in vips]
 
 
 def add_channel_vip(

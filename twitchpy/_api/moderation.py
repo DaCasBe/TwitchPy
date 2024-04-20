@@ -1,4 +1,15 @@
-from .._utils import http
+from datetime import datetime
+
+from .._utils import date, http
+from ..dataclasses import (
+    AutoModSettings,
+    BannedUser,
+    BlockedTerm,
+    Channel,
+    ShieldModeStatus,
+    UnbanRequest,
+    User,
+)
 
 ENDPOINT_BLOCKED_TERMS = "https://api.twitch.tv/helix/moderation/blocked_terms"
 ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
@@ -7,8 +18,8 @@ CONTENT_TYPE_APPLICATION_JSON = "application/json"
 
 
 def check_automod_status(
-    token: str, client_id: str, broadcaster_id: str, msg_id: str, msg_user: str
-) -> list[dict]:
+    token: str, client_id: str, broadcaster_id: str, data: list[tuple[str, str]]
+) -> list[tuple[str, bool]]:
     url = "https://api.twitch.tv/helix/moderation/enforcements/status"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -16,10 +27,15 @@ def check_automod_status(
     }
     payload = {
         "broadcaster_id": broadcaster_id,
-        "data": [{"msg_id": msg_id, "msg_user": msg_user}],
+        "data": data,
     }
 
-    return http.send_post_get_result(url, headers, payload)
+    messages_status = http.send_post_get_result(url, headers, payload)
+
+    return [
+        (message_status["msg_id"], message_status["is_permited"])
+        for message_status in messages_status
+    ]
 
 
 def manage_held_automod_messages(
@@ -37,7 +53,7 @@ def manage_held_automod_messages(
 
 def get_automod_settings(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
-) -> dict:
+) -> AutoModSettings:
     url = "https://api.twitch.tv/helix/moderation/automod/settings"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -45,7 +61,21 @@ def get_automod_settings(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    return http.send_get(url, headers, params)[0]
+    settings = http.send_get(url, headers, params)[0]
+
+    return AutoModSettings(
+        settings["broadcaster_id"],
+        settings["moderator_id"],
+        settings["overall_level"],
+        settings["disability"],
+        settings["aggression"],
+        settings["sexuality_sex_or_gender"],
+        settings["misogyny"],
+        settings["bullying"],
+        settings["swearing"],
+        settings["race_ethnicity_or_religion"],
+        settings["sex_based_terms"],
+    )
 
 
 def update_automod_settings(
@@ -62,7 +92,7 @@ def update_automod_settings(
     sex_based_terms: int | None = None,
     sexuality_sex_or_gender: int | None = None,
     swearing: int | None = None,
-) -> dict:
+) -> AutoModSettings:
     url = "https://api.twitch.tv/helix/moderation/automod/settings"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -100,7 +130,21 @@ def update_automod_settings(
     if swearing is not None:
         data["swearing"] = swearing
 
-    return http.send_put_get_result(url, headers, data)[0]
+    settings = http.send_put_get_result(url, headers, data)[0]
+
+    return AutoModSettings(
+        settings["broadcaster_id"],
+        settings["moderator_id"],
+        settings["overall_level"],
+        settings["disability"],
+        settings["aggression"],
+        settings["sexuality_sex_or_gender"],
+        settings["misogyny"],
+        settings["bullying"],
+        settings["swearing"],
+        settings["race_ethnicity_or_religion"],
+        settings["sex_based_terms"],
+    )
 
 
 def get_banned_users(
@@ -109,7 +153,7 @@ def get_banned_users(
     broadcaster_id: str,
     user_id: list[str] | None = None,
     first: int = 20,
-) -> list[dict]:
+) -> list[BannedUser]:
     url = "https://api.twitch.tv/helix/moderation/banned"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -124,7 +168,18 @@ def get_banned_users(
     if first != 20:
         params["first"] = first
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    users = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        BannedUser(
+            User(user["user_id"], user["user_login"], user["user_name"]),
+            datetime.strptime(user["expires_at"], date.RFC3339_FORMAT),
+            datetime.strptime(user["created_at"], date.RFC3339_FORMAT),
+            user["reason"],
+            User(user["moderator_id"], user["moderator_login"], user["moderator_name"]),
+        )
+        for user in users
+    ]
 
 
 def ban_user(
@@ -180,9 +235,9 @@ def get_unban_requests(
     broadcaster_id: str,
     moderator_id: str,
     status: str,
-    user_id: str = "",
+    user_id: str | None = None,
     first: int = 20,
-) -> list[dict]:
+) -> list[UnbanRequest]:
     url = "https://api.twitch.tv/helix/moderation/unban_requests"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -194,10 +249,35 @@ def get_unban_requests(
         "status": status,
     }
 
-    if user_id != "":
+    if user_id is not None:
         params["user_id"] = user_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    requests = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        UnbanRequest(
+            request["id"],
+            Channel(
+                User(
+                    request["broadcaster_id"],
+                    request["broadcaster_login"],
+                    request["broadcaster_name"],
+                )
+            ),
+            User(
+                request["moderator_id"],
+                request["moderator_login"],
+                request["moderator_name"],
+            ),
+            User(request["user_id"], request["user_login"], request["user_name"]),
+            request["text"],
+            request["status"],
+            datetime.strptime(request["created_at"], date.RFC3339_FORMAT),
+            datetime.strptime(request["resolved_at"], date.RFC3339_FORMAT),
+            request["resolution_text"],
+        )
+        for request in requests
+    ]
 
 
 def resolve_unban_requests(
@@ -207,8 +287,8 @@ def resolve_unban_requests(
     moderator_id: str,
     unban_request_id: str,
     status: str,
-    resolution_text: str = "",
-) -> list[dict]:
+    resolution_text: str | None = None,
+) -> UnbanRequest:
     url = "https://api.twitch.tv/helix/moderation/unban_requests"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -221,15 +301,37 @@ def resolve_unban_requests(
         "status": status,
     }
 
-    if resolution_text != "":
+    if resolution_text is not None:
         data["resolution_text"] = resolution_text
 
-    return http.send_patch_get_result(url, headers, data)
+    request = http.send_patch_get_result(url, headers, data)[0]
+
+    return UnbanRequest(
+        request["id"],
+        Channel(
+            User(
+                request["broadcaster_id"],
+                request["broadcaster_login"],
+                request["broadcaster_name"],
+            )
+        ),
+        User(
+            request["moderator_id"],
+            request["moderator_login"],
+            request["moderator_name"],
+        ),
+        User(request["user_id"], request["user_login"], request["user_name"]),
+        request["text"],
+        request["status"],
+        datetime.strptime(request["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(request["resolved_at"], date.RFC3339_FORMAT),
+        request["resolution_text"],
+    )
 
 
 def get_blocked_terms(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, first: int = 20
-) -> list[dict]:
+) -> list[BlockedTerm]:
     url = ENDPOINT_BLOCKED_TERMS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -242,12 +344,25 @@ def get_blocked_terms(
     if first != 20:
         params["first"] = first
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    terms = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        BlockedTerm(
+            term["broadcaster_id"],
+            term["moderator_id"],
+            term["id"],
+            term["text"],
+            datetime.strptime(term["created_at"], date.RFC3339_FORMAT),
+            datetime.strptime(term["updated_at"], date.RFC3339_FORMAT),
+            datetime.strptime(term["expires_at"], date.RFC3339_FORMAT),
+        )
+        for term in terms
+    ]
 
 
 def add_blocked_term(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, text: str
-) -> dict:
+) -> BlockedTerm:
     url = ENDPOINT_BLOCKED_TERMS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -260,7 +375,17 @@ def add_blocked_term(
         "text": text,
     }
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    term = http.send_post_get_result(url, headers, payload)[0]
+
+    return BlockedTerm(
+        term["broadcaster_id"],
+        term["moderator_id"],
+        term["id"],
+        term["text"],
+        datetime.strptime(term["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(term["updated_at"], date.RFC3339_FORMAT),
+        datetime.strptime(term["expires_at"], date.RFC3339_FORMAT),
+    )
 
 
 def remove_blocked_term(
@@ -289,7 +414,7 @@ def delete_chat_messages(
     client_id: str,
     broadcaster_id: str,
     moderator_id: str,
-    message_id: str = "",
+    message_id: str | None = None,
 ) -> None:
     url = "https://api.twitch.tv/helix/moderation/chat"
     headers = {
@@ -298,7 +423,7 @@ def delete_chat_messages(
     }
     data = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    if message_id != "":
+    if message_id is not None:
         data["message_id"] = message_id
 
     http.send_delete(url, headers, data)
@@ -306,7 +431,7 @@ def delete_chat_messages(
 
 def get_moderated_channels(
     token: str, client_id: str, user_id: str, first: int = 20
-) -> list[dict]:
+) -> list[Channel]:
     url = "https://api.twitch.tv/helix/moderation/channels"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -314,7 +439,18 @@ def get_moderated_channels(
     }
     params = {"user_id": user_id}
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    channels = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        Channel(
+            User(
+                channel["broadcaster_id"],
+                channel["broadcaster_login"],
+                channel["broadcaster_name"],
+            )
+        )
+        for channel in channels
+    ]
 
 
 def get_moderators(
@@ -323,7 +459,7 @@ def get_moderators(
     broadcaster_id: str,
     user_id: list[str] | None = None,
     first: int = 20,
-) -> list[dict]:
+) -> list[User]:
     url = ENDPOINT_MODERATORS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -335,7 +471,11 @@ def get_moderators(
     if user_id is not None and len(user_id) > 0:
         params["user_id"] = user_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    users = http.send_get_with_pagination(url, headers, params, first, 100)
+
+    return [
+        User(user["user_id"], user["user_login"], user["user_name"]) for user in users
+    ]
 
 
 def add_channel_moderator(
@@ -366,7 +506,7 @@ def remove_channel_moderator(
 
 def update_shield_mode_status(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, is_active: bool
-) -> dict:
+) -> ShieldModeStatus:
     url = "https://api.twitch.tv/helix/moderation/shield_mode"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -379,12 +519,22 @@ def update_shield_mode_status(
         "is_active": is_active,
     }
 
-    return http.send_put_get_result(url, headers, data)[0]
+    shield_mode_status = http.send_put_get_result(url, headers, data)[0]
+
+    return ShieldModeStatus(
+        shield_mode_status["is_active"],
+        User(
+            shield_mode_status["moderator_id"],
+            shield_mode_status["moderator_login"],
+            shield_mode_status["moderator_name"],
+        ),
+        datetime.strptime(shield_mode_status["last_activated_at"], date.RFC3339_FORMAT),
+    )
 
 
 def get_shield_mode_status(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
-) -> dict:
+) -> ShieldModeStatus:
     url = "https://api.twitch.tv/helix/moderation/shield_mode"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -392,4 +542,14 @@ def get_shield_mode_status(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    return http.send_get(url, headers, params)[0]
+    shield_mode_status = http.send_get(url, headers, params)[0]
+
+    return ShieldModeStatus(
+        shield_mode_status["is_active"],
+        User(
+            shield_mode_status["moderator_id"],
+            shield_mode_status["moderator_login"],
+            shield_mode_status["moderator_name"],
+        ),
+        datetime.strptime(shield_mode_status["last_activated_at"], date.RFC3339_FORMAT),
+    )
