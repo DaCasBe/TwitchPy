@@ -28,6 +28,8 @@
 </summary>
 <pre><code class="python">from dataclasses import dataclass
 
+from ..dataclasses import Guest
+
 
 @dataclass
 class GuestStarSession:
@@ -36,11 +38,11 @@ class GuestStarSession:
 
     Attributes:
         guest_star_session_id (str): ID uniquely representing the Guest Star session
-        guests (list[dict]): List of guests currently interacting with the Guest Star session
+        guests (list[Guest]): List of guests currently interacting with the Guest Star session
     &#34;&#34;&#34;
 
     guest_star_session_id: str
-    guests: list[dict]</code></pre>
+    guests: list[Guest]</code></pre>
 </details>
 </section>
 <section>
@@ -54,7 +56,7 @@ class GuestStarSession:
 <dl>
 <dt id="twitchpy.dataclasses.guest_star_session.GuestStarSession"><code class="flex name class">
 <span>class <span class="ident">GuestStarSession</span></span>
-<span>(</span><span>guest_star_session_id: str, guests: list[dict])</span>
+<span>(</span><span>guest_star_session_id: str, guests: list[<a title="twitchpy.dataclasses.guest.Guest" href="guest.html#twitchpy.dataclasses.guest.Guest">Guest</a>])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Guest Star Session</p>
@@ -62,7 +64,7 @@ class GuestStarSession:
 <dl>
 <dt><strong><code>guest_star_session_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>ID uniquely representing the Guest Star session</dd>
-<dt><strong><code>guests</code></strong> :&ensp;<code>list[dict]</code></dt>
+<dt><strong><code>guests</code></strong> :&ensp;<code>list[Guest]</code></dt>
 <dd>List of guests currently interacting with the Guest Star session</dd>
 </dl></div>
 <details class="source">
@@ -76,11 +78,11 @@ class GuestStarSession:
 
     Attributes:
         guest_star_session_id (str): ID uniquely representing the Guest Star session
-        guests (list[dict]): List of guests currently interacting with the Guest Star session
+        guests (list[Guest]): List of guests currently interacting with the Guest Star session
     &#34;&#34;&#34;
 
     guest_star_session_id: str
-    guests: list[dict]</code></pre>
+    guests: list[Guest]</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -88,7 +90,7 @@ class GuestStarSession:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.guest_star_session.GuestStarSession.guests"><code class="name">var <span class="ident">guests</span> : list[dict]</code></dt>
+<dt id="twitchpy.dataclasses.guest_star_session.GuestStarSession.guests"><code class="name">var <span class="ident">guests</span> : list[<a title="twitchpy.dataclasses.guest.Guest" href="guest.html#twitchpy.dataclasses.guest.Guest">Guest</a>]</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

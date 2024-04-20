@@ -27,8 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
 
-from ..dataclasses import Reward
+from ..dataclasses import Channel, Reward, User
 
 
 @dataclass
@@ -37,25 +38,21 @@ class Redemption:
     Represents a reward redemption
 
     Args:
-        broadcaster_name (str): The display name of the broadcaster that the reward belongs to
-        broadcaster_id (str): The id of the broadcaster that the reward belongs to
+        channel (Channel): The channel that the reward belongs to
         redemption_id (str): The ID of the redemption
-        user_id (str): The ID of the user that redeemed the reward
-        user_name (str): The display name of the user that redeemed the reward
+        user (User): The user that redeemed the reward
         user_input (str): The user input provided
         status (str): One of UNFULFILLED, FULFILLED or CANCELED
-        redeemed_at (str): Timestamp of when the reward was redeemed
+        redeemed_at (datetime): Timestamp of when the reward was redeemed
         reward (Reward): The custom reward that was redeemed at the time it was redeemed
     &#34;&#34;&#34;
 
-    broadcaster_name: str
-    broadcaster_id: str
+    channel: Channel
     redemption_id: str
-    user_id: str
-    user_name: str
+    user: User
     user_input: str
     status: str
-    redeemed_at: str
+    redeemed_at: datetime
     reward: Reward</code></pre>
 </details>
 </section>
@@ -70,27 +67,23 @@ class Redemption:
 <dl>
 <dt id="twitchpy.dataclasses.redemption.Redemption"><code class="flex name class">
 <span>class <span class="ident">Redemption</span></span>
-<span>(</span><span>broadcaster_name: str, broadcaster_id: str, redemption_id: str, user_id: str, user_name: str, user_input: str, status: str, redeemed_at: str, reward: <a title="twitchpy.dataclasses.reward.Reward" href="reward.html#twitchpy.dataclasses.reward.Reward">Reward</a>)</span>
+<span>(</span><span>channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, redemption_id: str, user: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, user_input: str, status: str, redeemed_at: datetime.datetime, reward: <a title="twitchpy.dataclasses.reward.Reward" href="reward.html#twitchpy.dataclasses.reward.Reward">Reward</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a reward redemption</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>broadcaster_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The display name of the broadcaster that the reward belongs to</dd>
-<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The id of the broadcaster that the reward belongs to</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>The channel that the reward belongs to</dd>
 <dt><strong><code>redemption_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>The ID of the redemption</dd>
-<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>The ID of the user that redeemed the reward</dd>
-<dt><strong><code>user_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The display name of the user that redeemed the reward</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>User</code></dt>
+<dd>The user that redeemed the reward</dd>
 <dt><strong><code>user_input</code></strong> :&ensp;<code>str</code></dt>
 <dd>The user input provided</dd>
 <dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
 <dd>One of UNFULFILLED, FULFILLED or CANCELED</dd>
-<dt><strong><code>redeemed_at</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>redeemed_at</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>Timestamp of when the reward was redeemed</dd>
 <dt><strong><code>reward</code></strong> :&ensp;<code>Reward</code></dt>
 <dd>The custom reward that was redeemed at the time it was redeemed</dd>
@@ -105,38 +98,30 @@ class Redemption:
     Represents a reward redemption
 
     Args:
-        broadcaster_name (str): The display name of the broadcaster that the reward belongs to
-        broadcaster_id (str): The id of the broadcaster that the reward belongs to
+        channel (Channel): The channel that the reward belongs to
         redemption_id (str): The ID of the redemption
-        user_id (str): The ID of the user that redeemed the reward
-        user_name (str): The display name of the user that redeemed the reward
+        user (User): The user that redeemed the reward
         user_input (str): The user input provided
         status (str): One of UNFULFILLED, FULFILLED or CANCELED
-        redeemed_at (str): Timestamp of when the reward was redeemed
+        redeemed_at (datetime): Timestamp of when the reward was redeemed
         reward (Reward): The custom reward that was redeemed at the time it was redeemed
     &#34;&#34;&#34;
 
-    broadcaster_name: str
-    broadcaster_id: str
+    channel: Channel
     redemption_id: str
-    user_id: str
-    user_name: str
+    user: User
     user_input: str
     status: str
-    redeemed_at: str
+    redeemed_at: datetime
     reward: Reward</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.redemption.Redemption.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.redemption.Redemption.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.redemption.Redemption.broadcaster_name"><code class="name">var <span class="ident">broadcaster_name</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.redemption.Redemption.redeemed_at"><code class="name">var <span class="ident">redeemed_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.redemption.Redemption.redeemed_at"><code class="name">var <span class="ident">redeemed_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -152,15 +137,11 @@ class Redemption:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.redemption.Redemption.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.redemption.Redemption.user"><code class="name">var <span class="ident">user</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt id="twitchpy.dataclasses.redemption.Redemption.user_input"><code class="name">var <span class="ident">user_input</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.redemption.Redemption.user_name"><code class="name">var <span class="ident">user_name</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -185,15 +166,13 @@ class Redemption:
 <li>
 <h4><code><a title="twitchpy.dataclasses.redemption.Redemption" href="#twitchpy.dataclasses.redemption.Redemption">Redemption</a></code></h4>
 <ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.redemption.Redemption.broadcaster_id" href="#twitchpy.dataclasses.redemption.Redemption.broadcaster_id">broadcaster_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.redemption.Redemption.broadcaster_name" href="#twitchpy.dataclasses.redemption.Redemption.broadcaster_name">broadcaster_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.redemption.Redemption.channel" href="#twitchpy.dataclasses.redemption.Redemption.channel">channel</a></code></li>
 <li><code><a title="twitchpy.dataclasses.redemption.Redemption.redeemed_at" href="#twitchpy.dataclasses.redemption.Redemption.redeemed_at">redeemed_at</a></code></li>
 <li><code><a title="twitchpy.dataclasses.redemption.Redemption.redemption_id" href="#twitchpy.dataclasses.redemption.Redemption.redemption_id">redemption_id</a></code></li>
 <li><code><a title="twitchpy.dataclasses.redemption.Redemption.reward" href="#twitchpy.dataclasses.redemption.Redemption.reward">reward</a></code></li>
 <li><code><a title="twitchpy.dataclasses.redemption.Redemption.status" href="#twitchpy.dataclasses.redemption.Redemption.status">status</a></code></li>
-<li><code><a title="twitchpy.dataclasses.redemption.Redemption.user_id" href="#twitchpy.dataclasses.redemption.Redemption.user_id">user_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.redemption.Redemption.user" href="#twitchpy.dataclasses.redemption.Redemption.user">user</a></code></li>
 <li><code><a title="twitchpy.dataclasses.redemption.Redemption.user_input" href="#twitchpy.dataclasses.redemption.Redemption.user_input">user_input</a></code></li>
-<li><code><a title="twitchpy.dataclasses.redemption.Redemption.user_name" href="#twitchpy.dataclasses.redemption.Redemption.user_name">user_name</a></code></li>
 </ul>
 </li>
 </ul>

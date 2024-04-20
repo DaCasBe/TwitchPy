@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.dataclasses.badge API documentation</title>
+<title>twitchpy.dataclasses.guest API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.badge</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.guest</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -27,22 +27,33 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
 
-from ..dataclasses import BadgeVersion
+from ..dataclasses import User
 
 
 @dataclass
-class Badge:
+class Guest:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a guest in a Guest Star session
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        slot_id (str): ID representing this guest’s slot assignment
+        is_live (bool): Flag determining whether or not the guest is visible in the browser source in the host’s streaming software
+        user (User): The user assigned to this slot
+        volume (int): Value from 0 to 100 representing the host’s volume setting for this guest
+        assigned_at (datetime): Timestamp when this guest was assigned a slot in the session
+        audio_settings (dict): Information about the guest’s audio settings
+        video_settings (dict): Information about the guest’s video settings
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    slot_id: str
+    is_live: bool
+    user: User
+    volume: int
+    assigned_at: datetime
+    audio_settings: dict
+    video_settings: dict</code></pre>
 </details>
 </section>
 <section>
@@ -54,43 +65,83 @@ class Badge:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
-<span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id: str, versions: list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>])</span>
+<dt id="twitchpy.dataclasses.guest.Guest"><code class="flex name class">
+<span>class <span class="ident">Guest</span></span>
+<span>(</span><span>slot_id: str, is_live: bool, user: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, volume: int, assigned_at: datetime.datetime, audio_settings: dict, video_settings: dict)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a chat badge</p>
+<div class="desc"><p>Represents a guest in a Guest Star session</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list[BadgeVersion]</code></dt>
-<dd>Chat badge versions for the set</dd>
+<dt><strong><code>slot_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>ID representing this guest’s slot assignment</dd>
+<dt><strong><code>is_live</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Flag determining whether or not the guest is visible in the browser source in the host’s streaming software</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>User</code></dt>
+<dd>The user assigned to this slot</dd>
+<dt><strong><code>volume</code></strong> :&ensp;<code>int</code></dt>
+<dd>Value from 0 to 100 representing the host’s volume setting for this guest</dd>
+<dt><strong><code>assigned_at</code></strong> :&ensp;<code>datetime</code></dt>
+<dd>Timestamp when this guest was assigned a slot in the session</dd>
+<dt><strong><code>audio_settings</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Information about the guest’s audio settings</dd>
+<dt><strong><code>video_settings</code></strong> :&ensp;<code>dict</code></dt>
+<dd>Information about the guest’s video settings</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Badge:
+class Guest:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a guest in a Guest Star session
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        slot_id (str): ID representing this guest’s slot assignment
+        is_live (bool): Flag determining whether or not the guest is visible in the browser source in the host’s streaming software
+        user (User): The user assigned to this slot
+        volume (int): Value from 0 to 100 representing the host’s volume setting for this guest
+        assigned_at (datetime): Timestamp when this guest was assigned a slot in the session
+        audio_settings (dict): Information about the guest’s audio settings
+        video_settings (dict): Information about the guest’s video settings
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    slot_id: str
+    is_live: bool
+    user: User
+    volume: int
+    assigned_at: datetime
+    audio_settings: dict
+    video_settings: dict</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge.set_id"><code class="name">var <span class="ident">set_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.guest.Guest.assigned_at"><code class="name">var <span class="ident">assigned_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>]</code></dt>
+<dt id="twitchpy.dataclasses.guest.Guest.audio_settings"><code class="name">var <span class="ident">audio_settings</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.guest.Guest.is_live"><code class="name">var <span class="ident">is_live</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.guest.Guest.slot_id"><code class="name">var <span class="ident">slot_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.guest.Guest.user"><code class="name">var <span class="ident">user</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.guest.Guest.video_settings"><code class="name">var <span class="ident">video_settings</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.guest.Guest.volume"><code class="name">var <span class="ident">volume</span> : int</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -113,10 +164,15 @@ class Badge:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.badge.Badge" href="#twitchpy.dataclasses.badge.Badge">Badge</a></code></h4>
-<ul class="">
-<li><code><a title="twitchpy.dataclasses.badge.Badge.set_id" href="#twitchpy.dataclasses.badge.Badge.set_id">set_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.badge.Badge.versions" href="#twitchpy.dataclasses.badge.Badge.versions">versions</a></code></li>
+<h4><code><a title="twitchpy.dataclasses.guest.Guest" href="#twitchpy.dataclasses.guest.Guest">Guest</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.guest.Guest.assigned_at" href="#twitchpy.dataclasses.guest.Guest.assigned_at">assigned_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.audio_settings" href="#twitchpy.dataclasses.guest.Guest.audio_settings">audio_settings</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.is_live" href="#twitchpy.dataclasses.guest.Guest.is_live">is_live</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.slot_id" href="#twitchpy.dataclasses.guest.Guest.slot_id">slot_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.user" href="#twitchpy.dataclasses.guest.Guest.user">user</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.video_settings" href="#twitchpy.dataclasses.guest.Guest.video_settings">video_settings</a></code></li>
+<li><code><a title="twitchpy.dataclasses.guest.Guest.volume" href="#twitchpy.dataclasses.guest.Guest.volume">volume</a></code></li>
 </ul>
 </li>
 </ul>

@@ -27,6 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import HypeTrainEventData
 
 
 @dataclass
@@ -37,16 +40,16 @@ class HypeTrainEvent:
     Attributes:
         event_id (str): The distinct ID of the event
         event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-        event_timestamp (str): RFC3339 formatted timestamp of event
+        event_timestamp (datetime): RFC3339 formatted timestamp of event
         version (str): Returns the version of the endpoint
         event_data (dict): The event data
     &#34;&#34;&#34;
 
     event_id: str
     event_type: str
-    event_timestamp: str
+    event_timestamp: datetime
     version: str
-    event_data: dict</code></pre>
+    event_data: HypeTrainEventData</code></pre>
 </details>
 </section>
 <section>
@@ -60,7 +63,7 @@ class HypeTrainEvent:
 <dl>
 <dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent"><code class="flex name class">
 <span>class <span class="ident">HypeTrainEvent</span></span>
-<span>(</span><span>event_id: str, event_type: str, event_timestamp: str, version: str, event_data: dict)</span>
+<span>(</span><span>event_id: str, event_type: str, event_timestamp: datetime.datetime, version: str, event_data: <a title="twitchpy.dataclasses.hype_train_event_data.HypeTrainEventData" href="hype_train_event_data.html#twitchpy.dataclasses.hype_train_event_data.HypeTrainEventData">HypeTrainEventData</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Hype Train event</p>
@@ -70,7 +73,7 @@ class HypeTrainEvent:
 <dd>The distinct ID of the event</dd>
 <dt><strong><code>event_type</code></strong> :&ensp;<code>str</code></dt>
 <dd>Displays hypetrain.{event_name}, currently only hypetrain.progression</dd>
-<dt><strong><code>event_timestamp</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>event_timestamp</code></strong> :&ensp;<code>datetime</code></dt>
 <dd>RFC3339 formatted timestamp of event</dd>
 <dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
 <dd>Returns the version of the endpoint</dd>
@@ -89,20 +92,20 @@ class HypeTrainEvent:
     Attributes:
         event_id (str): The distinct ID of the event
         event_type (str): Displays hypetrain.{event_name}, currently only hypetrain.progression
-        event_timestamp (str): RFC3339 formatted timestamp of event
+        event_timestamp (datetime): RFC3339 formatted timestamp of event
         version (str): Returns the version of the endpoint
         event_data (dict): The event data
     &#34;&#34;&#34;
 
     event_id: str
     event_type: str
-    event_timestamp: str
+    event_timestamp: datetime
     version: str
-    event_data: dict</code></pre>
+    event_data: HypeTrainEventData</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_data"><code class="name">var <span class="ident">event_data</span> : dict</code></dt>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_data"><code class="name">var <span class="ident">event_data</span> : <a title="twitchpy.dataclasses.hype_train_event_data.HypeTrainEventData" href="hype_train_event_data.html#twitchpy.dataclasses.hype_train_event_data.HypeTrainEventData">HypeTrainEventData</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -110,7 +113,7 @@ class HypeTrainEvent:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_timestamp"><code class="name">var <span class="ident">event_timestamp</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.hypetrain_event.HypeTrainEvent.event_timestamp"><code class="name">var <span class="ident">event_timestamp</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>

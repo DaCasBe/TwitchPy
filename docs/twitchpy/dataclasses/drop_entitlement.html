@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.dataclasses.badge API documentation</title>
+<title>twitchpy.dataclasses.drop_entitlement API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.badge</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.drop_entitlement</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -27,22 +27,32 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
-
-from ..dataclasses import BadgeVersion
+from datetime import datetime
 
 
 @dataclass
-class Badge:
+class DropEntitlement:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a entitlement
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        drop_entitlement_id (str): An ID that identifies the entitlement
+        benefit_id (str): An ID that identifies the benefit (reward)
+        timestamp (datetime): The UTC date and time (in RFC3339 format) of when the entitlement was granted
+        user_id (str): An ID that identifies the user who was granted the entitlement
+        game_id (str): An ID that identifies the game the user was playing when the reward was entitled
+        fulfillment_status (str): The entitlement’s fulfillment status
+            Possible values: CLAIMED, FULFILLED
+        last_updated (datetime): The UTC date and time (in RFC3339 format) of when the entitlement was last updated
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    drop_entitlement_id: str
+    benefit_id: str
+    timestamp: datetime
+    user_id: str
+    game_id: str
+    fulfillment_status: str
+    last_updated: datetime</code></pre>
 </details>
 </section>
 <section>
@@ -54,43 +64,85 @@ class Badge:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
-<span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id: str, versions: list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>])</span>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement"><code class="flex name class">
+<span>class <span class="ident">DropEntitlement</span></span>
+<span>(</span><span>drop_entitlement_id: str, benefit_id: str, timestamp: datetime.datetime, user_id: str, game_id: str, fulfillment_status: str, last_updated: datetime.datetime)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a chat badge</p>
+<div class="desc"><p>Represents a entitlement</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list[BadgeVersion]</code></dt>
-<dd>Chat badge versions for the set</dd>
+<dt><strong><code>drop_entitlement_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the entitlement</dd>
+<dt><strong><code>benefit_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the benefit (reward)</dd>
+<dt><strong><code>timestamp</code></strong> :&ensp;<code>datetime</code></dt>
+<dd>The UTC date and time (in RFC3339 format) of when the entitlement was granted</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the user who was granted the entitlement</dd>
+<dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the game the user was playing when the reward was entitled</dd>
+<dt><strong><code>fulfillment_status</code></strong> :&ensp;<code>str</code></dt>
+<dd>The entitlement’s fulfillment status
+Possible values: CLAIMED, FULFILLED</dd>
+<dt><strong><code>last_updated</code></strong> :&ensp;<code>datetime</code></dt>
+<dd>The UTC date and time (in RFC3339 format) of when the entitlement was last updated</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Badge:
+class DropEntitlement:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a entitlement
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        drop_entitlement_id (str): An ID that identifies the entitlement
+        benefit_id (str): An ID that identifies the benefit (reward)
+        timestamp (datetime): The UTC date and time (in RFC3339 format) of when the entitlement was granted
+        user_id (str): An ID that identifies the user who was granted the entitlement
+        game_id (str): An ID that identifies the game the user was playing when the reward was entitled
+        fulfillment_status (str): The entitlement’s fulfillment status
+            Possible values: CLAIMED, FULFILLED
+        last_updated (datetime): The UTC date and time (in RFC3339 format) of when the entitlement was last updated
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    drop_entitlement_id: str
+    benefit_id: str
+    timestamp: datetime
+    user_id: str
+    game_id: str
+    fulfillment_status: str
+    last_updated: datetime</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge.set_id"><code class="name">var <span class="ident">set_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.benefit_id"><code class="name">var <span class="ident">benefit_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>]</code></dt>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.drop_entitlement_id"><code class="name">var <span class="ident">drop_entitlement_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.fulfillment_status"><code class="name">var <span class="ident">fulfillment_status</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.game_id"><code class="name">var <span class="ident">game_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.last_updated"><code class="name">var <span class="ident">last_updated</span> : datetime.datetime</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.timestamp"><code class="name">var <span class="ident">timestamp</span> : datetime.datetime</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.drop_entitlement.DropEntitlement.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -113,10 +165,15 @@ class Badge:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.badge.Badge" href="#twitchpy.dataclasses.badge.Badge">Badge</a></code></h4>
-<ul class="">
-<li><code><a title="twitchpy.dataclasses.badge.Badge.set_id" href="#twitchpy.dataclasses.badge.Badge.set_id">set_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.badge.Badge.versions" href="#twitchpy.dataclasses.badge.Badge.versions">versions</a></code></li>
+<h4><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement">DropEntitlement</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.benefit_id" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.benefit_id">benefit_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.drop_entitlement_id" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.drop_entitlement_id">drop_entitlement_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.fulfillment_status" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.fulfillment_status">fulfillment_status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.game_id" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.game_id">game_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.last_updated" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.last_updated">last_updated</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.timestamp" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.timestamp">timestamp</a></code></li>
+<li><code><a title="twitchpy.dataclasses.drop_entitlement.DropEntitlement.user_id" href="#twitchpy.dataclasses.drop_entitlement.DropEntitlement.user_id">user_id</a></code></li>
 </ul>
 </li>
 </ul>

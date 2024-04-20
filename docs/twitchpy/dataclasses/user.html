@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -35,26 +36,31 @@ class User:
     Represents an user
 
     Attributes:
-        id (int): User&#39;s ID
+        user_id (int): User&#39;s ID
         login (str): User&#39;s login
         display_name (str): User&#39;s name
-        type (str): User type
-        broadcaster_type (str): User&#39;s range
-        description (str): User&#39;s description
-        profile_image_url (str): URL of the user&#39;s profile image
-        offline_image_url (str): URL of the image that is displayed when the user is not on stream
-        view_count (int): Number of user viewers
+        user_type (str | None): User type
+        broadcaster_type (str | None): User&#39;s range
+        description (str | None): User&#39;s description
+        profile_image_url (str | None): URL of the user&#39;s profile image
+        offline_image_url (str | None): URL of the image that is displayed when the user is not on stream
+        view_count (int | None): Number of user viewers
+        email (str | None): The user’s verified email address
+        created_at (datetime | None): The UTC date and time that the user’s account was created
+            The timestamp is in RFC3339 format
     &#34;&#34;&#34;
 
     user_id: int
     login: str
     display_name: str
-    user_type: str = &#34;&#34;
-    broadcaster_type: str = &#34;&#34;
-    description: str = &#34;&#34;
-    profile_image_url: str = &#34;&#34;
-    offline_image_url: str = &#34;&#34;
-    view_count: int = 0</code></pre>
+    user_type: str | None = None
+    broadcaster_type: str | None = None
+    description: str | None = None
+    profile_image_url: str | None = None
+    offline_image_url: str | None = None
+    view_count: int | None = None
+    email: str | None = None
+    created_at: datetime | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -68,31 +74,28 @@ class User:
 <dl>
 <dt id="twitchpy.dataclasses.user.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>user_id: int, login: str, display_name: str, user_type: str = '', broadcaster_type: str = '', description: str = '', profile_image_url: str = '', offline_image_url: str = '', view_count: int = 0)</span>
+<span>(</span><span>user_id: int, login: str, display_name: str, user_type: str | None = None, broadcaster_type: str | None = None, description: str | None = None, profile_image_url: str | None = None, offline_image_url: str | None = None, view_count: int | None = None, email: str | None = None, created_at: datetime.datetime | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an user</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>id</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>User's ID</dd>
 <dt><strong><code>login</code></strong> :&ensp;<code>str</code></dt>
 <dd>User's login</dd>
 <dt><strong><code>display_name</code></strong> :&ensp;<code>str</code></dt>
 <dd>User's name</dd>
-<dt><strong><code>type</code></strong> :&ensp;<code>str</code></dt>
-<dd>User type</dd>
-<dt><strong><code>broadcaster_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's range</dd>
-<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
-<dd>User's description</dd>
-<dt><strong><code>profile_image_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL of the user's profile image</dd>
-<dt><strong><code>offline_image_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL of the image that is displayed when the user is not on stream</dd>
-<dt><strong><code>view_count</code></strong> :&ensp;<code>int</code></dt>
-<dd>Number of user viewers</dd>
-</dl></div>
+</dl>
+<p>user_type (str | None): User type
+broadcaster_type (str | None): User's range
+description (str | None): User's description
+profile_image_url (str | None): URL of the user's profile image
+offline_image_url (str | None): URL of the image that is displayed when the user is not on stream
+view_count (int | None): Number of user viewers
+email (str | None): The user’s verified email address
+created_at (datetime | None): The UTC date and time that the user’s account was created
+The timestamp is in RFC3339 format</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -103,34 +106,43 @@ class User:
     Represents an user
 
     Attributes:
-        id (int): User&#39;s ID
+        user_id (int): User&#39;s ID
         login (str): User&#39;s login
         display_name (str): User&#39;s name
-        type (str): User type
-        broadcaster_type (str): User&#39;s range
-        description (str): User&#39;s description
-        profile_image_url (str): URL of the user&#39;s profile image
-        offline_image_url (str): URL of the image that is displayed when the user is not on stream
-        view_count (int): Number of user viewers
+        user_type (str | None): User type
+        broadcaster_type (str | None): User&#39;s range
+        description (str | None): User&#39;s description
+        profile_image_url (str | None): URL of the user&#39;s profile image
+        offline_image_url (str | None): URL of the image that is displayed when the user is not on stream
+        view_count (int | None): Number of user viewers
+        email (str | None): The user’s verified email address
+        created_at (datetime | None): The UTC date and time that the user’s account was created
+            The timestamp is in RFC3339 format
     &#34;&#34;&#34;
 
     user_id: int
     login: str
     display_name: str
-    user_type: str = &#34;&#34;
-    broadcaster_type: str = &#34;&#34;
-    description: str = &#34;&#34;
-    profile_image_url: str = &#34;&#34;
-    offline_image_url: str = &#34;&#34;
-    view_count: int = 0</code></pre>
+    user_type: str | None = None
+    broadcaster_type: str | None = None
+    description: str | None = None
+    profile_image_url: str | None = None
+    offline_image_url: str | None = None
+    view_count: int | None = None
+    email: str | None = None
+    created_at: datetime | None = None</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.user.User.broadcaster_type"><code class="name">var <span class="ident">broadcaster_type</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.user.User.broadcaster_type"><code class="name">var <span class="ident">broadcaster_type</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.user.User.description"><code class="name">var <span class="ident">description</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.user.User.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.user.User.description"><code class="name">var <span class="ident">description</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -138,15 +150,19 @@ class User:
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="twitchpy.dataclasses.user.User.email"><code class="name">var <span class="ident">email</span> : str | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt id="twitchpy.dataclasses.user.User.login"><code class="name">var <span class="ident">login</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.user.User.offline_image_url"><code class="name">var <span class="ident">offline_image_url</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.user.User.offline_image_url"><code class="name">var <span class="ident">offline_image_url</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.user.User.profile_image_url"><code class="name">var <span class="ident">profile_image_url</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.user.User.profile_image_url"><code class="name">var <span class="ident">profile_image_url</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -154,11 +170,11 @@ class User:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.user.User.user_type"><code class="name">var <span class="ident">user_type</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.user.User.user_type"><code class="name">var <span class="ident">user_type</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.user.User.view_count"><code class="name">var <span class="ident">view_count</span> : int</code></dt>
+<dt id="twitchpy.dataclasses.user.User.view_count"><code class="name">var <span class="ident">view_count</span> : int | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -184,8 +200,10 @@ class User:
 <h4><code><a title="twitchpy.dataclasses.user.User" href="#twitchpy.dataclasses.user.User">User</a></code></h4>
 <ul class="two-column">
 <li><code><a title="twitchpy.dataclasses.user.User.broadcaster_type" href="#twitchpy.dataclasses.user.User.broadcaster_type">broadcaster_type</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.created_at" href="#twitchpy.dataclasses.user.User.created_at">created_at</a></code></li>
 <li><code><a title="twitchpy.dataclasses.user.User.description" href="#twitchpy.dataclasses.user.User.description">description</a></code></li>
 <li><code><a title="twitchpy.dataclasses.user.User.display_name" href="#twitchpy.dataclasses.user.User.display_name">display_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.user.User.email" href="#twitchpy.dataclasses.user.User.email">email</a></code></li>
 <li><code><a title="twitchpy.dataclasses.user.User.login" href="#twitchpy.dataclasses.user.User.login">login</a></code></li>
 <li><code><a title="twitchpy.dataclasses.user.User.offline_image_url" href="#twitchpy.dataclasses.user.User.offline_image_url">offline_image_url</a></code></li>
 <li><code><a title="twitchpy.dataclasses.user.User.profile_image_url" href="#twitchpy.dataclasses.user.User.profile_image_url">profile_image_url</a></code></li>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.dataclasses.team API documentation</title>
+<title>twitchpy.dataclasses.unban_request API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.team</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.unban_request</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -29,37 +29,36 @@
 <pre><code class="python">from dataclasses import dataclass
 from datetime import datetime
 
-from ..dataclasses import User
+from ..dataclasses import Channel, User
 
 
 @dataclass
-class Team:
+class UnbanRequest:
     &#34;&#34;&#34;
-    Represents a team
+    Represents an unban request
 
     Attributes:
-        users (list[User]): Users in the team
-        background_image_url (str): URL of the team background image
-        banner (str): URL for the team banner
-        created_at (datetime): Date and time the team was created
-        updated_at (datetime): Date and time the team was last updated
-        info (str): Team description
-        thumbnail_url (str): Image URL for the team logo
-        team_name (str): Team name
-        team_display_name (str): Team display name
-        team_id (str): Team ID
+        request_id (str): Unban request ID
+        channel (Channel): Channel that is receiving the unban request
+        moderator (User): Moderator who approved/denied the request
+        user (User): User who is asking for an unban
+        text (str): Text of the request from the requesting user
+        status (str): Status of the request
+            Possible values: pending, approved, denied, acknowledged, canceled
+        created_at (datetime): Timestamp of when the unban request was created
+        resolved_at (datetime): Timestamp of when moderator/broadcaster approved or denied the request
+        resolution_text (str): Text input by the resolver (moderator) of the unban request
     &#34;&#34;&#34;
 
-    users: list[User]
-    background_image_url: str
-    banner: str
+    request_id: str
+    channel: Channel
+    moderator: User
+    user: User
+    text: str
+    status: str
     created_at: datetime
-    updated_at: datetime
-    info: str
-    thumbnail_url: str
-    team_name: str
-    team_display_name: str
-    team_id: str</code></pre>
+    resolved_at: datetime
+    resolution_text: str</code></pre>
 </details>
 </section>
 <section>
@@ -71,107 +70,101 @@ class Team:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.team.Team"><code class="flex name class">
-<span>class <span class="ident">Team</span></span>
-<span>(</span><span>users: list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>], background_image_url: str, banner: str, created_at: datetime.datetime, updated_at: datetime.datetime, info: str, thumbnail_url: str, team_name: str, team_display_name: str, team_id: str)</span>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest"><code class="flex name class">
+<span>class <span class="ident">UnbanRequest</span></span>
+<span>(</span><span>request_id: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, moderator: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, user: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, text: str, status: str, created_at: datetime.datetime, resolved_at: datetime.datetime, resolution_text: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a team</p>
+<div class="desc"><p>Represents an unban request</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>users</code></strong> :&ensp;<code>list[User]</code></dt>
-<dd>Users in the team</dd>
-<dt><strong><code>background_image_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL of the team background image</dd>
-<dt><strong><code>banner</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL for the team banner</dd>
+<dt><strong><code>request_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Unban request ID</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>Channel that is receiving the unban request</dd>
+<dt><strong><code>moderator</code></strong> :&ensp;<code>User</code></dt>
+<dd>Moderator who approved/denied the request</dd>
+<dt><strong><code>user</code></strong> :&ensp;<code>User</code></dt>
+<dd>User who is asking for an unban</dd>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text of the request from the requesting user</dd>
+<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
+<dd>Status of the request
+Possible values: pending, approved, denied, acknowledged, canceled</dd>
 <dt><strong><code>created_at</code></strong> :&ensp;<code>datetime</code></dt>
-<dd>Date and time the team was created</dd>
-<dt><strong><code>updated_at</code></strong> :&ensp;<code>datetime</code></dt>
-<dd>Date and time the team was last updated</dd>
-<dt><strong><code>info</code></strong> :&ensp;<code>str</code></dt>
-<dd>Team description</dd>
-<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
-<dd>Image URL for the team logo</dd>
-<dt><strong><code>team_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Team name</dd>
-<dt><strong><code>team_display_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>Team display name</dd>
-<dt><strong><code>team_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>Team ID</dd>
+<dd>Timestamp of when the unban request was created</dd>
+<dt><strong><code>resolved_at</code></strong> :&ensp;<code>datetime</code></dt>
+<dd>Timestamp of when moderator/broadcaster approved or denied the request</dd>
+<dt><strong><code>resolution_text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text input by the resolver (moderator) of the unban request</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Team:
+class UnbanRequest:
     &#34;&#34;&#34;
-    Represents a team
+    Represents an unban request
 
     Attributes:
-        users (list[User]): Users in the team
-        background_image_url (str): URL of the team background image
-        banner (str): URL for the team banner
-        created_at (datetime): Date and time the team was created
-        updated_at (datetime): Date and time the team was last updated
-        info (str): Team description
-        thumbnail_url (str): Image URL for the team logo
-        team_name (str): Team name
-        team_display_name (str): Team display name
-        team_id (str): Team ID
+        request_id (str): Unban request ID
+        channel (Channel): Channel that is receiving the unban request
+        moderator (User): Moderator who approved/denied the request
+        user (User): User who is asking for an unban
+        text (str): Text of the request from the requesting user
+        status (str): Status of the request
+            Possible values: pending, approved, denied, acknowledged, canceled
+        created_at (datetime): Timestamp of when the unban request was created
+        resolved_at (datetime): Timestamp of when moderator/broadcaster approved or denied the request
+        resolution_text (str): Text input by the resolver (moderator) of the unban request
     &#34;&#34;&#34;
 
-    users: list[User]
-    background_image_url: str
-    banner: str
+    request_id: str
+    channel: Channel
+    moderator: User
+    user: User
+    text: str
+    status: str
     created_at: datetime
-    updated_at: datetime
-    info: str
-    thumbnail_url: str
-    team_name: str
-    team_display_name: str
-    team_id: str</code></pre>
+    resolved_at: datetime
+    resolution_text: str</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.team.Team.background_image_url"><code class="name">var <span class="ident">background_image_url</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.banner"><code class="name">var <span class="ident">banner</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.moderator"><code class="name">var <span class="ident">moderator</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.info"><code class="name">var <span class="ident">info</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.request_id"><code class="name">var <span class="ident">request_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.team_display_name"><code class="name">var <span class="ident">team_display_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.resolution_text"><code class="name">var <span class="ident">resolution_text</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.team_id"><code class="name">var <span class="ident">team_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.resolved_at"><code class="name">var <span class="ident">resolved_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.team_name"><code class="name">var <span class="ident">team_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.status"><code class="name">var <span class="ident">status</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.thumbnail_url"><code class="name">var <span class="ident">thumbnail_url</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.team.Team.updated_at"><code class="name">var <span class="ident">updated_at</span> : datetime.datetime</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.team.Team.users"><code class="name">var <span class="ident">users</span> : list[<a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>]</code></dt>
+<dt id="twitchpy.dataclasses.unban_request.UnbanRequest.user"><code class="name">var <span class="ident">user</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -194,18 +187,17 @@ class Team:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.team.Team" href="#twitchpy.dataclasses.team.Team">Team</a></code></h4>
-<ul class="">
-<li><code><a title="twitchpy.dataclasses.team.Team.background_image_url" href="#twitchpy.dataclasses.team.Team.background_image_url">background_image_url</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.banner" href="#twitchpy.dataclasses.team.Team.banner">banner</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.created_at" href="#twitchpy.dataclasses.team.Team.created_at">created_at</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.info" href="#twitchpy.dataclasses.team.Team.info">info</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.team_display_name" href="#twitchpy.dataclasses.team.Team.team_display_name">team_display_name</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.team_id" href="#twitchpy.dataclasses.team.Team.team_id">team_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.team_name" href="#twitchpy.dataclasses.team.Team.team_name">team_name</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.thumbnail_url" href="#twitchpy.dataclasses.team.Team.thumbnail_url">thumbnail_url</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.updated_at" href="#twitchpy.dataclasses.team.Team.updated_at">updated_at</a></code></li>
-<li><code><a title="twitchpy.dataclasses.team.Team.users" href="#twitchpy.dataclasses.team.Team.users">users</a></code></li>
+<h4><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest" href="#twitchpy.dataclasses.unban_request.UnbanRequest">UnbanRequest</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.channel" href="#twitchpy.dataclasses.unban_request.UnbanRequest.channel">channel</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.created_at" href="#twitchpy.dataclasses.unban_request.UnbanRequest.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.moderator" href="#twitchpy.dataclasses.unban_request.UnbanRequest.moderator">moderator</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.request_id" href="#twitchpy.dataclasses.unban_request.UnbanRequest.request_id">request_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.resolution_text" href="#twitchpy.dataclasses.unban_request.UnbanRequest.resolution_text">resolution_text</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.resolved_at" href="#twitchpy.dataclasses.unban_request.UnbanRequest.resolved_at">resolved_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.status" href="#twitchpy.dataclasses.unban_request.UnbanRequest.status">status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.text" href="#twitchpy.dataclasses.unban_request.UnbanRequest.text">text</a></code></li>
+<li><code><a title="twitchpy.dataclasses.unban_request.UnbanRequest.user" href="#twitchpy.dataclasses.unban_request.UnbanRequest.user">user</a></code></li>
 </ul>
 </li>
 </ul>

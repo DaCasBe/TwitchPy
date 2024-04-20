@@ -38,30 +38,32 @@ class Emote:
         emote_id (str): An ID that identifies the emote
         name (str): The name of the emote
             This is the name that viewers type in the chat window to get the emote to appear
-        images (dict): Contains the image URLs for the emote
-            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
         emote_format (list[str]): The formats that the emote is available in
             The possible formats are: animated, static
         scale (list[str]): The sizes that the emote is available in
             Possible sizes are: 1.0, 2.0, 3.0
         theme_mode (list[str]): The background themes that the emote is available in
             Possible themes are: dark, light
-        tier (str): The subscriber tier at which the emote is unlocked
+        images (dict | None): Contains the image URLs for the emote
+            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
+        tier (str | None): The subscriber tier at which the emote is unlocked
             This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
-        emote_type (str): The type of emote
+        emote_type (str | None): The type of emote
             The possible values are: bitstier, follower, subscriptions
-        emote_set_id (str): An ID that identifies the emote set that the emote belongs to
+        emote_set_id (str | None): An ID that identifies the emote set that the emote belongs to
+        owner_id (str | None): The ID of the broadcaster who owns the emote
     &#34;&#34;&#34;
 
     emote_id: str
     name: str
-    images: dict
     emote_format: list[str]
     scale: list[str]
     theme_mode: list[str]
-    tier: str = &#34;&#34;
-    emote_type: str = &#34;&#34;
-    emote_set_id: str = &#34;&#34;</code></pre>
+    images: dict | None = None
+    tier: str | None = None
+    emote_type: str | None = None
+    emote_set_id: str | None = None
+    owner_id: str | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -75,7 +77,7 @@ class Emote:
 <dl>
 <dt id="twitchpy.dataclasses.emote.Emote"><code class="flex name class">
 <span>class <span class="ident">Emote</span></span>
-<span>(</span><span>emote_id: str, name: str, images: dict, emote_format: list[str], scale: list[str], theme_mode: list[str], tier: str = '', emote_type: str = '', emote_set_id: str = '')</span>
+<span>(</span><span>emote_id: str, name: str, emote_format: list[str], scale: list[str], theme_mode: list[str], images: dict | None = None, tier: str | None = None, emote_type: str | None = None, emote_set_id: str | None = None, owner_id: str | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an emote</p>
@@ -86,9 +88,6 @@ class Emote:
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the emote
 This is the name that viewers type in the chat window to get the emote to appear</dd>
-<dt><strong><code>images</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Contains the image URLs for the emote
-These image URLs will always provide a static (i.e., non-animated) emote image with a light background</dd>
 <dt><strong><code>emote_format</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>The formats that the emote is available in
 The possible formats are: animated, static</dd>
@@ -98,15 +97,15 @@ Possible sizes are: 1.0, 2.0, 3.0</dd>
 <dt><strong><code>theme_mode</code></strong> :&ensp;<code>list[str]</code></dt>
 <dd>The background themes that the emote is available in
 Possible themes are: dark, light</dd>
-<dt><strong><code>tier</code></strong> :&ensp;<code>str</code></dt>
-<dd>The subscriber tier at which the emote is unlocked
-This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string</dd>
-<dt><strong><code>emote_type</code></strong> :&ensp;<code>str</code></dt>
-<dd>The type of emote
-The possible values are: bitstier, follower, subscriptions</dd>
-<dt><strong><code>emote_set_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the emote set that the emote belongs to</dd>
-</dl></div>
+</dl>
+<p>images (dict | None): Contains the image URLs for the emote
+These image URLs will always provide a static (i.e., non-animated) emote image with a light background
+tier (str | None): The subscriber tier at which the emote is unlocked
+This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
+emote_type (str | None): The type of emote
+The possible values are: bitstier, follower, subscriptions
+emote_set_id (str | None): An ID that identifies the emote set that the emote belongs to
+owner_id (str | None): The ID of the broadcaster who owns the emote</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -120,30 +119,32 @@ class Emote:
         emote_id (str): An ID that identifies the emote
         name (str): The name of the emote
             This is the name that viewers type in the chat window to get the emote to appear
-        images (dict): Contains the image URLs for the emote
-            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
         emote_format (list[str]): The formats that the emote is available in
             The possible formats are: animated, static
         scale (list[str]): The sizes that the emote is available in
             Possible sizes are: 1.0, 2.0, 3.0
         theme_mode (list[str]): The background themes that the emote is available in
             Possible themes are: dark, light
-        tier (str): The subscriber tier at which the emote is unlocked
+        images (dict | None): Contains the image URLs for the emote
+            These image URLs will always provide a static (i.e., non-animated) emote image with a light background
+        tier (str | None): The subscriber tier at which the emote is unlocked
             This field contains the tier information only if emote_type is set to subscriptions, otherwise, it’s an empty string
-        emote_type (str): The type of emote
+        emote_type (str | None): The type of emote
             The possible values are: bitstier, follower, subscriptions
-        emote_set_id (str): An ID that identifies the emote set that the emote belongs to
+        emote_set_id (str | None): An ID that identifies the emote set that the emote belongs to
+        owner_id (str | None): The ID of the broadcaster who owns the emote
     &#34;&#34;&#34;
 
     emote_id: str
     name: str
-    images: dict
     emote_format: list[str]
     scale: list[str]
     theme_mode: list[str]
-    tier: str = &#34;&#34;
-    emote_type: str = &#34;&#34;
-    emote_set_id: str = &#34;&#34;</code></pre>
+    images: dict | None = None
+    tier: str | None = None
+    emote_type: str | None = None
+    emote_set_id: str | None = None
+    owner_id: str | None = None</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
@@ -155,19 +156,23 @@ class Emote:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.emote.Emote.emote_set_id"><code class="name">var <span class="ident">emote_set_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.emote.Emote.emote_set_id"><code class="name">var <span class="ident">emote_set_id</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.emote.Emote.emote_type"><code class="name">var <span class="ident">emote_type</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.emote.Emote.emote_type"><code class="name">var <span class="ident">emote_type</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.emote.Emote.images"><code class="name">var <span class="ident">images</span> : dict</code></dt>
+<dt id="twitchpy.dataclasses.emote.Emote.images"><code class="name">var <span class="ident">images</span> : dict | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 <dt id="twitchpy.dataclasses.emote.Emote.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.emote.Emote.owner_id"><code class="name">var <span class="ident">owner_id</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -179,7 +184,7 @@ class Emote:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.emote.Emote.tier"><code class="name">var <span class="ident">tier</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.emote.Emote.tier"><code class="name">var <span class="ident">tier</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -210,6 +215,7 @@ class Emote:
 <li><code><a title="twitchpy.dataclasses.emote.Emote.emote_type" href="#twitchpy.dataclasses.emote.Emote.emote_type">emote_type</a></code></li>
 <li><code><a title="twitchpy.dataclasses.emote.Emote.images" href="#twitchpy.dataclasses.emote.Emote.images">images</a></code></li>
 <li><code><a title="twitchpy.dataclasses.emote.Emote.name" href="#twitchpy.dataclasses.emote.Emote.name">name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.emote.Emote.owner_id" href="#twitchpy.dataclasses.emote.Emote.owner_id">owner_id</a></code></li>
 <li><code><a title="twitchpy.dataclasses.emote.Emote.scale" href="#twitchpy.dataclasses.emote.Emote.scale">scale</a></code></li>
 <li><code><a title="twitchpy.dataclasses.emote.Emote.theme_mode" href="#twitchpy.dataclasses.emote.Emote.theme_mode">theme_mode</a></code></li>
 <li><code><a title="twitchpy.dataclasses.emote.Emote.tier" href="#twitchpy.dataclasses.emote.Emote.tier">tier</a></code></li>

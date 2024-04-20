@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>twitchpy.dataclasses.badge API documentation</title>
+<title>twitchpy.dataclasses.conduit_shard API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.badge</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.conduit_shard</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -28,21 +28,24 @@
 </summary>
 <pre><code class="python">from dataclasses import dataclass
 
-from ..dataclasses import BadgeVersion
+from ..dataclasses import Transport
 
 
 @dataclass
-class Badge:
+class ConduitShard:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a conduit&#39;s shard
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        shard_id (str): Shard ID
+        status (str): The shard status
+            Possible values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect
+        transport (Transport): The transport details used to send the notifications
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    shard_id: str
+    status: str
+    transport: Transport</code></pre>
 </details>
 </section>
 <section>
@@ -54,43 +57,53 @@ class Badge:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge"><code class="flex name class">
-<span>class <span class="ident">Badge</span></span>
-<span>(</span><span>set_id: str, versions: list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>])</span>
+<dt id="twitchpy.dataclasses.conduit_shard.ConduitShard"><code class="flex name class">
+<span>class <span class="ident">ConduitShard</span></span>
+<span>(</span><span>shard_id: str, status: str, transport: <a title="twitchpy.dataclasses.transport.Transport" href="transport.html#twitchpy.dataclasses.transport.Transport">Transport</a>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a chat badge</p>
+<div class="desc"><p>Represents a conduit's shard</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>set_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID for the chat badge set</dd>
-<dt><strong><code>versions</code></strong> :&ensp;<code>list[BadgeVersion]</code></dt>
-<dd>Chat badge versions for the set</dd>
+<dt><strong><code>shard_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Shard ID</dd>
+<dt><strong><code>status</code></strong> :&ensp;<code>str</code></dt>
+<dd>The shard status
+Possible values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect</dd>
+<dt><strong><code>transport</code></strong> :&ensp;<code>Transport</code></dt>
+<dd>The transport details used to send the notifications</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Badge:
+class ConduitShard:
     &#34;&#34;&#34;
-    Represents a chat badge
+    Represents a conduit&#39;s shard
 
     Attributes:
-        set_id (str): ID for the chat badge set
-        versions (list[BadgeVersion]): Chat badge versions for the set
+        shard_id (str): Shard ID
+        status (str): The shard status
+            Possible values: enabled, webhook_callback_verification_pending, webhook_callback_verification_failed, notification_failures_exceeded, websocket_disconnected, websocket_failed_ping_pong, websocket_received_inbound_traffic, websocket_internal_error, websocket_network_timeout, websocket_network_error, websocket_failed_to_reconnect
+        transport (Transport): The transport details used to send the notifications
     &#34;&#34;&#34;
 
-    set_id: str
-    versions: list[BadgeVersion]</code></pre>
+    shard_id: str
+    status: str
+    transport: Transport</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.badge.Badge.set_id"><code class="name">var <span class="ident">set_id</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.conduit_shard.ConduitShard.shard_id"><code class="name">var <span class="ident">shard_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.badge.Badge.versions"><code class="name">var <span class="ident">versions</span> : list[<a title="twitchpy.dataclasses.badge_version.BadgeVersion" href="badge_version.html#twitchpy.dataclasses.badge_version.BadgeVersion">BadgeVersion</a>]</code></dt>
+<dt id="twitchpy.dataclasses.conduit_shard.ConduitShard.status"><code class="name">var <span class="ident">status</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.conduit_shard.ConduitShard.transport"><code class="name">var <span class="ident">transport</span> : <a title="twitchpy.dataclasses.transport.Transport" href="transport.html#twitchpy.dataclasses.transport.Transport">Transport</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -113,10 +126,11 @@ class Badge:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.badge.Badge" href="#twitchpy.dataclasses.badge.Badge">Badge</a></code></h4>
+<h4><code><a title="twitchpy.dataclasses.conduit_shard.ConduitShard" href="#twitchpy.dataclasses.conduit_shard.ConduitShard">ConduitShard</a></code></h4>
 <ul class="">
-<li><code><a title="twitchpy.dataclasses.badge.Badge.set_id" href="#twitchpy.dataclasses.badge.Badge.set_id">set_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.badge.Badge.versions" href="#twitchpy.dataclasses.badge.Badge.versions">versions</a></code></li>
+<li><code><a title="twitchpy.dataclasses.conduit_shard.ConduitShard.shard_id" href="#twitchpy.dataclasses.conduit_shard.ConduitShard.shard_id">shard_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.conduit_shard.ConduitShard.status" href="#twitchpy.dataclasses.conduit_shard.ConduitShard.status">status</a></code></li>
+<li><code><a title="twitchpy.dataclasses.conduit_shard.ConduitShard.transport" href="#twitchpy.dataclasses.conduit_shard.ConduitShard.transport">transport</a></code></li>
 </ul>
 </li>
 </ul>

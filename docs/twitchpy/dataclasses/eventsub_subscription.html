@@ -27,6 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from dataclasses import dataclass
+from datetime import datetime
+
+from ..dataclasses import Transport
 
 
 @dataclass
@@ -42,7 +45,7 @@ class EventSubSubscription:
         version (str): The version of the subscription type
         condition (dict): The subscription’s parameter values
         created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-        transport (dict): The transport details used to send you notifications
+        transport (Transport): The transport details used to send you notifications
         cost (int): The amount that the subscription counts against your limit
     &#34;&#34;&#34;
 
@@ -51,8 +54,8 @@ class EventSubSubscription:
     subscription_type: str
     version: str
     condition: dict
-    created_at: str
-    transport: dict
+    created_at: datetime
+    transport: Transport
     cost: int</code></pre>
 </details>
 </section>
@@ -67,7 +70,7 @@ class EventSubSubscription:
 <dl>
 <dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription"><code class="flex name class">
 <span>class <span class="ident">EventSubSubscription</span></span>
-<span>(</span><span>subscription_id: str, status: str, subscription_type: str, version: str, condition: dict, created_at: str, transport: dict, cost: int)</span>
+<span>(</span><span>subscription_id: str, status: str, subscription_type: str, version: str, condition: dict, created_at: datetime.datetime, transport: <a title="twitchpy.dataclasses.transport.Transport" href="transport.html#twitchpy.dataclasses.transport.Transport">Transport</a>, cost: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an EventSub subscription</p>
@@ -86,7 +89,7 @@ Possible values are: enabled, webhook_callback_verification_pending, webhook_cal
 <dd>The subscription’s parameter values</dd>
 <dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
 <dd>The RFC 3339 timestamp indicating when the subscription was created</dd>
-<dt><strong><code>transport</code></strong> :&ensp;<code>dict</code></dt>
+<dt><strong><code>transport</code></strong> :&ensp;<code>Transport</code></dt>
 <dd>The transport details used to send you notifications</dd>
 <dt><strong><code>cost</code></strong> :&ensp;<code>int</code></dt>
 <dd>The amount that the subscription counts against your limit</dd>
@@ -108,7 +111,7 @@ class EventSubSubscription:
         version (str): The version of the subscription type
         condition (dict): The subscription’s parameter values
         created_at (str): The RFC 3339 timestamp indicating when the subscription was created
-        transport (dict): The transport details used to send you notifications
+        transport (Transport): The transport details used to send you notifications
         cost (int): The amount that the subscription counts against your limit
     &#34;&#34;&#34;
 
@@ -117,8 +120,8 @@ class EventSubSubscription:
     subscription_type: str
     version: str
     condition: dict
-    created_at: str
-    transport: dict
+    created_at: datetime
+    transport: Transport
     cost: int</code></pre>
 </details>
 <h3>Class variables</h3>
@@ -131,7 +134,7 @@ class EventSubSubscription:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.created_at"><code class="name">var <span class="ident">created_at</span> : datetime.datetime</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -147,7 +150,7 @@ class EventSubSubscription:
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.transport"><code class="name">var <span class="ident">transport</span> : dict</code></dt>
+<dt id="twitchpy.dataclasses.eventsub_subscription.EventSubSubscription.transport"><code class="name">var <span class="ident">transport</span> : <a title="twitchpy.dataclasses.transport.Transport" href="transport.html#twitchpy.dataclasses.transport.Transport">Transport</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
