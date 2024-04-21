@@ -96,6 +96,11 @@ class Bot:
         self.custom_methods_after_delete_message = {}
         self.methods_after_delete_message_to_remove = []
 
+        self.custom_methods_before_bot_connected = {}
+        self.methods_before_bot_connected_to_remove = []
+        self.custom_methods_after_bot_connected = {}
+        self.methods_after_bot_connected_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -398,6 +403,28 @@ class Bot:
 
         self.methods_after_delete_message_to_remove = []
 
+    def __execute_methods_before_bot_connected(self) -> None:
+        for method in self.custom_methods_before_bot_connected.values():
+            method()
+
+    def __remove_methods_before_bot_connected(self) -> None:
+        for method in self.methods_before_bot_connected_to_remove:
+            if method in self.custom_methods_before_bot_connected:
+                self.custom_methods_before_bot_connected.pop(method)
+
+        self.methods_before_bot_connected_to_remove = []
+
+    def __execute_methods_after_bot_connected(self) -> None:
+        for method in self.custom_methods_after_bot_connected.values():
+            method()
+
+    def __remove_methods_after_bot_connected(self) -> None:
+        for method in self.methods_after_bot_connected_to_remove:
+            if method in self.custom_methods_after_bot_connected:
+                self.custom_methods_after_bot_connected.pop(method)
+
+        self.methods_after_bot_connected_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -461,6 +488,14 @@ class Bot:
                     message.channel, message.text
                 )
                 self.__remove_methods_after_delete_message()
+
+        if message.irc_command == "GLOBALUSERSTATE":
+            print(f"{message.irc_command} >")
+
+            self.__execute_methods_before_bot_connected()
+            self.__remove_methods_before_bot_connected()
+            self.__execute_methods_after_bot_connected()
+            self.__remove_methods_after_bot_connected()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1106,25 +1141,127 @@ class Bot:
         self.methods_after_commands_to_remove.append(name)
 
     def add_method_before_clearchat(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before each chat clearing
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before each chat clearing
+        """
+
         self.custom_methods_before_clearchat[name] = method
 
     def remove_method_before_clearchat(self, name: str) -> None:
+        """
+        Removes a method that is executed before each chat clearing
+
+        Args:
+            name (str): Method's name
+        """
+
         self.methods_before_clearchat_to_remove.append(name)
 
     def add_method_after_clearchat(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after each chat clearing
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after each chat clearing
+        """
+
         self.custom_methods_after_clearchat[name] = method
 
     def remove_method_after_clearchat(self, name: str) -> None:
+        """
+        Removes a method that is executed after each chat clearing
+
+        Args:
+            name (str): Method's name
+        """
+
         self.methods_after_clearchat_to_remove.append(name)
 
     def add_method_before_delete_message(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before each time a message is deleted
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before each time a message is deleted
+        """
+
         self.custom_methods_before_delete_message[name] = method
 
     def remove_method_before_delete_message(self, name: str) -> None:
+        """
+        Removes a method that is executed before each time a message is deleted
+
+        Args:
+            name (str): Method's name
+        """
+
         self.methods_before_delete_message_to_remove.append(name)
 
     def add_method_after_delete_message(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after each time a message is deleted
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after each time a message is deleted
+        """
+
         self.custom_methods_after_delete_message[name] = method
 
     def remove_method_after_delete_message(self, name: str) -> None:
+        """
+        Removes a method that is executed after each time a message is deleted
+
+        Args:
+            name (str): Method's name
+        """
+
         self.methods_after_delete_message_to_remove.append(name)
+
+    def add_method_before_bot_connected(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before a bot connects to a chat
+        """
+
+        self.custom_methods_before_bot_connected[name] = method
+
+    def remove_method_before_bot_connected(self, name: str) -> None:
+        """
+        Removes a method that is executed before a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_before_bot_connected_to_remove.append(name)
+
+    def add_method_after_bot_connected(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a bot connects to a chat
+        """
+
+        self.custom_methods_after_bot_connected[name] = method
+
+    def remove_method_after_bot_connected(self, name: str) -> None:
+        """
+        Removes a method that is executed after a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_bot_connected_to_remove.append(name)
