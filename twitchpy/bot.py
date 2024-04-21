@@ -70,6 +70,11 @@ class Bot:
         self.custom_methods_after_join_channel = {}
         self.methods_after_join_channel_to_remove = []
 
+        self.custom_methods_before_leave_channel = {}
+        self.methods_before_leave_channel_to_remove = []
+        self.custom_methods_after_leave_channel = {}
+        self.methods_after_leave_channel_to_remove = []
+
         self.custom_checks = {}
         self.custom_listeners = {}
         self.listeners_to_remove = []
@@ -92,6 +97,9 @@ class Bot:
 
     def __send_nick(self, username: str) -> None:
         self.__send_command(f"NICK {username}")
+
+    def __send_part(self, channel: str) -> None:
+        self.__send_command(f"PART #{channel}")
 
     def __send_privmsg(self, channel: str, text: str) -> None:
         self.__send_command(f"PRIVMSG #{channel} :{text}")
@@ -117,6 +125,16 @@ class Bot:
 
         self.__remove_methods_before_join_channel()
         self.__remove_methods_after_join_channel()
+
+    def leave_channel(self, channel: str) -> None:
+        self.__execute_methods_before_leave_channel(channel)
+
+        self.__send_part(channel)
+
+        self.__execute_methods_after_leave_channel(channel)
+
+        self.__remove_methods_before_leave_channel()
+        self.__remove_methods_after_leave_channel()
 
     def __connect(self) -> None:
         self.irc.settimeout(_DEFAULT_TIMEOUT)
@@ -236,6 +254,28 @@ class Bot:
 
         self.methods_after_join_channel_to_remove = []
 
+    def __execute_methods_before_leave_channel(self, channel: str) -> None:
+        for method in self.custom_methods_before_leave_channel:
+            method(channel)
+
+    def __remove_methods_before_leave_channel(self) -> None:
+        for method in self.methods_before_leave_channel_to_remove:
+            if method in self.custom_methods_before_leave_channel:
+                self.custom_methods_before_leave_channel.pop(method)
+
+        self.methods_before_leave_channel_to_remove = []
+
+    def __execute_methods_after_leave_channel(self, channel: str) -> None:
+        for method in self.custom_methods_after_leave_channel:
+            method(channel)
+
+    def __remove_methods_after_leave_channel(self) -> None:
+        for method in self.methods_after_leave_channel_to_remove:
+            if method in self.custom_methods_after_leave_channel:
+                self.custom_methods_after_leave_channel.pop(method)
+
+        self.methods_after_leave_channel_to_remove = []
+
     def __execute_listeners(self, message: Message) -> None:
         for listener in self.custom_listeners.values():
             listener(message)
@@ -277,6 +317,15 @@ class Bot:
 
         if message.irc_command == "NOTICE":
             print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+        if message.irc_command == "PART":
+            print(f"{message.irc_command} > [{message.channel}] {message.user}")
+
+            if message.channel is not None:
+                self.__execute_methods_after_leave_channel(message.channel)
+
+            self.__remove_methods_before_leave_channel()
+            self.__remove_methods_after_leave_channel()
 
         if message.irc_command == "PING":
             self.__send_command("PONG :tmi.twitch.tv")
@@ -825,6 +874,48 @@ class Bot:
         """
 
         self.methods_after_join_channel_to_remove.append(name)
+
+    def add_method_before_leave_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before leaving a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before leaving a channel
+        """
+
+        self.custom_methods_before_leave_channel[name] = method
+
+    def remove_method_before_leave_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed before leaving a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_before_leave_channel_to_remove.append(name)
+
+    def add_method_after_leave_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after leaving a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after leaving a channel
+        """
+
+        self.custom_methods_after_leave_channel[name] = method
+
+    def remove_method_after_leave_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed after leaving a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_leave_channel_to_remove.append(name)
 
     def add_method_after_commands(self, name: str, method: Callable) -> None:
         """
