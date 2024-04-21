@@ -91,6 +91,11 @@ class Bot:
         self.custom_methods_after_clearchat = {}
         self.methods_after_clearchat_to_remove = []
 
+        self.custom_methods_before_delete_message = {}
+        self.methods_before_delete_message_to_remove = []
+        self.custom_methods_after_delete_message = {}
+        self.methods_after_delete_message_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -371,6 +376,28 @@ class Bot:
 
         self.methods_after_clearchat_to_remove = []
 
+    def __execute_methods_before_delete_message(self, channel: str, text: str) -> None:
+        for method in self.custom_methods_before_delete_message.values():
+            method(channel, text)
+
+    def __remove_methods_before_delete_message(self) -> None:
+        for method in self.methods_before_delete_message_to_remove:
+            if method in self.custom_methods_before_delete_message:
+                self.custom_methods_before_delete_message.pop(method)
+
+        self.methods_before_delete_message_to_remove = []
+
+    def __execute_methods_after_delete_message(self, channel: str, text: str) -> None:
+        for method in self.custom_methods_after_delete_message.values():
+            method(channel, text)
+
+    def __remove_methods_after_delete_message(self) -> None:
+        for method in self.methods_after_delete_message_to_remove:
+            if method in self.custom_methods_after_delete_message:
+                self.custom_methods_after_delete_message.pop(method)
+
+        self.methods_after_delete_message_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -412,13 +439,28 @@ class Bot:
                 self.__remove_methods_after_commands()
 
         if message.irc_command == "CLEARCHAT":
-            print(f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}")
+            print(
+                f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
+            )
 
             if message.channel is not None and message.text is not None:
                 self.__execute_methods_before_clearchat(message.channel, message.text)
                 self.__remove_methods_before_clearchat()
                 self.__execute_methods_after_clearchat(message.channel, message.text)
                 self.__remove_methods_after_clearchat()
+
+        if message.irc_command == "CLEARMSG":
+            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+            if message.channel is not None and message.text is not None:
+                self.__execute_methods_before_delete_message(
+                    message.channel, message.text
+                )
+                self.__remove_methods_before_delete_message()
+                self.__execute_methods_after_delete_message(
+                    message.channel, message.text
+                )
+                self.__remove_methods_after_delete_message()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1074,3 +1116,15 @@ class Bot:
 
     def remove_method_after_clearchat(self, name: str) -> None:
         self.methods_after_clearchat_to_remove.append(name)
+
+    def add_method_before_delete_message(self, name: str, method: Callable) -> None:
+        self.custom_methods_before_delete_message[name] = method
+
+    def remove_method_before_delete_message(self, name: str) -> None:
+        self.methods_before_delete_message_to_remove.append(name)
+
+    def add_method_after_delete_message(self, name: str, method: Callable) -> None:
+        self.custom_methods_after_delete_message[name] = method
+
+    def remove_method_after_delete_message(self, name: str) -> None:
+        self.methods_after_delete_message_to_remove.append(name)
