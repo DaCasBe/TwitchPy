@@ -101,11 +101,14 @@ class Bot:
     def __send_part(self, channel: str) -> None:
         self.__send_command(f"PART #{channel}")
 
+    def __send_pass(self, oauth_token: str) -> None:
+        self.__send_command(f"PASS {oauth_token}")
+
     def __send_privmsg(self, channel: str, text: str) -> None:
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
     def __login(self) -> None:
-        self.__send_command(f"PASS {self.__oauth_token}")
+        self.__send_pass(self.__oauth_token)
         self.__send_nick(self.username)
 
     def join_channel(self, channel: str) -> None:
