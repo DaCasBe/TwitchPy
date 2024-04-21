@@ -81,6 +81,9 @@ class Bot:
 
         self.irc.send((command + "\r\n").encode())
 
+    def __send_join(self, channel: str) -> None:
+        self.__send_command(f"JOIN #{channel}")
+
     def __send_privmsg(self, channel: str, text: str) -> None:
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
@@ -88,8 +91,15 @@ class Bot:
         self.__send_command(f"PASS {self.__oauth_token}")
         self.__send_command(f"NICK {self.username}")
 
-    def __join(self, channel: str) -> None:
-        self.__send_command(f"JOIN #{channel}")
+    def join_channel(self, channel: str) -> None:
+        """
+        Makes the bot to join into a channel
+
+        Args:
+            channel (str): The channel to join
+        """
+
+        self.__send_join(channel)
         self.__send_privmsg(channel, self.ready_message)
 
     def __connect(self) -> None:
@@ -99,7 +109,7 @@ class Bot:
         self.__login()
 
         for channel in self.channels:
-            self.__join(channel)
+            self.join_channel(channel)
 
     def run(self) -> None:
         """
