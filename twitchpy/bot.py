@@ -176,14 +176,14 @@ class Bot:
             channel = irc_args[hash_start][1:]
 
         message = Message(
-            prefix=prefix,
-            user=user,
-            channel=channel,
-            irc_command=irc_command,
-            irc_args=irc_args,
-            text=text,
-            text_command=text_command,
-            text_args=text_args,
+            prefix,
+            user,
+            channel,
+            irc_command,
+            irc_args,
+            text,
+            text_command,
+            text_args,
         )
 
         return message
