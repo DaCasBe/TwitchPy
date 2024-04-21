@@ -76,6 +76,7 @@ class Bot:
         self.methods_after_leave_channel_to_remove = []
 
         self.custom_checks = {}
+        self.checks_to_remove = []
         self.custom_listeners = {}
         self.listeners_to_remove = []
         self.custom_commands = {}
@@ -293,6 +294,13 @@ class Bot:
         for check in self.custom_checks.values():
             check()
 
+    def __remove_checks(self) -> None:
+        for check in self.checks_to_remove:
+            if check in self.custom_checks:
+                self.custom_checks.pop(check)
+
+        self.checks_to_remove = []
+
     def __execute_listeners(self, message: Message) -> None:
         for listener in self.custom_listeners.values():
             listener(message)
@@ -386,6 +394,7 @@ class Bot:
 
             except socket.timeout:
                 self.__execute_checks()
+                self.__remove_checks()
 
     def send(self, channel: str, text: str) -> None:
         """
@@ -929,7 +938,7 @@ class Bot:
             name (str): Check's name
         """
 
-        self.custom_checks.pop(name)
+        self.checks_to_remove.append(name)
 
     def add_listener(self, name: str, listener: Callable) -> None:
         """
@@ -995,7 +1004,7 @@ class Bot:
             name (str): Method's name
         """
 
-        self.custom_methods_before_commands.pop(name, None)
+        self.methods_before_commands_to_remove.append(name)
 
     def add_method_after_commands(self, name: str, method: Callable) -> None:
         """
@@ -1016,4 +1025,4 @@ class Bot:
             name (str): Method's name
         """
 
-        self.custom_methods_after_commands.pop(name, None)
+        self.methods_after_commands_to_remove.append(name)
