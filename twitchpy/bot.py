@@ -87,29 +87,28 @@ class Bot:
 
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
-    def __send_command(self, command: str) -> None:
-        if "PASS" not in command and "PONG" not in command:
-            print(f"< {command}")
+    def __send_command(self, command: str, args: str) -> None:
+        print(f"{command} < {args}")
 
         self.irc.send((command + "\r\n").encode())
 
     def __send_join(self, channel: str) -> None:
-        self.__send_command(f"JOIN #{channel}")
+        self.__send_command("JOIN", f"#{channel}")
 
     def __send_nick(self, username: str) -> None:
-        self.__send_command(f"NICK {username}")
+        self.__send_command("NICK", username)
 
     def __send_part(self, channel: str) -> None:
-        self.__send_command(f"PART #{channel}")
+        self.__send_command("PART", f"#{channel}")
 
     def __send_pass(self, oauth_token: str) -> None:
-        self.__send_command(f"PASS {oauth_token}")
+        self.__send_command("PASS", oauth_token)
 
     def __send_pong(self, text: str) -> None:
-        self.__send_command(f"PONG :{text}")
+        self.__send_command("PONG", f":{text}")
 
     def __send_privmsg(self, channel: str, text: str) -> None:
-        self.__send_command(f"PRIVMSG #{channel} :{text}")
+        self.__send_command("PRIVMSG", f"#{channel} :{text}")
 
     def __login(self) -> None:
         self.__send_pass(self.__oauth_token)
@@ -362,7 +361,9 @@ class Bot:
                 self.__send_pong(message.text)
 
         if message.irc_command == "PRIVMSG":
-            print(f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}")
+            print(
+                f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+            )
 
             self.__execute_listeners(message)
             self.__remove_listeners()
