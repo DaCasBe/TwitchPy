@@ -104,6 +104,9 @@ class Bot:
     def __send_pass(self, oauth_token: str) -> None:
         self.__send_command(f"PASS {oauth_token}")
 
+    def __send_pong(self, text: str) -> None:
+        self.__send_command(f"PONG :{text}")
+
     def __send_privmsg(self, channel: str, text: str) -> None:
         self.__send_command(f"PRIVMSG #{channel} :{text}")
 
@@ -331,7 +334,10 @@ class Bot:
             self.__remove_methods_after_leave_channel()
 
         if message.irc_command == "PING":
-            self.__send_command("PONG :tmi.twitch.tv")
+            print(f"{message.irc_command} :{message.text}")
+
+            if message.text is not None:
+                self.__send_pong(message.text)
 
         else:
             self.__execute_listeners(message)
