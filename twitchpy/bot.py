@@ -64,6 +64,12 @@ class Bot:
 
         self.command_prefix = command_prefix
         self.ready_message = ready_message if ready_message is not None else ""
+
+        self.custom_methods_before_join_channel = {}
+        self.methods_before_join_channel_to_remove = []
+        self.custom_methods_after_join_channel = {}
+        self.methods_after_join_channel_to_remove = []
+
         self.custom_checks = {}
         self.custom_listeners = {}
         self.listeners_to_remove = []
@@ -102,8 +108,15 @@ class Bot:
             channel (str): The channel to join
         """
 
+        self.__execute_methods_before_join_channel(channel)
+
         self.__send_join(channel)
         self.__send_privmsg(channel, self.ready_message)
+
+        self.__execute_methods_after_join_channel(channel)
+
+        self.__remove_methods_before_join_channel()
+        self.__remove_methods_after_join_channel()
 
     def __connect(self) -> None:
         self.irc.settimeout(_DEFAULT_TIMEOUT)
@@ -200,6 +213,28 @@ class Bot:
         )
 
         return message
+
+    def __execute_methods_before_join_channel(self, channel: str) -> None:
+        for method in self.custom_methods_before_join_channel:
+            method(channel)
+
+    def __remove_methods_before_join_channel(self) -> None:
+        for method in self.methods_before_join_channel_to_remove:
+            if method in self.custom_methods_before_join_channel:
+                self.custom_methods_before_join_channel.pop(method)
+
+        self.methods_before_join_channel_to_remove = []
+
+    def __execute_methods_after_join_channel(self, channel: str) -> None:
+        for method in self.custom_methods_after_join_channel:
+            method(channel)
+
+    def __remove_methods_after_join_channel(self) -> None:
+        for method in self.methods_after_join_channel_to_remove:
+            if method in self.custom_methods_after_join_channel:
+                self.custom_methods_after_join_channel.pop(method)
+
+        self.methods_after_join_channel_to_remove = []
 
     def __execute_listeners(self, message: Message) -> None:
         for listener in self.custom_listeners.values():
@@ -748,6 +783,48 @@ class Bot:
         """
 
         self.__send_privmsg(channel, f"/w {user} {text}")
+
+    def add_method_before_join_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before joinnnig a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before joinnnig a channel
+        """
+
+        self.custom_methods_before_join_channel[name] = method
+
+    def remove_method_before_join_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed before joinning a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_before_join_channel_to_remove.append(name)
+
+    def add_method_after_join_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after joinnnig a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after joinnnig a channel
+        """
+
+        self.custom_methods_after_join_channel[name] = method
+
+    def remove_method_after_join_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed after joinning a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_join_channel_to_remove.append(name)
 
     def add_method_after_commands(self, name: str, method: Callable) -> None:
         """
