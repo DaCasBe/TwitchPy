@@ -239,7 +239,9 @@ class Bot:
             return
 
         message = self.__parse_message(received_msg)
-        print(f"[{message.channel}] {message.user}: {message.text}")
+
+        if message.irc_command == "NOTICE":
+            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
 
         if message.irc_command == "PING":
             self.__send_command("PONG :tmi.twitch.tv")
