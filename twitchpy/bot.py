@@ -110,6 +110,9 @@ class Bot:
         self.custom_methods_after_user_join = {}
         self.methods_after_user_join_to_remove = []
 
+        self.custom_methods_after_whisper = {}
+        self.methods_after_whisper_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -456,6 +459,17 @@ class Bot:
 
         self.methods_after_user_join_to_remove = []
 
+    def __execute_methods_after_whisper(self, message: Message) -> None:
+        for method in self.custom_methods_after_whisper.values():
+            method(message)
+
+    def __remove_methods_after_whisper(self) -> None:
+        for method in self.methods_after_whisper_to_remove:
+            if method in self.custom_methods_after_whisper:
+                self.custom_methods_after_whisper.pop(method)
+
+        self.methods_after_whisper_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -546,6 +560,14 @@ class Bot:
 
             self.__execute_methods_after_user_join(message)
             self.__remove_methods_after_user_join()
+
+        if message.irc_command == "WHISPER":
+            print(
+                f"{message.irc_command} > {message.irc_args[0] if message.irc_args is not None else ''}: {message.text}"
+            )
+
+            self.__execute_methods_after_whisper(message)
+            self.__remove_methods_after_whisper()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1346,7 +1368,7 @@ class Bot:
             method (Callable): Method to be executed after an user joins into a channel
         """
 
-        self.custom_methods_after_event[name] = method
+        self.custom_methods_after_user_join[name] = method
 
     def remove_method_after_user_join(self, name: str) -> None:
         """
@@ -1356,4 +1378,25 @@ class Bot:
             name (str): Method's name
         """
 
-        self.methods_after_event_to_remove.append(name)
+        self.methods_after_user_join_to_remove.append(name)
+
+    def add_method_after_whisper(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a whisper is received
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a whisper is received
+        """
+
+        self.custom_methods_after_whisper[name] = method
+
+    def remove_method_after_whisper(self, name: str) -> None:
+        """
+        Removes a method that is executed after a whisper is received
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_whisper_to_remove.append(name)
