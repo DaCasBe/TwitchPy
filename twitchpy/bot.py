@@ -109,7 +109,7 @@ class Bot:
     def __send_command(self, command: str, args: str) -> None:
         print(f"{command} < {args}")
 
-        self.irc.send((command + "\r\n").encode())
+        self.irc.send((f"{command} {args}" + "\r\n").encode())
 
     def __send_join(self, channel: str) -> None:
         self.__send_command("JOIN", f"#{channel}")
