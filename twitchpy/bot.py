@@ -104,6 +104,9 @@ class Bot:
         self.custom_methods_after_channel_change = {}
         self.methods_after_channel_change_to_remove = []
 
+        self.custom_methods_after_event = {}
+        self.methods_after_event_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -428,6 +431,17 @@ class Bot:
 
         self.methods_after_channel_change_to_remove = []
 
+    def __execute_methods_after_event(self, message: Message) -> None:
+        for method in self.custom_methods_after_event.values():
+            method(message)
+
+    def __remove_methods_after_event(self) -> None:
+        for method in self.methods_after_event_to_remove:
+            if method in self.custom_methods_after_event:
+                self.custom_methods_after_event.pop(method)
+
+        self.methods_after_event_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -504,6 +518,14 @@ class Bot:
 
             self.__execute_methods_after_channel_change(message)
             self.__remove_methods_after_channel_change()
+
+        if message.irc_command == "USERNOTICE":
+            print(
+                f"{message.irc_command} > [{message.channel}]: {message.text if message.text is not None else ''}"
+            )
+
+            self.__execute_methods_after_event(message)
+            self.__remove_methods_after_event()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1273,3 +1295,24 @@ class Bot:
         """
 
         self.methods_after_channel_change_to_remove.append(name)
+
+    def add_method_after_event(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after an event occurs
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after an event occurs
+        """
+
+        self.custom_methods_after_event[name] = method
+
+    def remove_method_after_event(self, name: str) -> None:
+        """
+        Removes a method that is executed after an event occurs
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_event_to_remove.append(name)
