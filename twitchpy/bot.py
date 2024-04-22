@@ -353,9 +353,9 @@ class Bot:
 
         self.methods_after_commands_to_remove = []
 
-    def __execute_methods_after_clearchat(self, channel: str, user: str) -> None:
+    def __execute_methods_after_clearchat(self, message: Message) -> None:
         for method in self.custom_methods_after_clearchat.values():
-            method(channel, user)
+            method(message)
 
     def __remove_methods_after_clearchat(self) -> None:
         for method in self.methods_after_clearchat_to_remove:
@@ -364,9 +364,9 @@ class Bot:
 
         self.methods_after_clearchat_to_remove = []
 
-    def __execute_methods_after_delete_message(self, channel: str, text: str) -> None:
+    def __execute_methods_after_delete_message(self, message: Message) -> None:
         for method in self.custom_methods_after_delete_message.values():
-            method(channel, text)
+            method(message)
 
     def __remove_methods_after_delete_message(self) -> None:
         for method in self.methods_after_delete_message_to_remove:
@@ -375,9 +375,9 @@ class Bot:
 
         self.methods_after_delete_message_to_remove = []
 
-    def __execute_methods_after_bot_connected(self) -> None:
+    def __execute_methods_after_bot_connected(self, message: Message) -> None:
         for method in self.custom_methods_after_bot_connected.values():
-            method()
+            method(message)
 
     def __remove_methods_after_bot_connected(self) -> None:
         for method in self.methods_after_bot_connected_to_remove:
@@ -432,22 +432,20 @@ class Bot:
             )
 
             if message.channel is not None and message.text is not None:
-                self.__execute_methods_after_clearchat(message.channel, message.text)
+                self.__execute_methods_after_clearchat(message)
                 self.__remove_methods_after_clearchat()
 
         if message.irc_command == "CLEARMSG":
             print(f"{message.irc_command} > [{message.channel}]: {message.text}")
 
             if message.channel is not None and message.text is not None:
-                self.__execute_methods_after_delete_message(
-                    message.channel, message.text
-                )
+                self.__execute_methods_after_delete_message(message)
                 self.__remove_methods_after_delete_message()
 
         if message.irc_command == "GLOBALUSERSTATE":
             print(f"{message.irc_command} >")
 
-            self.__execute_methods_after_bot_connected()
+            self.__execute_methods_after_bot_connected(message)
             self.__remove_methods_after_bot_connected()
 
     def __loop(self) -> None:
