@@ -142,6 +142,9 @@ class Bot:
         self.__send_pass(self.__oauth_token)
         self.__send_nick(self.username)
 
+    def __request_irc_capabilities(self) -> None:
+        self.__send_command("CAP REQ", ":twitch.tv/commands twitch.tv/membership")
+
     def join_channel(self, channel: str) -> None:
         """
         Makes the bot to join into a channel
@@ -182,6 +185,7 @@ class Bot:
         self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
         self.__login()
+        self.__request_irc_capabilities()
 
         for channel in self.channels:
             self.join_channel(channel)
