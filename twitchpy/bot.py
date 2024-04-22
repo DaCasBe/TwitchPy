@@ -431,16 +431,14 @@ class Bot:
                 f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
             )
 
-            if message.channel is not None and message.text is not None:
-                self.__execute_methods_after_clearchat(message)
-                self.__remove_methods_after_clearchat()
+            self.__execute_methods_after_clearchat(message)
+            self.__remove_methods_after_clearchat()
 
         if message.irc_command == "CLEARMSG":
             print(f"{message.irc_command} > [{message.channel}]: {message.text}")
 
-            if message.channel is not None and message.text is not None:
-                self.__execute_methods_after_delete_message(message)
-                self.__remove_methods_after_delete_message()
+            self.__execute_methods_after_delete_message(message)
+            self.__remove_methods_after_delete_message()
 
         if message.irc_command == "GLOBALUSERSTATE":
             print(f"{message.irc_command} >")
