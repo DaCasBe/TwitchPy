@@ -86,8 +86,6 @@ class Bot:
         self.custom_methods_after_commands = {}
         self.methods_after_commands_to_remove = []
 
-        self.custom_methods_before_clearchat = {}
-        self.methods_before_clearchat_to_remove = []
         self.custom_methods_after_clearchat = {}
         self.methods_after_clearchat_to_remove = []
 
@@ -359,17 +357,6 @@ class Bot:
 
         self.methods_after_commands_to_remove = []
 
-    def __execute_methods_before_clearchat(self, channel: str, user: str) -> None:
-        for method in self.custom_methods_before_clearchat.values():
-            method(channel, user)
-
-    def __remove_methods_before_clearchat(self) -> None:
-        for method in self.methods_before_clearchat_to_remove:
-            if method in self.custom_methods_before_clearchat:
-                self.custom_methods_before_clearchat.pop(method)
-
-        self.methods_before_clearchat_to_remove = []
-
     def __execute_methods_after_clearchat(self, channel: str, user: str) -> None:
         for method in self.custom_methods_after_clearchat.values():
             method(channel, user)
@@ -471,8 +458,6 @@ class Bot:
             )
 
             if message.channel is not None and message.text is not None:
-                self.__execute_methods_before_clearchat(message.channel, message.text)
-                self.__remove_methods_before_clearchat()
                 self.__execute_methods_after_clearchat(message.channel, message.text)
                 self.__remove_methods_after_clearchat()
 
@@ -1139,27 +1124,6 @@ class Bot:
         """
 
         self.methods_after_commands_to_remove.append(name)
-
-    def add_method_before_clearchat(self, name: str, method: Callable) -> None:
-        """
-        Adds to the bot a method that will be executed before each chat clearing
-
-        Args:
-            name (str): Method's name
-            method (Callable): Method to be executed before each chat clearing
-        """
-
-        self.custom_methods_before_clearchat[name] = method
-
-    def remove_method_before_clearchat(self, name: str) -> None:
-        """
-        Removes a method that is executed before each chat clearing
-
-        Args:
-            name (str): Method's name
-        """
-
-        self.methods_before_clearchat_to_remove.append(name)
 
     def add_method_after_clearchat(self, name: str, method: Callable) -> None:
         """
