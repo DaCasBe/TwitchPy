@@ -95,6 +95,9 @@ class Bot:
         self.custom_methods_after_bot_connected = {}
         self.methods_after_bot_connected_to_remove = []
 
+        self.custom_methods_after_toggle_host = {}
+        self.methods_after_toggle_host_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -386,6 +389,17 @@ class Bot:
 
         self.methods_after_bot_connected_to_remove = []
 
+    def __execute_methods_after_toggle_host(self, message: Message) -> None:
+        for method in self.custom_methods_after_toggle_host.values():
+            method(message)
+
+    def __remove_methods_after_toggle_host(self) -> None:
+        for method in self.methods_after_toggle_host_to_remove:
+            if method in self.custom_methods_after_toggle_host:
+                self.custom_methods_after_toggle_host.pop(method)
+
+        self.methods_after_toggle_host_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -445,6 +459,12 @@ class Bot:
 
             self.__execute_methods_after_bot_connected(message)
             self.__remove_methods_after_bot_connected()
+
+        if message.irc_command == "HOSTTARGET":
+            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+            self.__execute_methods_after_toggle_host(message)
+            self.__remove_methods_after_toggle_host()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1151,3 +1171,24 @@ class Bot:
         """
 
         self.methods_after_bot_connected_to_remove.append(name)
+
+    def add_method_after_toggle_host(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a channel toggles hosting
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a channel toggles hosting
+        """
+
+        self.custom_methods_after_toggle_host[name] = method
+
+    def remove_method_after_toggle_host(self, name: str) -> None:
+        """
+        Removes a method that is executed after a channel toggles hosting
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_toggle_host_to_remove.append(name)
