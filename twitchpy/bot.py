@@ -92,8 +92,6 @@ class Bot:
         self.custom_methods_after_delete_message = {}
         self.methods_after_delete_message_to_remove = []
 
-        self.custom_methods_before_bot_connected = {}
-        self.methods_before_bot_connected_to_remove = []
         self.custom_methods_after_bot_connected = {}
         self.methods_after_bot_connected_to_remove = []
 
@@ -377,17 +375,6 @@ class Bot:
 
         self.methods_after_delete_message_to_remove = []
 
-    def __execute_methods_before_bot_connected(self) -> None:
-        for method in self.custom_methods_before_bot_connected.values():
-            method()
-
-    def __remove_methods_before_bot_connected(self) -> None:
-        for method in self.methods_before_bot_connected_to_remove:
-            if method in self.custom_methods_before_bot_connected:
-                self.custom_methods_before_bot_connected.pop(method)
-
-        self.methods_before_bot_connected_to_remove = []
-
     def __execute_methods_after_bot_connected(self) -> None:
         for method in self.custom_methods_after_bot_connected.values():
             method()
@@ -460,8 +447,6 @@ class Bot:
         if message.irc_command == "GLOBALUSERSTATE":
             print(f"{message.irc_command} >")
 
-            self.__execute_methods_before_bot_connected()
-            self.__remove_methods_before_bot_connected()
             self.__execute_methods_after_bot_connected()
             self.__remove_methods_after_bot_connected()
 
@@ -1149,27 +1134,6 @@ class Bot:
         """
 
         self.methods_after_delete_message_to_remove.append(name)
-
-    def add_method_before_bot_connected(self, name: str, method: Callable) -> None:
-        """
-        Adds to the bot a method that will be executed before a bot connects to a chat
-
-        Args:
-            name (str): Method's name
-            method (Callable): Method to be executed before a bot connects to a chat
-        """
-
-        self.custom_methods_before_bot_connected[name] = method
-
-    def remove_method_before_bot_connected(self, name: str) -> None:
-        """
-        Removes a method that is executed before a bot connects to a chat
-
-        Args:
-            name (str): Method's name
-        """
-
-        self.methods_before_bot_connected_to_remove.append(name)
 
     def add_method_after_bot_connected(self, name: str, method: Callable) -> None:
         """
