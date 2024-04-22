@@ -89,8 +89,6 @@ class Bot:
         self.custom_methods_after_clearchat = {}
         self.methods_after_clearchat_to_remove = []
 
-        self.custom_methods_before_delete_message = {}
-        self.methods_before_delete_message_to_remove = []
         self.custom_methods_after_delete_message = {}
         self.methods_after_delete_message_to_remove = []
 
@@ -368,17 +366,6 @@ class Bot:
 
         self.methods_after_clearchat_to_remove = []
 
-    def __execute_methods_before_delete_message(self, channel: str, text: str) -> None:
-        for method in self.custom_methods_before_delete_message.values():
-            method(channel, text)
-
-    def __remove_methods_before_delete_message(self) -> None:
-        for method in self.methods_before_delete_message_to_remove:
-            if method in self.custom_methods_before_delete_message:
-                self.custom_methods_before_delete_message.pop(method)
-
-        self.methods_before_delete_message_to_remove = []
-
     def __execute_methods_after_delete_message(self, channel: str, text: str) -> None:
         for method in self.custom_methods_after_delete_message.values():
             method(channel, text)
@@ -465,10 +452,6 @@ class Bot:
             print(f"{message.irc_command} > [{message.channel}]: {message.text}")
 
             if message.channel is not None and message.text is not None:
-                self.__execute_methods_before_delete_message(
-                    message.channel, message.text
-                )
-                self.__remove_methods_before_delete_message()
                 self.__execute_methods_after_delete_message(
                     message.channel, message.text
                 )
@@ -1145,27 +1128,6 @@ class Bot:
         """
 
         self.methods_after_clearchat_to_remove.append(name)
-
-    def add_method_before_delete_message(self, name: str, method: Callable) -> None:
-        """
-        Adds to the bot a method that will be executed before each time a message is deleted
-
-        Args:
-            name (str): Method's name
-            method (Callable): Method to be executed before each time a message is deleted
-        """
-
-        self.custom_methods_before_delete_message[name] = method
-
-    def remove_method_before_delete_message(self, name: str) -> None:
-        """
-        Removes a method that is executed before each time a message is deleted
-
-        Args:
-            name (str): Method's name
-        """
-
-        self.methods_before_delete_message_to_remove.append(name)
 
     def add_method_after_delete_message(self, name: str, method: Callable) -> None:
         """
