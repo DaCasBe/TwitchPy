@@ -101,6 +101,9 @@ class Bot:
         self.custom_methods_after_server_reconnect = {}
         self.methods_after_server_reconnect_to_remove = []
 
+        self.custom_methods_after_channel_change = {}
+        self.methods_after_channel_change_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str) -> None:
@@ -414,6 +417,17 @@ class Bot:
 
         self.methods_after_server_reconnect_to_remove = []
 
+    def __execute_methods_after_channel_change(self, message: Message) -> None:
+        for method in self.custom_methods_after_channel_change.values():
+            method(message)
+
+    def __remove_methods_after_channel_change(self) -> None:
+        for method in self.methods_after_channel_change_to_remove:
+            if method in self.custom_methods_after_channel_change:
+                self.custom_methods_after_channel_change.pop(method)
+
+        self.methods_after_channel_change_to_remove = []
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -484,6 +498,12 @@ class Bot:
 
             self.__execute_methods_after_server_reconnect(message)
             self.__remove_methods_after_server_reconnect()
+
+        if message.irc_command == "ROOMSTATE":
+            print(f"{message.irc_command} > [{message.channel}]")
+
+            self.__execute_methods_after_channel_change(message)
+            self.__remove_methods_after_channel_change()
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -1232,3 +1252,24 @@ class Bot:
         """
 
         self.methods_after_server_reconnect_to_remove.append(name)
+
+    def add_method_after_channel_change(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a channel's chat settings change
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a channel's chat settings change
+        """
+
+        self.custom_methods_after_channel_change[name] = method
+
+    def remove_method_after_channel_change(self, name: str) -> None:
+        """
+        Removes a method that is executed after a channel's chat settings change
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_channel_change_to_remove.append(name)
