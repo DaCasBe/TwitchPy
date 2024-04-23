@@ -64,42 +64,131 @@ class Bot:
 
         self.command_prefix = command_prefix
         self.ready_message = ready_message if ready_message is not None else ""
+
+        self.custom_methods_before_join_channel = {}
+        self.methods_before_join_channel_to_remove = []
+        self.custom_methods_after_join_channel = {}
+        self.methods_after_join_channel_to_remove = []
+
+        self.custom_methods_before_leave_channel = {}
+        self.methods_before_leave_channel_to_remove = []
+        self.custom_methods_after_leave_channel = {}
+        self.methods_after_leave_channel_to_remove = []
+
         self.custom_checks = {}
+        self.checks_to_remove = []
         self.custom_listeners = {}
         self.listeners_to_remove = []
         self.custom_commands = {}
         self.commands_to_remove = []
-        self.custom_methods_after_commands = {}
-        self.methods_after_commands_to_remove = []
         self.custom_methods_before_commands = {}
         self.methods_before_commands_to_remove = []
+        self.custom_methods_after_commands = {}
+        self.methods_after_commands_to_remove = []
+
+        self.custom_methods_after_clearchat = {}
+        self.methods_after_clearchat_to_remove = []
+
+        self.custom_methods_after_delete_message = {}
+        self.methods_after_delete_message_to_remove = []
+
+        self.custom_methods_after_bot_connected = {}
+        self.methods_after_bot_connected_to_remove = []
+
+        self.custom_methods_after_toggle_host = {}
+        self.methods_after_toggle_host_to_remove = []
+
+        self.custom_methods_after_server_reconnect = {}
+        self.methods_after_server_reconnect_to_remove = []
+
+        self.custom_methods_after_channel_change = {}
+        self.methods_after_channel_change_to_remove = []
+
+        self.custom_methods_after_event = {}
+        self.methods_after_event_to_remove = []
+
+        self.custom_methods_after_user_join = {}
+        self.methods_after_user_join_to_remove = []
+
+        self.custom_methods_after_whisper = {}
+        self.methods_after_whisper_to_remove = []
+
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
-    def __send_command(self, command: str) -> None:
-        if "PASS" not in command and "PONG" not in command:
-            print(f"< {command}")
+    def __send_command(self, command: str, args: str) -> None:
+        print(f"{command} < {args}")
 
-        self.irc.send((command + "\r\n").encode())
+        self.irc.send((f"{command} {args}" + "\r\n").encode())
+
+    def __send_join(self, channel: str) -> None:
+        self.__send_command("JOIN", f"#{channel}")
+
+    def __send_nick(self, username: str) -> None:
+        self.__send_command("NICK", username)
+
+    def __send_part(self, channel: str) -> None:
+        self.__send_command("PART", f"#{channel}")
+
+    def __send_pass(self, oauth_token: str) -> None:
+        self.__send_command("PASS", oauth_token)
+
+    def __send_pong(self, text: str) -> None:
+        self.__send_command("PONG", f":{text}")
 
     def __send_privmsg(self, channel: str, text: str) -> None:
-        self.__send_command(f"PRIVMSG #{channel} :{text}")
+        self.__send_command("PRIVMSG", f"#{channel} :{text}")
 
     def __login(self) -> None:
-        self.__send_command(f"PASS {self.__oauth_token}")
-        self.__send_command(f"NICK {self.username}")
+        self.__send_pass(self.__oauth_token)
+        self.__send_nick(self.username)
 
-    def __join(self, channel: str) -> None:
-        self.__send_command(f"JOIN #{channel}")
+    def __request_irc_capabilities(self) -> None:
+        self.__send_command("CAP REQ", ":twitch.tv/commands twitch.tv/membership")
+
+    def join_channel(self, channel: str) -> None:
+        """
+        Makes the bot to join into a channel
+
+        Args:
+            channel (str): The channel to join
+        """
+
+        self.__execute_methods_before_join_channel(channel)
+
+        self.__send_join(channel)
         self.__send_privmsg(channel, self.ready_message)
+
+        self.__execute_methods_after_join_channel(channel)
+
+        self.__remove_methods_before_join_channel()
+        self.__remove_methods_after_join_channel()
+
+    def leave_channel(self, channel: str) -> None:
+        """
+        Makes the bot to leave into a channel
+
+        Args:
+            channel (str): The channel to leave
+        """
+
+        self.__execute_methods_before_leave_channel(channel)
+
+        self.__send_part(channel)
+
+        self.__execute_methods_after_leave_channel(channel)
+
+        self.__remove_methods_before_leave_channel()
+        self.__remove_methods_after_leave_channel()
 
     def __connect(self) -> None:
         self.irc.settimeout(_DEFAULT_TIMEOUT)
         self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
         self.__login()
+        self.__request_irc_capabilities()
 
         for channel in self.channels:
-            self.__join(channel)
+            self.join_channel(channel)
 
     def run(self) -> None:
         """
@@ -176,17 +265,72 @@ class Bot:
             channel = irc_args[hash_start][1:]
 
         message = Message(
-            prefix=prefix,
-            user=user,
-            channel=channel,
-            irc_command=irc_command,
-            irc_args=irc_args,
-            text=text,
-            text_command=text_command,
-            text_args=text_args,
+            prefix,
+            user,
+            channel,
+            irc_command,
+            irc_args,
+            text,
+            text_command,
+            text_args,
         )
 
         return message
+
+    def __execute_methods_before_join_channel(self, channel: str) -> None:
+        for method in self.custom_methods_before_join_channel.values():
+            method(channel)
+
+    def __remove_methods_before_join_channel(self) -> None:
+        for method in self.methods_before_join_channel_to_remove:
+            if method in self.custom_methods_before_join_channel:
+                self.custom_methods_before_join_channel.pop(method)
+
+        self.methods_before_join_channel_to_remove = []
+
+    def __execute_methods_after_join_channel(self, channel: str) -> None:
+        for method in self.custom_methods_after_join_channel.values():
+            method(channel)
+
+    def __remove_methods_after_join_channel(self) -> None:
+        for method in self.methods_after_join_channel_to_remove:
+            if method in self.custom_methods_after_join_channel:
+                self.custom_methods_after_join_channel.pop(method)
+
+        self.methods_after_join_channel_to_remove = []
+
+    def __execute_methods_before_leave_channel(self, channel: str) -> None:
+        for method in self.custom_methods_before_leave_channel.values():
+            method(channel)
+
+    def __remove_methods_before_leave_channel(self) -> None:
+        for method in self.methods_before_leave_channel_to_remove:
+            if method in self.custom_methods_before_leave_channel:
+                self.custom_methods_before_leave_channel.pop(method)
+
+        self.methods_before_leave_channel_to_remove = []
+
+    def __execute_methods_after_leave_channel(self, channel: str) -> None:
+        for method in self.custom_methods_after_leave_channel.values():
+            method(channel)
+
+    def __remove_methods_after_leave_channel(self) -> None:
+        for method in self.methods_after_leave_channel_to_remove:
+            if method in self.custom_methods_after_leave_channel:
+                self.custom_methods_after_leave_channel.pop(method)
+
+        self.methods_after_leave_channel_to_remove = []
+
+    def __execute_checks(self) -> None:
+        for check in self.custom_checks.values():
+            check()
+
+    def __remove_checks(self) -> None:
+        for check in self.checks_to_remove:
+            if check in self.custom_checks:
+                self.custom_checks.pop(check)
+
+        self.checks_to_remove = []
 
     def __execute_listeners(self, message: Message) -> None:
         for listener in self.custom_listeners.values():
@@ -199,6 +343,16 @@ class Bot:
 
         self.listeners_to_remove = []
 
+    def __execute_command(self, message: Message) -> None:
+        self.custom_commands[message.text_command](message)
+
+    def __remove_commands(self) -> None:
+        for command in self.commands_to_remove:
+            if command in self.custom_commands:
+                self.custom_commands.pop(command)
+
+        self.commands_to_remove = []
+
     def __execute_methods_before_commands(self, message: Message) -> None:
         for before in self.custom_methods_before_commands.values():
             before(message)
@@ -208,9 +362,7 @@ class Bot:
             if method in self.custom_methods_before_commands:
                 self.custom_methods_before_commands.pop(method)
 
-    def __execute_commands(self, message: Message) -> None:
-        self.custom_commands[message.text_command](message)
-        self.__remove_methods_after_commands()
+        self.methods_before_commands_to_remove = []
 
     def __execute_methods_after_commands(self, message: Message) -> None:
         for after in self.custom_methods_after_commands.values():
@@ -221,27 +373,248 @@ class Bot:
             if method in self.custom_methods_after_commands:
                 self.custom_methods_after_commands.pop(method)
 
+        self.methods_after_commands_to_remove = []
+
+    def __execute_methods_after_clearchat(self, message: Message) -> None:
+        for method in self.custom_methods_after_clearchat.values():
+            method(message)
+
+    def __remove_methods_after_clearchat(self) -> None:
+        for method in self.methods_after_clearchat_to_remove:
+            if method in self.custom_methods_after_clearchat:
+                self.custom_methods_after_clearchat.pop(method)
+
+        self.methods_after_clearchat_to_remove = []
+
+    def __execute_methods_after_delete_message(self, message: Message) -> None:
+        for method in self.custom_methods_after_delete_message.values():
+            method(message)
+
+    def __remove_methods_after_delete_message(self) -> None:
+        for method in self.methods_after_delete_message_to_remove:
+            if method in self.custom_methods_after_delete_message:
+                self.custom_methods_after_delete_message.pop(method)
+
+        self.methods_after_delete_message_to_remove = []
+
+    def __execute_methods_after_bot_connected(self, message: Message) -> None:
+        for method in self.custom_methods_after_bot_connected.values():
+            method(message)
+
+    def __remove_methods_after_bot_connected(self) -> None:
+        for method in self.methods_after_bot_connected_to_remove:
+            if method in self.custom_methods_after_bot_connected:
+                self.custom_methods_after_bot_connected.pop(method)
+
+        self.methods_after_bot_connected_to_remove = []
+
+    def __execute_methods_after_toggle_host(self, message: Message) -> None:
+        for method in self.custom_methods_after_toggle_host.values():
+            method(message)
+
+    def __remove_methods_after_toggle_host(self) -> None:
+        for method in self.methods_after_toggle_host_to_remove:
+            if method in self.custom_methods_after_toggle_host:
+                self.custom_methods_after_toggle_host.pop(method)
+
+        self.methods_after_toggle_host_to_remove = []
+
+    def __execute_methods_after_server_reconnect(self, message: Message) -> None:
+        for method in self.custom_methods_after_server_reconnect.values():
+            method(message)
+
+    def __remove_methods_after_server_reconnect(self) -> None:
+        for method in self.methods_after_server_reconnect_to_remove:
+            if method in self.custom_methods_after_server_reconnect:
+                self.custom_methods_after_server_reconnect.pop(method)
+
+        self.methods_after_server_reconnect_to_remove = []
+
+    def __execute_methods_after_channel_change(self, message: Message) -> None:
+        for method in self.custom_methods_after_channel_change.values():
+            method(message)
+
+    def __remove_methods_after_channel_change(self) -> None:
+        for method in self.methods_after_channel_change_to_remove:
+            if method in self.custom_methods_after_channel_change:
+                self.custom_methods_after_channel_change.pop(method)
+
+        self.methods_after_channel_change_to_remove = []
+
+    def __execute_methods_after_event(self, message: Message) -> None:
+        for method in self.custom_methods_after_event.values():
+            method(message)
+
+    def __remove_methods_after_event(self) -> None:
+        for method in self.methods_after_event_to_remove:
+            if method in self.custom_methods_after_event:
+                self.custom_methods_after_event.pop(method)
+
+        self.methods_after_event_to_remove = []
+
+    def __execute_methods_after_user_join(self, message: Message) -> None:
+        for method in self.custom_methods_after_user_join.values():
+            method(message)
+
+    def __remove_methods_after_user_join(self) -> None:
+        for method in self.methods_after_user_join_to_remove:
+            if method in self.custom_methods_after_user_join:
+                self.custom_methods_after_user_join.pop(method)
+
+        self.methods_after_user_join_to_remove = []
+
+    def __execute_methods_after_whisper(self, message: Message) -> None:
+        for method in self.custom_methods_after_whisper.values():
+            method(message)
+
+    def __remove_methods_after_whisper(self) -> None:
+        for method in self.methods_after_whisper_to_remove:
+            if method in self.custom_methods_after_whisper:
+                self.custom_methods_after_whisper.pop(method)
+
+        self.methods_after_whisper_to_remove = []
+
+    def __handle_notice(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+    def __handle_part(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}] {message.user}")
+
+        self.__execute_methods_after_leave_channel(
+            message.channel if message.channel is not None else ""
+        )
+        self.__remove_methods_after_leave_channel()
+
+    def __handle_ping(self, message: Message) -> None:
+        print(f"{message.irc_command} > :{message.text}")
+
+        self.__send_pong(message.text if message.text is not None else "")
+
+    def __handle_privmsg(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+        )
+
+        self.__execute_listeners(message)
+        self.__remove_listeners()
+
+        if message.text_command in self.custom_commands:
+            self.__execute_methods_before_commands(message)
+            self.__remove_methods_before_commands()
+            self.__execute_command(message)
+            self.__remove_commands()
+            self.__execute_methods_after_commands(message)
+            self.__remove_methods_after_commands()
+
+    def __handle_clearchat(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
+        )
+
+        self.__execute_methods_after_clearchat(message)
+        self.__remove_methods_after_clearchat()
+
+    def __handle_clearmsg(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+        self.__execute_methods_after_delete_message(message)
+        self.__remove_methods_after_delete_message()
+
+    def __handle_globaluserstate(self, message: Message) -> None:
+        print(f"{message.irc_command} >")
+
+        self.__execute_methods_after_bot_connected(message)
+        self.__remove_methods_after_bot_connected()
+
+    def __handle_hosttarget(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+        self.__execute_methods_after_toggle_host(message)
+        self.__remove_methods_after_toggle_host()
+
+    def __handle_reconnect(self, message: Message) -> None:
+        print(f"{message.irc_command} >")
+
+        self.__execute_methods_after_server_reconnect(message)
+        self.__remove_methods_after_server_reconnect()
+
+    def __handle_roomstate(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]")
+
+        self.__execute_methods_after_channel_change(message)
+        self.__remove_methods_after_channel_change()
+
+    def __handle_usernotice(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}]: {message.text if message.text is not None else ''}"
+        )
+
+        self.__execute_methods_after_event(message)
+        self.__remove_methods_after_event()
+
+    def __handle_userstate(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]")
+
+        self.__execute_methods_after_user_join(message)
+        self.__remove_methods_after_user_join()
+
+    def __handle_whisper(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > {message.irc_args[0] if message.irc_args is not None else ''}: {message.text}"
+        )
+
+        self.__execute_methods_after_whisper(message)
+        self.__remove_methods_after_whisper()
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
 
         message = self.__parse_message(received_msg)
-        print(f"[{message.channel}] {message.user}: {message.text}")
 
-        if message.irc_command == "PING":
-            self.__send_command("PONG :tmi.twitch.tv")
+        if message.irc_command == "NOTICE":
+            self.__handle_notice(message)
+
+        elif message.irc_command == "PART":
+            self.__handle_part(message)
+
+        elif message.irc_command == "PING":
+            self.__handle_ping(message)
+
+        elif message.irc_command == "PRIVMSG":
+            self.__handle_privmsg(message)
+
+        elif message.irc_command == "CLEARCHAT":
+            self.__handle_clearchat(message)
+
+        elif message.irc_command == "CLEARMSG":
+            self.__handle_clearmsg(message)
+
+        elif message.irc_command == "GLOBALUSERSTATE":
+            self.__handle_globaluserstate(message)
+
+        elif message.irc_command == "HOSTTARGET":
+            self.__handle_hosttarget(message)
+
+        elif message.irc_command == "RECONNECT":
+            self.__handle_reconnect(message)
+
+        elif message.irc_command == "ROOMSTATE":
+            self.__handle_roomstate(message)
+
+        elif message.irc_command == "USERNOTICE":
+            self.__handle_usernotice(message)
+
+        elif message.irc_command == "USERSTATE":
+            self.__handle_userstate(message)
+
+        elif message.irc_command == "WHISPER":
+            self.__handle_whisper(message)
 
         else:
-            self.__execute_listeners(message)
-            self.__remove_listeners()
-
-            if message.irc_command == "PRIVMSG":
-                if message.text_command in self.custom_commands:
-                    self.__execute_methods_before_commands(message)
-                    self.__remove_methods_before_commands()
-                    self.__execute_commands(message)
-                    self.__execute_methods_after_commands(message)
-                    self.__remove_methods_after_commands()
+            print(
+                f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+            )
 
     def __loop(self) -> None:
         while not self.__finish:
@@ -251,50 +624,9 @@ class Bot:
                 for received_msg in received_msgs.split("\r\n"):
                     self.__handle_message(received_msg)
 
-                for command in self.commands_to_remove:
-                    if command in self.custom_commands:
-                        self.custom_commands.pop(command)
-
             except socket.timeout:
-                for check in self.custom_checks.values():
-                    check()
-
-    def add_check(self, name: str, check: Callable) -> None:
-        """
-        Adds a check to the bot
-        Checks work permanently
-
-        Args:
-            name (str): Check's name
-            check (Callable): Method that will act as a check
-        """
-
-        self.custom_checks[name] = check
-
-    def add_listener(self, name: str, listener: Callable) -> None:
-        """
-        Adds a listener to the bot
-        Listeners work only when a message is received
-        Listeners must receive as a parameter the last message in the chat
-
-        Args:
-            name (str): Command's name
-            listener (Callable): Method that will be executed when the command is invoked
-        """
-
-        self.custom_listeners[name] = listener
-
-    def add_command(self, name: str, command: Callable) -> None:
-        """
-        Adds a command to the bot
-        Commands must receive as a parameter the messages which call them
-
-        Args:
-            name (str): Command's name
-            command (Callable): Method that will be executed when the command is invoked
-        """
-
-        self.custom_commands[name] = command
+                self.__execute_checks()
+                self.__remove_checks()
 
     def send(self, channel: str, text: str) -> None:
         """
@@ -734,16 +1066,156 @@ class Bot:
 
         self.__send_privmsg(channel, f"/w {user} {text}")
 
-    def add_method_after_commands(self, name: str, method: Callable) -> None:
+    def add_method_before_join_channel(self, name: str, method: Callable) -> None:
         """
-        Adds to the bot a method that will be executed after each command
+        Adds to the bot a method that will be executed before joinnnig a channel
 
         Args:
             name (str): Method's name
-            method (func): Method to be executed after each command
+            method (Callable): Method to be executed before joinnnig a channel
         """
 
-        self.custom_methods_after_commands[name] = method
+        self.custom_methods_before_join_channel[name] = method
+
+    def remove_method_before_join_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed before joinning a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_before_join_channel_to_remove.append(name)
+
+    def add_method_after_join_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after joinnnig a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after joinnnig a channel
+        """
+
+        self.custom_methods_after_join_channel[name] = method
+
+    def remove_method_after_join_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed after joinning a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_join_channel_to_remove.append(name)
+
+    def add_method_before_leave_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed before leaving a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed before leaving a channel
+        """
+
+        self.custom_methods_before_leave_channel[name] = method
+
+    def remove_method_before_leave_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed before leaving a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_before_leave_channel_to_remove.append(name)
+
+    def add_method_after_leave_channel(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after leaving a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after leaving a channel
+        """
+
+        self.custom_methods_after_leave_channel[name] = method
+
+    def remove_method_after_leave_channel(self, name: str) -> None:
+        """
+        Removes a method that is executed after leaving a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_leave_channel_to_remove.append(name)
+
+    def add_check(self, name: str, check: Callable) -> None:
+        """
+        Adds a check to the bot
+        Checks work permanently
+
+        Args:
+            name (str): Check's name
+            check (Callable): Method that will act as a check
+        """
+
+        self.custom_checks[name] = check
+
+    def remove_check(self, name: str) -> None:
+        """
+        Removes a check from the bot
+
+        Args:
+            name (str): Check's name
+        """
+
+        self.checks_to_remove.append(name)
+
+    def add_listener(self, name: str, listener: Callable) -> None:
+        """
+        Adds a listener to the bot
+        Listeners work only when a message is received
+        Listeners must receive as a parameter the last message in the chat
+
+        Args:
+            name (str): Command's name
+            listener (Callable): Method that will be executed when the command is invoked
+        """
+
+        self.custom_listeners[name] = listener
+
+    def remove_listener(self, name: str) -> None:
+        """
+        Removes a listener from the bot
+
+        Args:
+            name (str): Listener's name
+        """
+
+        self.listeners_to_remove.append(name)
+
+    def add_command(self, name: str, command: Callable) -> None:
+        """
+        Adds a command to the bot
+        Commands must receive as a parameter the messages which call them
+
+        Args:
+            name (str): Command's name
+            command (Callable): Method that will be executed when the command is invoked
+        """
+
+        self.custom_commands[name] = command
+
+    def remove_command(self, name: str) -> None:
+        """
+        Removes a command from the bot
+
+        Args:
+            name (str): Command's name
+        """
+
+        self.commands_to_remove.append(name)
 
     def add_method_before_commands(self, name: str, method: Callable) -> None:
         """
@@ -756,35 +1228,26 @@ class Bot:
 
         self.custom_methods_before_commands[name] = method
 
-    def remove_check(self, name: str) -> None:
+    def remove_method_before_commands(self, name: str) -> None:
         """
-        Removes a check from the bot
+        Removes a method that is executed before each command
 
         Args:
-            name (str): Check's name
+            name (str): Method's name
         """
 
-        self.custom_checks.pop(name)
+        self.methods_before_commands_to_remove.append(name)
 
-    def remove_listener(self, name: str) -> None:
+    def add_method_after_commands(self, name: str, method: Callable) -> None:
         """
-        Removes a listener from the bot
+        Adds to the bot a method that will be executed after each command
 
         Args:
-            name (str): Listener's name
+            name (str): Method's name
+            method (func): Method to be executed after each command
         """
 
-        self.listeners_to_remove.append(name)
-
-    def remove_command(self, name: str) -> None:
-        """
-        Removes a command from the bot
-
-        Args:
-            name (str): Command's name
-        """
-
-        self.commands_to_remove.append(name)
+        self.custom_methods_after_commands[name] = method
 
     def remove_method_after_commands(self, name: str) -> None:
         """
@@ -794,14 +1257,193 @@ class Bot:
             name (str): Method's name
         """
 
-        self.custom_methods_after_commands.pop(name, None)
+        self.methods_after_commands_to_remove.append(name)
 
-    def remove_method_before_commands(self, name: str) -> None:
+    def add_method_after_clearchat(self, name: str, method: Callable) -> None:
         """
-        Removes a method that is executed before each command
+        Adds to the bot a method that will be executed after each chat clearing
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after each chat clearing
+        """
+
+        self.custom_methods_after_clearchat[name] = method
+
+    def remove_method_after_clearchat(self, name: str) -> None:
+        """
+        Removes a method that is executed after each chat clearing
 
         Args:
             name (str): Method's name
         """
 
-        self.custom_methods_before_commands.pop(name, None)
+        self.methods_after_clearchat_to_remove.append(name)
+
+    def add_method_after_delete_message(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after each time a message is deleted
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after each time a message is deleted
+        """
+
+        self.custom_methods_after_delete_message[name] = method
+
+    def remove_method_after_delete_message(self, name: str) -> None:
+        """
+        Removes a method that is executed after each time a message is deleted
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_delete_message_to_remove.append(name)
+
+    def add_method_after_bot_connected(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a bot connects to a chat
+        """
+
+        self.custom_methods_after_bot_connected[name] = method
+
+    def remove_method_after_bot_connected(self, name: str) -> None:
+        """
+        Removes a method that is executed after a bot connects to a chat
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_bot_connected_to_remove.append(name)
+
+    def add_method_after_toggle_host(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a channel toggles hosting
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a channel toggles hosting
+        """
+
+        self.custom_methods_after_toggle_host[name] = method
+
+    def remove_method_after_toggle_host(self, name: str) -> None:
+        """
+        Removes a method that is executed after a channel toggles hosting
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_toggle_host_to_remove.append(name)
+
+    def add_method_after_server_reconnect(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a reconnect warning
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a reconnect warning
+        """
+
+        self.custom_methods_after_server_reconnect[name] = method
+
+    def remove_method_after_server_reconnect(self, name: str) -> None:
+        """
+        Removes a method that is executed after a reconnect warning
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_server_reconnect_to_remove.append(name)
+
+    def add_method_after_channel_change(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a channel's chat settings change
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a channel's chat settings change
+        """
+
+        self.custom_methods_after_channel_change[name] = method
+
+    def remove_method_after_channel_change(self, name: str) -> None:
+        """
+        Removes a method that is executed after a channel's chat settings change
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_channel_change_to_remove.append(name)
+
+    def add_method_after_event(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after an event occurs
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after an event occurs
+        """
+
+        self.custom_methods_after_event[name] = method
+
+    def remove_method_after_event(self, name: str) -> None:
+        """
+        Removes a method that is executed after an event occurs
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_event_to_remove.append(name)
+
+    def add_method_after_user_join(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after an user joins into a channel
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after an user joins into a channel
+        """
+
+        self.custom_methods_after_user_join[name] = method
+
+    def remove_method_after_user_join(self, name: str) -> None:
+        """
+        Removes a method that is executed after an user joins into a channel
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_user_join_to_remove.append(name)
+
+    def add_method_after_whisper(self, name: str, method: Callable) -> None:
+        """
+        Adds to the bot a method that will be executed after a whisper is received
+
+        Args:
+            name (str): Method's name
+            method (Callable): Method to be executed after a whisper is received
+        """
+
+        self.custom_methods_after_whisper[name] = method
+
+    def remove_method_after_whisper(self, name: str) -> None:
+        """
+        Removes a method that is executed after a whisper is received
+
+        Args:
+            name (str): Method's name
+        """
+
+        self.methods_after_whisper_to_remove.append(name)
