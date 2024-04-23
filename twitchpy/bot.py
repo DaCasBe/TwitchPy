@@ -575,41 +575,46 @@ class Bot:
         if message.irc_command == "NOTICE":
             self.__handle_notice(message)
 
-        if message.irc_command == "PART":
+        elif message.irc_command == "PART":
             self.__handle_part(message)
 
-        if message.irc_command == "PING":
+        elif message.irc_command == "PING":
             self.__handle_ping(message)
 
-        if message.irc_command == "PRIVMSG":
+        elif message.irc_command == "PRIVMSG":
             self.__handle_privmsg(message)
 
-        if message.irc_command == "CLEARCHAT":
+        elif message.irc_command == "CLEARCHAT":
             self.__handle_clearchat(message)
 
-        if message.irc_command == "CLEARMSG":
+        elif message.irc_command == "CLEARMSG":
             self.__handle_clearmsg(message)
 
-        if message.irc_command == "GLOBALUSERSTATE":
+        elif message.irc_command == "GLOBALUSERSTATE":
             self.__handle_globaluserstate(message)
 
-        if message.irc_command == "HOSTTARGET":
+        elif message.irc_command == "HOSTTARGET":
             self.__handle_hosttarget(message)
 
-        if message.irc_command == "RECONNECT":
+        elif message.irc_command == "RECONNECT":
             self.__handle_reconnect(message)
 
-        if message.irc_command == "ROOMSTATE":
+        elif message.irc_command == "ROOMSTATE":
             self.__handle_roomstate(message)
 
-        if message.irc_command == "USERNOTICE":
+        elif message.irc_command == "USERNOTICE":
             self.__handle_usernotice(message)
 
-        if message.irc_command == "USERSTATE":
+        elif message.irc_command == "USERSTATE":
             self.__handle_userstate(message)
 
-        if message.irc_command == "WHISPER":
+        elif message.irc_command == "WHISPER":
             self.__handle_whisper(message)
+
+        else:
+            print(
+                f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+            )
 
     def __loop(self) -> None:
         while not self.__finish:
