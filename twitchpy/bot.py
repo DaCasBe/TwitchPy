@@ -474,6 +474,98 @@ class Bot:
 
         self.methods_after_whisper_to_remove = []
 
+    def __handle_notice(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+    def __handle_part(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}] {message.user}")
+
+        self.__execute_methods_after_leave_channel(
+            message.channel if message.channel is not None else ""
+        )
+        self.__remove_methods_after_leave_channel()
+
+    def __handle_ping(self, message: Message) -> None:
+        print(f"{message.irc_command} > :{message.text}")
+
+        self.__send_pong(message.text if message.text is not None else "")
+
+    def __handle_privmsg(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+        )
+
+        self.__execute_listeners(message)
+        self.__remove_listeners()
+
+        if message.text_command in self.custom_commands:
+            self.__execute_methods_before_commands(message)
+            self.__remove_methods_before_commands()
+            self.__execute_command(message)
+            self.__remove_commands()
+            self.__execute_methods_after_commands(message)
+            self.__remove_methods_after_commands()
+
+    def __handle_clearchat(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
+        )
+
+        self.__execute_methods_after_clearchat(message)
+        self.__remove_methods_after_clearchat()
+
+    def __handle_clearmsg(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+        self.__execute_methods_after_delete_message(message)
+        self.__remove_methods_after_delete_message()
+
+    def __handle_globaluserstate(self, message: Message) -> None:
+        print(f"{message.irc_command} >")
+
+        self.__execute_methods_after_bot_connected(message)
+        self.__remove_methods_after_bot_connected()
+
+    def __handle_hosttarget(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+
+        self.__execute_methods_after_toggle_host(message)
+        self.__remove_methods_after_toggle_host()
+
+    def __handle_reconnect(self, message: Message) -> None:
+        print(f"{message.irc_command} >")
+
+        self.__execute_methods_after_server_reconnect(message)
+        self.__remove_methods_after_server_reconnect()
+
+    def __handle_roomstate(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]")
+
+        self.__execute_methods_after_channel_change(message)
+        self.__remove_methods_after_channel_change()
+
+    def __handle_usernotice(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > [{message.channel}]: {message.text if message.text is not None else ''}"
+        )
+
+        self.__execute_methods_after_event(message)
+        self.__remove_methods_after_event()
+
+    def __handle_userstate(self, message: Message) -> None:
+        print(f"{message.irc_command} > [{message.channel}]")
+
+        self.__execute_methods_after_user_join(message)
+        self.__remove_methods_after_user_join()
+
+    def __handle_whisper(self, message: Message) -> None:
+        print(
+            f"{message.irc_command} > {message.irc_args[0] if message.irc_args is not None else ''}: {message.text}"
+        )
+
+        self.__execute_methods_after_whisper(message)
+        self.__remove_methods_after_whisper()
+
     def __handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
@@ -481,97 +573,43 @@ class Bot:
         message = self.__parse_message(received_msg)
 
         if message.irc_command == "NOTICE":
-            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+            self.__handle_notice(message)
 
         if message.irc_command == "PART":
-            print(f"{message.irc_command} > [{message.channel}] {message.user}")
-
-            if message.channel is not None:
-                self.__execute_methods_after_leave_channel(message.channel)
-
-            self.__remove_methods_after_leave_channel()
+            self.__handle_part(message)
 
         if message.irc_command == "PING":
-            print(f"{message.irc_command} > :{message.text}")
-
-            if message.text is not None:
-                self.__send_pong(message.text)
+            self.__handle_ping(message)
 
         if message.irc_command == "PRIVMSG":
-            print(
-                f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
-            )
-
-            self.__execute_listeners(message)
-            self.__remove_listeners()
-
-            if message.text_command in self.custom_commands:
-                self.__execute_methods_before_commands(message)
-                self.__remove_methods_before_commands()
-                self.__execute_command(message)
-                self.__remove_commands()
-                self.__execute_methods_after_commands(message)
-                self.__remove_methods_after_commands()
+            self.__handle_privmsg(message)
 
         if message.irc_command == "CLEARCHAT":
-            print(
-                f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
-            )
-
-            self.__execute_methods_after_clearchat(message)
-            self.__remove_methods_after_clearchat()
+            self.__handle_clearchat(message)
 
         if message.irc_command == "CLEARMSG":
-            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
-
-            self.__execute_methods_after_delete_message(message)
-            self.__remove_methods_after_delete_message()
+            self.__handle_clearmsg(message)
 
         if message.irc_command == "GLOBALUSERSTATE":
-            print(f"{message.irc_command} >")
-
-            self.__execute_methods_after_bot_connected(message)
-            self.__remove_methods_after_bot_connected()
+            self.__handle_globaluserstate(message)
 
         if message.irc_command == "HOSTTARGET":
-            print(f"{message.irc_command} > [{message.channel}]: {message.text}")
-
-            self.__execute_methods_after_toggle_host(message)
-            self.__remove_methods_after_toggle_host()
+            self.__handle_hosttarget(message)
 
         if message.irc_command == "RECONNECT":
-            print(f"{message.irc_command} >")
-
-            self.__execute_methods_after_server_reconnect(message)
-            self.__remove_methods_after_server_reconnect()
+            self.__handle_reconnect(message)
 
         if message.irc_command == "ROOMSTATE":
-            print(f"{message.irc_command} > [{message.channel}]")
-
-            self.__execute_methods_after_channel_change(message)
-            self.__remove_methods_after_channel_change()
+            self.__handle_roomstate(message)
 
         if message.irc_command == "USERNOTICE":
-            print(
-                f"{message.irc_command} > [{message.channel}]: {message.text if message.text is not None else ''}"
-            )
-
-            self.__execute_methods_after_event(message)
-            self.__remove_methods_after_event()
+            self.__handle_usernotice(message)
 
         if message.irc_command == "USERSTATE":
-            print(f"{message.irc_command} > [{message.channel}]")
-
-            self.__execute_methods_after_user_join(message)
-            self.__remove_methods_after_user_join()
+            self.__handle_userstate(message)
 
         if message.irc_command == "WHISPER":
-            print(
-                f"{message.irc_command} > {message.irc_args[0] if message.irc_args is not None else ''}: {message.text}"
-            )
-
-            self.__execute_methods_after_whisper(message)
-            self.__remove_methods_after_whisper()
+            self.__handle_whisper(message)
 
     def __loop(self) -> None:
         while not self.__finish:
