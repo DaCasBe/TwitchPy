@@ -1066,13 +1066,15 @@ class Bot:
 
         self.__send_privmsg(channel, f"/w {user} {text}")
 
-    def add_method_before_join_channel(self, name: str, method: Callable) -> None:
+    def add_method_before_join_channel(
+        self, name: str, method: Callable[[str], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed before joinnnig a channel
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed before joinnnig a channel
+            method (Callable[[str], None]): Method to be executed before joinnnig a channel
         """
 
         self.custom_methods_before_join_channel[name] = method
@@ -1087,13 +1089,15 @@ class Bot:
 
         self.methods_before_join_channel_to_remove.append(name)
 
-    def add_method_after_join_channel(self, name: str, method: Callable) -> None:
+    def add_method_after_join_channel(
+        self, name: str, method: Callable[[str], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after joinnnig a channel
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after joinnnig a channel
+            method (Callable[[str], None]): Method to be executed after joinnnig a channel
         """
 
         self.custom_methods_after_join_channel[name] = method
@@ -1108,13 +1112,15 @@ class Bot:
 
         self.methods_after_join_channel_to_remove.append(name)
 
-    def add_method_before_leave_channel(self, name: str, method: Callable) -> None:
+    def add_method_before_leave_channel(
+        self, name: str, method: Callable[[str], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed before leaving a channel
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed before leaving a channel
+            method (Callable[[str], None]): Method to be executed before leaving a channel
         """
 
         self.custom_methods_before_leave_channel[name] = method
@@ -1129,13 +1135,15 @@ class Bot:
 
         self.methods_before_leave_channel_to_remove.append(name)
 
-    def add_method_after_leave_channel(self, name: str, method: Callable) -> None:
+    def add_method_after_leave_channel(
+        self, name: str, method: Callable[[str], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after leaving a channel
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after leaving a channel
+            method (Callable[[str], None]): Method to be executed after leaving a channel
         """
 
         self.custom_methods_after_leave_channel[name] = method
@@ -1150,14 +1158,14 @@ class Bot:
 
         self.methods_after_leave_channel_to_remove.append(name)
 
-    def add_check(self, name: str, check: Callable) -> None:
+    def add_check(self, name: str, check: Callable[[], None]) -> None:
         """
         Adds a check to the bot
         Checks work permanently
 
         Args:
             name (str): Check's name
-            check (Callable): Method that will act as a check
+            check (Callable[[], None]): Method that will act as a check
         """
 
         self.custom_checks[name] = check
@@ -1172,15 +1180,15 @@ class Bot:
 
         self.checks_to_remove.append(name)
 
-    def add_listener(self, name: str, listener: Callable) -> None:
+    def add_listener(self, name: str, listener: Callable[[Message], None]) -> None:
         """
         Adds a listener to the bot
         Listeners work only when a message is received
         Listeners must receive as a parameter the last message in the chat
 
         Args:
-            name (str): Command's name
-            listener (Callable): Method that will be executed when the command is invoked
+            name (str): Listener's name
+            listener (Callable[[Message], None]): Method that will be executed after every chat message
         """
 
         self.custom_listeners[name] = listener
@@ -1195,14 +1203,14 @@ class Bot:
 
         self.listeners_to_remove.append(name)
 
-    def add_command(self, name: str, command: Callable) -> None:
+    def add_command(self, name: str, command: Callable[[Message], None]) -> None:
         """
         Adds a command to the bot
         Commands must receive as a parameter the messages which call them
 
         Args:
             name (str): Command's name
-            command (Callable): Method that will be executed when the command is invoked
+            command (Callable[[Message], None]): Method that will be executed when the command is invoked
         """
 
         self.custom_commands[name] = command
@@ -1217,13 +1225,15 @@ class Bot:
 
         self.commands_to_remove.append(name)
 
-    def add_method_before_commands(self, name: str, method: Callable) -> None:
+    def add_method_before_commands(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed before each command
 
         Args:
             name (str): Method's name
-            method (func): Method to be executed before each command
+            method (Callable[[Message], None]): Method to be executed before each command
         """
 
         self.custom_methods_before_commands[name] = method
@@ -1238,13 +1248,15 @@ class Bot:
 
         self.methods_before_commands_to_remove.append(name)
 
-    def add_method_after_commands(self, name: str, method: Callable) -> None:
+    def add_method_after_commands(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after each command
 
         Args:
             name (str): Method's name
-            method (func): Method to be executed after each command
+            method (Callable[[Message], None]): Method to be executed after each command
         """
 
         self.custom_methods_after_commands[name] = method
@@ -1259,13 +1271,15 @@ class Bot:
 
         self.methods_after_commands_to_remove.append(name)
 
-    def add_method_after_clearchat(self, name: str, method: Callable) -> None:
+    def add_method_after_clearchat(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after each chat clearing
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after each chat clearing
+            method (Callable[[Message], None]): Method to be executed after each chat clearing
         """
 
         self.custom_methods_after_clearchat[name] = method
@@ -1280,13 +1294,15 @@ class Bot:
 
         self.methods_after_clearchat_to_remove.append(name)
 
-    def add_method_after_delete_message(self, name: str, method: Callable) -> None:
+    def add_method_after_delete_message(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after each time a message is deleted
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after each time a message is deleted
+            method (Callable[[Message], None]): Method to be executed after each time a message is deleted
         """
 
         self.custom_methods_after_delete_message[name] = method
@@ -1301,13 +1317,15 @@ class Bot:
 
         self.methods_after_delete_message_to_remove.append(name)
 
-    def add_method_after_bot_connected(self, name: str, method: Callable) -> None:
+    def add_method_after_bot_connected(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after a bot connects to a chat
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after a bot connects to a chat
+            method (Callable[[Message], None]): Method to be executed after a bot connects to a chat
         """
 
         self.custom_methods_after_bot_connected[name] = method
@@ -1322,13 +1340,15 @@ class Bot:
 
         self.methods_after_bot_connected_to_remove.append(name)
 
-    def add_method_after_toggle_host(self, name: str, method: Callable) -> None:
+    def add_method_after_toggle_host(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after a channel toggles hosting
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after a channel toggles hosting
+            method (Callable[[Message], None]): Method to be executed after a channel toggles hosting
         """
 
         self.custom_methods_after_toggle_host[name] = method
@@ -1343,13 +1363,15 @@ class Bot:
 
         self.methods_after_toggle_host_to_remove.append(name)
 
-    def add_method_after_server_reconnect(self, name: str, method: Callable) -> None:
+    def add_method_after_server_reconnect(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after a reconnect warning
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after a reconnect warning
+            method (Callable[[Message], None]): Method to be executed after a reconnect warning
         """
 
         self.custom_methods_after_server_reconnect[name] = method
@@ -1364,13 +1386,15 @@ class Bot:
 
         self.methods_after_server_reconnect_to_remove.append(name)
 
-    def add_method_after_channel_change(self, name: str, method: Callable) -> None:
+    def add_method_after_channel_change(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after a channel's chat settings change
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after a channel's chat settings change
+            method (Callable[[Message], None]): Method to be executed after a channel's chat settings change
         """
 
         self.custom_methods_after_channel_change[name] = method
@@ -1385,13 +1409,15 @@ class Bot:
 
         self.methods_after_channel_change_to_remove.append(name)
 
-    def add_method_after_event(self, name: str, method: Callable) -> None:
+    def add_method_after_event(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after an event occurs
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after an event occurs
+            method (Callable[[Message], None]): Method to be executed after an event occurs
         """
 
         self.custom_methods_after_event[name] = method
@@ -1406,13 +1432,15 @@ class Bot:
 
         self.methods_after_event_to_remove.append(name)
 
-    def add_method_after_user_join(self, name: str, method: Callable) -> None:
+    def add_method_after_user_join(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after an user joins into a channel
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after an user joins into a channel
+            method (Callable[[Message], None]): Method to be executed after an user joins into a channel
         """
 
         self.custom_methods_after_user_join[name] = method
@@ -1427,13 +1455,15 @@ class Bot:
 
         self.methods_after_user_join_to_remove.append(name)
 
-    def add_method_after_whisper(self, name: str, method: Callable) -> None:
+    def add_method_after_whisper(
+        self, name: str, method: Callable[[Message], None]
+    ) -> None:
         """
         Adds to the bot a method that will be executed after a whisper is received
 
         Args:
             name (str): Method's name
-            method (Callable): Method to be executed after a whisper is received
+            method (Callable[[Message], None]): Method to be executed after a whisper is received
         """
 
         self.custom_methods_after_whisper[name] = method
