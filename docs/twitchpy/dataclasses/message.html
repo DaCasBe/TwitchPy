@@ -35,24 +35,24 @@ class Message:
     Represents a message
 
     Attributes:
-        prefix (str): Message&#39;s prefix
-        user (str): User who has sent the message
-        channel (str): Channel on which the message was sent
-        irc_command (str): IRC command related to the message
-        irc_args (str): IRC command&#39;s arguments
-        text (str): Message&#39;s text
-        text_command (str): Command related to the message
-        text_args (str): Command&#39;s arguments
+        prefix (str | None): Message&#39;s prefix
+        user (str | None): User who has sent the message
+        channel (str | None): Channel on which the message was sent
+        irc_command (str | None): IRC command related to the message
+        irc_args (list[str] | None): IRC command&#39;s arguments
+        text (str | None): Message&#39;s text
+        text_command (str | None): Command related to the message
+        text_args (list[str] | None): Command&#39;s arguments
     &#34;&#34;&#34;
 
-    prefix: str
-    user: str
-    channel: str
-    irc_command: str
-    irc_args: str
-    text: str
-    text_command: str
-    text_args: str</code></pre>
+    prefix: str | None = None
+    user: str | None = None
+    channel: str | None = None
+    irc_command: str | None = None
+    irc_args: list[str] | None = None
+    text: str | None = None
+    text_command: str | None = None
+    text_args: list[str] | None = None</code></pre>
 </details>
 </section>
 <section>
@@ -66,29 +66,19 @@ class Message:
 <dl>
 <dt id="twitchpy.dataclasses.message.Message"><code class="flex name class">
 <span>class <span class="ident">Message</span></span>
-<span>(</span><span>prefix: str, user: str, channel: str, irc_command: str, irc_args: str, text: str, text_command: str, text_args: str)</span>
+<span>(</span><span>prefix: str | None = None, user: str | None = None, channel: str | None = None, irc_command: str | None = None, irc_args: list[str] | None = None, text: str | None = None, text_command: str | None = None, text_args: list[str] | None = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a message</p>
 <h2 id="attributes">Attributes</h2>
-<dl>
-<dt><strong><code>prefix</code></strong> :&ensp;<code>str</code></dt>
-<dd>Message's prefix</dd>
-<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
-<dd>User who has sent the message</dd>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel on which the message was sent</dd>
-<dt><strong><code>irc_command</code></strong> :&ensp;<code>str</code></dt>
-<dd>IRC command related to the message</dd>
-<dt><strong><code>irc_args</code></strong> :&ensp;<code>str</code></dt>
-<dd>IRC command's arguments</dd>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Message's text</dd>
-<dt><strong><code>text_command</code></strong> :&ensp;<code>str</code></dt>
-<dd>Command related to the message</dd>
-<dt><strong><code>text_args</code></strong> :&ensp;<code>str</code></dt>
-<dd>Command's arguments</dd>
-</dl></div>
+<p>prefix (str | None): Message's prefix
+user (str | None): User who has sent the message
+channel (str | None): Channel on which the message was sent
+irc_command (str | None): IRC command related to the message
+irc_args (list[str] | None): IRC command's arguments
+text (str | None): Message's text
+text_command (str | None): Command related to the message
+text_args (list[str] | None): Command's arguments</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -99,56 +89,56 @@ class Message:
     Represents a message
 
     Attributes:
-        prefix (str): Message&#39;s prefix
-        user (str): User who has sent the message
-        channel (str): Channel on which the message was sent
-        irc_command (str): IRC command related to the message
-        irc_args (str): IRC command&#39;s arguments
-        text (str): Message&#39;s text
-        text_command (str): Command related to the message
-        text_args (str): Command&#39;s arguments
+        prefix (str | None): Message&#39;s prefix
+        user (str | None): User who has sent the message
+        channel (str | None): Channel on which the message was sent
+        irc_command (str | None): IRC command related to the message
+        irc_args (list[str] | None): IRC command&#39;s arguments
+        text (str | None): Message&#39;s text
+        text_command (str | None): Command related to the message
+        text_args (list[str] | None): Command&#39;s arguments
     &#34;&#34;&#34;
 
-    prefix: str
-    user: str
-    channel: str
-    irc_command: str
-    irc_args: str
-    text: str
-    text_command: str
-    text_args: str</code></pre>
+    prefix: str | None = None
+    user: str | None = None
+    channel: str | None = None
+    irc_command: str | None = None
+    irc_args: list[str] | None = None
+    text: str | None = None
+    text_command: str | None = None
+    text_args: list[str] | None = None</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.message.Message.channel"><code class="name">var <span class="ident">channel</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.channel"><code class="name">var <span class="ident">channel</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.irc_args"><code class="name">var <span class="ident">irc_args</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.irc_args"><code class="name">var <span class="ident">irc_args</span> : list[str] | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.irc_command"><code class="name">var <span class="ident">irc_command</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.irc_command"><code class="name">var <span class="ident">irc_command</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.prefix"><code class="name">var <span class="ident">prefix</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.prefix"><code class="name">var <span class="ident">prefix</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.text"><code class="name">var <span class="ident">text</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.text"><code class="name">var <span class="ident">text</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.text_args"><code class="name">var <span class="ident">text_args</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.text_args"><code class="name">var <span class="ident">text_args</span> : list[str] | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.text_command"><code class="name">var <span class="ident">text_command</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.text_command"><code class="name">var <span class="ident">text_command</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.message.Message.user"><code class="name">var <span class="ident">user</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.message.Message.user"><code class="name">var <span class="ident">user</span> : str | None</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
