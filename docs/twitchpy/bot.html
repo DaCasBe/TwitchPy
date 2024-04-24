@@ -677,7 +677,7 @@ class Bot:
             reason (str): Reason of the ban
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/ban @{user} {reason}&#34;)
+        self.send(channel, f&#34;/ban @{user} {reason}&#34;)
 
     def unban(self, channel: str, user: str) -&gt; None:
         &#34;&#34;&#34;
@@ -688,7 +688,7 @@ class Bot:
             user (str): Name of the user to readmit
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/unban @{user}&#34;)
+        self.send(channel, f&#34;/unban @{user}&#34;)
 
     def clear(self, channel: str) -&gt; None:
         &#34;&#34;&#34;
@@ -698,314 +698,7 @@ class Bot:
             channel (str): Channel to clean the chat
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, &#34;/clear&#34;)
-
-    def delete_poll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Eliminates the active poll
-
-        Args:
-            channel (str): Channel in which eliminate the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/deletepoll&#34;)
-
-    def emoteonly(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;emotes only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/emoteonly&#34;)
-
-    def emoteonly_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables &#34;emotes only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/emoteonlyoff&#34;)
-
-    def endpoll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Finish the active poll
-
-        Args:
-            channel (str): Channel in which finish the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/endpoll&#34;)
-
-    def followers(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;followers only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/followers&#34;)
-
-    def followers_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;followers only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/followersoff&#34;)
-
-    def host(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Hosts a channel
-
-        Args:
-            channel (str): Name of the channel who hosts
-            username (str): Name of the channel to host
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/host {username}&#34;)
-
-    def unhost(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Unhosts the hosted channel
-
-        Args:
-            channel (str): Channel who unhosts
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/unhost&#34;)
-
-    def marker(self, channel: str, description: str = &#34;&#34;) -&gt; None:
-        &#34;&#34;&#34;
-        Leaves a mark on the channel&#39;s stream
-
-        Args:
-            channel (str): Channel in which leave the mark
-            description (str): Mark&#39;s description
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/marker {description}&#34;)
-
-    def mod(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Makes a user mod
-
-        Args:
-            channel (str): Channel who promotes the user
-            username (str): Name of the user to be promoted
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/mod {username}&#34;)
-
-    def unmod(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Removes the moderator&#39;s rank from a user
-
-        Args:
-            channel (str): Channel who removes the moderator&#39;s rank
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unmod {username}&#34;)
-
-    def poll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens a configuration menu for creating a poll
-
-        Args:
-            channel (str): Channel in which create the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/poll&#34;)
-
-    def prediction(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens a configuration menu for creating a prediction
-
-        Args:
-            channel (str): Channel in which create the prediction
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/prediction&#34;)
-
-    def raid(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Raids another channel
-
-        Args:
-            channel (str): Name of the channel who raids
-            username (str): Name of the channel to raid
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/raid {username}&#34;)
-
-    def unraid(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Cancels an raid
-
-        Args:
-            channel (str): Channel who unraids
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/unraid&#34;)
-
-    def requests(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens the reward requests queue
-
-        Args:
-            channel (str): Owner of the rewards
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/requests&#34;)
-
-    def slow(self, channel: str, duration: int) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;slow&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-            duration (int): Time between messages
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/slow {duration}&#34;)
-
-    def slow_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;slow&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/slow_off&#34;)
-
-    def subscribers(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;subscribers only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/subscribers&#34;)
-
-    def subscribers_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables &#34;subscriber only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/subscribersoff&#34;)
-
-    def timeout(
-        self, channel: str, user: str, duration: int = 600, reason: str = &#34;&#34;
-    ) -&gt; None:
-        &#34;&#34;&#34;
-        Expels a user temporarily
-
-        Args:
-            channel (str): Channel who ejects
-            user (str): Name of the user to expel
-            duration (int): Ejecting time
-            reason (str): Reason for expulsion
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/timeout @{user} {duration} {reason}&#34;)
-
-    def untimeout(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Cancels the timeout of a user
-
-        Args:
-            channel (str): Channel who ejected the user
-            username (str): User to readmit
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/untimeout @{username}&#34;)
-
-    def uniquechat(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;unique&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/uniquechat&#34;)
-
-    def uniquechat_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;unique&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/uniquechatoff&#34;)
-
-    def user(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows information about a user
-
-        Args:
-            channel (str): Channel in which to show the user&#39;s information
-            username (str): User to show information about
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/user {username}&#34;)
-
-    def vip(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Makes a user vip
-
-        Args:
-            channel (str): Channel who makes a user vip
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/vip {username}&#34;)
-
-    def unvip(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Removes the vip range from a user
-
-        Args:
-            channel (str): Channel who remove&#39;s the vip range
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unvip {username}&#34;)
-
-    def block(self, channel: str, user: str) -&gt; None:
-        &#34;&#34;&#34;
-        Blocks a user
-
-        Args:
-            channel (str): Channel who blocks
-            username (str): User to block
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/block @{user}&#34;)
-
-    def unblock(self, channel: str, user: str) -&gt; None:
-        &#34;&#34;&#34;
-        Unblocks a user
-
-        Args:
-            channel (str): Name of the channel who unblocks
-            user (str): Name of the user to unblock
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unblock @{user}&#34;)
+        self.send(channel, &#34;/clear&#34;)
 
     def color(self, channel: str, color: str) -&gt; None:
         &#34;&#34;&#34;
@@ -1016,60 +709,7 @@ class Bot:
             color (str): New color&#39;s name
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/color {color}&#34;)
-
-    def help(self, channel: str, command: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows detailed information about a command
-
-        Args:
-            channel (str): Channel in which show the command&#39;s information
-            command (str): Command to show information about
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/help {command}&#34;)
-
-    def me(self, channel: str, text: str) -&gt; None:
-        &#34;&#34;&#34;
-        Sends a message by chat in italics
-
-        Args:
-            channel (str): Owner of the chat
-            text (str): Message&#39;s text
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/me {text}&#34;)
-
-    def mods(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows the moderators list of a channel
-
-        Args:
-            channel (str): Channel who owns the moderators
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/mods&#34;)
-
-    def vips(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows the vips list of a channel
-
-        Args:
-            channel (str): Channel who owns the vips
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/vips&#34;)
-
-    def vote(self, channel: str, index: int) -&gt; None:
-        &#34;&#34;&#34;
-        Votes in the active poll
-
-        Args:
-            channel (str): Owner of the poll
-            index (int): Number of the option
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/vote {index}&#34;)
+        self.send(channel, f&#34;/color {color}&#34;)
 
     def commercial(self, channel: str, duration: int = 30) -&gt; None:
         &#34;&#34;&#34;
@@ -1080,7 +720,291 @@ class Bot:
             duration (int): Duration of advertising
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/commercial {duration}&#34;)
+        self.send(channel, f&#34;/commercial {duration}&#34;)
+
+    def delete(self, channel: str, message_id: str) -&gt; None:
+        &#34;&#34;&#34;
+        Deletes the specified message from the chat room
+
+        Args:
+            channel (str): Channel where the message was sent
+            message_id (str): ID of the message
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/delete {message_id}&#34;)
+
+    def disconnect(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Closes the session that the command was received from
+
+        Args:
+            channel (str): Channel whose session close to
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/disconnect&#34;)
+
+    def emoteonly(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;emotes only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/emoteonly&#34;)
+
+    def emoteonlyoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables &#34;emotes only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/emoteonlyoff&#34;)
+
+    def followers(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;followers only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/followers&#34;)
+
+    def followersoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;followers only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/followersoff&#34;)
+
+    def help(self, channel: str, command: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Shows detailed information about a command
+
+        Args:
+            channel (str): Channel in which show the command&#39;s information
+            command (str): Command to show information about
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/help {command}&#34;)
+
+    def host(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Hosts a channel
+
+        Args:
+            channel (str): Name of the channel who hosts
+            username (str): Name of the channel to host
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/host {username}&#34;)
+
+    def unhost(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Unhosts the hosted channel
+
+        Args:
+            channel (str): Channel who unhosts
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/unhost&#34;)
+
+    def marker(self, channel: str, description: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Leaves a mark on the channel&#39;s stream
+
+        Args:
+            channel (str): Channel in which leave the mark
+            description (str): Mark&#39;s description
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/marker {description}&#34;)
+
+    def me(self, channel: str, text: str) -&gt; None:
+        &#34;&#34;&#34;
+        Sends a message by chat in italics
+
+        Args:
+            channel (str): Owner of the chat
+            text (str): Message&#39;s text
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/me {text}&#34;)
+
+    def mod(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Makes a user mod
+
+        Args:
+            channel (str): Channel who promotes the user
+            username (str): Name of the user to be promoted
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/mod {username}&#34;)
+
+    def unmod(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Removes the moderator&#39;s rank from a user
+
+        Args:
+            channel (str): Channel who removes the moderator&#39;s rank
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/unmod {username}&#34;)
+
+    def mods(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Shows the moderators list of a channel
+
+        Args:
+            channel (str): Channel who owns the moderators
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/mods&#34;)
+
+    def raid(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Raids another channel
+
+        Args:
+            channel (str): Name of the channel who raids
+            username (str): Name of the channel to raid
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/raid {username}&#34;)
+
+    def unraid(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Cancels an raid
+
+        Args:
+            channel (str): Channel who unraids
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/unraid&#34;)
+
+    def slow(self, channel: str, duration: int) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;slow&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+            duration (int): Time between messages
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/slow {duration}&#34;)
+
+    def slowoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;slow&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/slowoff&#34;)
+
+    def subscribers(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;subscribers only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/subscribers&#34;)
+
+    def subscribersoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables &#34;subscriber only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/subscribersoff&#34;)
+
+    def timeout(self, channel: str, user: str, duration: int = 600) -&gt; None:
+        &#34;&#34;&#34;
+        Expels a user temporarily
+
+        Args:
+            channel (str): Channel who ejects
+            user (str): Name of the user to expel
+            duration (int): Ejecting time
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/timeout @{user} {duration}&#34;)
+
+    def untimeout(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Cancels the timeout of a user
+
+        Args:
+            channel (str): Channel who ejected the user
+            username (str): User to readmit
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/untimeout @{username}&#34;)
+
+    def uniquechat(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;unique&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/uniquechat&#34;)
+
+    def uniquechatoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;unique&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/uniquechatoff&#34;)
+
+    def vip(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Makes a user vip
+
+        Args:
+            channel (str): Channel who makes a user vip
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/vip {username}&#34;)
+
+    def unvip(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Removes the vip range from a user
+
+        Args:
+            channel (str): Channel who remove&#39;s the vip range
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/unvip {username}&#34;)
+
+    def vips(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Shows the vips list of a channel
+
+        Args:
+            channel (str): Channel who owns the vips
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/vips&#34;)
 
     def whisper(self, channel: str, user: str, text: str) -&gt; None:
         &#34;&#34;&#34;
@@ -1092,7 +1016,7 @@ class Bot:
             text (str): Whisper&#39;s text
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/w {user} {text}&#34;)
+        self.send(channel, f&#34;/w {user} {text}&#34;)
 
     def add_method_before_join_channel(
         self, name: str, method: Callable[[str], None]
@@ -2189,7 +2113,7 @@ class Bot:
             reason (str): Reason of the ban
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/ban @{user} {reason}&#34;)
+        self.send(channel, f&#34;/ban @{user} {reason}&#34;)
 
     def unban(self, channel: str, user: str) -&gt; None:
         &#34;&#34;&#34;
@@ -2200,7 +2124,7 @@ class Bot:
             user (str): Name of the user to readmit
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/unban @{user}&#34;)
+        self.send(channel, f&#34;/unban @{user}&#34;)
 
     def clear(self, channel: str) -&gt; None:
         &#34;&#34;&#34;
@@ -2210,314 +2134,7 @@ class Bot:
             channel (str): Channel to clean the chat
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, &#34;/clear&#34;)
-
-    def delete_poll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Eliminates the active poll
-
-        Args:
-            channel (str): Channel in which eliminate the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/deletepoll&#34;)
-
-    def emoteonly(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;emotes only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/emoteonly&#34;)
-
-    def emoteonly_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables &#34;emotes only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/emoteonlyoff&#34;)
-
-    def endpoll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Finish the active poll
-
-        Args:
-            channel (str): Channel in which finish the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/endpoll&#34;)
-
-    def followers(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;followers only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/followers&#34;)
-
-    def followers_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;followers only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/followersoff&#34;)
-
-    def host(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Hosts a channel
-
-        Args:
-            channel (str): Name of the channel who hosts
-            username (str): Name of the channel to host
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/host {username}&#34;)
-
-    def unhost(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Unhosts the hosted channel
-
-        Args:
-            channel (str): Channel who unhosts
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/unhost&#34;)
-
-    def marker(self, channel: str, description: str = &#34;&#34;) -&gt; None:
-        &#34;&#34;&#34;
-        Leaves a mark on the channel&#39;s stream
-
-        Args:
-            channel (str): Channel in which leave the mark
-            description (str): Mark&#39;s description
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/marker {description}&#34;)
-
-    def mod(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Makes a user mod
-
-        Args:
-            channel (str): Channel who promotes the user
-            username (str): Name of the user to be promoted
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/mod {username}&#34;)
-
-    def unmod(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Removes the moderator&#39;s rank from a user
-
-        Args:
-            channel (str): Channel who removes the moderator&#39;s rank
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unmod {username}&#34;)
-
-    def poll(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens a configuration menu for creating a poll
-
-        Args:
-            channel (str): Channel in which create the poll
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/poll&#34;)
-
-    def prediction(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens a configuration menu for creating a prediction
-
-        Args:
-            channel (str): Channel in which create the prediction
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/prediction&#34;)
-
-    def raid(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Raids another channel
-
-        Args:
-            channel (str): Name of the channel who raids
-            username (str): Name of the channel to raid
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/raid {username}&#34;)
-
-    def unraid(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Cancels an raid
-
-        Args:
-            channel (str): Channel who unraids
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/unraid&#34;)
-
-    def requests(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Opens the reward requests queue
-
-        Args:
-            channel (str): Owner of the rewards
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/requests&#34;)
-
-    def slow(self, channel: str, duration: int) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;slow&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-            duration (int): Time between messages
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/slow {duration}&#34;)
-
-    def slow_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;slow&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/slow_off&#34;)
-
-    def subscribers(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;subscribers only&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/subscribers&#34;)
-
-    def subscribers_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables &#34;subscriber only&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/subscribersoff&#34;)
-
-    def timeout(
-        self, channel: str, user: str, duration: int = 600, reason: str = &#34;&#34;
-    ) -&gt; None:
-        &#34;&#34;&#34;
-        Expels a user temporarily
-
-        Args:
-            channel (str): Channel who ejects
-            user (str): Name of the user to expel
-            duration (int): Ejecting time
-            reason (str): Reason for expulsion
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/timeout @{user} {duration} {reason}&#34;)
-
-    def untimeout(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Cancels the timeout of a user
-
-        Args:
-            channel (str): Channel who ejected the user
-            username (str): User to readmit
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/untimeout @{username}&#34;)
-
-    def uniquechat(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Activates the &#34;unique&#34; mode
-
-        Args:
-            channel (str): Channel on which activate the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/uniquechat&#34;)
-
-    def uniquechat_off(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Disables the &#34;unique&#34; mode
-
-        Args:
-            channel (str): Channel on which disable the mode
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/uniquechatoff&#34;)
-
-    def user(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows information about a user
-
-        Args:
-            channel (str): Channel in which to show the user&#39;s information
-            username (str): User to show information about
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/user {username}&#34;)
-
-    def vip(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Makes a user vip
-
-        Args:
-            channel (str): Channel who makes a user vip
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/vip {username}&#34;)
-
-    def unvip(self, channel: str, username: str) -&gt; None:
-        &#34;&#34;&#34;
-        Removes the vip range from a user
-
-        Args:
-            channel (str): Channel who remove&#39;s the vip range
-            username (str): User&#39;s name
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unvip {username}&#34;)
-
-    def block(self, channel: str, user: str) -&gt; None:
-        &#34;&#34;&#34;
-        Blocks a user
-
-        Args:
-            channel (str): Channel who blocks
-            username (str): User to block
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/block @{user}&#34;)
-
-    def unblock(self, channel: str, user: str) -&gt; None:
-        &#34;&#34;&#34;
-        Unblocks a user
-
-        Args:
-            channel (str): Name of the channel who unblocks
-            user (str): Name of the user to unblock
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/unblock @{user}&#34;)
+        self.send(channel, &#34;/clear&#34;)
 
     def color(self, channel: str, color: str) -&gt; None:
         &#34;&#34;&#34;
@@ -2528,60 +2145,7 @@ class Bot:
             color (str): New color&#39;s name
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/color {color}&#34;)
-
-    def help(self, channel: str, command: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows detailed information about a command
-
-        Args:
-            channel (str): Channel in which show the command&#39;s information
-            command (str): Command to show information about
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/help {command}&#34;)
-
-    def me(self, channel: str, text: str) -&gt; None:
-        &#34;&#34;&#34;
-        Sends a message by chat in italics
-
-        Args:
-            channel (str): Owner of the chat
-            text (str): Message&#39;s text
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/me {text}&#34;)
-
-    def mods(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows the moderators list of a channel
-
-        Args:
-            channel (str): Channel who owns the moderators
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/mods&#34;)
-
-    def vips(self, channel: str) -&gt; None:
-        &#34;&#34;&#34;
-        Shows the vips list of a channel
-
-        Args:
-            channel (str): Channel who owns the vips
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, &#34;/vips&#34;)
-
-    def vote(self, channel: str, index: int) -&gt; None:
-        &#34;&#34;&#34;
-        Votes in the active poll
-
-        Args:
-            channel (str): Owner of the poll
-            index (int): Number of the option
-        &#34;&#34;&#34;
-
-        self.__send_privmsg(channel, f&#34;/vote {index}&#34;)
+        self.send(channel, f&#34;/color {color}&#34;)
 
     def commercial(self, channel: str, duration: int = 30) -&gt; None:
         &#34;&#34;&#34;
@@ -2592,7 +2156,291 @@ class Bot:
             duration (int): Duration of advertising
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/commercial {duration}&#34;)
+        self.send(channel, f&#34;/commercial {duration}&#34;)
+
+    def delete(self, channel: str, message_id: str) -&gt; None:
+        &#34;&#34;&#34;
+        Deletes the specified message from the chat room
+
+        Args:
+            channel (str): Channel where the message was sent
+            message_id (str): ID of the message
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/delete {message_id}&#34;)
+
+    def disconnect(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Closes the session that the command was received from
+
+        Args:
+            channel (str): Channel whose session close to
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/disconnect&#34;)
+
+    def emoteonly(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;emotes only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/emoteonly&#34;)
+
+    def emoteonlyoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables &#34;emotes only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/emoteonlyoff&#34;)
+
+    def followers(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;followers only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/followers&#34;)
+
+    def followersoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;followers only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/followersoff&#34;)
+
+    def help(self, channel: str, command: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Shows detailed information about a command
+
+        Args:
+            channel (str): Channel in which show the command&#39;s information
+            command (str): Command to show information about
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/help {command}&#34;)
+
+    def host(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Hosts a channel
+
+        Args:
+            channel (str): Name of the channel who hosts
+            username (str): Name of the channel to host
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/host {username}&#34;)
+
+    def unhost(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Unhosts the hosted channel
+
+        Args:
+            channel (str): Channel who unhosts
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/unhost&#34;)
+
+    def marker(self, channel: str, description: str = &#34;&#34;) -&gt; None:
+        &#34;&#34;&#34;
+        Leaves a mark on the channel&#39;s stream
+
+        Args:
+            channel (str): Channel in which leave the mark
+            description (str): Mark&#39;s description
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/marker {description}&#34;)
+
+    def me(self, channel: str, text: str) -&gt; None:
+        &#34;&#34;&#34;
+        Sends a message by chat in italics
+
+        Args:
+            channel (str): Owner of the chat
+            text (str): Message&#39;s text
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/me {text}&#34;)
+
+    def mod(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Makes a user mod
+
+        Args:
+            channel (str): Channel who promotes the user
+            username (str): Name of the user to be promoted
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/mod {username}&#34;)
+
+    def unmod(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Removes the moderator&#39;s rank from a user
+
+        Args:
+            channel (str): Channel who removes the moderator&#39;s rank
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/unmod {username}&#34;)
+
+    def mods(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Shows the moderators list of a channel
+
+        Args:
+            channel (str): Channel who owns the moderators
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/mods&#34;)
+
+    def raid(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Raids another channel
+
+        Args:
+            channel (str): Name of the channel who raids
+            username (str): Name of the channel to raid
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/raid {username}&#34;)
+
+    def unraid(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Cancels an raid
+
+        Args:
+            channel (str): Channel who unraids
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/unraid&#34;)
+
+    def slow(self, channel: str, duration: int) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;slow&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+            duration (int): Time between messages
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/slow {duration}&#34;)
+
+    def slowoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;slow&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/slowoff&#34;)
+
+    def subscribers(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;subscribers only&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/subscribers&#34;)
+
+    def subscribersoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables &#34;subscriber only&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/subscribersoff&#34;)
+
+    def timeout(self, channel: str, user: str, duration: int = 600) -&gt; None:
+        &#34;&#34;&#34;
+        Expels a user temporarily
+
+        Args:
+            channel (str): Channel who ejects
+            user (str): Name of the user to expel
+            duration (int): Ejecting time
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/timeout @{user} {duration}&#34;)
+
+    def untimeout(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Cancels the timeout of a user
+
+        Args:
+            channel (str): Channel who ejected the user
+            username (str): User to readmit
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/untimeout @{username}&#34;)
+
+    def uniquechat(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Activates the &#34;unique&#34; mode
+
+        Args:
+            channel (str): Channel on which activate the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/uniquechat&#34;)
+
+    def uniquechatoff(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Disables the &#34;unique&#34; mode
+
+        Args:
+            channel (str): Channel on which disable the mode
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/uniquechatoff&#34;)
+
+    def vip(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Makes a user vip
+
+        Args:
+            channel (str): Channel who makes a user vip
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/vip {username}&#34;)
+
+    def unvip(self, channel: str, username: str) -&gt; None:
+        &#34;&#34;&#34;
+        Removes the vip range from a user
+
+        Args:
+            channel (str): Channel who remove&#39;s the vip range
+            username (str): User&#39;s name
+        &#34;&#34;&#34;
+
+        self.send(channel, f&#34;/unvip {username}&#34;)
+
+    def vips(self, channel: str) -&gt; None:
+        &#34;&#34;&#34;
+        Shows the vips list of a channel
+
+        Args:
+            channel (str): Channel who owns the vips
+        &#34;&#34;&#34;
+
+        self.send(channel, &#34;/vips&#34;)
 
     def whisper(self, channel: str, user: str, text: str) -&gt; None:
         &#34;&#34;&#34;
@@ -2604,7 +2452,7 @@ class Bot:
             text (str): Whisper&#39;s text
         &#34;&#34;&#34;
 
-        self.__send_privmsg(channel, f&#34;/w {user} {text}&#34;)
+        self.send(channel, f&#34;/w {user} {text}&#34;)
 
     def add_method_before_join_channel(
         self, name: str, method: Callable[[str], None]
@@ -3590,35 +3438,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         reason (str): Reason of the ban
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/ban @{user} {reason}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.block"><code class="name flex">
-<span>def <span class="ident">block</span></span>(<span>self, channel: str, user: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Blocks a user</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel who blocks</dd>
-<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
-<dd>User to block</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def block(self, channel: str, user: str) -&gt; None:
-    &#34;&#34;&#34;
-    Blocks a user
-
-    Args:
-        channel (str): Channel who blocks
-        username (str): User to block
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, f&#34;/block @{user}&#34;)</code></pre>
+    self.send(channel, f&#34;/ban @{user} {reason}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.clear"><code class="name flex">
@@ -3643,7 +3463,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel to clean the chat
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/clear&#34;)</code></pre>
+    self.send(channel, &#34;/clear&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.color"><code class="name flex">
@@ -3671,7 +3491,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         color (str): New color&#39;s name
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/color {color}&#34;)</code></pre>
+    self.send(channel, f&#34;/color {color}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.commercial"><code class="name flex">
@@ -3699,32 +3519,60 @@ Listeners must receive as a parameter the last message in the chat</p>
         duration (int): Duration of advertising
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/commercial {duration}&#34;)</code></pre>
+    self.send(channel, f&#34;/commercial {duration}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.delete_poll"><code class="name flex">
-<span>def <span class="ident">delete_poll</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.delete"><code class="name flex">
+<span>def <span class="ident">delete</span></span>(<span>self, channel: str, message_id: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Eliminates the active poll</p>
+<div class="desc"><p>Deletes the specified message from the chat room</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel in which eliminate the poll</dd>
+<dd>Channel where the message was sent</dd>
+<dt><strong><code>message_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>ID of the message</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def delete_poll(self, channel: str) -&gt; None:
+<pre><code class="python">def delete(self, channel: str, message_id: str) -&gt; None:
     &#34;&#34;&#34;
-    Eliminates the active poll
+    Deletes the specified message from the chat room
 
     Args:
-        channel (str): Channel in which eliminate the poll
+        channel (str): Channel where the message was sent
+        message_id (str): ID of the message
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/deletepoll&#34;)</code></pre>
+    self.send(channel, f&#34;/delete {message_id}&#34;)</code></pre>
+</details>
+</dd>
+<dt id="twitchpy.bot.Bot.disconnect"><code class="name flex">
+<span>def <span class="ident">disconnect</span></span>(<span>self, channel: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Closes the session that the command was received from</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
+<dd>Channel whose session close to</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disconnect(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Closes the session that the command was received from
+
+    Args:
+        channel (str): Channel whose session close to
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/disconnect&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.emoteonly"><code class="name flex">
@@ -3749,11 +3597,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which activate the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/emoteonly&#34;)</code></pre>
+    self.send(channel, &#34;/emoteonly&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.emoteonly_off"><code class="name flex">
-<span>def <span class="ident">emoteonly_off</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.emoteonlyoff"><code class="name flex">
+<span>def <span class="ident">emoteonlyoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Disables "emotes only" mode</p>
@@ -3766,7 +3614,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def emoteonly_off(self, channel: str) -&gt; None:
+<pre><code class="python">def emoteonlyoff(self, channel: str) -&gt; None:
     &#34;&#34;&#34;
     Disables &#34;emotes only&#34; mode
 
@@ -3774,32 +3622,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which disable the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/emoteonlyoff&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.endpoll"><code class="name flex">
-<span>def <span class="ident">endpoll</span></span>(<span>self, channel: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Finish the active poll</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel in which finish the poll</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def endpoll(self, channel: str) -&gt; None:
-    &#34;&#34;&#34;
-    Finish the active poll
-
-    Args:
-        channel (str): Channel in which finish the poll
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, &#34;/endpoll&#34;)</code></pre>
+    self.send(channel, &#34;/emoteonlyoff&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.followers"><code class="name flex">
@@ -3824,11 +3647,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which activate the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/followers&#34;)</code></pre>
+    self.send(channel, &#34;/followers&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.followers_off"><code class="name flex">
-<span>def <span class="ident">followers_off</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.followersoff"><code class="name flex">
+<span>def <span class="ident">followersoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Disables the "followers only" mode</p>
@@ -3841,7 +3664,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def followers_off(self, channel: str) -&gt; None:
+<pre><code class="python">def followersoff(self, channel: str) -&gt; None:
     &#34;&#34;&#34;
     Disables the &#34;followers only&#34; mode
 
@@ -3849,11 +3672,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which disable the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/followersoff&#34;)</code></pre>
+    self.send(channel, &#34;/followersoff&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.help"><code class="name flex">
-<span>def <span class="ident">help</span></span>(<span>self, channel: str, command: str) ‑> None</span>
+<span>def <span class="ident">help</span></span>(<span>self, channel: str, command: str = '') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Shows detailed information about a command</p>
@@ -3868,7 +3691,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def help(self, channel: str, command: str) -&gt; None:
+<pre><code class="python">def help(self, channel: str, command: str = &#34;&#34;) -&gt; None:
     &#34;&#34;&#34;
     Shows detailed information about a command
 
@@ -3877,7 +3700,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         command (str): Command to show information about
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/help {command}&#34;)</code></pre>
+    self.send(channel, f&#34;/help {command}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.host"><code class="name flex">
@@ -3905,7 +3728,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): Name of the channel to host
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/host {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/host {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.join_channel"><code class="name flex">
@@ -3998,7 +3821,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         description (str): Mark&#39;s description
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/marker {description}&#34;)</code></pre>
+    self.send(channel, f&#34;/marker {description}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.me"><code class="name flex">
@@ -4026,7 +3849,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         text (str): Message&#39;s text
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/me {text}&#34;)</code></pre>
+    self.send(channel, f&#34;/me {text}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.mod"><code class="name flex">
@@ -4054,7 +3877,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): Name of the user to be promoted
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/mod {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/mod {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.mods"><code class="name flex">
@@ -4079,57 +3902,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel who owns the moderators
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/mods&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.poll"><code class="name flex">
-<span>def <span class="ident">poll</span></span>(<span>self, channel: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Opens a configuration menu for creating a poll</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel in which create the poll</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def poll(self, channel: str) -&gt; None:
-    &#34;&#34;&#34;
-    Opens a configuration menu for creating a poll
-
-    Args:
-        channel (str): Channel in which create the poll
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, &#34;/poll&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.prediction"><code class="name flex">
-<span>def <span class="ident">prediction</span></span>(<span>self, channel: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Opens a configuration menu for creating a prediction</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel in which create the prediction</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def prediction(self, channel: str) -&gt; None:
-    &#34;&#34;&#34;
-    Opens a configuration menu for creating a prediction
-
-    Args:
-        channel (str): Channel in which create the prediction
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, &#34;/prediction&#34;)</code></pre>
+    self.send(channel, &#34;/mods&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.raid"><code class="name flex">
@@ -4157,7 +3930,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): Name of the channel to raid
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/raid {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/raid {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.remove_check"><code class="name flex">
@@ -4610,31 +4383,6 @@ Listeners must receive as a parameter the last message in the chat</p>
     self.methods_before_leave_channel_to_remove.append(name)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.requests"><code class="name flex">
-<span>def <span class="ident">requests</span></span>(<span>self, channel: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Opens the reward requests queue</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Owner of the rewards</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def requests(self, channel: str) -&gt; None:
-    &#34;&#34;&#34;
-    Opens the reward requests queue
-
-    Args:
-        channel (str): Owner of the rewards
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, &#34;/requests&#34;)</code></pre>
-</details>
-</dd>
 <dt id="twitchpy.bot.Bot.run"><code class="name flex">
 <span>def <span class="ident">run</span></span>(<span>self) ‑> None</span>
 </code></dt>
@@ -4706,11 +4454,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         duration (int): Time between messages
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/slow {duration}&#34;)</code></pre>
+    self.send(channel, f&#34;/slow {duration}&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.slow_off"><code class="name flex">
-<span>def <span class="ident">slow_off</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.slowoff"><code class="name flex">
+<span>def <span class="ident">slowoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Disables the "slow" mode</p>
@@ -4723,7 +4471,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def slow_off(self, channel: str) -&gt; None:
+<pre><code class="python">def slowoff(self, channel: str) -&gt; None:
     &#34;&#34;&#34;
     Disables the &#34;slow&#34; mode
 
@@ -4731,7 +4479,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which disable the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/slow_off&#34;)</code></pre>
+    self.send(channel, &#34;/slowoff&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.stop"><code class="name flex">
@@ -4773,11 +4521,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which activate the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/subscribers&#34;)</code></pre>
+    self.send(channel, &#34;/subscribers&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.subscribers_off"><code class="name flex">
-<span>def <span class="ident">subscribers_off</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.subscribersoff"><code class="name flex">
+<span>def <span class="ident">subscribersoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Disables "subscriber only" mode</p>
@@ -4790,7 +4538,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def subscribers_off(self, channel: str) -&gt; None:
+<pre><code class="python">def subscribersoff(self, channel: str) -&gt; None:
     &#34;&#34;&#34;
     Disables &#34;subscriber only&#34; mode
 
@@ -4798,11 +4546,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which disable the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/subscribersoff&#34;)</code></pre>
+    self.send(channel, &#34;/subscribersoff&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.timeout"><code class="name flex">
-<span>def <span class="ident">timeout</span></span>(<span>self, channel: str, user: str, duration: int = 600, reason: str = '') ‑> None</span>
+<span>def <span class="ident">timeout</span></span>(<span>self, channel: str, user: str, duration: int = 600) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Expels a user temporarily</p>
@@ -4814,16 +4562,12 @@ Listeners must receive as a parameter the last message in the chat</p>
 <dd>Name of the user to expel</dd>
 <dt><strong><code>duration</code></strong> :&ensp;<code>int</code></dt>
 <dd>Ejecting time</dd>
-<dt><strong><code>reason</code></strong> :&ensp;<code>str</code></dt>
-<dd>Reason for expulsion</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def timeout(
-    self, channel: str, user: str, duration: int = 600, reason: str = &#34;&#34;
-) -&gt; None:
+<pre><code class="python">def timeout(self, channel: str, user: str, duration: int = 600) -&gt; None:
     &#34;&#34;&#34;
     Expels a user temporarily
 
@@ -4831,10 +4575,9 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel who ejects
         user (str): Name of the user to expel
         duration (int): Ejecting time
-        reason (str): Reason for expulsion
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/timeout @{user} {duration} {reason}&#34;)</code></pre>
+    self.send(channel, f&#34;/timeout @{user} {duration}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.unban"><code class="name flex">
@@ -4862,35 +4605,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         user (str): Name of the user to readmit
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/unban @{user}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.unblock"><code class="name flex">
-<span>def <span class="ident">unblock</span></span>(<span>self, channel: str, user: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Unblocks a user</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of the channel who unblocks</dd>
-<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of the user to unblock</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def unblock(self, channel: str, user: str) -&gt; None:
-    &#34;&#34;&#34;
-    Unblocks a user
-
-    Args:
-        channel (str): Name of the channel who unblocks
-        user (str): Name of the user to unblock
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, f&#34;/unblock @{user}&#34;)</code></pre>
+    self.send(channel, f&#34;/unban @{user}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.unhost"><code class="name flex">
@@ -4915,7 +4630,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel who unhosts
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/unhost&#34;)</code></pre>
+    self.send(channel, &#34;/unhost&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.uniquechat"><code class="name flex">
@@ -4940,11 +4655,11 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which activate the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/uniquechat&#34;)</code></pre>
+    self.send(channel, &#34;/uniquechat&#34;)</code></pre>
 </details>
 </dd>
-<dt id="twitchpy.bot.Bot.uniquechat_off"><code class="name flex">
-<span>def <span class="ident">uniquechat_off</span></span>(<span>self, channel: str) ‑> None</span>
+<dt id="twitchpy.bot.Bot.uniquechatoff"><code class="name flex">
+<span>def <span class="ident">uniquechatoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Disables the "unique" mode</p>
@@ -4957,7 +4672,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def uniquechat_off(self, channel: str) -&gt; None:
+<pre><code class="python">def uniquechatoff(self, channel: str) -&gt; None:
     &#34;&#34;&#34;
     Disables the &#34;unique&#34; mode
 
@@ -4965,7 +4680,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel on which disable the mode
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/uniquechatoff&#34;)</code></pre>
+    self.send(channel, &#34;/uniquechatoff&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.unmod"><code class="name flex">
@@ -4993,7 +4708,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): User&#39;s name
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/unmod {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/unmod {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.unraid"><code class="name flex">
@@ -5018,7 +4733,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel who unraids
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/unraid&#34;)</code></pre>
+    self.send(channel, &#34;/unraid&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.untimeout"><code class="name flex">
@@ -5046,7 +4761,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): User to readmit
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/untimeout @{username}&#34;)</code></pre>
+    self.send(channel, f&#34;/untimeout @{username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.unvip"><code class="name flex">
@@ -5074,35 +4789,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): User&#39;s name
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/unvip {username}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.user"><code class="name flex">
-<span>def <span class="ident">user</span></span>(<span>self, channel: str, username: str) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Shows information about a user</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Channel in which to show the user's information</dd>
-<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
-<dd>User to show information about</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def user(self, channel: str, username: str) -&gt; None:
-    &#34;&#34;&#34;
-    Shows information about a user
-
-    Args:
-        channel (str): Channel in which to show the user&#39;s information
-        username (str): User to show information about
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, f&#34;/user {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/unvip {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.vip"><code class="name flex">
@@ -5130,7 +4817,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         username (str): User&#39;s name
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/vip {username}&#34;)</code></pre>
+    self.send(channel, f&#34;/vip {username}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.vips"><code class="name flex">
@@ -5155,35 +4842,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         channel (str): Channel who owns the vips
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, &#34;/vips&#34;)</code></pre>
-</details>
-</dd>
-<dt id="twitchpy.bot.Bot.vote"><code class="name flex">
-<span>def <span class="ident">vote</span></span>(<span>self, channel: str, index: int) ‑> None</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Votes in the active poll</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>channel</code></strong> :&ensp;<code>str</code></dt>
-<dd>Owner of the poll</dd>
-<dt><strong><code>index</code></strong> :&ensp;<code>int</code></dt>
-<dd>Number of the option</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def vote(self, channel: str, index: int) -&gt; None:
-    &#34;&#34;&#34;
-    Votes in the active poll
-
-    Args:
-        channel (str): Owner of the poll
-        index (int): Number of the option
-    &#34;&#34;&#34;
-
-    self.__send_privmsg(channel, f&#34;/vote {index}&#34;)</code></pre>
+    self.send(channel, &#34;/vips&#34;)</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.bot.Bot.whisper"><code class="name flex">
@@ -5214,7 +4873,7 @@ Listeners must receive as a parameter the last message in the chat</p>
         text (str): Whisper&#39;s text
     &#34;&#34;&#34;
 
-    self.__send_privmsg(channel, f&#34;/w {user} {text}&#34;)</code></pre>
+    self.send(channel, f&#34;/w {user} {text}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -5257,16 +4916,15 @@ Listeners must receive as a parameter the last message in the chat</p>
 <li><code><a title="twitchpy.bot.Bot.add_method_before_join_channel" href="#twitchpy.bot.Bot.add_method_before_join_channel">add_method_before_join_channel</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.add_method_before_leave_channel" href="#twitchpy.bot.Bot.add_method_before_leave_channel">add_method_before_leave_channel</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.ban" href="#twitchpy.bot.Bot.ban">ban</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.block" href="#twitchpy.bot.Bot.block">block</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.clear" href="#twitchpy.bot.Bot.clear">clear</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.color" href="#twitchpy.bot.Bot.color">color</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.commercial" href="#twitchpy.bot.Bot.commercial">commercial</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.delete_poll" href="#twitchpy.bot.Bot.delete_poll">delete_poll</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.delete" href="#twitchpy.bot.Bot.delete">delete</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.disconnect" href="#twitchpy.bot.Bot.disconnect">disconnect</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.emoteonly" href="#twitchpy.bot.Bot.emoteonly">emoteonly</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.emoteonly_off" href="#twitchpy.bot.Bot.emoteonly_off">emoteonly_off</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.endpoll" href="#twitchpy.bot.Bot.endpoll">endpoll</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.emoteonlyoff" href="#twitchpy.bot.Bot.emoteonlyoff">emoteonlyoff</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.followers" href="#twitchpy.bot.Bot.followers">followers</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.followers_off" href="#twitchpy.bot.Bot.followers_off">followers_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.followersoff" href="#twitchpy.bot.Bot.followersoff">followersoff</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.help" href="#twitchpy.bot.Bot.help">help</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.host" href="#twitchpy.bot.Bot.host">host</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.join_channel" href="#twitchpy.bot.Bot.join_channel">join_channel</a></code></li>
@@ -5275,8 +4933,6 @@ Listeners must receive as a parameter the last message in the chat</p>
 <li><code><a title="twitchpy.bot.Bot.me" href="#twitchpy.bot.Bot.me">me</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.mod" href="#twitchpy.bot.Bot.mod">mod</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.mods" href="#twitchpy.bot.Bot.mods">mods</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.poll" href="#twitchpy.bot.Bot.poll">poll</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.prediction" href="#twitchpy.bot.Bot.prediction">prediction</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.raid" href="#twitchpy.bot.Bot.raid">raid</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.remove_check" href="#twitchpy.bot.Bot.remove_check">remove_check</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.remove_command" href="#twitchpy.bot.Bot.remove_command">remove_command</a></code></li>
@@ -5296,28 +4952,24 @@ Listeners must receive as a parameter the last message in the chat</p>
 <li><code><a title="twitchpy.bot.Bot.remove_method_before_commands" href="#twitchpy.bot.Bot.remove_method_before_commands">remove_method_before_commands</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.remove_method_before_join_channel" href="#twitchpy.bot.Bot.remove_method_before_join_channel">remove_method_before_join_channel</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.remove_method_before_leave_channel" href="#twitchpy.bot.Bot.remove_method_before_leave_channel">remove_method_before_leave_channel</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.requests" href="#twitchpy.bot.Bot.requests">requests</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.run" href="#twitchpy.bot.Bot.run">run</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.send" href="#twitchpy.bot.Bot.send">send</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.slow" href="#twitchpy.bot.Bot.slow">slow</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.slow_off" href="#twitchpy.bot.Bot.slow_off">slow_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.slowoff" href="#twitchpy.bot.Bot.slowoff">slowoff</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.stop" href="#twitchpy.bot.Bot.stop">stop</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.subscribers" href="#twitchpy.bot.Bot.subscribers">subscribers</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.subscribers_off" href="#twitchpy.bot.Bot.subscribers_off">subscribers_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.subscribersoff" href="#twitchpy.bot.Bot.subscribersoff">subscribersoff</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.timeout" href="#twitchpy.bot.Bot.timeout">timeout</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.unban" href="#twitchpy.bot.Bot.unban">unban</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.unblock" href="#twitchpy.bot.Bot.unblock">unblock</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.unhost" href="#twitchpy.bot.Bot.unhost">unhost</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.uniquechat" href="#twitchpy.bot.Bot.uniquechat">uniquechat</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.uniquechat_off" href="#twitchpy.bot.Bot.uniquechat_off">uniquechat_off</a></code></li>
+<li><code><a title="twitchpy.bot.Bot.uniquechatoff" href="#twitchpy.bot.Bot.uniquechatoff">uniquechatoff</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.unmod" href="#twitchpy.bot.Bot.unmod">unmod</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.unraid" href="#twitchpy.bot.Bot.unraid">unraid</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.untimeout" href="#twitchpy.bot.Bot.untimeout">untimeout</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.unvip" href="#twitchpy.bot.Bot.unvip">unvip</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.user" href="#twitchpy.bot.Bot.user">user</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.vip" href="#twitchpy.bot.Bot.vip">vip</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.vips" href="#twitchpy.bot.Bot.vips">vips</a></code></li>
-<li><code><a title="twitchpy.bot.Bot.vote" href="#twitchpy.bot.Bot.vote">vote</a></code></li>
 <li><code><a title="twitchpy.bot.Bot.whisper" href="#twitchpy.bot.Bot.whisper">whisper</a></code></li>
 </ul>
 </li>
