@@ -1514,7 +1514,11 @@ class Client:
         """
 
         return drops.get_drops_entitlements(
-            self.__app_token,
+            (
+                self.__user_token
+                if self.__user_token != "" and user_id is None
+                else self.__app_token
+            ),
             self.client_id,
             entitlement_id,
             user_id,
@@ -1545,7 +1549,7 @@ class Client:
         """
 
         return drops.update_drops_entitlements(
-            self.__app_token if self.__user_token == "" else self.__user_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             entitlement_ids,
             fulfillment_status,
