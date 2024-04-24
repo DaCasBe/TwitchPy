@@ -1697,7 +1697,10 @@ class Client:
         """
 
         return extensions.get_extension_live_channels(
-            self.__app_token, self.client_id, extension_id, first
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            extension_id,
+            first,
         )
 
     def get_extension_secrets(self) -> list[tuple[str, list[ExtensionSecret]]]:
@@ -1807,7 +1810,10 @@ class Client:
         """
 
         return extensions.get_released_extensions(
-            self.__app_token, self.client_id, extension_id, extension_version
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            extension_id,
+            extension_version,
         )
 
     def get_extension_bits_products(
