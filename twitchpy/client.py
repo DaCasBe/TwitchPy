@@ -1346,7 +1346,7 @@ class Client:
         """
 
         return clips.get_clips(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
             game_id,
