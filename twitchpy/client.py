@@ -1477,11 +1477,13 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ContentClassificationLabel]
         """
 
         return content_classification_labels.get_content_classification_labels(
-            self.__app_token, self.client_id, locale
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            locale,
         )
 
     def get_drops_entitlements(
