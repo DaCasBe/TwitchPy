@@ -983,7 +983,9 @@ class Client:
         """
 
         return chats.get_channel_emotes(
-            self.__app_token, self.client_id, broadcaster_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_global_emotes(self) -> list[Emote]:
