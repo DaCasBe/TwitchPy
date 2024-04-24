@@ -446,7 +446,11 @@ class Client:
             list[Cheermote]
         """
 
-        return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
+        return bits.get_cheermotes(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_extension_transactions(
         self,
