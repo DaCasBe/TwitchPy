@@ -1908,7 +1908,7 @@ class Client:
         """
 
         return eventsubs.create_eventsub_subscription(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             subscription_type,
             version,
@@ -1928,7 +1928,9 @@ class Client:
         """
 
         eventsubs.delete_eventsub_subscription(
-            self.__app_token, self.client_id, subscription_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            subscription_id,
         )
 
     def get_eventsub_subscriptions(
@@ -1955,7 +1957,11 @@ class Client:
         """
 
         return eventsubs.get_eventsub_subscriptions(
-            self.__app_token, self.client_id, status, subscription_type, user_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            status,
+            subscription_type,
+            user_id,
         )
 
     def get_top_games(self, first: int = 20) -> list[Game]:
