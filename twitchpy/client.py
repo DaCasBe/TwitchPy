@@ -1985,7 +1985,11 @@ class Client:
             list[Game]
         """
 
-        return games.get_top_games(self.__app_token, self.client_id, first)
+        return games.get_top_games(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            first,
+        )
 
     def get_games(
         self,
@@ -2011,7 +2015,13 @@ class Client:
             list[Game]
         """
 
-        return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
+        return games.get_games(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            game_id,
+            name,
+            igdb_id,
+        )
 
     def get_creator_goals(self, broadcaster_id: str) -> list[CreatorGoal]:
         """
