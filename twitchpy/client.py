@@ -3513,7 +3513,7 @@ class Client:
         """
 
         return streams.get_streams(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             user_id,
             user_login,
