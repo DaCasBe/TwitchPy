@@ -38,7 +38,7 @@ def get_users(
             user["profile_image_url"],
             user["offline_image_url"],
             user["view_count"],
-            user["email"],
+            user["email"] if "email" in user else None,
             datetime.strptime(user["created_at"], date.RFC3339_FORMAT),
         )
         for user in users

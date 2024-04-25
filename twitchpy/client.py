@@ -446,7 +446,11 @@ class Client:
             list[Cheermote]
         """
 
-        return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
+        return bits.get_cheermotes(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_extension_transactions(
         self,
@@ -979,7 +983,9 @@ class Client:
         """
 
         return chats.get_channel_emotes(
-            self.__app_token, self.client_id, broadcaster_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_global_emotes(self) -> list[Emote]:
@@ -1340,7 +1346,7 @@ class Client:
         """
 
         return clips.get_clips(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
             game_id,
@@ -1471,11 +1477,13 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ContentClassificationLabel]
         """
 
         return content_classification_labels.get_content_classification_labels(
-            self.__app_token, self.client_id, locale
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            locale,
         )
 
     def get_drops_entitlements(
@@ -1506,7 +1514,11 @@ class Client:
         """
 
         return drops.get_drops_entitlements(
-            self.__app_token,
+            (
+                self.__user_token
+                if self.__user_token != "" and user_id is None
+                else self.__app_token
+            ),
             self.client_id,
             entitlement_id,
             user_id,
@@ -1537,7 +1549,7 @@ class Client:
         """
 
         return drops.update_drops_entitlements(
-            self.__app_token if self.__user_token == "" else self.__user_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             entitlement_ids,
             fulfillment_status,
@@ -1685,7 +1697,10 @@ class Client:
         """
 
         return extensions.get_extension_live_channels(
-            self.__app_token, self.client_id, extension_id, first
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            extension_id,
+            first,
         )
 
     def get_extension_secrets(self) -> list[tuple[str, list[ExtensionSecret]]]:
@@ -1795,7 +1810,10 @@ class Client:
         """
 
         return extensions.get_released_extensions(
-            self.__app_token, self.client_id, extension_id, extension_version
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            extension_id,
+            extension_version,
         )
 
     def get_extension_bits_products(
@@ -1896,7 +1914,7 @@ class Client:
         """
 
         return eventsubs.create_eventsub_subscription(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             subscription_type,
             version,
@@ -1916,7 +1934,9 @@ class Client:
         """
 
         eventsubs.delete_eventsub_subscription(
-            self.__app_token, self.client_id, subscription_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            subscription_id,
         )
 
     def get_eventsub_subscriptions(
@@ -1943,7 +1963,11 @@ class Client:
         """
 
         return eventsubs.get_eventsub_subscriptions(
-            self.__app_token, self.client_id, status, subscription_type, user_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            status,
+            subscription_type,
+            user_id,
         )
 
     def get_top_games(self, first: int = 20) -> list[Game]:
@@ -1961,7 +1985,11 @@ class Client:
             list[Game]
         """
 
-        return games.get_top_games(self.__app_token, self.client_id, first)
+        return games.get_top_games(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            first,
+        )
 
     def get_games(
         self,
@@ -1987,7 +2015,13 @@ class Client:
             list[Game]
         """
 
-        return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
+        return games.get_games(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            game_id,
+            name,
+            igdb_id,
+        )
 
     def get_creator_goals(self, broadcaster_id: str) -> list[CreatorGoal]:
         """
@@ -3206,7 +3240,7 @@ class Client:
         """
 
         return schedules.get_channel_stream_schedule(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
             stream_segment_id,
@@ -3393,7 +3427,12 @@ class Client:
             list[Game]
         """
 
-        return searchs.search_categories(self.__app_token, self.client_id, query, first)
+        return searchs.search_categories(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            query,
+            first,
+        )
 
     def search_channels(
         self, query: str, first: int = 20, live_only: bool = False
@@ -3416,7 +3455,11 @@ class Client:
         """
 
         return searchs.search_channels(
-            self.__app_token, self.client_id, query, first, live_only
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            query,
+            first,
+            live_only,
         )
 
     def get_stream_key(self, broadcaster_id: str) -> str:
@@ -3470,7 +3513,7 @@ class Client:
         """
 
         return streams.get_streams(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             user_id,
             user_login,
@@ -3615,7 +3658,12 @@ class Client:
             list[Tag]
         """
 
-        return tags.get_all_stream_tags(self.__app_token, self.client_id, first, tag_id)
+        return tags.get_all_stream_tags(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            first,
+            tag_id,
+        )
 
     def get_stream_tags(self, broadcaster_id: str) -> list[Tag]:
         """
@@ -3631,7 +3679,11 @@ class Client:
             list[Tag]
         """
 
-        return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)
+        return tags.get_stream_tags(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_channel_teams(self, broadcaster_id: str) -> list[Team]:
         """
@@ -3647,7 +3699,11 @@ class Client:
             list[Team]
         """
 
-        return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
+        return teams.get_channel_teams(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_teams(self, name: str | None = None, team_id: str | None = None) -> Team:
         """
@@ -3665,7 +3721,12 @@ class Client:
             Team
         """
 
-        return teams.get_teams(self.__app_token, self.client_id, name, team_id)
+        return teams.get_teams(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            name,
+            team_id,
+        )
 
     def get_users(
         self, user_ids: list[str] | None = None, login: list[str] | None = None
@@ -3688,7 +3749,12 @@ class Client:
             list[User]
         """
 
-        return users.get_users(self.__app_token, self.client_id, user_ids, login)
+        return users.get_users(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            user_ids,
+            login,
+        )
 
     def update_user(self, description: str | None = None) -> User:
         """
@@ -3792,7 +3858,9 @@ class Client:
         """
 
         return users.get_user_active_extensions(
-            self.__user_token, self.client_id, user_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            user_id,
         )
 
     def update_user_extensions(self, data: dict) -> list[dict]:
@@ -3860,7 +3928,7 @@ class Client:
         """
 
         return videos.get_videos(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             video_ids,
             user_id,
