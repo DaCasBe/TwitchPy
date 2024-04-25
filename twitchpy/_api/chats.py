@@ -187,13 +187,18 @@ def get_chat_settings(
     )
 
 
-def get_user_emotes(token: str, client_id: str, user_id: str) -> list[Emote]:
+def get_user_emotes(
+    token: str, client_id: str, user_id: str, broadcaster_id: str | None = None
+) -> list[Emote]:
     url = "https://api.twitch.tv/helix/chat/emotes/user"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
     params = {"user_id": user_id}
+
+    if broadcaster_id is not None:
+        params["broadcaster_id"] = broadcaster_id
 
     emotes = http.send_get_with_infinite_pagination(url, headers, params)
 

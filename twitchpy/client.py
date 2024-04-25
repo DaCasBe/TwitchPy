@@ -1076,13 +1076,17 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
-    def get_user_emotes(self, user_id: str) -> list[Emote]:
+    def get_user_emotes(
+        self, user_id: str, broadcaster_id: str | None = None
+    ) -> list[Emote]:
         """
         Retrieves emotes available to the user across all channels
 
         Args:
             user_id (str): The ID of the user
                 This ID must match the user ID in the user access token
+            broadcaster_id (str | None): The User ID of a broadcaster you wish to get follower emotes of
+                Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body
 
         Raises:
             errors.ClientError
@@ -1091,7 +1095,9 @@ class Client:
             list[Emote]
         """
 
-        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
+        return chats.get_user_emotes(
+            self.__user_token, self.client_id, user_id, broadcaster_id
+        )
 
     def update_chat_settings(
         self,
