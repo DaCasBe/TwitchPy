@@ -3749,7 +3749,12 @@ class Client:
             list[User]
         """
 
-        return users.get_users(self.__app_token, self.client_id, user_ids, login)
+        return users.get_users(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            user_ids,
+            login,
+        )
 
     def update_user(self, description: str | None = None) -> User:
         """
@@ -3853,7 +3858,9 @@ class Client:
         """
 
         return users.get_user_active_extensions(
-            self.__user_token, self.client_id, user_id
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            user_id,
         )
 
     def update_user_extensions(self, data: dict) -> list[dict]:
