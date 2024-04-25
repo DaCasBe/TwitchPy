@@ -3427,7 +3427,12 @@ class Client:
             list[Game]
         """
 
-        return searchs.search_categories(self.__app_token, self.client_id, query, first)
+        return searchs.search_categories(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            query,
+            first,
+        )
 
     def search_channels(
         self, query: str, first: int = 20, live_only: bool = False
@@ -3450,7 +3455,11 @@ class Client:
         """
 
         return searchs.search_channels(
-            self.__app_token, self.client_id, query, first, live_only
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            query,
+            first,
+            live_only,
         )
 
     def get_stream_key(self, broadcaster_id: str) -> str:
