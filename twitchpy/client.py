@@ -3699,7 +3699,11 @@ class Client:
             list[Team]
         """
 
-        return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
+        return teams.get_channel_teams(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_teams(self, name: str | None = None, team_id: str | None = None) -> Team:
         """
@@ -3717,7 +3721,12 @@ class Client:
             Team
         """
 
-        return teams.get_teams(self.__app_token, self.client_id, name, team_id)
+        return teams.get_teams(
+            self.__user_token if self.__user_token != "" else self.__app_token,
+            self.client_id,
+            name,
+            team_id,
+        )
 
     def get_users(
         self, user_ids: list[str] | None = None, login: list[str] | None = None
