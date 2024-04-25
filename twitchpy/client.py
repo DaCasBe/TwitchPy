@@ -3240,7 +3240,7 @@ class Client:
         """
 
         return schedules.get_channel_stream_schedule(
-            self.__app_token,
+            self.__user_token if self.__user_token != "" else self.__app_token,
             self.client_id,
             broadcaster_id,
             stream_segment_id,
