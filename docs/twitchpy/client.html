@@ -474,7 +474,11 @@ class Client:
             list[Cheermote]
         &#34;&#34;&#34;
 
-        return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
+        return bits.get_cheermotes(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_extension_transactions(
         self,
@@ -1007,7 +1011,9 @@ class Client:
         &#34;&#34;&#34;
 
         return chats.get_channel_emotes(
-            self.__app_token, self.client_id, broadcaster_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_global_emotes(self) -&gt; list[Emote]:
@@ -1368,7 +1374,7 @@ class Client:
         &#34;&#34;&#34;
 
         return clips.get_clips(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             broadcaster_id,
             game_id,
@@ -1499,11 +1505,13 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ContentClassificationLabel]
         &#34;&#34;&#34;
 
         return content_classification_labels.get_content_classification_labels(
-            self.__app_token, self.client_id, locale
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            locale,
         )
 
     def get_drops_entitlements(
@@ -1534,7 +1542,11 @@ class Client:
         &#34;&#34;&#34;
 
         return drops.get_drops_entitlements(
-            self.__app_token,
+            (
+                self.__user_token
+                if self.__user_token != &#34;&#34; and user_id is None
+                else self.__app_token
+            ),
             self.client_id,
             entitlement_id,
             user_id,
@@ -1565,7 +1577,7 @@ class Client:
         &#34;&#34;&#34;
 
         return drops.update_drops_entitlements(
-            self.__app_token if self.__user_token == &#34;&#34; else self.__user_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             entitlement_ids,
             fulfillment_status,
@@ -1713,7 +1725,10 @@ class Client:
         &#34;&#34;&#34;
 
         return extensions.get_extension_live_channels(
-            self.__app_token, self.client_id, extension_id, first
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            extension_id,
+            first,
         )
 
     def get_extension_secrets(self) -&gt; list[tuple[str, list[ExtensionSecret]]]:
@@ -1823,7 +1838,10 @@ class Client:
         &#34;&#34;&#34;
 
         return extensions.get_released_extensions(
-            self.__app_token, self.client_id, extension_id, extension_version
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            extension_id,
+            extension_version,
         )
 
     def get_extension_bits_products(
@@ -1924,7 +1942,7 @@ class Client:
         &#34;&#34;&#34;
 
         return eventsubs.create_eventsub_subscription(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             subscription_type,
             version,
@@ -1944,7 +1962,9 @@ class Client:
         &#34;&#34;&#34;
 
         eventsubs.delete_eventsub_subscription(
-            self.__app_token, self.client_id, subscription_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            subscription_id,
         )
 
     def get_eventsub_subscriptions(
@@ -1971,7 +1991,11 @@ class Client:
         &#34;&#34;&#34;
 
         return eventsubs.get_eventsub_subscriptions(
-            self.__app_token, self.client_id, status, subscription_type, user_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            status,
+            subscription_type,
+            user_id,
         )
 
     def get_top_games(self, first: int = 20) -&gt; list[Game]:
@@ -1989,7 +2013,11 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return games.get_top_games(self.__app_token, self.client_id, first)
+        return games.get_top_games(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            first,
+        )
 
     def get_games(
         self,
@@ -2015,7 +2043,13 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
+        return games.get_games(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            game_id,
+            name,
+            igdb_id,
+        )
 
     def get_creator_goals(self, broadcaster_id: str) -&gt; list[CreatorGoal]:
         &#34;&#34;&#34;
@@ -3234,7 +3268,7 @@ class Client:
         &#34;&#34;&#34;
 
         return schedules.get_channel_stream_schedule(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             broadcaster_id,
             stream_segment_id,
@@ -3421,7 +3455,12 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return searchs.search_categories(self.__app_token, self.client_id, query, first)
+        return searchs.search_categories(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            query,
+            first,
+        )
 
     def search_channels(
         self, query: str, first: int = 20, live_only: bool = False
@@ -3444,7 +3483,11 @@ class Client:
         &#34;&#34;&#34;
 
         return searchs.search_channels(
-            self.__app_token, self.client_id, query, first, live_only
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            query,
+            first,
+            live_only,
         )
 
     def get_stream_key(self, broadcaster_id: str) -&gt; str:
@@ -3498,7 +3541,7 @@ class Client:
         &#34;&#34;&#34;
 
         return streams.get_streams(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             user_id,
             user_login,
@@ -3643,7 +3686,12 @@ class Client:
             list[Tag]
         &#34;&#34;&#34;
 
-        return tags.get_all_stream_tags(self.__app_token, self.client_id, first, tag_id)
+        return tags.get_all_stream_tags(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            first,
+            tag_id,
+        )
 
     def get_stream_tags(self, broadcaster_id: str) -&gt; list[Tag]:
         &#34;&#34;&#34;
@@ -3659,7 +3707,11 @@ class Client:
             list[Tag]
         &#34;&#34;&#34;
 
-        return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)
+        return tags.get_stream_tags(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_channel_teams(self, broadcaster_id: str) -&gt; list[Team]:
         &#34;&#34;&#34;
@@ -3675,7 +3727,11 @@ class Client:
             list[Team]
         &#34;&#34;&#34;
 
-        return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
+        return teams.get_channel_teams(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_teams(self, name: str | None = None, team_id: str | None = None) -&gt; Team:
         &#34;&#34;&#34;
@@ -3693,7 +3749,12 @@ class Client:
             Team
         &#34;&#34;&#34;
 
-        return teams.get_teams(self.__app_token, self.client_id, name, team_id)
+        return teams.get_teams(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            name,
+            team_id,
+        )
 
     def get_users(
         self, user_ids: list[str] | None = None, login: list[str] | None = None
@@ -3716,7 +3777,12 @@ class Client:
             list[User]
         &#34;&#34;&#34;
 
-        return users.get_users(self.__app_token, self.client_id, user_ids, login)
+        return users.get_users(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            user_ids,
+            login,
+        )
 
     def update_user(self, description: str | None = None) -&gt; User:
         &#34;&#34;&#34;
@@ -3820,7 +3886,9 @@ class Client:
         &#34;&#34;&#34;
 
         return users.get_user_active_extensions(
-            self.__user_token, self.client_id, user_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            user_id,
         )
 
     def update_user_extensions(self, data: dict) -&gt; list[dict]:
@@ -3888,7 +3956,7 @@ class Client:
         &#34;&#34;&#34;
 
         return videos.get_videos(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             video_ids,
             user_id,
@@ -4326,7 +4394,11 @@ class Client:
             list[Cheermote]
         &#34;&#34;&#34;
 
-        return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)
+        return bits.get_cheermotes(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_extension_transactions(
         self,
@@ -4859,7 +4931,9 @@ class Client:
         &#34;&#34;&#34;
 
         return chats.get_channel_emotes(
-            self.__app_token, self.client_id, broadcaster_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_global_emotes(self) -&gt; list[Emote]:
@@ -5220,7 +5294,7 @@ class Client:
         &#34;&#34;&#34;
 
         return clips.get_clips(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             broadcaster_id,
             game_id,
@@ -5351,11 +5425,13 @@ class Client:
             errors.ClientError
 
         Returns:
-            list[dict]
+            list[ContentClassificationLabel]
         &#34;&#34;&#34;
 
         return content_classification_labels.get_content_classification_labels(
-            self.__app_token, self.client_id, locale
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            locale,
         )
 
     def get_drops_entitlements(
@@ -5386,7 +5462,11 @@ class Client:
         &#34;&#34;&#34;
 
         return drops.get_drops_entitlements(
-            self.__app_token,
+            (
+                self.__user_token
+                if self.__user_token != &#34;&#34; and user_id is None
+                else self.__app_token
+            ),
             self.client_id,
             entitlement_id,
             user_id,
@@ -5417,7 +5497,7 @@ class Client:
         &#34;&#34;&#34;
 
         return drops.update_drops_entitlements(
-            self.__app_token if self.__user_token == &#34;&#34; else self.__user_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             entitlement_ids,
             fulfillment_status,
@@ -5565,7 +5645,10 @@ class Client:
         &#34;&#34;&#34;
 
         return extensions.get_extension_live_channels(
-            self.__app_token, self.client_id, extension_id, first
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            extension_id,
+            first,
         )
 
     def get_extension_secrets(self) -&gt; list[tuple[str, list[ExtensionSecret]]]:
@@ -5675,7 +5758,10 @@ class Client:
         &#34;&#34;&#34;
 
         return extensions.get_released_extensions(
-            self.__app_token, self.client_id, extension_id, extension_version
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            extension_id,
+            extension_version,
         )
 
     def get_extension_bits_products(
@@ -5776,7 +5862,7 @@ class Client:
         &#34;&#34;&#34;
 
         return eventsubs.create_eventsub_subscription(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             subscription_type,
             version,
@@ -5796,7 +5882,9 @@ class Client:
         &#34;&#34;&#34;
 
         eventsubs.delete_eventsub_subscription(
-            self.__app_token, self.client_id, subscription_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            subscription_id,
         )
 
     def get_eventsub_subscriptions(
@@ -5823,7 +5911,11 @@ class Client:
         &#34;&#34;&#34;
 
         return eventsubs.get_eventsub_subscriptions(
-            self.__app_token, self.client_id, status, subscription_type, user_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            status,
+            subscription_type,
+            user_id,
         )
 
     def get_top_games(self, first: int = 20) -&gt; list[Game]:
@@ -5841,7 +5933,11 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return games.get_top_games(self.__app_token, self.client_id, first)
+        return games.get_top_games(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            first,
+        )
 
     def get_games(
         self,
@@ -5867,7 +5963,13 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)
+        return games.get_games(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            game_id,
+            name,
+            igdb_id,
+        )
 
     def get_creator_goals(self, broadcaster_id: str) -&gt; list[CreatorGoal]:
         &#34;&#34;&#34;
@@ -7086,7 +7188,7 @@ class Client:
         &#34;&#34;&#34;
 
         return schedules.get_channel_stream_schedule(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             broadcaster_id,
             stream_segment_id,
@@ -7273,7 +7375,12 @@ class Client:
             list[Game]
         &#34;&#34;&#34;
 
-        return searchs.search_categories(self.__app_token, self.client_id, query, first)
+        return searchs.search_categories(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            query,
+            first,
+        )
 
     def search_channels(
         self, query: str, first: int = 20, live_only: bool = False
@@ -7296,7 +7403,11 @@ class Client:
         &#34;&#34;&#34;
 
         return searchs.search_channels(
-            self.__app_token, self.client_id, query, first, live_only
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            query,
+            first,
+            live_only,
         )
 
     def get_stream_key(self, broadcaster_id: str) -&gt; str:
@@ -7350,7 +7461,7 @@ class Client:
         &#34;&#34;&#34;
 
         return streams.get_streams(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             user_id,
             user_login,
@@ -7495,7 +7606,12 @@ class Client:
             list[Tag]
         &#34;&#34;&#34;
 
-        return tags.get_all_stream_tags(self.__app_token, self.client_id, first, tag_id)
+        return tags.get_all_stream_tags(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            first,
+            tag_id,
+        )
 
     def get_stream_tags(self, broadcaster_id: str) -&gt; list[Tag]:
         &#34;&#34;&#34;
@@ -7511,7 +7627,11 @@ class Client:
             list[Tag]
         &#34;&#34;&#34;
 
-        return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)
+        return tags.get_stream_tags(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_channel_teams(self, broadcaster_id: str) -&gt; list[Team]:
         &#34;&#34;&#34;
@@ -7527,7 +7647,11 @@ class Client:
             list[Team]
         &#34;&#34;&#34;
 
-        return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)
+        return teams.get_channel_teams(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            broadcaster_id,
+        )
 
     def get_teams(self, name: str | None = None, team_id: str | None = None) -&gt; Team:
         &#34;&#34;&#34;
@@ -7545,7 +7669,12 @@ class Client:
             Team
         &#34;&#34;&#34;
 
-        return teams.get_teams(self.__app_token, self.client_id, name, team_id)
+        return teams.get_teams(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            name,
+            team_id,
+        )
 
     def get_users(
         self, user_ids: list[str] | None = None, login: list[str] | None = None
@@ -7568,7 +7697,12 @@ class Client:
             list[User]
         &#34;&#34;&#34;
 
-        return users.get_users(self.__app_token, self.client_id, user_ids, login)
+        return users.get_users(
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            user_ids,
+            login,
+        )
 
     def update_user(self, description: str | None = None) -&gt; User:
         &#34;&#34;&#34;
@@ -7672,7 +7806,9 @@ class Client:
         &#34;&#34;&#34;
 
         return users.get_user_active_extensions(
-            self.__user_token, self.client_id, user_id
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+            self.client_id,
+            user_id,
         )
 
     def update_user_extensions(self, data: dict) -&gt; list[dict]:
@@ -7740,7 +7876,7 @@ class Client:
         &#34;&#34;&#34;
 
         return videos.get_videos(
-            self.__app_token,
+            self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
             self.client_id,
             video_ids,
             user_id,
@@ -8556,7 +8692,7 @@ In addition to the method string, a webhook transport must include the callback 
     &#34;&#34;&#34;
 
     return eventsubs.create_eventsub_subscription(
-        self.__app_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         subscription_type,
         version,
@@ -9031,7 +9167,9 @@ Must match a Custom Reward on broadcaster_id’s channel</dd>
     &#34;&#34;&#34;
 
     eventsubs.delete_eventsub_subscription(
-        self.__app_token, self.client_id, subscription_id
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        subscription_id,
     )</code></pre>
 </details>
 </dd>
@@ -9416,7 +9554,12 @@ Default: 20</dd>
         list[Tag]
     &#34;&#34;&#34;
 
-    return tags.get_all_stream_tags(self.__app_token, self.client_id, first, tag_id)</code></pre>
+    return tags.get_all_stream_tags(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        first,
+        tag_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_automod_settings"><code class="name flex">
@@ -9797,7 +9940,9 @@ Custom channel emotes are custom emoticons that viewers may use in Twitch chat o
     &#34;&#34;&#34;
 
     return chats.get_channel_emotes(
-        self.__app_token, self.client_id, broadcaster_id
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        broadcaster_id,
     )</code></pre>
 </details>
 </dd>
@@ -10031,7 +10176,7 @@ Default: 20</dd>
     &#34;&#34;&#34;
 
     return schedules.get_channel_stream_schedule(
-        self.__app_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         broadcaster_id,
         stream_segment_id,
@@ -10072,7 +10217,11 @@ Default: 20</dd>
         list[Team]
     &#34;&#34;&#34;
 
-    return teams.get_channel_teams(self.__app_token, self.client_id, broadcaster_id)</code></pre>
+    return teams.get_channel_teams(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        broadcaster_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_charity_campaign"><code class="name flex">
@@ -10291,7 +10440,11 @@ Cheermotes returned are available throughout Twitch, in all Bits-enabled channel
         list[Cheermote]
     &#34;&#34;&#34;
 
-    return bits.get_cheermotes(self.__app_token, self.client_id, broadcaster_id)</code></pre>
+    return bits.get_cheermotes(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        broadcaster_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_clips"><code class="name flex">
@@ -10352,7 +10505,7 @@ Default: 20</dd>
     &#34;&#34;&#34;
 
     return clips.get_clips(
-        self.__app_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         broadcaster_id,
         game_id,
@@ -10446,7 +10599,7 @@ Possible values: "bg-BG", "cs-CZ", "da-DK", "da-DK", "de-DE", "el-GR", "en-GB", 
 <h2 id="raise">Raise</h2>
 <p>errors.ClientError</p>
 <h2 id="returns">Returns</h2>
-<p>list[dict]</p></div>
+<p>list[ContentClassificationLabel]</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -10465,11 +10618,13 @@ Possible values: "bg-BG", "cs-CZ", "da-DK", "da-DK", "de-DE", "el-GR", "en-GB", 
         errors.ClientError
 
     Returns:
-        list[dict]
+        list[ContentClassificationLabel]
     &#34;&#34;&#34;
 
     return content_classification_labels.get_content_classification_labels(
-        self.__app_token, self.client_id, locale
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        locale,
     )</code></pre>
 </details>
 </dd>
@@ -10696,7 +10851,11 @@ Default: 20</dd>
     &#34;&#34;&#34;
 
     return drops.get_drops_entitlements(
-        self.__app_token,
+        (
+            self.__user_token
+            if self.__user_token != &#34;&#34; and user_id is None
+            else self.__app_token
+        ),
         self.client_id,
         entitlement_id,
         user_id,
@@ -10786,7 +10945,11 @@ user_id (str | None): Filter subscriptions by user ID</p>
     &#34;&#34;&#34;
 
     return eventsubs.get_eventsub_subscriptions(
-        self.__app_token, self.client_id, status, subscription_type, user_id
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        status,
+        subscription_type,
+        user_id,
     )</code></pre>
 </details>
 </dd>
@@ -10999,7 +11162,10 @@ Default: 20</dd>
     &#34;&#34;&#34;
 
     return extensions.get_extension_live_channels(
-        self.__app_token, self.client_id, extension_id, first
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        extension_id,
+        first,
     )</code></pre>
 </details>
 </dd>
@@ -11338,7 +11504,13 @@ Maximum: 100</p>
         list[Game]
     &#34;&#34;&#34;
 
-    return games.get_games(self.__app_token, self.client_id, game_id, name, igdb_id)</code></pre>
+    return games.get_games(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        game_id,
+        name,
+        igdb_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_global_chat_badges"><code class="name flex">
@@ -11773,7 +11945,10 @@ If not provided, the current version is returned</p>
     &#34;&#34;&#34;
 
     return extensions.get_released_extensions(
-        self.__app_token, self.client_id, extension_id, extension_version
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        extension_id,
+        extension_version,
     )</code></pre>
 </details>
 </dd>
@@ -11939,7 +12114,11 @@ Default: 20</dd>
         list[Tag]
     &#34;&#34;&#34;
 
-    return tags.get_stream_tags(self.__app_token, self.client_id, broadcaster_id)</code></pre>
+    return tags.get_stream_tags(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        broadcaster_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_streams"><code class="name flex">
@@ -12008,7 +12187,7 @@ Minimum: 1</dd>
     &#34;&#34;&#34;
 
     return streams.get_streams(
-        self.__app_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         user_id,
         user_login,
@@ -12052,7 +12231,12 @@ team_id (str | None): Team ID</p>
         Team
     &#34;&#34;&#34;
 
-    return teams.get_teams(self.__app_token, self.client_id, name, team_id)</code></pre>
+    return teams.get_teams(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        name,
+        team_id,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_top_games"><code class="name flex">
@@ -12089,7 +12273,11 @@ Default: 20</dd>
         list[Game]
     &#34;&#34;&#34;
 
-    return games.get_top_games(self.__app_token, self.client_id, first)</code></pre>
+    return games.get_top_games(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        first,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_unban_requests"><code class="name flex">
@@ -12187,7 +12375,9 @@ Possible values: pending, approved, denied, acknowledged, canceled</dd>
     &#34;&#34;&#34;
 
     return users.get_user_active_extensions(
-        self.__user_token, self.client_id, user_id
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        user_id,
     )</code></pre>
 </details>
 </dd>
@@ -12375,7 +12565,12 @@ Limit: 100</p>
         list[User]
     &#34;&#34;&#34;
 
-    return users.get_users(self.__app_token, self.client_id, user_ids, login)</code></pre>
+    return users.get_users(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        user_ids,
+        login,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_videos"><code class="name flex">
@@ -12458,7 +12653,7 @@ Default: "all"</dd>
     &#34;&#34;&#34;
 
     return videos.get_videos(
-        self.__app_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         video_ids,
         user_id,
@@ -12871,7 +13066,12 @@ Default: 20</dd>
         list[Game]
     &#34;&#34;&#34;
 
-    return searchs.search_categories(self.__app_token, self.client_id, query, first)</code></pre>
+    return searchs.search_categories(
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        query,
+        first,
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.search_channels"><code class="name flex">
@@ -12919,7 +13119,11 @@ Default: 20</dd>
     &#34;&#34;&#34;
 
     return searchs.search_channels(
-        self.__app_token, self.client_id, query, first, live_only
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
+        self.client_id,
+        query,
+        first,
+        live_only,
     )</code></pre>
 </details>
 </dd>
@@ -14261,7 +14465,7 @@ Valid values are "CLAIMED" or "FULFILLED"</p>
     &#34;&#34;&#34;
 
     return drops.update_drops_entitlements(
-        self.__app_token if self.__user_token == &#34;&#34; else self.__user_token,
+        self.__user_token if self.__user_token != &#34;&#34; else self.__app_token,
         self.client_id,
         entitlement_ids,
         fulfillment_status,
