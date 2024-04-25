@@ -1104,13 +1104,17 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
-    def get_user_emotes(self, user_id: str) -&gt; list[Emote]:
+    def get_user_emotes(
+        self, user_id: str, broadcaster_id: str | None = None
+    ) -&gt; list[Emote]:
         &#34;&#34;&#34;
         Retrieves emotes available to the user across all channels
 
         Args:
             user_id (str): The ID of the user
                 This ID must match the user ID in the user access token
+            broadcaster_id (str | None): The User ID of a broadcaster you wish to get follower emotes of
+                Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body
 
         Raises:
             errors.ClientError
@@ -1119,7 +1123,9 @@ class Client:
             list[Emote]
         &#34;&#34;&#34;
 
-        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
+        return chats.get_user_emotes(
+            self.__user_token, self.client_id, user_id, broadcaster_id
+        )
 
     def update_chat_settings(
         self,
@@ -5024,13 +5030,17 @@ class Client:
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
-    def get_user_emotes(self, user_id: str) -&gt; list[Emote]:
+    def get_user_emotes(
+        self, user_id: str, broadcaster_id: str | None = None
+    ) -&gt; list[Emote]:
         &#34;&#34;&#34;
         Retrieves emotes available to the user across all channels
 
         Args:
             user_id (str): The ID of the user
                 This ID must match the user ID in the user access token
+            broadcaster_id (str | None): The User ID of a broadcaster you wish to get follower emotes of
+                Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body
 
         Raises:
             errors.ClientError
@@ -5039,7 +5049,9 @@ class Client:
             list[Emote]
         &#34;&#34;&#34;
 
-        return chats.get_user_emotes(self.__user_token, self.client_id, user_id)
+        return chats.get_user_emotes(
+            self.__user_token, self.client_id, user_id, broadcaster_id
+        )
 
     def update_chat_settings(
         self,
@@ -12461,7 +12473,7 @@ Maximum: 100</dd>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_user_emotes"><code class="name flex">
-<span>def <span class="ident">get_user_emotes</span></span>(<span>self, user_id: str) ‑> list[<a title="twitchpy.dataclasses.emote.Emote" href="dataclasses/emote.html#twitchpy.dataclasses.emote.Emote">Emote</a>]</span>
+<span>def <span class="ident">get_user_emotes</span></span>(<span>self, user_id: str, broadcaster_id: str | None = None) ‑> list[<a title="twitchpy.dataclasses.emote.Emote" href="dataclasses/emote.html#twitchpy.dataclasses.emote.Emote">Emote</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retrieves emotes available to the user across all channels</p>
@@ -12471,6 +12483,8 @@ Maximum: 100</dd>
 <dd>The ID of the user
 This ID must match the user ID in the user access token</dd>
 </dl>
+<p>broadcaster_id (str | None): The User ID of a broadcaster you wish to get follower emotes of
+Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body</p>
 <h2 id="raises">Raises</h2>
 <p>errors.ClientError</p>
 <h2 id="returns">Returns</h2>
@@ -12479,13 +12493,17 @@ This ID must match the user ID in the user access token</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_user_emotes(self, user_id: str) -&gt; list[Emote]:
+<pre><code class="python">def get_user_emotes(
+    self, user_id: str, broadcaster_id: str | None = None
+) -&gt; list[Emote]:
     &#34;&#34;&#34;
     Retrieves emotes available to the user across all channels
 
     Args:
         user_id (str): The ID of the user
             This ID must match the user ID in the user access token
+        broadcaster_id (str | None): The User ID of a broadcaster you wish to get follower emotes of
+            Using this query parameter will guarantee inclusion of the broadcaster’s follower emotes in the response body
 
     Raises:
         errors.ClientError
@@ -12494,7 +12512,9 @@ This ID must match the user ID in the user access token</dd>
         list[Emote]
     &#34;&#34;&#34;
 
-    return chats.get_user_emotes(self.__user_token, self.client_id, user_id)</code></pre>
+    return chats.get_user_emotes(
+        self.__user_token, self.client_id, user_id, broadcaster_id
+    )</code></pre>
 </details>
 </dd>
 <dt id="twitchpy.client.Client.get_user_extensions"><code class="name flex">
