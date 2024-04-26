@@ -1,8 +1,14 @@
 # TwitchPy
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-green.svg)](https://github.com/DaCasBe/TwitchPy/blob/master/LICENSE)
+[![Formatter: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Pypi downloads](https://img.shields.io/pypi/dm/twitchpy?color=blue)](https://pypi.org/project/twitchpy)
+
+TwitchPy is a Python package for using the Twitch's API and create bots for interacting with their IRC chats.
+
 ## Installation
 
-TwitchPy requires Python 3.6 or higher.
+TwitchPy requires Python 3.10 or higher. You can download the latest version of Python [here](https://www.python.org/downloads/).
 
 ~~~
 pip install twitchpy
@@ -10,13 +16,64 @@ pip install twitchpy
 
 ## Getting started
 
-TwitchPy uses many endpoints which may require different tokens and IDs.
+A basic bot.
 
-+ IRC endpoints which require an OAuth token. Log in to Twitch with the bot's account and visit: <https://twitchapps.com/tmi/>
+~~~```python
+from datetime import datetime
 
-+ HTTP endpoints which require a client ID. Register a Twitch application with the bot's account: <https://dev.twitch.tv/>
+from twitchpy.bot import Bot
 
-+ HTTP endpoints which require an OAuth token and certain scopes. Documentation [here](https://dev.twitch.tv/docs/authentication/getting-tokens-oauth/).
+bot = Bot(
+    "your_oauth_token",
+    "your_client_id",
+    "your_client_secret",
+    "your_redirect_uri",
+    "tokens_file_path",
+    "login_of_your_bot",
+    ["channels_list_to_read_from"],
+    "!",
+)
+
+time = datetime.now()
+
+
+def example_check():
+    global time
+
+    time_diff = datetime.now() - time
+
+    if time_diff.seconds >= 5:
+        bot.me("any_channel_login", "This message is sent every 5 seconds")
+        time = datetime.now()
+
+
+def example_listener(message):
+    if message.user is not None:
+        bot.me("any_channel_login", f"{message.user} said: {message.text}")
+
+
+def example_command(message):
+    bot.me("any_channel_login", f"{message.user} is who called me")
+
+
+bot.add_check("example_check", example_check)
+bot.add_listener("example_listener", example_listener)
+bot.add_command("example_command", example_command)
+
+bot.run()
+~~~
+
+## Contributing
+
+TwitchPy currently uses the Black formatter to enforce sensible style formatting.
+
+Before creating a pull request it is encouraged you install and run black on your code.
+
+The line length limit for TwitchPy is 88.
+
+For installation and usage of Black visit: [Black Formatter](https://black.readthedocs.io/en/stable/usage_and_configuration/)
+
+For integrating Black into your IDE visit: [Black IDE Usage](https://black.readthedocs.io/en/stable/integrations/editors.html)
 
 ## Contact
 
