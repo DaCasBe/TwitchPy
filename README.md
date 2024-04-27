@@ -6,6 +6,10 @@
 
 TwitchPy is a Python package for using the Twitch's API and create bots for interacting with their IRC chats.
 
+## Documentation
+
+Click [here](https://dacasbe.github.io/TwitchPy/) to see the official documentation.
+
 ## Installation
 
 TwitchPy requires Python 3.10 or higher. You can download the latest version of Python [here](https://www.python.org/downloads/).
