@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>twitchpy.dataclasses.extension API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>twitchpy.dataclasses.extension</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from dataclasses import dataclass
+
+
+@dataclass
+class Extension:
+    &#34;&#34;&#34;
+    Represents an extension
+
+    Attributes:
+        author_name (str): Name of the individual or organization that owns the Extension
+        bits_enabled (bool): Whether the Extension has features that use Bits
+        can_install (bool): Indicates if a user can install the Extension on their channel
+            They may not be allowed if the Extension is currently in testing mode and the user is not on the allow list
+        configuration_location (str): Whether the Extension configuration is hosted by the EBS or the Extensions Configuration Service
+        description (str): The description of the Extension
+        eula_tos_url (str): URL to the Extension’s Terms of Service
+        has_chat_support (bool): Indicates if the Extension can communicate with the installed channel’s chat
+        icon_url (str): The default icon to be displayed in the Extensions directory
+        icon_urls (dict): The default icon in a variety of sizes
+        extension_id (str): The autogenerated ID of the Extension
+        name (str): The name of the Extension
+        privacy_policy_url (str): URL to the Extension’s privacy policy
+        request_identity_link (bool): Indicates if the Extension wants to explicitly ask viewers to link their Twitch identity
+        screenshot_urls (list[str]): Screenshots to be shown in the Extensions marketplace
+        state (str): The current state of the Extension
+            Valid values are &#34;InTest&#34;, &#34;InReview&#34;, &#34;Rejected&#34;, &#34;Approved&#34;, &#34;Released&#34;, &#34;Deprecated&#34;, &#34;PendingAction&#34;, &#34;AssetsUploaded&#34;, &#34;Deleted&#34;
+        subscriptions_support_level (str): Indicates if the Extension can determine a user’s subscription level on the channel the Extension is installed on
+        summary (str): A brief description of the Extension
+        support_email (str): The email users can use to receive Extension support
+        version (str): The version of the Extension
+        viewer_summary (str): A brief description displayed on the channel to explain how the Extension works
+        views (dict): All configurations related to views such as: mobile, panel, video_overlay, and component
+        allowlisted_config_urls (list[str]): Allow-listed configuration URLs for displaying the Extension
+        allowlisted_panel_urls (list[str]): Allow-listed panel URLs for displaying the Extension
+    &#34;&#34;&#34;
+
+    author_name: str
+    bits_enabled: bool
+    can_install: bool
+    configuration_location: str
+    description: str
+    eula_tos_url: str
+    has_chat_support: bool
+    icon_url: str
+    icon_urls: dict
+    extension_id: str
+    name: str
+    privacy_policy_url: str
+    request_identity_link: bool
+    screenshot_urls: list[str]
+    state: str
+    subscriptions_support_level: str
+    summary: str
+    support_email: str
+    version: str
+    viewer_summary: str
+    views: dict
+    allowlisted_config_urls: list[str]
+    allowlisted_panel_urls: list[str]</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="twitchpy.dataclasses.extension.Extension"><code class="flex name class">
+<span>class <span class="ident">Extension</span></span>
+<span>(</span><span>author_name: str, bits_enabled: bool, can_install: bool, configuration_location: str, description: str, eula_tos_url: str, has_chat_support: bool, icon_url: str, icon_urls: dict, extension_id: str, name: str, privacy_policy_url: str, request_identity_link: bool, screenshot_urls: list[str], state: str, subscriptions_support_level: str, summary: str, support_email: str, version: str, viewer_summary: str, views: dict, allowlisted_config_urls: list[str], allowlisted_panel_urls: list[str])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents an extension</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>author_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the individual or organization that owns the Extension</dd>
+<dt><strong><code>bits_enabled</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether the Extension has features that use Bits</dd>
+<dt><strong><code>can_install</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates if a user can install the Extension on their channel
+They may not be allowed if the Extension is currently in testing mode and the user is not on the allow list</dd>
+<dt><strong><code>configuration_location</code></strong> :&ensp;<code>str</code></dt>
+<dd>Whether the Extension configuration is hosted by the EBS or the Extensions Configuration Service</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code></dt>
+<dd>The description of the Extension</dd>
+<dt><strong><code>eula_tos_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL to the Extension’s Terms of Service</dd>
+<dt><strong><code>has_chat_support</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates if the Extension can communicate with the installed channel’s chat</dd>
+<dt><strong><code>icon_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>The default icon to be displayed in the Extensions directory</dd>
+<dt><strong><code>icon_urls</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The default icon in a variety of sizes</dd>
+<dt><strong><code>extension_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The autogenerated ID of the Extension</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the Extension</dd>
+<dt><strong><code>privacy_policy_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL to the Extension’s privacy policy</dd>
+<dt><strong><code>request_identity_link</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Indicates if the Extension wants to explicitly ask viewers to link their Twitch identity</dd>
+<dt><strong><code>screenshot_urls</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>Screenshots to be shown in the Extensions marketplace</dd>
+<dt><strong><code>state</code></strong> :&ensp;<code>str</code></dt>
+<dd>The current state of the Extension
+Valid values are "InTest", "InReview", "Rejected", "Approved", "Released", "Deprecated", "PendingAction", "AssetsUploaded", "Deleted"</dd>
+<dt><strong><code>subscriptions_support_level</code></strong> :&ensp;<code>str</code></dt>
+<dd>Indicates if the Extension can determine a user’s subscription level on the channel the Extension is installed on</dd>
+<dt><strong><code>summary</code></strong> :&ensp;<code>str</code></dt>
+<dd>A brief description of the Extension</dd>
+<dt><strong><code>support_email</code></strong> :&ensp;<code>str</code></dt>
+<dd>The email users can use to receive Extension support</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>The version of the Extension</dd>
+<dt><strong><code>viewer_summary</code></strong> :&ensp;<code>str</code></dt>
+<dd>A brief description displayed on the channel to explain how the Extension works</dd>
+<dt><strong><code>views</code></strong> :&ensp;<code>dict</code></dt>
+<dd>All configurations related to views such as: mobile, panel, video_overlay, and component</dd>
+<dt><strong><code>allowlisted_config_urls</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>Allow-listed configuration URLs for displaying the Extension</dd>
+<dt><strong><code>allowlisted_panel_urls</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>Allow-listed panel URLs for displaying the Extension</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Extension:
+    &#34;&#34;&#34;
+    Represents an extension
+
+    Attributes:
+        author_name (str): Name of the individual or organization that owns the Extension
+        bits_enabled (bool): Whether the Extension has features that use Bits
+        can_install (bool): Indicates if a user can install the Extension on their channel
+            They may not be allowed if the Extension is currently in testing mode and the user is not on the allow list
+        configuration_location (str): Whether the Extension configuration is hosted by the EBS or the Extensions Configuration Service
+        description (str): The description of the Extension
+        eula_tos_url (str): URL to the Extension’s Terms of Service
+        has_chat_support (bool): Indicates if the Extension can communicate with the installed channel’s chat
+        icon_url (str): The default icon to be displayed in the Extensions directory
+        icon_urls (dict): The default icon in a variety of sizes
+        extension_id (str): The autogenerated ID of the Extension
+        name (str): The name of the Extension
+        privacy_policy_url (str): URL to the Extension’s privacy policy
+        request_identity_link (bool): Indicates if the Extension wants to explicitly ask viewers to link their Twitch identity
+        screenshot_urls (list[str]): Screenshots to be shown in the Extensions marketplace
+        state (str): The current state of the Extension
+            Valid values are &#34;InTest&#34;, &#34;InReview&#34;, &#34;Rejected&#34;, &#34;Approved&#34;, &#34;Released&#34;, &#34;Deprecated&#34;, &#34;PendingAction&#34;, &#34;AssetsUploaded&#34;, &#34;Deleted&#34;
+        subscriptions_support_level (str): Indicates if the Extension can determine a user’s subscription level on the channel the Extension is installed on
+        summary (str): A brief description of the Extension
+        support_email (str): The email users can use to receive Extension support
+        version (str): The version of the Extension
+        viewer_summary (str): A brief description displayed on the channel to explain how the Extension works
+        views (dict): All configurations related to views such as: mobile, panel, video_overlay, and component
+        allowlisted_config_urls (list[str]): Allow-listed configuration URLs for displaying the Extension
+        allowlisted_panel_urls (list[str]): Allow-listed panel URLs for displaying the Extension
+    &#34;&#34;&#34;
+
+    author_name: str
+    bits_enabled: bool
+    can_install: bool
+    configuration_location: str
+    description: str
+    eula_tos_url: str
+    has_chat_support: bool
+    icon_url: str
+    icon_urls: dict
+    extension_id: str
+    name: str
+    privacy_policy_url: str
+    request_identity_link: bool
+    screenshot_urls: list[str]
+    state: str
+    subscriptions_support_level: str
+    summary: str
+    support_email: str
+    version: str
+    viewer_summary: str
+    views: dict
+    allowlisted_config_urls: list[str]
+    allowlisted_panel_urls: list[str]</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.extension.Extension.allowlisted_config_urls"><code class="name">var <span class="ident">allowlisted_config_urls</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.allowlisted_panel_urls"><code class="name">var <span class="ident">allowlisted_panel_urls</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.author_name"><code class="name">var <span class="ident">author_name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.bits_enabled"><code class="name">var <span class="ident">bits_enabled</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.can_install"><code class="name">var <span class="ident">can_install</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.configuration_location"><code class="name">var <span class="ident">configuration_location</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.description"><code class="name">var <span class="ident">description</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.eula_tos_url"><code class="name">var <span class="ident">eula_tos_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.extension_id"><code class="name">var <span class="ident">extension_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.has_chat_support"><code class="name">var <span class="ident">has_chat_support</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.icon_url"><code class="name">var <span class="ident">icon_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.icon_urls"><code class="name">var <span class="ident">icon_urls</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.privacy_policy_url"><code class="name">var <span class="ident">privacy_policy_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.request_identity_link"><code class="name">var <span class="ident">request_identity_link</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.screenshot_urls"><code class="name">var <span class="ident">screenshot_urls</span> : list[str]</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.state"><code class="name">var <span class="ident">state</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.subscriptions_support_level"><code class="name">var <span class="ident">subscriptions_support_level</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.summary"><code class="name">var <span class="ident">summary</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.support_email"><code class="name">var <span class="ident">support_email</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.version"><code class="name">var <span class="ident">version</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.viewer_summary"><code class="name">var <span class="ident">viewer_summary</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.extension.Extension.views"><code class="name">var <span class="ident">views</span> : dict</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="twitchpy.dataclasses.extension.Extension" href="#twitchpy.dataclasses.extension.Extension">Extension</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.extension.Extension.allowlisted_config_urls" href="#twitchpy.dataclasses.extension.Extension.allowlisted_config_urls">allowlisted_config_urls</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.allowlisted_panel_urls" href="#twitchpy.dataclasses.extension.Extension.allowlisted_panel_urls">allowlisted_panel_urls</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.author_name" href="#twitchpy.dataclasses.extension.Extension.author_name">author_name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.bits_enabled" href="#twitchpy.dataclasses.extension.Extension.bits_enabled">bits_enabled</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.can_install" href="#twitchpy.dataclasses.extension.Extension.can_install">can_install</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.configuration_location" href="#twitchpy.dataclasses.extension.Extension.configuration_location">configuration_location</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.description" href="#twitchpy.dataclasses.extension.Extension.description">description</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.eula_tos_url" href="#twitchpy.dataclasses.extension.Extension.eula_tos_url">eula_tos_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.extension_id" href="#twitchpy.dataclasses.extension.Extension.extension_id">extension_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.has_chat_support" href="#twitchpy.dataclasses.extension.Extension.has_chat_support">has_chat_support</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.icon_url" href="#twitchpy.dataclasses.extension.Extension.icon_url">icon_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.icon_urls" href="#twitchpy.dataclasses.extension.Extension.icon_urls">icon_urls</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.name" href="#twitchpy.dataclasses.extension.Extension.name">name</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.privacy_policy_url" href="#twitchpy.dataclasses.extension.Extension.privacy_policy_url">privacy_policy_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.request_identity_link" href="#twitchpy.dataclasses.extension.Extension.request_identity_link">request_identity_link</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.screenshot_urls" href="#twitchpy.dataclasses.extension.Extension.screenshot_urls">screenshot_urls</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.state" href="#twitchpy.dataclasses.extension.Extension.state">state</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.subscriptions_support_level" href="#twitchpy.dataclasses.extension.Extension.subscriptions_support_level">subscriptions_support_level</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.summary" href="#twitchpy.dataclasses.extension.Extension.summary">summary</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.support_email" href="#twitchpy.dataclasses.extension.Extension.support_email">support_email</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.version" href="#twitchpy.dataclasses.extension.Extension.version">version</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.viewer_summary" href="#twitchpy.dataclasses.extension.Extension.viewer_summary">viewer_summary</a></code></li>
+<li><code><a title="twitchpy.dataclasses.extension.Extension.views" href="#twitchpy.dataclasses.extension.Extension.views">views</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

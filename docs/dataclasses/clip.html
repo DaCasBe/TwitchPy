@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>twitchpy.dataclasses.clip API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>twitchpy.dataclasses.clip</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from dataclasses import dataclass
+
+from ..dataclasses import Channel, User
+
+
+@dataclass
+class Clip:
+    &#34;&#34;&#34;
+    Represents a clip
+
+    Attributes:
+        clip_id (str): An ID that uniquely identifies the clip
+        url (str): A URL to the clip
+        embed_url (str): A URL that you can use in an iframe to embed the clip
+        channel (Channel): The channel that the video was clipped from
+        creator (User): The user that created the clip
+        video_id (str): An ID that identifies the video that the clip came from
+        game_id (str): The ID of the game that was being played when the clip was created
+        language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
+        title (str): The title of the clip
+        view_count (int): The number of times the clip has been viewed
+        created_at (str): The date and time of when the clip was created
+        thumbnail_url (str): A URL to a thumbnail image of the clip
+        duration (float): The length of the clip, in seconds
+            Precision is 0.1
+        vod_offset (int): The zero-based offset, in seconds, to where the clip starts in the video (VOD)
+        is_featured (bool): A Boolean value that indicates if the clip is featured or not
+    &#34;&#34;&#34;
+
+    clip_id: str
+    url: str
+    embed_url: str
+    channel: Channel
+    creator: User
+    video_id: str
+    game_id: str
+    language: str
+    title: str
+    view_count: int
+    created_at: str
+    thumbnail_url: str
+    duration: float
+    vod_offset: int
+    is_featured: bool</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="twitchpy.dataclasses.clip.Clip"><code class="flex name class">
+<span>class <span class="ident">Clip</span></span>
+<span>(</span><span>clip_id: str, url: str, embed_url: str, channel: <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a>, creator: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, video_id: str, game_id: str, language: str, title: str, view_count: int, created_at: str, thumbnail_url: str, duration: float, vod_offset: int, is_featured: bool)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a clip</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>clip_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that uniquely identifies the clip</dd>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to the clip</dd>
+<dt><strong><code>embed_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL that you can use in an iframe to embed the clip</dd>
+<dt><strong><code>channel</code></strong> :&ensp;<code>Channel</code></dt>
+<dd>The channel that the video was clipped from</dd>
+<dt><strong><code>creator</code></strong> :&ensp;<code>User</code></dt>
+<dd>The user that created the clip</dd>
+<dt><strong><code>video_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>An ID that identifies the video that the clip came from</dd>
+<dt><strong><code>game_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the game that was being played when the clip was created</dd>
+<dt><strong><code>language</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ISO 639-1 two-letter language code that the broadcaster broadcasts in</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>The title of the clip</dd>
+<dt><strong><code>view_count</code></strong> :&ensp;<code>int</code></dt>
+<dd>The number of times the clip has been viewed</dd>
+<dt><strong><code>created_at</code></strong> :&ensp;<code>str</code></dt>
+<dd>The date and time of when the clip was created</dd>
+<dt><strong><code>thumbnail_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>A URL to a thumbnail image of the clip</dd>
+<dt><strong><code>duration</code></strong> :&ensp;<code>float</code></dt>
+<dd>The length of the clip, in seconds
+Precision is 0.1</dd>
+<dt><strong><code>vod_offset</code></strong> :&ensp;<code>int</code></dt>
+<dd>The zero-based offset, in seconds, to where the clip starts in the video (VOD)</dd>
+<dt><strong><code>is_featured</code></strong> :&ensp;<code>bool</code></dt>
+<dd>A Boolean value that indicates if the clip is featured or not</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Clip:
+    &#34;&#34;&#34;
+    Represents a clip
+
+    Attributes:
+        clip_id (str): An ID that uniquely identifies the clip
+        url (str): A URL to the clip
+        embed_url (str): A URL that you can use in an iframe to embed the clip
+        channel (Channel): The channel that the video was clipped from
+        creator (User): The user that created the clip
+        video_id (str): An ID that identifies the video that the clip came from
+        game_id (str): The ID of the game that was being played when the clip was created
+        language (str): The ISO 639-1 two-letter language code that the broadcaster broadcasts in
+        title (str): The title of the clip
+        view_count (int): The number of times the clip has been viewed
+        created_at (str): The date and time of when the clip was created
+        thumbnail_url (str): A URL to a thumbnail image of the clip
+        duration (float): The length of the clip, in seconds
+            Precision is 0.1
+        vod_offset (int): The zero-based offset, in seconds, to where the clip starts in the video (VOD)
+        is_featured (bool): A Boolean value that indicates if the clip is featured or not
+    &#34;&#34;&#34;
+
+    clip_id: str
+    url: str
+    embed_url: str
+    channel: Channel
+    creator: User
+    video_id: str
+    game_id: str
+    language: str
+    title: str
+    view_count: int
+    created_at: str
+    thumbnail_url: str
+    duration: float
+    vod_offset: int
+    is_featured: bool</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="twitchpy.dataclasses.clip.Clip.channel"><code class="name">var <span class="ident">channel</span> : <a title="twitchpy.dataclasses.channel.Channel" href="channel.html#twitchpy.dataclasses.channel.Channel">Channel</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.clip_id"><code class="name">var <span class="ident">clip_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.created_at"><code class="name">var <span class="ident">created_at</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.creator"><code class="name">var <span class="ident">creator</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.duration"><code class="name">var <span class="ident">duration</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.embed_url"><code class="name">var <span class="ident">embed_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.game_id"><code class="name">var <span class="ident">game_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.is_featured"><code class="name">var <span class="ident">is_featured</span> : bool</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.language"><code class="name">var <span class="ident">language</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.thumbnail_url"><code class="name">var <span class="ident">thumbnail_url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.url"><code class="name">var <span class="ident">url</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.video_id"><code class="name">var <span class="ident">video_id</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.view_count"><code class="name">var <span class="ident">view_count</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="twitchpy.dataclasses.clip.Clip.vod_offset"><code class="name">var <span class="ident">vod_offset</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="twitchpy.dataclasses" href="index.html">twitchpy.dataclasses</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="twitchpy.dataclasses.clip.Clip" href="#twitchpy.dataclasses.clip.Clip">Clip</a></code></h4>
+<ul class="two-column">
+<li><code><a title="twitchpy.dataclasses.clip.Clip.channel" href="#twitchpy.dataclasses.clip.Clip.channel">channel</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.clip_id" href="#twitchpy.dataclasses.clip.Clip.clip_id">clip_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.created_at" href="#twitchpy.dataclasses.clip.Clip.created_at">created_at</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.creator" href="#twitchpy.dataclasses.clip.Clip.creator">creator</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.duration" href="#twitchpy.dataclasses.clip.Clip.duration">duration</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.embed_url" href="#twitchpy.dataclasses.clip.Clip.embed_url">embed_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.game_id" href="#twitchpy.dataclasses.clip.Clip.game_id">game_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.is_featured" href="#twitchpy.dataclasses.clip.Clip.is_featured">is_featured</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.language" href="#twitchpy.dataclasses.clip.Clip.language">language</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.thumbnail_url" href="#twitchpy.dataclasses.clip.Clip.thumbnail_url">thumbnail_url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.title" href="#twitchpy.dataclasses.clip.Clip.title">title</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.url" href="#twitchpy.dataclasses.clip.Clip.url">url</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.video_id" href="#twitchpy.dataclasses.clip.Clip.video_id">video_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.view_count" href="#twitchpy.dataclasses.clip.Clip.view_count">view_count</a></code></li>
+<li><code><a title="twitchpy.dataclasses.clip.Clip.vod_offset" href="#twitchpy.dataclasses.clip.Clip.vod_offset">vod_offset</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
