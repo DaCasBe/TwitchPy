@@ -175,9 +175,13 @@ hljs.highlightAll();
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
     def __send_command(self, command: str, args: str, tags: str | None = None) -&gt; None:
-        print(f&#34;{tags + &#39; &#39; if tags is not None else &#39;&#39;}{command} &lt; {args}&#34;)
+        logger.info(&#34;%s%s &lt; %s&#34;, tags + &#34; &#34; if tags is not None else &#34;&#34;, command, args)
 
-        self.irc.send((f&#34;{tags + &#39; &#39; if tags is not None else &#39;&#39;}{command} {args}&#34; + &#34;\r\n&#34;).encode())
+        self.irc.send(
+            (
+                f&#34;{tags + &#39; &#39; if tags is not None else &#39;&#39;}{command} {args}&#34; + &#34;\r\n&#34;
+            ).encode()
+        )
 
     def __send_join(self, channel: str) -&gt; None:
         self.__send_command(&#34;JOIN&#34;, f&#34;#{channel}&#34;)
@@ -194,15 +198,27 @@ hljs.highlightAll();
     def __send_pong(self, text: str) -&gt; None:
         self.__send_command(&#34;PONG&#34;, f&#34;:{text}&#34;)
 
-    def __send_privmsg(self, channel: str, text: str, message_to_reply: str | None = None) -&gt; None:
-        self.__send_command(&#34;PRIVMSG&#34;, f&#34;#{channel} :{text}&#34;, f&#34;@reply-parent-msg-id={message_to_reply}&#34; if message_to_reply is not None else None)
+    def __send_privmsg(
+        self, channel: str, text: str, message_to_reply: str | None = None
+    ) -&gt; None:
+        self.__send_command(
+            &#34;PRIVMSG&#34;,
+            f&#34;#{channel} :{text}&#34;,
+            (
+                f&#34;@reply-parent-msg-id={message_to_reply}&#34;
+                if message_to_reply is not None
+                else None
+            ),
+        )
 
     def __login(self) -&gt; None:
         self.__send_pass(self.__oauth_token)
         self.__send_nick(self.username)
 
     def __request_irc_capabilities(self) -&gt; None:
-        self.__send_command(&#34;CAP REQ&#34;, &#34;:twitch.tv/commands twitch.tv/membership twitch.tv/tags&#34;)
+        self.__send_command(
+            &#34;CAP REQ&#34;, &#34;:twitch.tv/commands twitch.tv/membership twitch.tv/tags&#34;
+        )
 
     def join_channel(self, channel: str) -&gt; None:
         &#34;&#34;&#34;
@@ -295,7 +311,10 @@ hljs.highlightAll();
         text_args = None
 
         if parts[0].startswith(&#34;@&#34;):
-            irc_tags = dict(item.split(&#34;=&#34;) for item in self.__remove_prefix(parts[0], &#34;@&#34;).split(&#34;;&#34;))
+            irc_tags = dict(
+                item.split(&#34;=&#34;)
+                for item in self.__remove_prefix(parts[0], &#34;@&#34;).split(&#34;;&#34;)
+            )
             parts = parts[1:]
 
         if parts[0].startswith(&#34;:&#34;):
@@ -540,10 +559,16 @@ hljs.highlightAll();
         self.methods_after_whisper_to_remove = []
 
     def __handle_notice(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}]: {message.text} | {message.irc_tags}&#34;)
+        logger.info(
+            &#34;%s &gt; [%s]: %s | %s&#34;,
+            message.irc_command,
+            message.channel,
+            message.text,
+            message.irc_tags,
+        )
 
     def __handle_part(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}] {message.user}&#34;)
+        logger.info(&#34;%s &gt; [%s] %s&#34;, message.irc_command, message.channel, message.user)
 
         self.__execute_methods_after_leave_channel(
             message.channel if message.channel is not None else &#34;&#34;
@@ -551,13 +576,18 @@ hljs.highlightAll();
         self.__remove_methods_after_leave_channel()
 
     def __handle_ping(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; :{message.text}&#34;)
+        logger.info(&#34;%s &gt; :%s&#34;, message.irc_command, message.text)
 
         self.__send_pong(message.text if message.text is not None else &#34;&#34;)
 
     def __handle_privmsg(self, message: Message) -&gt; None:
-        print(
-            f&#34;{message.irc_command} &gt; [{message.channel}] {message.user}: {message.text} | {message.irc_tags}&#34;
+        logger.info(
+            &#34;%s &gt; [%s] %s: %s | %s&#34;,
+            message.irc_command,
+            message.channel,
+            message.user,
+            message.text,
+            message.irc_tags,
         )
 
         self.__execute_listeners(message)
@@ -572,60 +602,81 @@ hljs.highlightAll();
             self.__remove_methods_after_commands()
 
     def __handle_clearchat(self, message: Message) -&gt; None:
-        print(
-            f&#34;{message.irc_command} &gt; [{message.channel}] {message.text if message.text is None else &#39;&#39;} | {message.irc_tags}&#34;
+        logger.info(
+            &#34;%s &gt; [%s] %s | %s&#34;,
+            message.irc_command,
+            message.channel,
+            message.text if message.text is None else &#34;&#34;,
+            message.irc_tags,
         )
 
         self.__execute_methods_after_clearchat(message)
         self.__remove_methods_after_clearchat()
 
     def __handle_clearmsg(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}]: {message.text} | {message.irc_tags}&#34;)
+        logger.info(
+            &#34;%s &gt; [%s]: %s | %s&#34;,
+            message.irc_command,
+            message.channel,
+            message.text,
+            message.irc_tags,
+        )
 
         self.__execute_methods_after_delete_message(message)
         self.__remove_methods_after_delete_message()
 
     def __handle_globaluserstate(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; | {message.irc_tags}&#34;)
+        logger.info(&#34;%s &gt; | %s&#34;, message.irc_command, message.irc_tags)
 
         self.__execute_methods_after_bot_connected(message)
         self.__remove_methods_after_bot_connected()
 
     def __handle_hosttarget(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}]: {message.text}&#34;)
+        logger.info(&#34;%s &gt; [%s]: %s&#34;, message.irc_command, message.channel, message.text)
 
         self.__execute_methods_after_toggle_host(message)
         self.__remove_methods_after_toggle_host()
 
     def __handle_reconnect(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt;&#34;)
+        logger.info(&#34;%s &gt;&#34;, message.irc_command)
 
         self.__execute_methods_after_server_reconnect(message)
         self.__remove_methods_after_server_reconnect()
 
     def __handle_roomstate(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}] | {message.irc_tags}&#34;)
+        logger.info(
+            &#34;%s &gt; [%s] | %s&#34;, message.irc_command, message.channel, message.irc_tags
+        )
 
         self.__execute_methods_after_channel_change(message)
         self.__remove_methods_after_channel_change()
 
     def __handle_usernotice(self, message: Message) -&gt; None:
-        print(
-            f&#34;{message.irc_command} &gt; [{message.channel}]: {message.text if message.text is not None else &#39;&#39;} | {message.irc_tags}&#34;
+        logger.info(
+            &#34;%s &gt; [%s]: %s | %s&#34;,
+            message.irc_command,
+            message.channel,
+            message.text if message.text is not None else &#34;&#34;,
+            message.irc_tags,
         )
 
         self.__execute_methods_after_event(message)
         self.__remove_methods_after_event()
 
     def __handle_userstate(self, message: Message) -&gt; None:
-        print(f&#34;{message.irc_command} &gt; [{message.channel}] | {message.irc_tags}&#34;)
+        logger.info(
+            &#34;%s &gt; [%s] | %s&#34;, message.irc_command, message.channel, message.irc_tags
+        )
 
         self.__execute_methods_after_user_join(message)
         self.__remove_methods_after_user_join()
 
     def __handle_whisper(self, message: Message) -&gt; None:
-        print(
-            f&#34;{message.irc_command} &gt; {message.irc_args[0] if message.irc_args is not None else &#39;&#39;}: {message.text}&#34;
+        logger.info(
+            &#34;%s &gt; %s: %s&#34;,
+            message.irc_command,
+            message.irc_args[0] if message.irc_args is not None else &#34;&#34;,
+            message.text,
         )
 
         self.__execute_methods_after_whisper(message)
@@ -677,8 +728,12 @@ hljs.highlightAll();
             self.__handle_whisper(message)
 
         else:
-            print(
-                f&#34;{message.irc_command} &gt; [{message.channel}] {message.user}: {message.text}&#34;
+            logger.info(
+                &#34;%s &gt; [%s] %s: %s&#34;,
+                message.irc_command,
+                message.channel,
+                message.user,
+                message.text,
             )
 
     def __loop(self) -&gt; None:
