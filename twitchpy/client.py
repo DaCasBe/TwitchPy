@@ -4,6 +4,8 @@ from datetime import datetime
 
 import requests
 
+from twitchpy.dataclasses.chatter_warning import ChatterWarning
+
 from . import errors
 from ._api import (
     ads,
@@ -2983,6 +2985,36 @@ class Client:
 
         return moderation.get_shield_mode_status(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
+        )
+
+    def warn_chat_user(
+        self, broadcaster_id: str, moderator_id: str, user_id: str, reason: str
+    ) -> ChatterWarning:
+        """
+        This function warns a user in a chat with a specified reason, using the provided broadcaster,
+        moderator, and user IDs.
+
+        Args:
+            broadcaster_id (str): The ID of the channel in which the warning will take effect
+            moderator_id (str): The ID of the Twitch user who requested the warning
+            user_id (str): The ID of the Twitch user to be warned
+            reason (str): A custom reason for the warning
+                Maximum: 500 chars
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            ChatterWarning
+        """
+
+        return moderation.warn_chat_user(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            user_id,
+            reason,
         )
 
     def get_polls(

@@ -2955,6 +2955,36 @@ hljs.highlightAll();
             self.__user_token, self.client_id, broadcaster_id, moderator_id
         )
 
+    def warn_chat_user(
+        self, broadcaster_id: str, moderator_id: str, user_id: str, reason: str
+    ) -&gt; ChatterWarning:
+        &#34;&#34;&#34;
+        This function warns a user in a chat with a specified reason, using the provided broadcaster,
+        moderator, and user IDs.
+
+        Args:
+            broadcaster_id (str): The ID of the channel in which the warning will take effect
+            moderator_id (str): The ID of the Twitch user who requested the warning
+            user_id (str): The ID of the Twitch user to be warned
+            reason (str): A custom reason for the warning
+                Maximum: 500 chars
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            ChatterWarning
+        &#34;&#34;&#34;
+
+        return moderation.warn_chat_user(
+            self.__user_token,
+            self.client_id,
+            broadcaster_id,
+            moderator_id,
+            user_id,
+            reason,
+        )
+
     def get_polls(
         self, broadcaster_id: str, poll_ids: list[str] | None = None, first: int = 20
     ) -&gt; list[Poll]:
@@ -6854,6 +6884,29 @@ For component extensions, the key’s value includes the above fields plus the x
 <h2 id="returns">Returns</h2>
 <p>list[dict]</p></div>
 </dd>
+<dt id="twitchpy.client.Client.warn_chat_user"><code class="name flex">
+<span>def <span class="ident">warn_chat_user</span></span>(<span>self, broadcaster_id: str, moderator_id: str, user_id: str, reason: str) ‑> <a title="twitchpy.dataclasses.chatter_warning.ChatterWarning" href="dataclasses/chatter_warning.html#twitchpy.dataclasses.chatter_warning.ChatterWarning">ChatterWarning</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>This function warns a user in a chat with a specified reason, using the provided broadcaster,
+moderator, and user IDs.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the channel in which the warning will take effect</dd>
+<dt><strong><code>moderator_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the Twitch user who requested the warning</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the Twitch user to be warned</dd>
+<dt><strong><code>reason</code></strong> :&ensp;<code>str</code></dt>
+<dd>A custom reason for the warning
+Maximum: 500 chars</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>ChatterWarning</p></div>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -7011,6 +7064,7 @@ For component extensions, the key’s value includes the above fields plus the x
 <li><code><a title="twitchpy.client.Client.update_user" href="#twitchpy.client.Client.update_user">update_user</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_user_chat_color" href="#twitchpy.client.Client.update_user_chat_color">update_user_chat_color</a></code></li>
 <li><code><a title="twitchpy.client.Client.update_user_extensions" href="#twitchpy.client.Client.update_user_extensions">update_user_extensions</a></code></li>
+<li><code><a title="twitchpy.client.Client.warn_chat_user" href="#twitchpy.client.Client.warn_chat_user">warn_chat_user</a></code></li>
 </ul>
 </li>
 </ul>
