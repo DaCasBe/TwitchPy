@@ -1,9 +1,14 @@
+import logging
 import socket
 import ssl
 from typing import Callable
 
 from .client import Client
 from .dataclasses import Message
+
+
+logger = logging.getLogger(__name__)
+
 
 _IRC_SERVER = "irc.chat.twitch.tv"
 _IRC_PORT = 6697
@@ -115,10 +120,14 @@ class Bot:
 
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
-    def __send_command(self, command: str, args: str) -> None:
-        print(f"{command} < {args}")
+    def __send_command(self, command: str, args: str, tags: str | None = None) -> None:
+        logger.info("%s%s < %s", tags + " " if tags is not None else "", command, args)
 
-        self.irc.send((f"{command} {args}" + "\r\n").encode())
+        self.irc.send(
+            (
+                f"{tags + ' ' if tags is not None else ''}{command} {args}" + "\r\n"
+            ).encode()
+        )
 
     def __send_join(self, channel: str) -> None:
         self.__send_command("JOIN", f"#{channel}")
@@ -135,15 +144,27 @@ class Bot:
     def __send_pong(self, text: str) -> None:
         self.__send_command("PONG", f":{text}")
 
-    def __send_privmsg(self, channel: str, text: str) -> None:
-        self.__send_command("PRIVMSG", f"#{channel} :{text}")
+    def __send_privmsg(
+        self, channel: str, text: str, message_to_reply: str | None = None
+    ) -> None:
+        self.__send_command(
+            "PRIVMSG",
+            f"#{channel} :{text}",
+            (
+                f"@reply-parent-msg-id={message_to_reply}"
+                if message_to_reply is not None
+                else None
+            ),
+        )
 
     def __login(self) -> None:
         self.__send_pass(self.__oauth_token)
         self.__send_nick(self.username)
 
     def __request_irc_capabilities(self) -> None:
-        self.__send_command("CAP REQ", ":twitch.tv/commands twitch.tv/membership")
+        self.__send_command(
+            "CAP REQ", ":twitch.tv/commands twitch.tv/membership twitch.tv/tags"
+        )
 
     def join_channel(self, channel: str) -> None:
         """
@@ -229,10 +250,18 @@ class Bot:
         user = None
         channel = None
         irc_command = None
+        irc_tags = None
         irc_args = None
         text = None
         text_command = None
         text_args = None
+
+        if parts[0].startswith("@"):
+            irc_tags = dict(
+                item.split("=")
+                for item in self.__remove_prefix(parts[0], "@").split(";")
+            )
+            parts = parts[1:]
 
         if parts[0].startswith(":"):
             prefix = self.__remove_prefix(parts[0], ":")
@@ -269,6 +298,7 @@ class Bot:
             user,
             channel,
             irc_command,
+            irc_tags,
             irc_args,
             text,
             text_command,
@@ -475,10 +505,16 @@ class Bot:
         self.methods_after_whisper_to_remove = []
 
     def __handle_notice(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+        logger.info(
+            "%s > [%s]: %s | %s",
+            message.irc_command,
+            message.channel,
+            message.text,
+            message.irc_tags,
+        )
 
     def __handle_part(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}] {message.user}")
+        logger.info("%s > [%s] %s", message.irc_command, message.channel, message.user)
 
         self.__execute_methods_after_leave_channel(
             message.channel if message.channel is not None else ""
@@ -486,13 +522,18 @@ class Bot:
         self.__remove_methods_after_leave_channel()
 
     def __handle_ping(self, message: Message) -> None:
-        print(f"{message.irc_command} > :{message.text}")
+        logger.info("%s > :%s", message.irc_command, message.text)
 
         self.__send_pong(message.text if message.text is not None else "")
 
     def __handle_privmsg(self, message: Message) -> None:
-        print(
-            f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+        logger.info(
+            "%s > [%s] %s: %s | %s",
+            message.irc_command,
+            message.channel,
+            message.user,
+            message.text,
+            message.irc_tags,
         )
 
         self.__execute_listeners(message)
@@ -507,60 +548,81 @@ class Bot:
             self.__remove_methods_after_commands()
 
     def __handle_clearchat(self, message: Message) -> None:
-        print(
-            f"{message.irc_command} > [{message.channel}] {message.text if message.text is None else ''}"
+        logger.info(
+            "%s > [%s] %s | %s",
+            message.irc_command,
+            message.channel,
+            message.text if message.text is None else "",
+            message.irc_tags,
         )
 
         self.__execute_methods_after_clearchat(message)
         self.__remove_methods_after_clearchat()
 
     def __handle_clearmsg(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+        logger.info(
+            "%s > [%s]: %s | %s",
+            message.irc_command,
+            message.channel,
+            message.text,
+            message.irc_tags,
+        )
 
         self.__execute_methods_after_delete_message(message)
         self.__remove_methods_after_delete_message()
 
     def __handle_globaluserstate(self, message: Message) -> None:
-        print(f"{message.irc_command} >")
+        logger.info("%s > | %s", message.irc_command, message.irc_tags)
 
         self.__execute_methods_after_bot_connected(message)
         self.__remove_methods_after_bot_connected()
 
     def __handle_hosttarget(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}]: {message.text}")
+        logger.info("%s > [%s]: %s", message.irc_command, message.channel, message.text)
 
         self.__execute_methods_after_toggle_host(message)
         self.__remove_methods_after_toggle_host()
 
     def __handle_reconnect(self, message: Message) -> None:
-        print(f"{message.irc_command} >")
+        logger.info("%s >", message.irc_command)
 
         self.__execute_methods_after_server_reconnect(message)
         self.__remove_methods_after_server_reconnect()
 
     def __handle_roomstate(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}]")
+        logger.info(
+            "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
+        )
 
         self.__execute_methods_after_channel_change(message)
         self.__remove_methods_after_channel_change()
 
     def __handle_usernotice(self, message: Message) -> None:
-        print(
-            f"{message.irc_command} > [{message.channel}]: {message.text if message.text is not None else ''}"
+        logger.info(
+            "%s > [%s]: %s | %s",
+            message.irc_command,
+            message.channel,
+            message.text if message.text is not None else "",
+            message.irc_tags,
         )
 
         self.__execute_methods_after_event(message)
         self.__remove_methods_after_event()
 
     def __handle_userstate(self, message: Message) -> None:
-        print(f"{message.irc_command} > [{message.channel}]")
+        logger.info(
+            "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
+        )
 
         self.__execute_methods_after_user_join(message)
         self.__remove_methods_after_user_join()
 
     def __handle_whisper(self, message: Message) -> None:
-        print(
-            f"{message.irc_command} > {message.irc_args[0] if message.irc_args is not None else ''}: {message.text}"
+        logger.info(
+            "%s > %s: %s",
+            message.irc_command,
+            message.irc_args[0] if message.irc_args is not None else "",
+            message.text,
         )
 
         self.__execute_methods_after_whisper(message)
@@ -612,8 +674,12 @@ class Bot:
             self.__handle_whisper(message)
 
         else:
-            print(
-                f"{message.irc_command} > [{message.channel}] {message.user}: {message.text}"
+            logger.info(
+                "%s > [%s] %s: %s",
+                message.irc_command,
+                message.channel,
+                message.user,
+                message.text,
             )
 
     def __loop(self) -> None:
@@ -638,6 +704,18 @@ class Bot:
         """
 
         self.__send_privmsg(channel, text)
+
+    def reply(self, channel: str, message_id: str, text: str) -> None:
+        """
+        Replies to a message in a chat
+
+        Args:
+            channel (str): Owner of the chat
+            message_id (str): ID of the message being replied to
+            text (str): Message's text
+        """
+
+        self.__send_privmsg(channel, text, message_id)
 
     def ban(self, channel: str, user: str, reason: str = "") -> None:
         """

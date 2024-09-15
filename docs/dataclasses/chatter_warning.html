@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.1">
-<title>twitchpy.dataclasses.guest API documentation</title>
+<title>twitchpy.dataclasses.chatter_warning API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
@@ -22,7 +22,7 @@ hljs.highlightAll();
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.guest</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.chatter_warning</code></h1>
 </header>
 <section id="section-intro">
 </section>
@@ -35,83 +35,59 @@ hljs.highlightAll();
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.guest.Guest"><code class="flex name class">
-<span>class <span class="ident">Guest</span></span>
-<span>(</span><span>slot_id: str, is_live: bool, user: <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a>, volume: int, assigned_at: datetime.datetime, audio_settings: dict, video_settings: dict)</span>
+<dt id="twitchpy.dataclasses.chatter_warning.ChatterWarning"><code class="flex name class">
+<span>class <span class="ident">ChatterWarning</span></span>
+<span>(</span><span>broadcaster_id: str, user_id: str, moderator_id: str, reason: str)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a guest in a Guest Star session</p>
+<div class="desc"><p>Represents a warning to a chat user</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>slot_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>ID representing this guest’s slot assignment</dd>
-<dt><strong><code>is_live</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Flag determining whether or not the guest is visible in the browser source in the host’s streaming software</dd>
-<dt><strong><code>user</code></strong> :&ensp;<code>User</code></dt>
-<dd>The user assigned to this slot</dd>
-<dt><strong><code>volume</code></strong> :&ensp;<code>int</code></dt>
-<dd>Value from 0 to 100 representing the host’s volume setting for this guest</dd>
-<dt><strong><code>assigned_at</code></strong> :&ensp;<code>datetime</code></dt>
-<dd>Timestamp when this guest was assigned a slot in the session</dd>
-<dt><strong><code>audio_settings</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Information about the guest’s audio settings</dd>
-<dt><strong><code>video_settings</code></strong> :&ensp;<code>dict</code></dt>
-<dd>Information about the guest’s video settings</dd>
+<dt><strong><code>broadcaster_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the channel in which the warning takes effect</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the warned user</dd>
+<dt><strong><code>moderator_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The ID of the user who applied the warning</dd>
+<dt><strong><code>reason</code></strong> :&ensp;<code>str</code></dt>
+<dd>The reason provided for warning</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Guest:
+class ChatterWarning:
     &#34;&#34;&#34;
-    Represents a guest in a Guest Star session
+    Represents a warning to a chat user
 
     Attributes:
-        slot_id (str): ID representing this guest’s slot assignment
-        is_live (bool): Flag determining whether or not the guest is visible in the browser source in the host’s streaming software
-        user (User): The user assigned to this slot
-        volume (int): Value from 0 to 100 representing the host’s volume setting for this guest
-        assigned_at (datetime): Timestamp when this guest was assigned a slot in the session
-        audio_settings (dict): Information about the guest’s audio settings
-        video_settings (dict): Information about the guest’s video settings
+        broadcaster_id (str): The ID of the channel in which the warning takes effect
+        user_id (str): The ID of the warned user
+        moderator_id (str): The ID of the user who applied the warning
+        reason (str): The reason provided for warning
     &#34;&#34;&#34;
 
-    slot_id: str
-    is_live: bool
-    user: User
-    volume: int
-    assigned_at: datetime
-    audio_settings: dict
-    video_settings: dict</code></pre>
+    broadcaster_id: str
+    user_id: str
+    moderator_id: str
+    reason: str</code></pre>
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.guest.Guest.assigned_at"><code class="name">var <span class="ident">assigned_at</span> : datetime.datetime</code></dt>
+<dt id="twitchpy.dataclasses.chatter_warning.ChatterWarning.broadcaster_id"><code class="name">var <span class="ident">broadcaster_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.guest.Guest.audio_settings"><code class="name">var <span class="ident">audio_settings</span> : dict</code></dt>
+<dt id="twitchpy.dataclasses.chatter_warning.ChatterWarning.moderator_id"><code class="name">var <span class="ident">moderator_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.guest.Guest.is_live"><code class="name">var <span class="ident">is_live</span> : bool</code></dt>
+<dt id="twitchpy.dataclasses.chatter_warning.ChatterWarning.reason"><code class="name">var <span class="ident">reason</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="twitchpy.dataclasses.guest.Guest.slot_id"><code class="name">var <span class="ident">slot_id</span> : str</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.guest.Guest.user"><code class="name">var <span class="ident">user</span> : <a title="twitchpy.dataclasses.user.User" href="user.html#twitchpy.dataclasses.user.User">User</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.guest.Guest.video_settings"><code class="name">var <span class="ident">video_settings</span> : dict</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="twitchpy.dataclasses.guest.Guest.volume"><code class="name">var <span class="ident">volume</span> : int</code></dt>
+<dt id="twitchpy.dataclasses.chatter_warning.ChatterWarning.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -133,15 +109,12 @@ class Guest:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.guest.Guest" href="#twitchpy.dataclasses.guest.Guest">Guest</a></code></h4>
-<ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.guest.Guest.assigned_at" href="#twitchpy.dataclasses.guest.Guest.assigned_at">assigned_at</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.audio_settings" href="#twitchpy.dataclasses.guest.Guest.audio_settings">audio_settings</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.is_live" href="#twitchpy.dataclasses.guest.Guest.is_live">is_live</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.slot_id" href="#twitchpy.dataclasses.guest.Guest.slot_id">slot_id</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.user" href="#twitchpy.dataclasses.guest.Guest.user">user</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.video_settings" href="#twitchpy.dataclasses.guest.Guest.video_settings">video_settings</a></code></li>
-<li><code><a title="twitchpy.dataclasses.guest.Guest.volume" href="#twitchpy.dataclasses.guest.Guest.volume">volume</a></code></li>
+<h4><code><a title="twitchpy.dataclasses.chatter_warning.ChatterWarning" href="#twitchpy.dataclasses.chatter_warning.ChatterWarning">ChatterWarning</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.chatter_warning.ChatterWarning.broadcaster_id" href="#twitchpy.dataclasses.chatter_warning.ChatterWarning.broadcaster_id">broadcaster_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.chatter_warning.ChatterWarning.moderator_id" href="#twitchpy.dataclasses.chatter_warning.ChatterWarning.moderator_id">moderator_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.chatter_warning.ChatterWarning.reason" href="#twitchpy.dataclasses.chatter_warning.ChatterWarning.reason">reason</a></code></li>
+<li><code><a title="twitchpy.dataclasses.chatter_warning.ChatterWarning.user_id" href="#twitchpy.dataclasses.chatter_warning.ChatterWarning.user_id">user_id</a></code></li>
 </ul>
 </li>
 </ul>

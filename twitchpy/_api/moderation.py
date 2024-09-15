@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from twitchpy.dataclasses.chatter_warning import ChatterWarning
+
 from .._utils import date, http
 from ..dataclasses import (
     AutoModSettings,
@@ -552,4 +554,34 @@ def get_shield_mode_status(
             shield_mode_status["moderator_name"],
         ),
         datetime.strptime(shield_mode_status["last_activated_at"], date.RFC3339_FORMAT),
+    )
+
+
+def warn_chat_user(
+    token: str,
+    client_id: str,
+    broadcaster_id: str,
+    moderator_id: str,
+    user_id: str,
+    reason: str,
+) -> ChatterWarning:
+    url = "https://api.twitch.tv/helix/moderation/warnings"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Client-Id": client_id,
+        "Content-Type": CONTENT_TYPE_APPLICATION_JSON,
+    }
+    payload = {
+        "broadcaster_id": broadcaster_id,
+        "moderator_id": moderator_id,
+        "data": {"user_id": user_id, "reason": reason},
+    }
+
+    warning = http.send_post_get_result(url, headers, payload)[0]
+
+    return ChatterWarning(
+        warning["broadcaster_id"],
+        warning["user_id"],
+        warning["moderator_id"],
+        warning["reason"],
     )
