@@ -4,8 +4,6 @@ from datetime import datetime
 
 import requests
 
-from twitchpy.dataclasses.chatter_warning import ChatterWarning
-
 from . import errors
 from ._api import (
     ads,
@@ -49,6 +47,7 @@ from .dataclasses import (
     CharityCampaign,
     CharityCampaignDonation,
     ChatSettings,
+    ChatterWarning,
     Cheermote,
     Clip,
     Commercial,

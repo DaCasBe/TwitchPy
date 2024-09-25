@@ -12,6 +12,7 @@ from .charity_campaign_amount import CharityCampaignAmount
 from .charity_campaign import CharityCampaign
 from .charity_campaign_donation import CharityCampaignDonation
 from .chat_settings import ChatSettings
+from .chatter_warning import ChatterWarning
 from .cheermote_tier import CheermoteTier
 from .cheermote import Cheermote
 from .clip import Clip
