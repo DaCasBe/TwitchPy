@@ -1,13 +1,12 @@
 from datetime import datetime
 
-from twitchpy.dataclasses.chatter_warning import ChatterWarning
-
 from .._utils import date, http
 from ..dataclasses import (
     AutoModSettings,
     BannedUser,
     BlockedTerm,
     Channel,
+    ChatterWarning,
     ShieldModeStatus,
     UnbanRequest,
     User,

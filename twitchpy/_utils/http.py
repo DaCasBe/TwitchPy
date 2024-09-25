@@ -60,7 +60,7 @@ def send_get_with_pagination(
         response = response.json()
         results.extend(response["data"])
 
-        if "pagination" in response:
+        if "pagination" in response and "cursor" in response["pagination"]:
             after = response["pagination"]["cursor"]
 
     return results
