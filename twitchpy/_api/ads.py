@@ -34,10 +34,10 @@ def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> AdSchedu
 
     return AdSchedule(
         ad_schedule["snooze_count"],
-        datetime.strptime(ad_schedule["snooze_refresh_at"], date.RFC3339_FORMAT),
-        datetime.strptime(ad_schedule["next_ad_at"], date.RFC3339_FORMAT),
+        datetime.fromtimestamp(ad_schedule["snooze_refresh_at"]),
+        datetime.fromtimestamp(ad_schedule["next_ad_at"]),
         ad_schedule["duration"],
-        datetime.strptime(ad_schedule["last_ad_at"], date.RFC3339_FORMAT),
+        datetime.fromtimestamp(ad_schedule["last_ad_at"]),
         ad_schedule["preroll_free_time"],
     )
 
