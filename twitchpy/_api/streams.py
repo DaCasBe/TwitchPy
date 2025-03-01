@@ -1,4 +1,5 @@
 from datetime import datetime
+import re
 
 from .._utils import date, http
 from ..dataclasses import Channel, Game, Stream, StreamMarker, User
@@ -111,9 +112,16 @@ def create_stream_marker(
 
     marker = http.send_post_get_result(url, headers, payload)[0]
 
+    # Twitch documentation says that the created_at time is
+    # RFC3339 but it also includes nanoseconds. This removes
+    # the nanoseconds from the end
+    # https://discuss.dev.twitch.com/t/create-stream-marker-api-response-incorrect-format/62671
+    
+    new_time = re.sub(r"\.\d+Z$", "Z", marker["created_at"])
+
     return StreamMarker(
         marker["id"],
-        datetime.strptime(marker["created_at"], date.RFC3339_FORMAT),
+        datetime.strptime(new_time, date.RFC3339_FORMAT),
         marker["position_seconds"],
         marker["description"],
     )
