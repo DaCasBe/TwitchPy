@@ -56,5 +56,6 @@ from .stream_schedule import StreamSchedule
 from .subscription import Subscription
 from .tag import Tag
 from .team import Team
+from .token import TokenInfo
 from .unban_request import UnbanRequest
 from .video import Video
