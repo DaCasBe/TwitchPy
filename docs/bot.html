@@ -3,19 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-<meta name="generator" content="pdoc3 0.11.1">
+<meta name="generator" content="pdoc3 0.11.5">
 <title>twitchpy.bot API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
 <style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => {
 hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
 hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
 })</script>
 </head>
 <body>
@@ -37,35 +48,9 @@ hljs.highlightAll();
 <dl>
 <dt id="twitchpy.bot.Bot"><code class="flex name class">
 <span>class <span class="ident">Bot</span></span>
-<span>(</span><span>oauth_token: str, client_id: str, client_secret: str, redirect_uri: str, tokens_path: str, username: str, channels: list[str], command_prefix: str, authorization_code: str | None = None, jwt_token: str | None = None, ready_message: str | None = None)</span>
+<span>(</span><span>oauth_token: str,<br>client_id: str,<br>client_secret: str,<br>redirect_uri: str,<br>tokens_path: str,<br>username: str,<br>channels: list[str],<br>command_prefix: str,<br>authorization_code: str | None = None,<br>jwt_token: str | None = None,<br>ready_message: str | None = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a bot</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>oauth_token</code></strong> :&ensp;<code>str</code></dt>
-<dd>OAuth token</dd>
-<dt><strong><code>client_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>Client ID</dd>
-<dt><strong><code>client_secret</code></strong> :&ensp;<code>str</code></dt>
-<dd>Client secret</dd>
-<dt><strong><code>redirect_uri</code></strong> :&ensp;<code>str</code></dt>
-<dd>Redirect URI</dd>
-<dt><strong><code>tokens_path</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path of tokens file (file included)</dd>
-<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
-<dd>Name of the bot</dd>
-<dt><strong><code>channels</code></strong> :&ensp;<code>list</code></dt>
-<dd>Names of channels the bot will access</dd>
-<dt><strong><code>command_prefix</code></strong> :&ensp;<code>str</code></dt>
-<dd>Prefix of the commands the bot will recognize</dd>
-<dt><strong><code>code</code></strong> :&ensp;<code>str</code></dt>
-<dd>Authorization code for getting an user token</dd>
-<dt><strong><code>jwt_token</code></strong> :&ensp;<code>str</code></dt>
-<dd>JWT Token</dd>
-<dt><strong><code>ready_message</code></strong> :&ensp;<code>str</code></dt>
-<dd>Message that the bot will send through the chats of the channels it access</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1534,12 +1519,54 @@ hljs.highlightAll();
 
         self.methods_after_whisper_to_remove.append(name)</code></pre>
 </details>
+<div class="desc"><p>Represents a bot</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>oauth_token</code></strong> :&ensp;<code>str</code></dt>
+<dd>OAuth token</dd>
+<dt><strong><code>client_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Client ID</dd>
+<dt><strong><code>client_secret</code></strong> :&ensp;<code>str</code></dt>
+<dd>Client secret</dd>
+<dt><strong><code>redirect_uri</code></strong> :&ensp;<code>str</code></dt>
+<dd>Redirect URI</dd>
+<dt><strong><code>tokens_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path of tokens file (file included)</dd>
+<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
+<dd>Name of the bot</dd>
+<dt><strong><code>channels</code></strong> :&ensp;<code>list</code></dt>
+<dd>Names of channels the bot will access</dd>
+<dt><strong><code>command_prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>Prefix of the commands the bot will recognize</dd>
+<dt><strong><code>code</code></strong> :&ensp;<code>str</code></dt>
+<dd>Authorization code for getting an user token</dd>
+<dt><strong><code>jwt_token</code></strong> :&ensp;<code>str</code></dt>
+<dd>JWT Token</dd>
+<dt><strong><code>ready_message</code></strong> :&ensp;<code>str</code></dt>
+<dd>Message that the bot will send through the chats of the channels it access</dd>
+</dl></div>
 <h3>Methods</h3>
 <dl>
 <dt id="twitchpy.bot.Bot.add_check"><code class="name flex">
 <span>def <span class="ident">add_check</span></span>(<span>self, name: str, check: Callable[[], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_check(self, name: str, check: Callable[[], None]) -&gt; None:
+    &#34;&#34;&#34;
+    Adds a check to the bot
+    Checks work permanently
+
+    Args:
+        name (str): Check&#39;s name
+        check (Callable[[], None]): Method that will act as a check
+    &#34;&#34;&#34;
+
+    self.custom_checks[name] = check</code></pre>
+</details>
 <div class="desc"><p>Adds a check to the bot
 Checks work permanently</p>
 <h2 id="args">Args</h2>
@@ -1551,9 +1578,25 @@ Checks work permanently</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_command"><code class="name flex">
-<span>def <span class="ident">add_command</span></span>(<span>self, name: str, command: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_command</span></span>(<span>self,<br>name: str,<br>command: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_command(self, name: str, command: Callable[[Message], None]) -&gt; None:
+    &#34;&#34;&#34;
+    Adds a command to the bot
+    Commands must receive as a parameter the messages which call them
+
+    Args:
+        name (str): Command&#39;s name
+        command (Callable[[Message], None]): Method that will be executed when the command is invoked
+    &#34;&#34;&#34;
+
+    self.custom_commands[name] = command</code></pre>
+</details>
 <div class="desc"><p>Adds a command to the bot
 Commands must receive as a parameter the messages which call them</p>
 <h2 id="args">Args</h2>
@@ -1565,9 +1608,26 @@ Commands must receive as a parameter the messages which call them</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_listener"><code class="name flex">
-<span>def <span class="ident">add_listener</span></span>(<span>self, name: str, listener: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_listener</span></span>(<span>self,<br>name: str,<br>listener: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_listener(self, name: str, listener: Callable[[Message], None]) -&gt; None:
+    &#34;&#34;&#34;
+    Adds a listener to the bot
+    Listeners work only when a message is received
+    Listeners must receive as a parameter the last message in the chat
+
+    Args:
+        name (str): Listener&#39;s name
+        listener (Callable[[Message], None]): Method that will be executed after every chat message
+    &#34;&#34;&#34;
+
+    self.custom_listeners[name] = listener</code></pre>
+</details>
 <div class="desc"><p>Adds a listener to the bot
 Listeners work only when a message is received
 Listeners must receive as a parameter the last message in the chat</p>
@@ -1580,9 +1640,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_bot_connected"><code class="name flex">
-<span>def <span class="ident">add_method_after_bot_connected</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_bot_connected</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_bot_connected(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after a bot connects to a chat
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after a bot connects to a chat
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_bot_connected[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after a bot connects to a chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1593,9 +1670,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_channel_change"><code class="name flex">
-<span>def <span class="ident">add_method_after_channel_change</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_channel_change</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_channel_change(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after a channel&#39;s chat settings change
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after a channel&#39;s chat settings change
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_channel_change[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after a channel's chat settings change</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1606,9 +1700,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_clearchat"><code class="name flex">
-<span>def <span class="ident">add_method_after_clearchat</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_clearchat</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_clearchat(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after each chat clearing
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after each chat clearing
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_clearchat[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after each chat clearing</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1619,9 +1730,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_commands"><code class="name flex">
-<span>def <span class="ident">add_method_after_commands</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_commands</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_commands(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after each command
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after each command
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_commands[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after each command</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1632,9 +1760,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_delete_message"><code class="name flex">
-<span>def <span class="ident">add_method_after_delete_message</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_delete_message</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_delete_message(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after each time a message is deleted
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after each time a message is deleted
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_delete_message[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after each time a message is deleted</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1645,9 +1790,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_event"><code class="name flex">
-<span>def <span class="ident">add_method_after_event</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_event</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_event(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after an event occurs
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after an event occurs
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_event[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after an event occurs</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1661,6 +1823,23 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">add_method_after_join_channel</span></span>(<span>self, name: str, method: Callable[[str], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_join_channel(
+    self, name: str, method: Callable[[str], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after joinnnig a channel
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[str], None]): Method to be executed after joinnnig a channel
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_join_channel[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after joinnnig a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1674,6 +1853,23 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">add_method_after_leave_channel</span></span>(<span>self, name: str, method: Callable[[str], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_leave_channel(
+    self, name: str, method: Callable[[str], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after leaving a channel
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[str], None]): Method to be executed after leaving a channel
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_leave_channel[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after leaving a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1684,9 +1880,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_server_reconnect"><code class="name flex">
-<span>def <span class="ident">add_method_after_server_reconnect</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_server_reconnect</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_server_reconnect(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after a reconnect warning
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after a reconnect warning
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_server_reconnect[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after a reconnect warning</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1697,9 +1910,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_toggle_host"><code class="name flex">
-<span>def <span class="ident">add_method_after_toggle_host</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_toggle_host</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_toggle_host(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after a channel toggles hosting
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after a channel toggles hosting
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_toggle_host[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after a channel toggles hosting</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1710,9 +1940,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_user_join"><code class="name flex">
-<span>def <span class="ident">add_method_after_user_join</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_user_join</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_user_join(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after an user joins into a channel
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after an user joins into a channel
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_user_join[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after an user joins into a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1723,9 +1970,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_after_whisper"><code class="name flex">
-<span>def <span class="ident">add_method_after_whisper</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_after_whisper</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_after_whisper(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed after a whisper is received
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed after a whisper is received
+    &#34;&#34;&#34;
+
+    self.custom_methods_after_whisper[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed after a whisper is received</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1736,9 +2000,26 @@ Listeners must receive as a parameter the last message in the chat</p>
 </dl></div>
 </dd>
 <dt id="twitchpy.bot.Bot.add_method_before_commands"><code class="name flex">
-<span>def <span class="ident">add_method_before_commands</span></span>(<span>self, name: str, method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
+<span>def <span class="ident">add_method_before_commands</span></span>(<span>self,<br>name: str,<br>method: Callable[[<a title="twitchpy.dataclasses.message.Message" href="dataclasses/message.html#twitchpy.dataclasses.message.Message">Message</a>], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_before_commands(
+    self, name: str, method: Callable[[Message], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed before each command
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[Message], None]): Method to be executed before each command
+    &#34;&#34;&#34;
+
+    self.custom_methods_before_commands[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed before each command</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1752,6 +2033,23 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">add_method_before_join_channel</span></span>(<span>self, name: str, method: Callable[[str], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_before_join_channel(
+    self, name: str, method: Callable[[str], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed before joinnnig a channel
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[str], None]): Method to be executed before joinnnig a channel
+    &#34;&#34;&#34;
+
+    self.custom_methods_before_join_channel[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed before joinnnig a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1765,6 +2063,23 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">add_method_before_leave_channel</span></span>(<span>self, name: str, method: Callable[[str], None]) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_method_before_leave_channel(
+    self, name: str, method: Callable[[str], None]
+) -&gt; None:
+    &#34;&#34;&#34;
+    Adds to the bot a method that will be executed before leaving a channel
+
+    Args:
+        name (str): Method&#39;s name
+        method (Callable[[str], None]): Method to be executed before leaving a channel
+    &#34;&#34;&#34;
+
+    self.custom_methods_before_leave_channel[name] = method</code></pre>
+</details>
 <div class="desc"><p>Adds to the bot a method that will be executed before leaving a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1778,6 +2093,22 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">ban</span></span>(<span>self, channel: str, user: str, reason: str = '') ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ban(self, channel: str, user: str, reason: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;
+    Bans a user
+
+    Args:
+        channel (str): Channel who bans
+        username (str): User to ban
+        reason (str): Reason of the ban
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/ban @{user} {reason}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Bans a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1793,6 +2124,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">clear</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Clears the chat
+
+    Args:
+        channel (str): Channel to clean the chat
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/clear&#34;)</code></pre>
+</details>
 <div class="desc"><p>Clears the chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1804,6 +2149,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">color</span></span>(<span>self, channel: str, color: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def color(self, channel: str, color: str) -&gt; None:
+    &#34;&#34;&#34;
+    Changes the color of the channel&#39;s name in the chat
+
+    Args:
+        channel (str): Channel to change color
+        color (str): New color&#39;s name
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/color {color}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Changes the color of the channel's name in the chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1817,6 +2177,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">commercial</span></span>(<span>self, channel: str, duration: int = 30) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def commercial(self, channel: str, duration: int = 30) -&gt; None:
+    &#34;&#34;&#34;
+    Places advertising in the channel
+
+    Args:
+        channel (str): Channel on which start the commercial
+        duration (int): Duration of advertising
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/commercial {duration}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Places advertising in the channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1830,6 +2205,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">delete</span></span>(<span>self, channel: str, message_id: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def delete(self, channel: str, message_id: str) -&gt; None:
+    &#34;&#34;&#34;
+    Deletes the specified message from the chat room
+
+    Args:
+        channel (str): Channel where the message was sent
+        message_id (str): ID of the message
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/delete {message_id}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Deletes the specified message from the chat room</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1843,6 +2233,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">disconnect</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def disconnect(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Closes the session that the command was received from
+
+    Args:
+        channel (str): Channel whose session close to
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/disconnect&#34;)</code></pre>
+</details>
 <div class="desc"><p>Closes the session that the command was received from</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1854,6 +2258,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">emoteonly</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def emoteonly(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Activates the &#34;emotes only&#34; mode
+
+    Args:
+        channel (str): Channel on which activate the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/emoteonly&#34;)</code></pre>
+</details>
 <div class="desc"><p>Activates the "emotes only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1865,6 +2283,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">emoteonlyoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def emoteonlyoff(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Disables &#34;emotes only&#34; mode
+
+    Args:
+        channel (str): Channel on which disable the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/emoteonlyoff&#34;)</code></pre>
+</details>
 <div class="desc"><p>Disables "emotes only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1876,6 +2308,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">followers</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def followers(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Activates the &#34;followers only&#34; mode
+
+    Args:
+        channel (str): Channel on which activate the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/followers&#34;)</code></pre>
+</details>
 <div class="desc"><p>Activates the "followers only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1887,6 +2333,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">followersoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def followersoff(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Disables the &#34;followers only&#34; mode
+
+    Args:
+        channel (str): Channel on which disable the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/followersoff&#34;)</code></pre>
+</details>
 <div class="desc"><p>Disables the "followers only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1898,6 +2358,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">help</span></span>(<span>self, channel: str, command: str = '') ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def help(self, channel: str, command: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;
+    Shows detailed information about a command
+
+    Args:
+        channel (str): Channel in which show the command&#39;s information
+        command (str): Command to show information about
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/help {command}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Shows detailed information about a command</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1911,6 +2386,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">host</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def host(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Hosts a channel
+
+    Args:
+        channel (str): Name of the channel who hosts
+        username (str): Name of the channel to host
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/host {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Hosts a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1924,6 +2414,28 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">join_channel</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def join_channel(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Makes the bot to join into a channel
+
+    Args:
+        channel (str): The channel to join
+    &#34;&#34;&#34;
+
+    self.__execute_methods_before_join_channel(channel)
+
+    self.__send_join(channel)
+    self.__send_privmsg(channel, self.ready_message)
+
+    self.__execute_methods_after_join_channel(channel)
+
+    self.__remove_methods_before_join_channel()
+    self.__remove_methods_after_join_channel()</code></pre>
+</details>
 <div class="desc"><p>Makes the bot to join into a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1935,6 +2447,27 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">leave_channel</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def leave_channel(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Makes the bot to leave into a channel
+
+    Args:
+        channel (str): The channel to leave
+    &#34;&#34;&#34;
+
+    self.__execute_methods_before_leave_channel(channel)
+
+    self.__send_part(channel)
+
+    self.__execute_methods_after_leave_channel(channel)
+
+    self.__remove_methods_before_leave_channel()
+    self.__remove_methods_after_leave_channel()</code></pre>
+</details>
 <div class="desc"><p>Makes the bot to leave into a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1946,6 +2479,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">marker</span></span>(<span>self, channel: str, description: str = '') ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def marker(self, channel: str, description: str = &#34;&#34;) -&gt; None:
+    &#34;&#34;&#34;
+    Leaves a mark on the channel&#39;s stream
+
+    Args:
+        channel (str): Channel in which leave the mark
+        description (str): Mark&#39;s description
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/marker {description}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Leaves a mark on the channel's stream</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1959,6 +2507,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">me</span></span>(<span>self, channel: str, text: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def me(self, channel: str, text: str) -&gt; None:
+    &#34;&#34;&#34;
+    Sends a message by chat in italics
+
+    Args:
+        channel (str): Owner of the chat
+        text (str): Message&#39;s text
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/me {text}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Sends a message by chat in italics</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1972,6 +2535,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">mod</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mod(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Makes a user mod
+
+    Args:
+        channel (str): Channel who promotes the user
+        username (str): Name of the user to be promoted
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/mod {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Makes a user mod</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1985,6 +2563,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">mods</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def mods(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Shows the moderators list of a channel
+
+    Args:
+        channel (str): Channel who owns the moderators
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/mods&#34;)</code></pre>
+</details>
 <div class="desc"><p>Shows the moderators list of a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1996,6 +2588,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">raid</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def raid(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Raids another channel
+
+    Args:
+        channel (str): Name of the channel who raids
+        username (str): Name of the channel to raid
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/raid {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Raids another channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2009,6 +2616,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_check</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_check(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a check from the bot
+
+    Args:
+        name (str): Check&#39;s name
+    &#34;&#34;&#34;
+
+    self.checks_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a check from the bot</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2020,6 +2641,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_command</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_command(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a command from the bot
+
+    Args:
+        name (str): Command&#39;s name
+    &#34;&#34;&#34;
+
+    self.commands_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a command from the bot</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2031,6 +2666,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_listener</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_listener(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a listener from the bot
+
+    Args:
+        name (str): Listener&#39;s name
+    &#34;&#34;&#34;
+
+    self.listeners_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a listener from the bot</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2042,6 +2691,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_bot_connected</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_bot_connected(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after a bot connects to a chat
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_bot_connected_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after a bot connects to a chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2053,6 +2716,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_channel_change</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_channel_change(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after a channel&#39;s chat settings change
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_channel_change_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after a channel's chat settings change</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2064,6 +2741,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_clearchat</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_clearchat(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after each chat clearing
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_clearchat_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after each chat clearing</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2075,6 +2766,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_commands</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_commands(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after each command
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_commands_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after each command</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2086,6 +2791,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_delete_message</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_delete_message(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after each time a message is deleted
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_delete_message_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after each time a message is deleted</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2097,6 +2816,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_event</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_event(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after an event occurs
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_event_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after an event occurs</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2108,6 +2841,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_join_channel</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_join_channel(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after joinning a channel
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_join_channel_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after joinning a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2119,6 +2866,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_leave_channel</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_leave_channel(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after leaving a channel
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_leave_channel_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after leaving a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2130,6 +2891,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_server_reconnect</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_server_reconnect(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after a reconnect warning
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_server_reconnect_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after a reconnect warning</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2141,6 +2916,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_toggle_host</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_toggle_host(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after a channel toggles hosting
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_toggle_host_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after a channel toggles hosting</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2152,6 +2941,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_user_join</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_user_join(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after an user joins into a channel
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_user_join_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after an user joins into a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2163,6 +2966,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_after_whisper</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_after_whisper(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed after a whisper is received
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_after_whisper_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed after a whisper is received</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2174,6 +2991,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_before_commands</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_before_commands(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed before each command
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_before_commands_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed before each command</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2185,6 +3016,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_before_join_channel</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_before_join_channel(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed before joinning a channel
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_before_join_channel_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed before joinning a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2196,6 +3041,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">remove_method_before_leave_channel</span></span>(<span>self, name: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_method_before_leave_channel(self, name: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes a method that is executed before leaving a channel
+
+    Args:
+        name (str): Method&#39;s name
+    &#34;&#34;&#34;
+
+    self.methods_before_leave_channel_to_remove.append(name)</code></pre>
+</details>
 <div class="desc"><p>Removes a method that is executed before leaving a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2207,6 +3066,22 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">reply</span></span>(<span>self, channel: str, message_id: str, text: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reply(self, channel: str, message_id: str, text: str) -&gt; None:
+    &#34;&#34;&#34;
+    Replies to a message in a chat
+
+    Args:
+        channel (str): Owner of the chat
+        message_id (str): ID of the message being replied to
+        text (str): Message&#39;s text
+    &#34;&#34;&#34;
+
+    self.__send_privmsg(channel, text, message_id)</code></pre>
+</details>
 <div class="desc"><p>Replies to a message in a chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2222,12 +3097,39 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">run</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self) -&gt; None:
+    &#34;&#34;&#34;
+    Runs the bot
+    &#34;&#34;&#34;
+
+    self.__connect()
+    self.__loop()</code></pre>
+</details>
 <div class="desc"><p>Runs the bot</p></div>
 </dd>
 <dt id="twitchpy.bot.Bot.send"><code class="name flex">
 <span>def <span class="ident">send</span></span>(<span>self, channel: str, text: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def send(self, channel: str, text: str) -&gt; None:
+    &#34;&#34;&#34;
+    Sends a message by chat
+
+    Args:
+        channel (str): Owner of the chat
+        text (str): Message&#39;s text
+    &#34;&#34;&#34;
+
+    self.__send_privmsg(channel, text)</code></pre>
+</details>
 <div class="desc"><p>Sends a message by chat</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2241,6 +3143,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">slow</span></span>(<span>self, channel: str, duration: int) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slow(self, channel: str, duration: int) -&gt; None:
+    &#34;&#34;&#34;
+    Activates the &#34;slow&#34; mode
+
+    Args:
+        channel (str): Channel on which activate the mode
+        duration (int): Time between messages
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/slow {duration}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Activates the "slow" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2254,6 +3171,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">slowoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def slowoff(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Disables the &#34;slow&#34; mode
+
+    Args:
+        channel (str): Channel on which disable the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/slowoff&#34;)</code></pre>
+</details>
 <div class="desc"><p>Disables the "slow" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2265,12 +3196,37 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">stop</span></span>(<span>self) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self) -&gt; None:
+    &#34;&#34;&#34;
+    Stops the bot
+    &#34;&#34;&#34;
+
+    self.__finish = True</code></pre>
+</details>
 <div class="desc"><p>Stops the bot</p></div>
 </dd>
 <dt id="twitchpy.bot.Bot.subscribers"><code class="name flex">
 <span>def <span class="ident">subscribers</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def subscribers(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Activates the &#34;subscribers only&#34; mode
+
+    Args:
+        channel (str): Channel on which activate the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/subscribers&#34;)</code></pre>
+</details>
 <div class="desc"><p>Activates the "subscribers only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2282,6 +3238,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">subscribersoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def subscribersoff(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Disables &#34;subscriber only&#34; mode
+
+    Args:
+        channel (str): Channel on which disable the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/subscribersoff&#34;)</code></pre>
+</details>
 <div class="desc"><p>Disables "subscriber only" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2293,6 +3263,22 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">timeout</span></span>(<span>self, channel: str, user: str, duration: int = 600) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def timeout(self, channel: str, user: str, duration: int = 600) -&gt; None:
+    &#34;&#34;&#34;
+    Expels a user temporarily
+
+    Args:
+        channel (str): Channel who ejects
+        user (str): Name of the user to expel
+        duration (int): Ejecting time
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/timeout @{user} {duration}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Expels a user temporarily</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2308,6 +3294,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">unban</span></span>(<span>self, channel: str, user: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unban(self, channel: str, user: str) -&gt; None:
+    &#34;&#34;&#34;
+    Undoes the ban of a user
+
+    Args:
+        channel (str): Name of the channel who readmits
+        user (str): Name of the user to readmit
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/unban @{user}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Undoes the ban of a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2321,6 +3322,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">unhost</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unhost(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Unhosts the hosted channel
+
+    Args:
+        channel (str): Channel who unhosts
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/unhost&#34;)</code></pre>
+</details>
 <div class="desc"><p>Unhosts the hosted channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2332,6 +3347,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">uniquechat</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def uniquechat(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Activates the &#34;unique&#34; mode
+
+    Args:
+        channel (str): Channel on which activate the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/uniquechat&#34;)</code></pre>
+</details>
 <div class="desc"><p>Activates the "unique" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2343,6 +3372,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">uniquechatoff</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def uniquechatoff(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Disables the &#34;unique&#34; mode
+
+    Args:
+        channel (str): Channel on which disable the mode
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/uniquechatoff&#34;)</code></pre>
+</details>
 <div class="desc"><p>Disables the "unique" mode</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2354,6 +3397,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">unmod</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unmod(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes the moderator&#39;s rank from a user
+
+    Args:
+        channel (str): Channel who removes the moderator&#39;s rank
+        username (str): User&#39;s name
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/unmod {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Removes the moderator's rank from a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2367,6 +3425,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">unraid</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unraid(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Cancels an raid
+
+    Args:
+        channel (str): Channel who unraids
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/unraid&#34;)</code></pre>
+</details>
 <div class="desc"><p>Cancels an raid</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2378,6 +3450,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">untimeout</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def untimeout(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Cancels the timeout of a user
+
+    Args:
+        channel (str): Channel who ejected the user
+        username (str): User to readmit
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/untimeout @{username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Cancels the timeout of a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2391,6 +3478,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">unvip</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unvip(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Removes the vip range from a user
+
+    Args:
+        channel (str): Channel who remove&#39;s the vip range
+        username (str): User&#39;s name
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/unvip {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Removes the vip range from a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2404,6 +3506,21 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">vip</span></span>(<span>self, channel: str, username: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def vip(self, channel: str, username: str) -&gt; None:
+    &#34;&#34;&#34;
+    Makes a user vip
+
+    Args:
+        channel (str): Channel who makes a user vip
+        username (str): User&#39;s name
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/vip {username}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Makes a user vip</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2417,6 +3534,20 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">vips</span></span>(<span>self, channel: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def vips(self, channel: str) -&gt; None:
+    &#34;&#34;&#34;
+    Shows the vips list of a channel
+
+    Args:
+        channel (str): Channel who owns the vips
+    &#34;&#34;&#34;
+
+    self.send(channel, &#34;/vips&#34;)</code></pre>
+</details>
 <div class="desc"><p>Shows the vips list of a channel</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2428,6 +3559,22 @@ Listeners must receive as a parameter the last message in the chat</p>
 <span>def <span class="ident">whisper</span></span>(<span>self, channel: str, user: str, text: str) ‑> None</span>
 </code></dt>
 <dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def whisper(self, channel: str, user: str, text: str) -&gt; None:
+    &#34;&#34;&#34;
+    Whispers to a user
+
+    Args:
+        channel (str): Channel on which send the whisp
+        user (str): User&#39;s name
+        text (str): Whisper&#39;s text
+    &#34;&#34;&#34;
+
+    self.send(channel, f&#34;/w {user} {text}&#34;)</code></pre>
+</details>
 <div class="desc"><p>Whispers to a user</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -2542,7 +3689,7 @@ Listeners must receive as a parameter the last message in the chat</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.1</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
 </footer>
 </body>
 </html>
