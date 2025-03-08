@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.5">
-<title>twitchpy.dataclasses.product API documentation</title>
+<title>twitchpy.dataclasses.token API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
@@ -33,7 +33,7 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>twitchpy.dataclasses.product</code></h1>
+<h1 class="title">Module <code>twitchpy.dataclasses.token</code></h1>
 </header>
 <section id="section-intro">
 </section>
@@ -46,9 +46,9 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="twitchpy.dataclasses.product.Product"><code class="flex name class">
-<span>class <span class="ident">Product</span></span>
-<span>(</span><span>sku: str,<br>cost: <a title="twitchpy.dataclasses.product_cost.ProductCost" href="product_cost.html#twitchpy.dataclasses.product_cost.ProductCost">ProductCost</a>,<br>in_development: bool,<br>display_name: str,<br>expiration: str,<br>broadcast: bool,<br>domain: str | None = None)</span>
+<dt id="twitchpy.dataclasses.token.TokenInfo"><code class="flex name class">
+<span>class <span class="ident">TokenInfo</span></span>
+<span>(</span><span>client_id: str, login: str, scopes: list[str], user_id: str, expires_in: int)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -56,73 +56,56 @@ el.replaceWith(d);
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@dataclass
-class Product:
+class TokenInfo:
     &#34;&#34;&#34;
-    Represents a digital product
+    Represents the token validity
 
     Attributes:
-        sku (str): An ID that identifies the digital product
-        cost (ProductCost): The digital product’s cost
-        in_development (bool): A Boolean value that determines whether the product is in development
-        display_name (str): The name of the digital product
-        expiration (str): This field is always empty since you may purchase only unexpired products
-        broadcast (bool): A Boolean value that determines whether the data was broadcast to all instances of the extension
-        domain (str | None): The product&#39;s domain
+        client_id (str): The authenticated client ID
+        login (str): The username of the authenticated client
+        scopes (list[str]): The list of scopes authorized for use by the client
+        user_id (str): The user ID of the authenticated client
+        expires_in (int): Number of seconds until the token expires
     &#34;&#34;&#34;
-
-    sku: str
-    cost: ProductCost
-    in_development: bool
-    display_name: str
-    expiration: str
-    broadcast: bool
-    domain: str | None = None</code></pre>
+    client_id: str
+    login: str
+    scopes: list[str]
+    user_id: str
+    expires_in: int</code></pre>
 </details>
-<div class="desc"><p>Represents a digital product</p>
+<div class="desc"><p>Represents the token validity</p>
 <h2 id="attributes">Attributes</h2>
 <dl>
-<dt><strong><code>sku</code></strong> :&ensp;<code>str</code></dt>
-<dd>An ID that identifies the digital product</dd>
-<dt><strong><code>cost</code></strong> :&ensp;<code>ProductCost</code></dt>
-<dd>The digital product’s cost</dd>
-<dt><strong><code>in_development</code></strong> :&ensp;<code>bool</code></dt>
-<dd>A Boolean value that determines whether the product is in development</dd>
-<dt><strong><code>display_name</code></strong> :&ensp;<code>str</code></dt>
-<dd>The name of the digital product</dd>
-<dt><strong><code>expiration</code></strong> :&ensp;<code>str</code></dt>
-<dd>This field is always empty since you may purchase only unexpired products</dd>
-<dt><strong><code>broadcast</code></strong> :&ensp;<code>bool</code></dt>
-<dd>A Boolean value that determines whether the data was broadcast to all instances of the extension</dd>
-<dt><strong><code>domain</code></strong> :&ensp;<code>str | None</code></dt>
-<dd>The product's domain</dd>
+<dt><strong><code>client_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The authenticated client ID</dd>
+<dt><strong><code>login</code></strong> :&ensp;<code>str</code></dt>
+<dd>The username of the authenticated client</dd>
+<dt><strong><code>scopes</code></strong> :&ensp;<code>list[str]</code></dt>
+<dd>The list of scopes authorized for use by the client</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user ID of the authenticated client</dd>
+<dt><strong><code>expires_in</code></strong> :&ensp;<code>int</code></dt>
+<dd>Number of seconds until the token expires</dd>
 </dl></div>
 <h3>Class variables</h3>
 <dl>
-<dt id="twitchpy.dataclasses.product.Product.broadcast"><code class="name">var <span class="ident">broadcast</span> : bool</code></dt>
+<dt id="twitchpy.dataclasses.token.TokenInfo.client_id"><code class="name">var <span class="ident">client_id</span> : str</code></dt>
 <dd>
 <div class="desc"><p>The type of the None singleton.</p></div>
 </dd>
-<dt id="twitchpy.dataclasses.product.Product.cost"><code class="name">var <span class="ident">cost</span> : <a title="twitchpy.dataclasses.product_cost.ProductCost" href="product_cost.html#twitchpy.dataclasses.product_cost.ProductCost">ProductCost</a></code></dt>
+<dt id="twitchpy.dataclasses.token.TokenInfo.expires_in"><code class="name">var <span class="ident">expires_in</span> : int</code></dt>
 <dd>
 <div class="desc"><p>The type of the None singleton.</p></div>
 </dd>
-<dt id="twitchpy.dataclasses.product.Product.display_name"><code class="name">var <span class="ident">display_name</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.token.TokenInfo.login"><code class="name">var <span class="ident">login</span> : str</code></dt>
 <dd>
 <div class="desc"><p>The type of the None singleton.</p></div>
 </dd>
-<dt id="twitchpy.dataclasses.product.Product.domain"><code class="name">var <span class="ident">domain</span> : str | None</code></dt>
+<dt id="twitchpy.dataclasses.token.TokenInfo.scopes"><code class="name">var <span class="ident">scopes</span> : list[str]</code></dt>
 <dd>
 <div class="desc"><p>The type of the None singleton.</p></div>
 </dd>
-<dt id="twitchpy.dataclasses.product.Product.expiration"><code class="name">var <span class="ident">expiration</span> : str</code></dt>
-<dd>
-<div class="desc"><p>The type of the None singleton.</p></div>
-</dd>
-<dt id="twitchpy.dataclasses.product.Product.in_development"><code class="name">var <span class="ident">in_development</span> : bool</code></dt>
-<dd>
-<div class="desc"><p>The type of the None singleton.</p></div>
-</dd>
-<dt id="twitchpy.dataclasses.product.Product.sku"><code class="name">var <span class="ident">sku</span> : str</code></dt>
+<dt id="twitchpy.dataclasses.token.TokenInfo.user_id"><code class="name">var <span class="ident">user_id</span> : str</code></dt>
 <dd>
 <div class="desc"><p>The type of the None singleton.</p></div>
 </dd>
@@ -144,15 +127,13 @@ class Product:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="twitchpy.dataclasses.product.Product" href="#twitchpy.dataclasses.product.Product">Product</a></code></h4>
-<ul class="two-column">
-<li><code><a title="twitchpy.dataclasses.product.Product.broadcast" href="#twitchpy.dataclasses.product.Product.broadcast">broadcast</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.cost" href="#twitchpy.dataclasses.product.Product.cost">cost</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.display_name" href="#twitchpy.dataclasses.product.Product.display_name">display_name</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.domain" href="#twitchpy.dataclasses.product.Product.domain">domain</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.expiration" href="#twitchpy.dataclasses.product.Product.expiration">expiration</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.in_development" href="#twitchpy.dataclasses.product.Product.in_development">in_development</a></code></li>
-<li><code><a title="twitchpy.dataclasses.product.Product.sku" href="#twitchpy.dataclasses.product.Product.sku">sku</a></code></li>
+<h4><code><a title="twitchpy.dataclasses.token.TokenInfo" href="#twitchpy.dataclasses.token.TokenInfo">TokenInfo</a></code></h4>
+<ul class="">
+<li><code><a title="twitchpy.dataclasses.token.TokenInfo.client_id" href="#twitchpy.dataclasses.token.TokenInfo.client_id">client_id</a></code></li>
+<li><code><a title="twitchpy.dataclasses.token.TokenInfo.expires_in" href="#twitchpy.dataclasses.token.TokenInfo.expires_in">expires_in</a></code></li>
+<li><code><a title="twitchpy.dataclasses.token.TokenInfo.login" href="#twitchpy.dataclasses.token.TokenInfo.login">login</a></code></li>
+<li><code><a title="twitchpy.dataclasses.token.TokenInfo.scopes" href="#twitchpy.dataclasses.token.TokenInfo.scopes">scopes</a></code></li>
+<li><code><a title="twitchpy.dataclasses.token.TokenInfo.user_id" href="#twitchpy.dataclasses.token.TokenInfo.user_id">user_id</a></code></li>
 </ul>
 </li>
 </ul>
