@@ -81,6 +81,7 @@ from .dataclasses import (
     Subscription,
     Tag,
     Team,
+    TokenInfo,
     Transport,
     UnbanRequest,
     User,
@@ -88,6 +89,7 @@ from .dataclasses import (
 )
 
 _URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
+_URL_OAUTH2_VALIDATE = "https://id.twitch.tv/oauth2/validate"
 _DEFAULT_TIMEOUT = 10
 
 
@@ -263,6 +265,24 @@ class Client:
             )
 
         return user_token
+
+    def validate_token(self) -> TokenInfo:
+        url = _URL_OAUTH2_VALIDATE
+        response = requests.get(url, headers={"Authorization": f"OAuth {self.__user_token}"}, timeout=_DEFAULT_TIMEOUT)
+
+        if response.ok:
+            response = response.json()
+            return TokenInfo(
+                    response["client_id"],
+                    response["login"],
+                    response["scopes"],
+                    response["user_id"],
+                    response["expires_in"]
+                    )
+
+        else:
+            raise errors.ClientError("Invalid client authorization")
+
 
     def start_commercial(self, broadcaster_id: int, length: int) -> Commercial:
         """
