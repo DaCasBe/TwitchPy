@@ -48,6 +48,7 @@ from .prediction_outcome import PredictionOutcome
 from .prediction import Prediction
 from .reward import Reward
 from .redemption import Redemption
+from .shared_chat_session import SharedChatSession
 from .shield_mode_status import ShieldModeStatus
 from .stream import Stream
 from .stream_marker import StreamMarker

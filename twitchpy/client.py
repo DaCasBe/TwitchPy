@@ -5,88 +5,28 @@ from datetime import datetime
 import requests
 
 from . import errors
-from ._api import (
-    ads,
-    analytics,
-    bits,
-    channels,
-    charity_campaigns,
-    chats,
-    clips,
-    content_classification_labels,
-    drops,
-    eventsubs,
-    extensions,
-    games,
-    goals,
-    guest_stars,
-    hype_trains,
-    moderation,
-    polls,
-    predictions,
-    raids,
-    rewards,
-    schedules,
-    searchs,
-    streams,
-    subscriptions,
-    tags,
-    teams,
-    users,
-    videos,
-    whispers,
-)
-from .dataclasses import (
-    AdSchedule,
-    AutoModSettings,
-    Badge,
-    BannedUser,
-    BitsLeaderboardLeader,
-    BlockedTerm,
-    Channel,
-    CharityCampaign,
-    CharityCampaignDonation,
-    ChatSettings,
-    ChatterWarning,
-    Cheermote,
-    Clip,
-    Commercial,
-    Conduit,
-    ConduitShard,
-    ContentClassificationLabel,
-    CreatorGoal,
-    DropEntitlement,
-    Emote,
-    EventSubSubscription,
-    Extension,
-    ExtensionAnalyticsReport,
-    ExtensionConfigurationSegment,
-    ExtensionSecret,
-    ExtensionTransaction,
-    Game,
-    GameAnalyticsReport,
-    GuestStarInvite,
-    GuestStarSession,
-    GuestStarSettings,
-    HypeTrainEvent,
-    Poll,
-    Prediction,
-    Product,
-    Redemption,
-    Reward,
-    ShieldModeStatus,
-    Stream,
-    StreamMarker,
-    StreamSchedule,
-    Subscription,
-    Tag,
-    Team,
-    TokenInfo,
-    Transport,
-    UnbanRequest,
-    User,
-    Video,
-)
+from ._api import (ads, analytics, bits, channels, charity_campaigns, chats,
+                   clips, content_classification_labels, drops, eventsubs,
+                   extensions, games, goals, guest_stars, hype_trains,
+                   moderation, polls, predictions, raids, rewards, schedules,
+                   searchs, shared_chats, streams, subscriptions, tags, teams,
+                   users, videos, whispers)
+from .dataclasses import (AdSchedule, AutoModSettings, Badge, BannedUser,
+                          BitsLeaderboardLeader, BlockedTerm, Channel,
+                          CharityCampaign, CharityCampaignDonation,
+                          ChatSettings, ChatterWarning, Cheermote, Clip,
+                          Commercial, Conduit, ConduitShard,
+                          ContentClassificationLabel, CreatorGoal,
+                          DropEntitlement, Emote, EventSubSubscription,
+                          Extension, ExtensionAnalyticsReport,
+                          ExtensionConfigurationSegment, ExtensionSecret,
+                          ExtensionTransaction, Game, GameAnalyticsReport,
+                          GuestStarInvite, GuestStarSession, GuestStarSettings,
+                          HypeTrainEvent, Poll, Prediction, Product,
+                          Redemption, Reward, SharedChatSession,
+                          ShieldModeStatus, Stream, StreamMarker,
+                          StreamSchedule, Subscription, Tag, Team, TokenInfo,
+                          Transport, UnbanRequest, User, Video)
 
 _URL_OAUTH2_TOKEN = "https://id.twitch.tv/oauth2/token"
 _URL_OAUTH2_VALIDATE = "https://id.twitch.tv/oauth2/validate"
@@ -268,21 +208,24 @@ class Client:
 
     def validate_token(self) -> TokenInfo:
         url = _URL_OAUTH2_VALIDATE
-        response = requests.get(url, headers={"Authorization": f"OAuth {self.__user_token}"}, timeout=_DEFAULT_TIMEOUT)
+        response = requests.get(
+            url,
+            headers={"Authorization": f"OAuth {self.__user_token}"},
+            timeout=_DEFAULT_TIMEOUT,
+        )
 
         if response.ok:
             response = response.json()
             return TokenInfo(
-                    response["client_id"],
-                    response["login"],
-                    response["scopes"],
-                    response["user_id"],
-                    response["expires_in"]
-                    )
+                response["client_id"],
+                response["login"],
+                response["scopes"],
+                response["user_id"],
+                response["expires_in"],
+            )
 
         else:
             raise errors.ClientError("Invalid client authorization")
-
 
     def start_commercial(self, broadcaster_id: int, length: int) -> Commercial:
         """
@@ -1095,6 +1038,26 @@ class Client:
 
         return chats.get_chat_settings(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
+        )
+
+    def get_shared_chat_session(self, broadcaster_id: str) -> SharedChatSession:
+        """
+        Retrieves the active shared chat session for a channel
+
+        Args:
+            broadcaster_id: The User ID of the channel broadcaster
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            SharedChatSession
+        """
+
+        return shared_chats.get_shared_chat_session(
+            self.__app_token if self.__user_token == "" else self.__user_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_user_emotes(
