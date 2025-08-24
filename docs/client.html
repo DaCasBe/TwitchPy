@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
-<meta name="generator" content="pdoc3 0.11.5">
+<meta name="generator" content="pdoc3 0.11.6">
 <title>twitchpy.client API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
@@ -230,21 +230,24 @@ el.replaceWith(d);
 
     def validate_token(self) -&gt; TokenInfo:
         url = _URL_OAUTH2_VALIDATE
-        response = requests.get(url, headers={&#34;Authorization&#34;: f&#34;OAuth {self.__user_token}&#34;}, timeout=_DEFAULT_TIMEOUT)
+        response = requests.get(
+            url,
+            headers={&#34;Authorization&#34;: f&#34;OAuth {self.__user_token}&#34;},
+            timeout=_DEFAULT_TIMEOUT,
+        )
 
         if response.ok:
             response = response.json()
             return TokenInfo(
-                    response[&#34;client_id&#34;],
-                    response[&#34;login&#34;],
-                    response[&#34;scopes&#34;],
-                    response[&#34;user_id&#34;],
-                    response[&#34;expires_in&#34;]
-                    )
+                response[&#34;client_id&#34;],
+                response[&#34;login&#34;],
+                response[&#34;scopes&#34;],
+                response[&#34;user_id&#34;],
+                response[&#34;expires_in&#34;],
+            )
 
         else:
             raise errors.ClientError(&#34;Invalid client authorization&#34;)
-
 
     def start_commercial(self, broadcaster_id: int, length: int) -&gt; Commercial:
         &#34;&#34;&#34;
@@ -1057,6 +1060,26 @@ el.replaceWith(d);
 
         return chats.get_chat_settings(
             self.__user_token, self.client_id, broadcaster_id, moderator_id
+        )
+
+    def get_shared_chat_session(self, broadcaster_id: str) -&gt; SharedChatSession:
+        &#34;&#34;&#34;
+        Retrieves the active shared chat session for a channel
+
+        Args:
+            broadcaster_id: The User ID of the channel broadcaster
+
+        Raises:
+            errors.ClientError
+
+        Returns:
+            SharedChatSession
+        &#34;&#34;&#34;
+
+        return shared_chats.get_shared_chat_session(
+            self.__app_token if self.__user_token == &#34;&#34; else self.__user_token,
+            self.client_id,
+            broadcaster_id,
         )
 
     def get_user_emotes(
@@ -8102,6 +8125,45 @@ If not provided, the current version is returned</dd>
 <h2 id="returns">Returns</h2>
 <p>Extension</p></div>
 </dd>
+<dt id="twitchpy.client.Client.get_shared_chat_session"><code class="name flex">
+<span>def <span class="ident">get_shared_chat_session</span></span>(<span>self, broadcaster_id: str) ‑> <a title="twitchpy.dataclasses.shared_chat_session.SharedChatSession" href="dataclasses/shared_chat_session.html#twitchpy.dataclasses.shared_chat_session.SharedChatSession">SharedChatSession</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_shared_chat_session(self, broadcaster_id: str) -&gt; SharedChatSession:
+    &#34;&#34;&#34;
+    Retrieves the active shared chat session for a channel
+
+    Args:
+        broadcaster_id: The User ID of the channel broadcaster
+
+    Raises:
+        errors.ClientError
+
+    Returns:
+        SharedChatSession
+    &#34;&#34;&#34;
+
+    return shared_chats.get_shared_chat_session(
+        self.__app_token if self.__user_token == &#34;&#34; else self.__user_token,
+        self.client_id,
+        broadcaster_id,
+    )</code></pre>
+</details>
+<div class="desc"><p>Retrieves the active shared chat session for a channel</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>broadcaster_id</code></strong></dt>
+<dd>The User ID of the channel broadcaster</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<p>errors.ClientError</p>
+<h2 id="returns">Returns</h2>
+<p>SharedChatSession</p></div>
+</dd>
 <dt id="twitchpy.client.Client.get_shield_mode_status"><code class="name flex">
 <span>def <span class="ident">get_shield_mode_status</span></span>(<span>self, broadcaster_id: str, moderator_id: str) ‑> <a title="twitchpy.dataclasses.shield_mode_status.ShieldModeStatus" href="dataclasses/shield_mode_status.html#twitchpy.dataclasses.shield_mode_status.ShieldModeStatus">ShieldModeStatus</a></span>
 </code></dt>
@@ -11189,17 +11251,21 @@ For component extensions, the key’s value includes the above fields plus the x
 </summary>
 <pre><code class="python">def validate_token(self) -&gt; TokenInfo:
     url = _URL_OAUTH2_VALIDATE
-    response = requests.get(url, headers={&#34;Authorization&#34;: f&#34;OAuth {self.__user_token}&#34;}, timeout=_DEFAULT_TIMEOUT)
+    response = requests.get(
+        url,
+        headers={&#34;Authorization&#34;: f&#34;OAuth {self.__user_token}&#34;},
+        timeout=_DEFAULT_TIMEOUT,
+    )
 
     if response.ok:
         response = response.json()
         return TokenInfo(
-                response[&#34;client_id&#34;],
-                response[&#34;login&#34;],
-                response[&#34;scopes&#34;],
-                response[&#34;user_id&#34;],
-                response[&#34;expires_in&#34;]
-                )
+            response[&#34;client_id&#34;],
+            response[&#34;login&#34;],
+            response[&#34;scopes&#34;],
+            response[&#34;user_id&#34;],
+            response[&#34;expires_in&#34;],
+        )
 
     else:
         raise errors.ClientError(&#34;Invalid client authorization&#34;)</code></pre>
@@ -11365,6 +11431,7 @@ Maximum: 500 chars</dd>
 <li><code><a title="twitchpy.client.Client.get_polls" href="#twitchpy.client.Client.get_polls">get_polls</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_predictions" href="#twitchpy.client.Client.get_predictions">get_predictions</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_released_extensions" href="#twitchpy.client.Client.get_released_extensions">get_released_extensions</a></code></li>
+<li><code><a title="twitchpy.client.Client.get_shared_chat_session" href="#twitchpy.client.Client.get_shared_chat_session">get_shared_chat_session</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_shield_mode_status" href="#twitchpy.client.Client.get_shield_mode_status">get_shield_mode_status</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_stream_key" href="#twitchpy.client.Client.get_stream_key">get_stream_key</a></code></li>
 <li><code><a title="twitchpy.client.Client.get_stream_markers" href="#twitchpy.client.Client.get_stream_markers">get_stream_markers</a></code></li>
@@ -11430,7 +11497,7 @@ Maximum: 500 chars</dd>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.6</a>.</p>
 </footer>
 </body>
 </html>
