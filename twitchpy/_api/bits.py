@@ -4,7 +4,7 @@ from .._utils import http
 from ..dataclasses import BitsLeaderboardLeader, Cheermote, CheermoteTier, User
 
 
-def get_bits_leaderboard(
+async def get_bits_leaderboard(
     token: str,
     client_id: str,
     count: int = 10,
@@ -25,7 +25,7 @@ def get_bits_leaderboard(
     if user_id is not None:
         params["user_id"] = user_id
 
-    leaderboard = http.send_get(url, headers, params)
+    leaderboard = await http.send_get(url, headers, params)
 
     return [
         BitsLeaderboardLeader(
@@ -37,7 +37,7 @@ def get_bits_leaderboard(
     ]
 
 
-def get_cheermotes(
+async def get_cheermotes(
     token: str, client_id: str, broadcaster_id: str | None = None
 ) -> list[Cheermote]:
     url = "https://api.twitch.tv/helix/bits/cheermotes"
@@ -50,7 +50,7 @@ def get_cheermotes(
     if broadcaster_id is not None:
         params = {"broadcaster_id": broadcaster_id}
 
-    cheermotes = http.send_get(url, headers, params)
+    cheermotes = await http.send_get(url, headers, params)
 
     return [
         Cheermote(

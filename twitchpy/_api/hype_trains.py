@@ -1,10 +1,11 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import HypeTrainContribution, HypeTrainEvent, HypeTrainEventData
+from ..dataclasses import (HypeTrainContribution, HypeTrainEvent,
+                           HypeTrainEventData)
 
 
-def get_hype_train_events(
+async def get_hype_train_events(
     token: str, client_id: str, broadcaster_id: str, first: int = 1
 ) -> list[HypeTrainEvent]:
     url = "https://api.twitch.tv/helix/hypetrain/events"
@@ -14,7 +15,7 @@ def get_hype_train_events(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    events = http.send_get_with_pagination(url, headers, params, first, 100)
+    events = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         HypeTrainEvent(

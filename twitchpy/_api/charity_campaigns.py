@@ -8,7 +8,7 @@ from ..dataclasses import (
 )
 
 
-def get_charity_campaign(
+async def get_charity_campaign(
     token: str, client_id: str, broadcaster_id: str
 ) -> CharityCampaign:
     url = "https://api.twitch.tv/helix/charity/campaigns"
@@ -18,7 +18,7 @@ def get_charity_campaign(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    charity_campaign = http.send_get(url, headers, params)[0]
+    charity_campaign = (await http.send_get(url, headers, params))[0]
 
     return CharityCampaign(
         charity_campaign["id"],
@@ -46,7 +46,7 @@ def get_charity_campaign(
     )
 
 
-def get_charity_campaign_donations(
+async def get_charity_campaign_donations(
     token: str, client_id: str, broadcaster_id: str, first: int = 20
 ) -> list[CharityCampaignDonation]:
     url = "https://api.twitch.tv/helix/charity/donations"
@@ -56,7 +56,7 @@ def get_charity_campaign_donations(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    donations = http.send_get_with_pagination(url, headers, params, first, 20)
+    donations = await http.send_get_with_pagination(url, headers, params, first, 20)
 
     return [
         CharityCampaignDonation(

@@ -4,7 +4,7 @@ from .._utils import date, http
 from ..dataclasses import Channel, User, Video
 
 
-def get_videos(
+async def get_videos(
     token: str,
     client_id: str,
     video_ids: list[str] | None = None,
@@ -38,7 +38,7 @@ def get_videos(
     if language is not None:
         params["language"] = language
 
-    videos = http.send_get_with_pagination(url, headers, params, first, 100)
+    videos = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Video(
@@ -65,7 +65,7 @@ def get_videos(
     ]
 
 
-def delete_video(token: str, client_id: str, video_id: str) -> None:
+async def delete_video(token: str, client_id: str, video_id: str) -> None:
     url = "https://api.twitch.tv/helix/videos"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -73,4 +73,4 @@ def delete_video(token: str, client_id: str, video_id: str) -> None:
     }
     data = {"id": video_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)

@@ -4,7 +4,7 @@ from .._utils import http
 from ..dataclasses import Channel, Clip, User
 
 
-def create_clip(
+async def create_clip(
     token: str, client_id: str, broadcaster_id: str, has_delay: bool = False
 ) -> tuple[str, str]:
     url = "https://api.twitch.tv/helix/clips"
@@ -14,12 +14,12 @@ def create_clip(
     }
     payload = {"broadcaster_id": broadcaster_id, "has_delay": has_delay}
 
-    clip_creation = http.send_post_get_result(url, headers, payload)[0]
+    clip_creation = (await http.send_post_get_result(url, headers, payload))[0]
 
     return (clip_creation["id"], clip_creation["edit_url"])
 
 
-def get_clips(
+async def get_clips(
     token: str,
     client_id: str,
     broadcaster_id: str | None = None,
@@ -55,7 +55,7 @@ def get_clips(
     if is_featured is not None:
         params["is_featured"] = is_featured
 
-    clips = http.send_get_with_pagination(url, headers, params, first, 100)
+    clips = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Clip(

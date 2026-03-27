@@ -1,146 +1,167 @@
 import math
 
-import requests
+import aiohttp
 
 from .. import errors
 
 DEFAULT_TIMEOUT: int = 10
 
 
-def send_post(url: str, headers: dict, payload: dict) -> None:
-    response = requests.post(
-        url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
-    )
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-
-def send_post_get_result(url: str, headers: dict, payload: dict) -> list[dict]:
-    response = requests.post(
-        url, headers=headers, json=payload, timeout=DEFAULT_TIMEOUT
-    )
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-    return response.json()["data"]
+async def send_post(url: str, headers: dict, payload: dict) -> None:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.post(url, headers=headers, json=payload) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
 
-def send_get(url: str, headers: dict, params: dict) -> list[dict]:
-    response = requests.get(
-        url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
-    )
+async def send_post_get_result(url: str, headers: dict, payload: dict) -> list[dict]:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.post(url, headers=headers, json=payload) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-    return response.json()["data"]
+            return (await response.json())["data"]
 
 
-def send_get_with_pagination(
+async def send_get(url: str, headers: dict, params: dict) -> list[dict]:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.get(url, headers=headers, params=params) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
+
+            return (await response.json())["data"]
+
+
+async def send_get_with_pagination(
     url: str, headers: dict, params: dict, first: int, page_size: int
 ) -> list[dict]:
     after = ""
     results = []
 
-    for call in range(math.ceil(first / page_size)):
-        params["first"] = min(page_size, first - (page_size * call))
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        for call in range(math.ceil(first / page_size)):
+            params["first"] = min(page_size, first - (page_size * call))
 
-        if after != "":
-            params["after"] = after
+            if after != "":
+                params["after"] = after
 
-        response = requests.get(
-            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
-        )
+            async with session.get(url, headers=headers, params=params) as response:
+                if not response.ok:
+                    raise errors.ClientError((await response.json())["message"])
 
-        if not response.ok:
-            raise errors.ClientError(response.json()["message"])
+                response_data = await response.json()
+                results.extend(response_data["data"])
 
-        response = response.json()
-        results.extend(response["data"])
-
-        if "pagination" in response and "cursor" in response["pagination"]:
-            after = response["pagination"]["cursor"]
+                if (
+                    "pagination" in response_data
+                    and "cursor" in response_data["pagination"]
+                ):
+                    after = response_data["pagination"]["cursor"]
 
     return results
 
 
-def send_get_with_infinite_pagination(
+async def send_get_with_infinite_pagination(
     url: str, headers: dict, params: dict
 ) -> list[dict]:
-    response = requests.get(
-        url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
-    )
-
     results = []
 
-    while response.ok and "pagination" in response.json():
-        results.extend(response.json()["data"])
-        params["after"] = response.json()["pagination"]["cursor"]
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        pagination = True
 
-        response = requests.get(
-            url, headers=headers, params=params, timeout=DEFAULT_TIMEOUT
-        )
+        while pagination:
+            async with session.get(url, headers=headers, params=params) as response:
+                if not response.ok:
+                    raise errors.ClientError((await response.json())["message"])
 
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
+                response_data = await response.json()
+                results.extend(response_data["data"])
+
+                if "pagination" in response_data:
+                    params["after"] = response_data["pagination"]["cursor"]
+                    continue
+
+                pagination = False
 
     return results
 
 
-def send_get_text(url: str, params: dict) -> str:
-    response = requests.get(url, params=params, timeout=DEFAULT_TIMEOUT)
+async def send_get_text(url: str, params: dict) -> str:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.get(url, params=params) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-    return response.text
-
-
-def send_put(url: str, headers: dict, data: dict) -> None:
-    response = requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
+            return await response.text()
 
 
-def send_put_get_result(url: str, headers: dict, data: dict) -> list[dict]:
-    response = requests.put(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-    return response.json()["data"]
-
-
-def send_patch(url: str, headers: dict, data: dict) -> None:
-    response = requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
+async def send_put(url: str, headers: dict, data: dict) -> None:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.put(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
 
-def send_patch_get_result(url: str, headers: dict, data: dict) -> list[dict]:
-    response = requests.patch(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
+async def send_put_get_result(url: str, headers: dict, data: dict) -> list[dict]:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.put(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
-
-    return response.json()["data"]
-
-
-def send_delete(url: str, headers: dict, data: dict) -> None:
-    response = requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
-
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
+            return (await response.json())["data"]
 
 
-def send_delete_get_result(url: str, headers: dict, data: dict) -> list[dict]:
-    response = requests.delete(url, headers=headers, data=data, timeout=DEFAULT_TIMEOUT)
+async def send_patch(url: str, headers: dict, data: dict) -> None:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.patch(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
 
-    if not response.ok:
-        raise errors.ClientError(response.json()["message"])
 
-    return response.json()["data"]
+async def send_patch_get_result(url: str, headers: dict, data: dict) -> list[dict]:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.patch(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
+
+            return (await response.json())["data"]
+
+
+async def send_delete(url: str, headers: dict, data: dict) -> None:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.delete(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
+
+
+async def send_delete_get_result(url: str, headers: dict, data: dict) -> list[dict]:
+    async with aiohttp.ClientSession(
+        timeout=aiohttp.ClientTimeout(total=DEFAULT_TIMEOUT)
+    ) as session:
+        async with session.delete(url, headers=headers, data=data) as response:
+            if not response.ok:
+                raise errors.ClientError((await response.json())["message"])
+
+            return (await response.json())["data"]

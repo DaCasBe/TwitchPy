@@ -1,12 +1,13 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import Channel, Prediction, PredictionOutcome, Predictor, User
+from ..dataclasses import (Channel, Prediction, PredictionOutcome, Predictor,
+                           User)
 
 ENDPOINT_PREDICTIONS = "https://api.twitch.tv/helix/predictions"
 
 
-def get_predictions(
+async def get_predictions(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -24,7 +25,7 @@ def get_predictions(
     if prediction_ids is not None and len(prediction_ids) > 0:
         params["id"] = prediction_ids
 
-    predictions = http.send_get_with_pagination(url, headers, params, first, 20)
+    predictions = await http.send_get_with_pagination(url, headers, params, first, 20)
 
     return [
         Prediction(
@@ -70,7 +71,7 @@ def get_predictions(
     ]
 
 
-def create_prediction(
+async def create_prediction(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -97,7 +98,7 @@ def create_prediction(
 
     payload["outcomes"] = outcomes_payload
 
-    prediction = http.send_post_get_result(url, headers, payload)[0]
+    prediction = (await http.send_post_get_result(url, headers, payload))[0]
 
     return Prediction(
         prediction["id"],
@@ -140,7 +141,7 @@ def create_prediction(
     )
 
 
-def end_prediction(
+async def end_prediction(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -158,7 +159,7 @@ def end_prediction(
     if winning_outcome_id != "":
         data["winning_outcome_id"] = winning_outcome_id
 
-    prediction = http.send_patch_get_result(url, headers, data)[0]
+    prediction = (await http.send_patch_get_result(url, headers, data))[0]
 
     return Prediction(
         prediction["id"],

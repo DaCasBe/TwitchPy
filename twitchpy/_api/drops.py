@@ -4,7 +4,7 @@ from .._utils import date, http
 from ..dataclasses import DropEntitlement
 
 
-def get_drops_entitlements(
+async def get_drops_entitlements(
     token: str,
     client_id: str,
     entitlement_id: list[str] | None = None,
@@ -32,7 +32,7 @@ def get_drops_entitlements(
     if fulfillment_status is not None:
         params["fulfillment_status"] = fulfillment_status
 
-    drops = http.send_get_with_pagination(url, headers, params, first, 1000)
+    drops = await http.send_get_with_pagination(url, headers, params, first, 1000)
 
     return [
         DropEntitlement(
@@ -48,7 +48,7 @@ def get_drops_entitlements(
     ]
 
 
-def update_drops_entitlements(
+async def update_drops_entitlements(
     token: str,
     client_id: str,
     entitlement_ids: list[str] | None = None,
@@ -68,7 +68,7 @@ def update_drops_entitlements(
     if fulfillment_status is not None:
         data["fulfillment_status"] = fulfillment_status
 
-    drops_updates = http.send_patch_get_result(url, headers, data)
+    drops_updates = await http.send_patch_get_result(url, headers, data)
 
     return [
         (drop_update["status"], drop_update["ids"]) for drop_update in drops_updates

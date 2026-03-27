@@ -6,7 +6,7 @@ from ..dataclasses import Channel, Redemption, Reward, User
 ENDPOINT_CUSTOM_REWARDS = "https://api.twitch.tv/helix/channel_points/custom_rewards"
 
 
-def create_custom_reward(
+async def create_custom_reward(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -56,7 +56,7 @@ def create_custom_reward(
     if global_cooldown_seconds is not None:
         params["global_cooldown_seconds"] = global_cooldown_seconds
 
-    reward = http.send_get(url, headers, params)[0]
+    reward = (await http.send_get(url, headers, params))[0]
 
     return Reward(
         Channel(
@@ -95,7 +95,7 @@ def create_custom_reward(
     )
 
 
-def delete_custom_reward(
+async def delete_custom_reward(
     token: str, client_id: str, broadcaster_id: str, reward_id: str
 ) -> None:
     url = ENDPOINT_CUSTOM_REWARDS
@@ -105,10 +105,10 @@ def delete_custom_reward(
     }
     data = {"broadcaster_id": broadcaster_id, "id": reward_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def get_custom_reward(
+async def get_custom_reward(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -128,7 +128,7 @@ def get_custom_reward(
     if reward_ids is not None and len(reward_ids) > 0:
         params["id"] = reward_ids
 
-    rewards = http.send_get(url, headers, params)
+    rewards = await http.send_get(url, headers, params)
 
     return [
         Reward(
@@ -170,7 +170,7 @@ def get_custom_reward(
     ]
 
 
-def get_custom_reward_redemption(
+async def get_custom_reward_redemption(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -196,7 +196,7 @@ def get_custom_reward_redemption(
     if status is not None:
         params["status"] = status
 
-    redemptions = http.send_get_with_pagination(url, headers, params, first, 50)
+    redemptions = await http.send_get_with_pagination(url, headers, params, first, 50)
 
     return [
         Redemption(
@@ -232,7 +232,7 @@ def get_custom_reward_redemption(
     ]
 
 
-def update_custom_reward(
+async def update_custom_reward(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -305,7 +305,7 @@ def update_custom_reward(
             should_redemptions_skip_request_queue
         )
 
-    reward = http.send_patch_get_result(url, headers, data)[0]
+    reward = (await http.send_patch_get_result(url, headers, data))[0]
 
     return Reward(
         Channel(
@@ -344,7 +344,7 @@ def update_custom_reward(
     )
 
 
-def update_redemption_status(
+async def update_redemption_status(
     token: str,
     client_id: str,
     redemption_id: list[str],
@@ -366,7 +366,7 @@ def update_redemption_status(
     if status is not None:
         data["status"] = status
 
-    redemptions = http.send_patch_get_result(url, headers, data)
+    redemptions = await http.send_patch_get_result(url, headers, data)
 
     return [
         Redemption(

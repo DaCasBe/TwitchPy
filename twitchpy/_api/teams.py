@@ -4,7 +4,9 @@ from .._utils import date, http
 from ..dataclasses import Team, User
 
 
-def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[Team]:
+async def get_channel_teams(
+    token: str, client_id: str, broadcaster_id: str
+) -> list[Team]:
     url = "https://api.twitch.tv/helix/teams/channel"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -12,7 +14,7 @@ def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[T
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    teams = http.send_get(url, headers, params)
+    teams = await http.send_get(url, headers, params)
 
     return [
         Team(
@@ -37,7 +39,7 @@ def get_channel_teams(token: str, client_id: str, broadcaster_id: str) -> list[T
     ]
 
 
-def get_teams(
+async def get_teams(
     token: str, client_id: str, name: str | None = None, team_id: str | None = None
 ) -> Team:
     url = "https://api.twitch.tv/helix/teams"
@@ -53,7 +55,7 @@ def get_teams(
     if team_id is not None:
         params["id"] = team_id
 
-    team = http.send_get(url, headers, params)[0]
+    team = (await http.send_get(url, headers, params))[0]
 
     return Team(
         [

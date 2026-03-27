@@ -4,7 +4,7 @@ from .._utils import date, http
 from ..dataclasses import AdSchedule, Commercial
 
 
-def start_commercial(
+async def start_commercial(
     token: str, client_id: str, broadcaster_id: int, length: int
 ) -> Commercial:
     url = "https://api.twitch.tv/helix/channels/commercial"
@@ -15,14 +15,16 @@ def start_commercial(
     }
     payload = {"broadcaster_id": broadcaster_id, "length": length}
 
-    commercial = http.send_post_get_result(url, headers, payload)[0]
+    commercial = (await http.send_post_get_result(url, headers, payload))[0]
 
     return Commercial(
         commercial["length"], commercial["message"], commercial["retry_after"]
     )
 
 
-def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> AdSchedule:
+async def get_ad_schedule(
+    token: str, client_id: str, broadcaster_id: str
+) -> AdSchedule:
     url = "https://api.twitch.tv/helix/channels/ads"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -30,7 +32,7 @@ def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> AdSchedu
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    ad_schedule = http.send_get(url, headers, params)[0]
+    ad_schedule = (await http.send_get(url, headers, params))[0]
 
     return AdSchedule(
         ad_schedule["snooze_count"],
@@ -42,7 +44,7 @@ def get_ad_schedule(token: str, client_id: str, broadcaster_id: str) -> AdSchedu
     )
 
 
-def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> AdSchedule:
+async def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> AdSchedule:
     url = "https://api.twitch.tv/helix/channels/ads/schedule/snooze"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -50,7 +52,7 @@ def snooze_next_ad(token: str, client_id: str, broadcaster_id: str) -> AdSchedul
     }
     payload = {"broadcaster_id": broadcaster_id}
 
-    ad_schedule = http.send_post_get_result(url, headers, payload)[0]
+    ad_schedule = (await http.send_post_get_result(url, headers, payload))[0]
 
     return AdSchedule(
         ad_schedule["snooze_count"],

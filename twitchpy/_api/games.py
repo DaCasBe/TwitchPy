@@ -2,14 +2,14 @@ from .._utils import http
 from ..dataclasses import Game
 
 
-def get_top_games(token: str, client_id: str, first: int = 20) -> list[Game]:
+async def get_top_games(token: str, client_id: str, first: int = 20) -> list[Game]:
     url = "https://api.twitch.tv/helix/games/top"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
 
-    games = http.send_get_with_pagination(url, headers, {}, first, 100)
+    games = await http.send_get_with_pagination(url, headers, {}, first, 100)
 
     return [
         Game(
@@ -22,7 +22,7 @@ def get_top_games(token: str, client_id: str, first: int = 20) -> list[Game]:
     ]
 
 
-def get_games(
+async def get_games(
     token: str,
     client_id: str,
     game_id: list[str] | None = None,
@@ -45,7 +45,7 @@ def get_games(
     if igdb_id is not None and len(igdb_id) > 0:
         params["igdb_id"] = igdb_id
 
-    games = http.send_get(url, headers, params)
+    games = await http.send_get(url, headers, params)
 
     return [
         Game(game["id"], game["name"], game["box_art_url"], game["igdb_id"])

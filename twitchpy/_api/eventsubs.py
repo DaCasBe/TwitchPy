@@ -1,7 +1,8 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import Conduit, ConduitShard, EventSubSubscription, Transport
+from ..dataclasses import (Conduit, ConduitShard, EventSubSubscription,
+                           Transport)
 
 ENDPOINT_CONDUITS = "https://api.twitch.tv/helix/eventsub/conduits"
 ENDPOINT_SUBSCRIPTIONS = "https://api.twitch.tv/helix/eventsub/subscriptions"
@@ -9,19 +10,19 @@ ENDPOINT_SUBSCRIPTIONS = "https://api.twitch.tv/helix/eventsub/subscriptions"
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 
 
-def get_conduits(token: str, client_id: str) -> list[Conduit]:
+async def get_conduits(token: str, client_id: str) -> list[Conduit]:
     url = ENDPOINT_CONDUITS
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
 
-    conduits = http.send_get(url, headers, {})
+    conduits = await http.send_get(url, headers, {})
 
     return [Conduit(conduit["id"], conduit["shard_count"]) for conduit in conduits]
 
 
-def create_conduits(token: str, client_id: str, shard_count: int) -> Conduit:
+async def create_conduits(token: str, client_id: str, shard_count: int) -> Conduit:
     url = ENDPOINT_CONDUITS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -30,12 +31,12 @@ def create_conduits(token: str, client_id: str, shard_count: int) -> Conduit:
     }
     payload = {"shard_count": shard_count}
 
-    conduit = http.send_post_get_result(url, headers, payload)[0]
+    conduit = (await http.send_post_get_result(url, headers, payload))[0]
 
     return Conduit(conduit["id"], conduit["shard_count"])
 
 
-def update_conduits(
+async def update_conduits(
     token: str, client_id: str, conduit_id: str, shard_count: int
 ) -> Conduit:
     url = ENDPOINT_CONDUITS
@@ -46,12 +47,12 @@ def update_conduits(
     }
     data = {"id": conduit_id, "shard_count": shard_count}
 
-    conduit = http.send_patch_get_result(url, headers, data)[0]
+    conduit = (await http.send_patch_get_result(url, headers, data))[0]
 
     return Conduit(conduit["id"], conduit["shard_count"])
 
 
-def delete_conduit(token: str, client_id: str, conduit_id: str) -> None:
+async def delete_conduit(token: str, client_id: str, conduit_id: str) -> None:
     url = ENDPOINT_CONDUITS
     headers = {
         "Authorization": f"Bearer {token}",
@@ -59,10 +60,10 @@ def delete_conduit(token: str, client_id: str, conduit_id: str) -> None:
     }
     data = {"id": conduit_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def get_conduit_shards(
+async def get_conduit_shards(
     token: str, client_id: str, conduit_id: str, status: str | None = None
 ) -> list[ConduitShard]:
     url = "https://api.twitch.tv/helix/eventsub/conduits/shards"
@@ -75,7 +76,7 @@ def get_conduit_shards(
     if status is not None:
         params["status"] = status
 
-    conduit_shards = http.send_get_with_infinite_pagination(url, headers, params)
+    conduit_shards = await http.send_get_with_infinite_pagination(url, headers, params)
 
     return [
         ConduitShard(
@@ -97,7 +98,7 @@ def get_conduit_shards(
     ]
 
 
-def update_conduit_shards(
+async def update_conduit_shards(
     token: str,
     client_id: str,
     conduit_id: str,
@@ -115,7 +116,7 @@ def update_conduit_shards(
     if session_id is not None:
         data["session_id"] = session_id
 
-    conduit_shards = http.send_patch_get_result(url, headers, data)
+    conduit_shards = await http.send_patch_get_result(url, headers, data)
 
     return [
         ConduitShard(
@@ -137,7 +138,7 @@ def update_conduit_shards(
     ]
 
 
-def create_eventsub_subscription(
+async def create_eventsub_subscription(
     token: str,
     client_id: str,
     subscription_type: str,
@@ -158,7 +159,7 @@ def create_eventsub_subscription(
         "transport": transport,
     }
 
-    subscription = http.send_post_get_result(url, headers, payload)[0]
+    subscription = (await http.send_post_get_result(url, headers, payload))[0]
 
     return EventSubSubscription(
         subscription["id"],
@@ -180,7 +181,7 @@ def create_eventsub_subscription(
     )
 
 
-def delete_eventsub_subscription(
+async def delete_eventsub_subscription(
     token: str, client_id: str, subscription_id: str
 ) -> None:
     url = ENDPOINT_SUBSCRIPTIONS
@@ -190,10 +191,10 @@ def delete_eventsub_subscription(
     }
     data = {"id": subscription_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def get_eventsub_subscriptions(
+async def get_eventsub_subscriptions(
     token: str,
     client_id: str,
     status: str | None = None,
@@ -216,7 +217,7 @@ def get_eventsub_subscriptions(
     if user_id is not None:
         params["user_id"] = user_id
 
-    subscriptions = http.send_get(url, headers, params)
+    subscriptions = await http.send_get(url, headers, params)
 
     return [
         EventSubSubscription(

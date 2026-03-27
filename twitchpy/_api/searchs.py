@@ -2,7 +2,7 @@ from .._utils import http
 from ..dataclasses import Channel, Game, User
 
 
-def search_categories(
+async def search_categories(
     token: str, client_id: str, query: str, first: int = 20
 ) -> list[Game]:
     url = "https://api.twitch.tv/helix/search/categories"
@@ -12,12 +12,12 @@ def search_categories(
     }
     params = {"query": query}
 
-    games = http.send_get_with_pagination(url, headers, params, first, 100)
+    games = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [Game(game["id"], game["name"], game["box_art_url"]) for game in games]
 
 
-def search_channels(
+async def search_channels(
     token: str, client_id: str, query: str, first: int = 20, live_only: bool = False
 ) -> list[Channel]:
     url = "https://api.twitch.tv/helix/search/channels"
@@ -27,7 +27,7 @@ def search_channels(
     }
     params = {"query": query, "live_only": live_only}
 
-    channels = http.send_get_with_pagination(url, headers, params, first, 100)
+    channels = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Channel(

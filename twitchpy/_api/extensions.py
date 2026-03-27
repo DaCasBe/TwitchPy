@@ -1,20 +1,12 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import (
-    Channel,
-    Extension,
-    ExtensionConfigurationSegment,
-    ExtensionSecret,
-    ExtensionTransaction,
-    Game,
-    Product,
-    ProductCost,
-    User,
-)
+from ..dataclasses import (Channel, Extension, ExtensionConfigurationSegment,
+                           ExtensionSecret, ExtensionTransaction, Game,
+                           Product, ProductCost, User)
 
 
-def get_extension_transactions(
+async def get_extension_transactions(
     token: str,
     client_id: str,
     extension_id: str,
@@ -32,7 +24,7 @@ def get_extension_transactions(
     if transaction_ids is not None and len(transaction_ids) > 0:
         params["id"] = transaction_ids
 
-    transactions = http.send_get_with_pagination(url, headers, params, first, 100)
+    transactions = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         ExtensionTransaction(
@@ -68,7 +60,7 @@ def get_extension_transactions(
     ]
 
 
-def get_extension_configuration_segment(
+async def get_extension_configuration_segment(
     token: str, client_id: str, broadcaster_id: str, extension_id: str, segment: str
 ) -> ExtensionConfigurationSegment:
     url = "https://api.twitch.tv/helix/extensions/configurations"
@@ -82,7 +74,7 @@ def get_extension_configuration_segment(
         "segment": segment,
     }
 
-    configuration_segment = http.send_get(url, headers, params)[0]
+    configuration_segment = (await http.send_get(url, headers, params))[0]
 
     return ExtensionConfigurationSegment(
         configuration_segment["segment"],
@@ -92,7 +84,7 @@ def get_extension_configuration_segment(
     )
 
 
-def set_extension_configuration_segment(
+async def set_extension_configuration_segment(
     token: str,
     client_id: str,
     extension_id: str,
@@ -117,10 +109,10 @@ def set_extension_configuration_segment(
     if version is not None:
         data["version"] = version
 
-    http.send_put(url, headers, data)
+    await http.send_put(url, headers, data)
 
 
-def set_extension_required_configuration(
+async def set_extension_required_configuration(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -140,10 +132,10 @@ def set_extension_required_configuration(
         "configuration_version": configuration_version,
     }
 
-    http.send_put(url, headers, data)
+    await http.send_put(url, headers, data)
 
 
-def send_extension_pubsub_message(
+async def send_extension_pubsub_message(
     token: str,
     client_id: str,
     target: list[str],
@@ -163,10 +155,10 @@ def send_extension_pubsub_message(
         "message": message,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def get_extension_live_channels(
+async def get_extension_live_channels(
     token: str, client_id: str, extension_id: str, first: int = 20
 ) -> list[Channel]:
     url = "https://api.twitch.tv/helix/extensions/live"
@@ -176,7 +168,7 @@ def get_extension_live_channels(
     }
     params = {"extension_id": extension_id}
 
-    channels = http.send_get_with_pagination(url, headers, params, first, 100)
+    channels = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Channel(
@@ -192,7 +184,7 @@ def get_extension_live_channels(
     ]
 
 
-def get_extension_secrets(
+async def get_extension_secrets(
     token: str, client_id: str
 ) -> list[tuple[str, list[ExtensionSecret]]]:
     url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
@@ -201,7 +193,7 @@ def get_extension_secrets(
         "Client-Id": client_id,
     }
 
-    extension_secrets = http.send_get(url, headers, {})
+    extension_secrets = await http.send_get(url, headers, {})
 
     return [
         (
@@ -217,7 +209,7 @@ def get_extension_secrets(
     ]
 
 
-def create_extension_secret(
+async def create_extension_secret(
     token: str, client_id: str, delay: int = 300
 ) -> list[tuple[str, list[ExtensionSecret]]]:
     url = "https://api.twitch.tv/helix/extensions/jwt/secrets"
@@ -227,7 +219,7 @@ def create_extension_secret(
     }
     payload = {"delay": delay}
 
-    extension_secrets = http.send_post_get_result(url, headers, payload)
+    extension_secrets = await http.send_post_get_result(url, headers, payload)
 
     return [
         (
@@ -243,7 +235,7 @@ def create_extension_secret(
     ]
 
 
-def send_extension_chat_message(
+async def send_extension_chat_message(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -263,10 +255,10 @@ def send_extension_chat_message(
         "extension_version": extension_version,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def get_extensions(
+async def get_extensions(
     token: str, client_id: str, extension_id: str, extension_version: str | None = None
 ) -> Extension:
     url = "https://api.twitch.tv/helix/extensions"
@@ -279,7 +271,7 @@ def get_extensions(
     if extension_version is not None:
         params["extension_version"] = extension_version
 
-    extension = http.send_get(url, headers, params)[0]
+    extension = (await http.send_get(url, headers, params))[0]
 
     return Extension(
         extension["author_name"],
@@ -308,7 +300,7 @@ def get_extensions(
     )
 
 
-def get_released_extensions(
+async def get_released_extensions(
     token: str, client_id: str, extension_id: str, extension_version: str | None = None
 ) -> Extension:
     url = "https://api.twitch.tv/helix/extensions/released"
@@ -321,7 +313,7 @@ def get_released_extensions(
     if extension_version is not None:
         params["extension_version"] = extension_version
 
-    extension = http.send_get(url, headers, params)[0]
+    extension = (await http.send_get(url, headers, params))[0]
 
     return Extension(
         extension["author_name"],
@@ -350,7 +342,7 @@ def get_released_extensions(
     )
 
 
-def get_extension_bits_products(
+async def get_extension_bits_products(
     token: str, extension_client_id: str, should_include_all: bool = False
 ) -> list[Product]:
     url = "https://api.twitch.tv/helix/bits/extensions"
@@ -360,7 +352,7 @@ def get_extension_bits_products(
     }
     params = {"should_include_all": should_include_all}
 
-    products = http.send_get(url, headers, params)
+    products = await http.send_get(url, headers, params)
 
     return [
         Product(
@@ -375,7 +367,7 @@ def get_extension_bits_products(
     ]
 
 
-def update_extension_bits_product(
+async def update_extension_bits_product(
     token: str,
     extension_client_id: str,
     sku: str,
@@ -401,7 +393,7 @@ def update_extension_bits_product(
     if is_broadcast is not None:
         data["is_broadcast"] = is_broadcast
 
-    products = http.send_put_get_result(url, headers, data)
+    products = await http.send_put_get_result(url, headers, data)
 
     return [
         Product(

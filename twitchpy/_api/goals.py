@@ -4,7 +4,7 @@ from .._utils import date, http
 from ..dataclasses import Channel, CreatorGoal, User
 
 
-def get_creator_goals(
+async def get_creator_goals(
     token: str, client_id: str, broadcaster_id: str
 ) -> list[CreatorGoal]:
     url = "https://api.twitch.tv/helix/goals"
@@ -14,7 +14,7 @@ def get_creator_goals(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    goals = http.send_get(url, headers, params)
+    goals = await http.send_get(url, headers, params)
 
     return [
         CreatorGoal(

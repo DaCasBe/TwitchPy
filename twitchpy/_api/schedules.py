@@ -1,12 +1,13 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import Channel, Game, StreamSchedule, StreamScheduleSegment, User
+from ..dataclasses import (Channel, Game, StreamSchedule,
+                           StreamScheduleSegment, User)
 
 ENDPOINT_SEGMENTS = "https://api.twitch.tv/helix/schedule/segment"
 
 
-def get_channel_stream_schedule(
+async def get_channel_stream_schedule(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -28,7 +29,7 @@ def get_channel_stream_schedule(
     if start_time is not None:
         params["start_time"] = start_time
 
-    schedules = http.send_get_with_pagination(url, headers, params, first, 25)
+    schedules = await http.send_get_with_pagination(url, headers, params, first, 25)
 
     return [
         StreamSchedule(
@@ -64,7 +65,7 @@ def get_channel_stream_schedule(
     ]
 
 
-def get_channel_icalendar(broadcaster_id: str) -> str:
+async def get_channel_icalendar(broadcaster_id: str) -> str:
     """
     Gets all scheduled broadcasts from a channel’s stream schedule as an iCalendar
 
@@ -78,10 +79,10 @@ def get_channel_icalendar(broadcaster_id: str) -> str:
     url = "https://api.twitch.tv/helix/schedule/icalendar"
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get_text(url, params)
+    return await http.send_get_text(url, params)
 
 
-def update_channel_stream_schedule(
+async def update_channel_stream_schedule(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -110,10 +111,10 @@ def update_channel_stream_schedule(
     if timezone is not None:
         data["timezone"] = timezone
 
-    http.send_patch(url, headers, data)
+    await http.send_patch(url, headers, data)
 
 
-def create_channel_stream_schedule_segment(
+async def create_channel_stream_schedule_segment(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -143,7 +144,7 @@ def create_channel_stream_schedule_segment(
     if title is not None:
         payload["title"] = title
 
-    schedule = http.send_post_get_result(url, headers, payload)[0]
+    schedule = (await http.send_post_get_result(url, headers, payload))[0]
 
     return StreamSchedule(
         [
@@ -172,7 +173,7 @@ def create_channel_stream_schedule_segment(
     )
 
 
-def update_channel_stream_schedule_segment(
+async def update_channel_stream_schedule_segment(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -211,7 +212,7 @@ def update_channel_stream_schedule_segment(
     if timezone is not None:
         data["timezone"] = timezone
 
-    schedule = http.send_patch_get_result(url, headers, data)[0]
+    schedule = (await http.send_patch_get_result(url, headers, data))[0]
 
     return StreamSchedule(
         [
@@ -240,7 +241,7 @@ def update_channel_stream_schedule_segment(
     )
 
 
-def delete_channel_stream_schedule_segment(
+async def delete_channel_stream_schedule_segment(
     token: str, client_id: str, broadcaster_id: str, stream_segment_id: str
 ) -> None:
     url = ENDPOINT_SEGMENTS
@@ -250,4 +251,4 @@ def delete_channel_stream_schedule_segment(
     }
     data = {"broadcaster_id": broadcaster_id, "id": stream_segment_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)

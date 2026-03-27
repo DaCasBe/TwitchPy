@@ -1,11 +1,11 @@
-from datetime import datetime
 import re
+from datetime import datetime
 
 from .._utils import date, http
 from ..dataclasses import Channel, Game, Stream, StreamMarker, User
 
 
-def get_stream_key(token: str, client_id: str, broadcaster_id: str) -> str:
+async def get_stream_key(token: str, client_id: str, broadcaster_id: str) -> str:
     url = "https://api.twitch.tv/helix/streams/key"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -13,10 +13,10 @@ def get_stream_key(token: str, client_id: str, broadcaster_id: str) -> str:
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    return http.send_get(url, headers, params)[0]["stream_key"]
+    return (await http.send_get(url, headers, params))[0]["stream_key"]
 
 
-def get_streams(
+async def get_streams(
     token: str,
     client_id: str,
     user_id: list[str] | None = None,
@@ -46,7 +46,7 @@ def get_streams(
     if language is not None:
         params["language"] = language
 
-    streams = http.send_get_with_pagination(url, headers, params, first, 100)
+    streams = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Stream(
@@ -66,7 +66,7 @@ def get_streams(
     ]
 
 
-def get_followed_streams(
+async def get_followed_streams(
     token: str, client_id: str, user_id: str, first: int = 100
 ) -> list[Stream]:
     url = "https://api.twitch.tv/helix/streams/followed"
@@ -76,7 +76,7 @@ def get_followed_streams(
     }
     params = {"user_id": user_id}
 
-    streams = http.send_get_with_pagination(url, headers, params, first, 100)
+    streams = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Stream(
@@ -96,7 +96,7 @@ def get_followed_streams(
     ]
 
 
-def create_stream_marker(
+async def create_stream_marker(
     token: str, client_id: str, user_id: str, description: str | None = None
 ) -> StreamMarker:
     url = "https://api.twitch.tv/helix/streams/markers"
@@ -110,13 +110,13 @@ def create_stream_marker(
     if description is not None:
         payload["description"] = description
 
-    marker = http.send_post_get_result(url, headers, payload)[0]
+    marker = (await http.send_post_get_result(url, headers, payload))[0]
 
     # Twitch documentation says that the created_at time is
     # RFC3339 but it also includes nanoseconds. This removes
     # the nanoseconds from the end
     # https://discuss.dev.twitch.com/t/create-stream-marker-api-response-incorrect-format/62671
-    
+
     new_time = re.sub(r"\.\d+Z$", "Z", marker["created_at"])
 
     return StreamMarker(
@@ -127,7 +127,7 @@ def create_stream_marker(
     )
 
 
-def get_stream_markers(
+async def get_stream_markers(
     token: str,
     client_id: str,
     user_id: str | None = None,
@@ -147,4 +147,4 @@ def get_stream_markers(
     if video_id is not None:
         params["video_id"] = video_id
 
-    return http.send_get_with_pagination(url, headers, params, first, 100)
+    return await http.send_get_with_pagination(url, headers, params, first, 100)

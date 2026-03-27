@@ -2,7 +2,7 @@ from .._utils import http
 from ..dataclasses import Badge, BadgeVersion, ChatSettings, Emote, User
 
 
-def get_chatters(
+async def get_chatters(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, first: int = 100
 ) -> list[User]:
     url = "https://api.twitch.tv/helix/chat/chatters"
@@ -12,7 +12,7 @@ def get_chatters(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    chatters = http.send_get_with_pagination(url, headers, params, first, 100)
+    chatters = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         User(chatter["user_id"], chatter["user_login"], chatter["user_name"])
@@ -20,7 +20,9 @@ def get_chatters(
     ]
 
 
-def get_channel_emotes(token: str, client_id: str, broadcaster_id: str) -> list[Emote]:
+async def get_channel_emotes(
+    token: str, client_id: str, broadcaster_id: str
+) -> list[Emote]:
     url = "https://api.twitch.tv/helix/chat/emotes"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -28,7 +30,7 @@ def get_channel_emotes(token: str, client_id: str, broadcaster_id: str) -> list[
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    emotes = http.send_get(url, headers, params)
+    emotes = await http.send_get(url, headers, params)
 
     return [
         Emote(
@@ -46,14 +48,14 @@ def get_channel_emotes(token: str, client_id: str, broadcaster_id: str) -> list[
     ]
 
 
-def get_global_emotes(token: str, client_id: str) -> list[Emote]:
+async def get_global_emotes(token: str, client_id: str) -> list[Emote]:
     url = "https://api.twitch.tv/helix/chat/emotes/global"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
 
-    emotes = http.send_get(url, headers, {})
+    emotes = await http.send_get(url, headers, {})
 
     return [
         Emote(
@@ -68,7 +70,9 @@ def get_global_emotes(token: str, client_id: str) -> list[Emote]:
     ]
 
 
-def get_emote_sets(token: str, client_id: str, emote_set_id: list[str]) -> list[Emote]:
+async def get_emote_sets(
+    token: str, client_id: str, emote_set_id: list[str]
+) -> list[Emote]:
     url = "https://api.twitch.tv/helix/chat/emotes/set"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -76,7 +80,7 @@ def get_emote_sets(token: str, client_id: str, emote_set_id: list[str]) -> list[
     }
     params = {"emote_set_id": emote_set_id}
 
-    emotes = http.send_get(url, headers, params)
+    emotes = await http.send_get(url, headers, params)
 
     return [
         Emote(
@@ -94,7 +98,7 @@ def get_emote_sets(token: str, client_id: str, emote_set_id: list[str]) -> list[
     ]
 
 
-def get_channel_chat_badges(
+async def get_channel_chat_badges(
     token: str, client_id: str, broadcaster_id: str
 ) -> list[Badge]:
     url = "https://api.twitch.tv/helix/chat/badges"
@@ -104,7 +108,7 @@ def get_channel_chat_badges(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    badges = http.send_get(url, headers, params)
+    badges = await http.send_get(url, headers, params)
 
     return [
         Badge(
@@ -127,14 +131,14 @@ def get_channel_chat_badges(
     ]
 
 
-def get_global_chat_badges(token: str, client_id: str) -> list[Badge]:
+async def get_global_chat_badges(token: str, client_id: str) -> list[Badge]:
     url = "https://api.twitch.tv/helix/chat/badges/global"
     headers = {
         "Authorization": f"Bearer {token}",
         "Client-Id": client_id,
     }
 
-    badges = http.send_get(url, headers, {})
+    badges = await http.send_get(url, headers, {})
 
     return [
         Badge(
@@ -157,7 +161,7 @@ def get_global_chat_badges(token: str, client_id: str) -> list[Badge]:
     ]
 
 
-def get_chat_settings(
+async def get_chat_settings(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str | None = None
 ) -> ChatSettings:
     url = "https://api.twitch.tv/helix/chat/settings"
@@ -170,7 +174,7 @@ def get_chat_settings(
     if moderator_id is not None:
         params["moderator_id"] = moderator_id
 
-    settings = http.send_get(url, headers, params)[0]
+    settings = (await http.send_get(url, headers, params))[0]
 
     return ChatSettings(
         settings["broadcaster_id"],
@@ -187,7 +191,7 @@ def get_chat_settings(
     )
 
 
-def get_user_emotes(
+async def get_user_emotes(
     token: str, client_id: str, user_id: str, broadcaster_id: str | None = None
 ) -> list[Emote]:
     url = "https://api.twitch.tv/helix/chat/emotes/user"
@@ -200,7 +204,7 @@ def get_user_emotes(
     if broadcaster_id is not None:
         params["broadcaster_id"] = broadcaster_id
 
-    emotes = http.send_get_with_infinite_pagination(url, headers, params)
+    emotes = await http.send_get_with_infinite_pagination(url, headers, params)
 
     return [
         Emote(
@@ -217,7 +221,7 @@ def get_user_emotes(
     ]
 
 
-def update_chat_settings(
+async def update_chat_settings(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -268,7 +272,7 @@ def update_chat_settings(
     if unique_chat_mode is not None:
         data["unique_chat_mode"] = unique_chat_mode
 
-    settings = http.send_patch_get_result(url, headers, data)[0]
+    settings = (await http.send_patch_get_result(url, headers, data))[0]
 
     return ChatSettings(
         settings["broadcaster_id"],
@@ -285,7 +289,7 @@ def update_chat_settings(
     )
 
 
-def send_chat_announcement(
+async def send_chat_announcement(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -309,10 +313,10 @@ def send_chat_announcement(
     if color is not None:
         payload["color"] = color
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def send_a_shoutout(
+async def send_a_shoutout(
     token: str,
     client_id: str,
     from_broadcaster_id: str,
@@ -330,10 +334,10 @@ def send_a_shoutout(
         "moderator_id": moderator_id,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def send_chat_message(
+async def send_chat_message(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -356,10 +360,10 @@ def send_chat_message(
     if reply_parent_message_id is not None:
         payload["reply_parent_message_id"] = reply_parent_message_id
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    return (await http.send_post_get_result(url, headers, payload))[0]
 
 
-def get_user_chat_color(
+async def get_user_chat_color(
     token: str, client_id: str, user_id: list[str]
 ) -> list[tuple[User, str]]:
     url = "https://api.twitch.tv/helix/chat/color"
@@ -369,7 +373,7 @@ def get_user_chat_color(
     }
     params = {"user_id": user_id}
 
-    color_settings = http.send_get(url, headers, params)
+    color_settings = await http.send_get(url, headers, params)
 
     return [
         (
@@ -380,7 +384,7 @@ def get_user_chat_color(
     ]
 
 
-def update_user_chat_color(
+async def update_user_chat_color(
     token: str, client_id: str, user_id: str, color: str
 ) -> None:
     url = "https://api.twitch.tv/helix/chat/color"
@@ -390,4 +394,4 @@ def update_user_chat_color(
     }
     data = {"user_id": user_id, "color": color}
 
-    http.send_put(url, headers, data)
+    await http.send_put(url, headers, data)

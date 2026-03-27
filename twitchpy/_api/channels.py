@@ -6,7 +6,7 @@ from ..dataclasses import Channel, ContentClassificationLabel, Game, User
 ENDPOINT_VIPS = "https://api.twitch.tv/helix/channels/vips"
 
 
-def get_channel_information(
+async def get_channel_information(
     token: str, client_id: str, broadcaster_id: list[str]
 ) -> list[Channel]:
     url = "https://api.twitch.tv/helix/channels"
@@ -16,7 +16,7 @@ def get_channel_information(
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    channels = http.send_get(url, headers, params)
+    channels = await http.send_get(url, headers, params)
 
     return [
         Channel(
@@ -37,7 +37,7 @@ def get_channel_information(
     ]
 
 
-def modify_channel_information(
+async def modify_channel_information(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -81,10 +81,12 @@ def modify_channel_information(
     if is_branded_content is not None:
         data["is_branded_content"] = is_branded_content
 
-    http.send_patch(url, headers, data)
+    await http.send_patch(url, headers, data)
 
 
-def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list[User]:
+async def get_channel_editors(
+    token: str, client_id: str, broadcaster_id: str
+) -> list[User]:
     url = "https://api.twitch.tv/helix/channels/editors"
     headers = {
         "Authorization": f"Bearer {token}",
@@ -92,7 +94,7 @@ def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list
     }
     params = {"broadcaster_id": broadcaster_id}
 
-    editors = http.send_get(url, headers, params)
+    editors = await http.send_get(url, headers, params)
 
     return [
         User(
@@ -105,7 +107,7 @@ def get_channel_editors(token: str, client_id: str, broadcaster_id: str) -> list
     ]
 
 
-def get_followed_channels(
+async def get_followed_channels(
     token: str,
     client_id: str,
     user_id: str,
@@ -122,7 +124,9 @@ def get_followed_channels(
     if broadcaster_id is not None:
         params["broadcaster_id"] = broadcaster_id
 
-    followed_channels = http.send_get_with_pagination(url, headers, params, first, 100)
+    followed_channels = await http.send_get_with_pagination(
+        url, headers, params, first, 100
+    )
 
     return [
         (
@@ -139,7 +143,7 @@ def get_followed_channels(
     ]
 
 
-def get_channel_followers(
+async def get_channel_followers(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -156,7 +160,7 @@ def get_channel_followers(
     if user_id is not None:
         params["user_id"] = user_id
 
-    followers = http.send_get_with_pagination(url, headers, params, first, 100)
+    followers = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         (
@@ -169,7 +173,7 @@ def get_channel_followers(
     ]
 
 
-def get_vips(
+async def get_vips(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -187,12 +191,12 @@ def get_vips(
     if user_id is not None and len(user_id) > 0:
         params["user_id"] = user_id
 
-    vips = http.send_get_with_pagination(url, headers, params, first, 20)
+    vips = await http.send_get_with_pagination(url, headers, params, first, 20)
 
     return [User(vip["user_id"], vip["user_login"], vip["user_name"]) for vip in vips]
 
 
-def add_channel_vip(
+async def add_channel_vip(
     token: str, client_id: str, user_id: str, broadcaster_id: str
 ) -> None:
     url = ENDPOINT_VIPS
@@ -202,10 +206,10 @@ def add_channel_vip(
     }
     payload = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def remove_channel_vip(
+async def remove_channel_vip(
     token: str, client_id: str, user_id: str, broadcaster_id: str
 ) -> None:
     url = ENDPOINT_VIPS
@@ -215,4 +219,4 @@ def remove_channel_vip(
     }
     data = {"user_id": user_id, "broadcaster_id": broadcaster_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)

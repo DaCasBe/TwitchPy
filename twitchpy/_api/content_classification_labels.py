@@ -2,7 +2,7 @@ from .._utils import http
 from ..dataclasses import ContentClassificationLabel
 
 
-def get_content_classification_labels(
+async def get_content_classification_labels(
     token: str, client_id: str, locale: str = "en-US"
 ) -> list[ContentClassificationLabel]:
     url = "https://api.twitch.tv/helix/content_classification_labels"
@@ -12,7 +12,7 @@ def get_content_classification_labels(
     }
     params = {"locale": locale}
 
-    content_classification_labels = http.send_get(url, headers, params)
+    content_classification_labels = await http.send_get(url, headers, params)
 
     return [
         ContentClassificationLabel(

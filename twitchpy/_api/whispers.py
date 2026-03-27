@@ -1,7 +1,7 @@
 from .._utils import http
 
 
-def send_whisper(
+async def send_whisper(
     token: str, client_id: str, from_user_id: str, to_user_id: str, message: str
 ) -> None:
     url = "https://api.twitch.tv/helix/whispers"
@@ -16,4 +16,4 @@ def send_whisper(
         "message": message,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)

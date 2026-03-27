@@ -4,7 +4,7 @@ from .._utils import date, http
 from ..dataclasses import ExtensionAnalyticsReport, GameAnalyticsReport
 
 
-def get_extension_analytics(
+async def get_extension_analytics(
     token: str,
     client_id: str,
     extension_id: str | None = None,
@@ -32,7 +32,7 @@ def get_extension_analytics(
     if ended_at is not None:
         params["ended_at"] = ended_at
 
-    reports = http.send_get_with_pagination(url, headers, params, first, 100)
+    reports = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         ExtensionAnalyticsReport(
@@ -46,7 +46,7 @@ def get_extension_analytics(
     ]
 
 
-def get_game_analytics(
+async def get_game_analytics(
     token: str,
     client_id: str,
     game_id: str | None = None,
@@ -74,7 +74,7 @@ def get_game_analytics(
     if ended_at is not None:
         params["ended_at"] = ended_at
 
-    reports = http.send_get_with_pagination(url, headers, params, first, 100)
+    reports = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         GameAnalyticsReport(

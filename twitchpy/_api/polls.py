@@ -6,7 +6,7 @@ from ..dataclasses import Channel, Poll, PollChoice, User
 ENDPOINT_POLLS = "https://api.twitch.tv/helix/polls"
 
 
-def get_polls(
+async def get_polls(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -24,7 +24,7 @@ def get_polls(
     if poll_ids is not None and len(poll_ids) > 0:
         params["id"] = poll_ids
 
-    polls = http.send_get_with_pagination(url, headers, params, first, 20)
+    polls = await http.send_get_with_pagination(url, headers, params, first, 20)
 
     return [
         Poll(
@@ -57,7 +57,7 @@ def get_polls(
     ]
 
 
-def create_poll(
+async def create_poll(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -85,7 +85,7 @@ def create_poll(
         "channel_points_per_vote": channel_points_per_vote,
     }
 
-    poll = http.send_post_get_result(url, headers, payload)[0]
+    poll = (await http.send_post_get_result(url, headers, payload))[0]
 
     return Poll(
         poll["id"],
@@ -115,7 +115,7 @@ def create_poll(
     )
 
 
-def end_poll(
+async def end_poll(
     token: str, client_id: str, broadcaster_id: str, poll_id: str, status: str
 ) -> Poll:
     url = ENDPOINT_POLLS
@@ -125,7 +125,7 @@ def end_poll(
     }
     data = {"broadcaster_id": broadcaster_id, "id": poll_id, "status": status}
 
-    poll = http.send_patch_get_result(url, headers, data)[0]
+    poll = (await http.send_patch_get_result(url, headers, data))[0]
 
     return Poll(
         poll["id"],

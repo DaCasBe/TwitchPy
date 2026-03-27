@@ -1,20 +1,15 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import (
-    Guest,
-    GuestStarInvite,
-    GuestStarSession,
-    GuestStarSettings,
-    User,
-)
+from ..dataclasses import (Guest, GuestStarInvite, GuestStarSession,
+                           GuestStarSettings, User)
 
 ENDPOINT_SESSIONS = "https://api.twitch.tv/helix/guest_star/session"
 ENDPOINT_INVITES = "https://api.twitch.tv/helix/guest_star/invites"
 ENDPOINT_SLOTS = "https://api.twitch.tv/helix/guest_star/slot"
 
 
-def get_channel_guest_star_settings(
+async def get_channel_guest_star_settings(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
 ) -> GuestStarSettings:
     url = "https://api.twitch.tv/helix/guest_star/channel_settings"
@@ -24,7 +19,7 @@ def get_channel_guest_star_settings(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    settings = http.send_get(url, headers, params)[0]
+    settings = (await http.send_get(url, headers, params))[0]
 
     return GuestStarSettings(
         settings["is_moderator_send_live_enabled"],
@@ -35,7 +30,7 @@ def get_channel_guest_star_settings(
     )
 
 
-def update_channel_guest_star_settings(
+async def update_channel_guest_star_settings(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -68,10 +63,10 @@ def update_channel_guest_star_settings(
     if regenerate_browser_sources is not None:
         data["regenerate_browser_sources"] = regenerate_browser_sources
 
-    http.send_put(url, headers, data)
+    await http.send_put(url, headers, data)
 
 
-def get_guest_star_session(
+async def get_guest_star_session(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
 ) -> GuestStarSession:
     url = ENDPOINT_SESSIONS
@@ -81,7 +76,7 @@ def get_guest_star_session(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    session = http.send_get(url, headers, params)[0]
+    session = (await http.send_get(url, headers, params))[0]
 
     return GuestStarSession(
         session["id"],
@@ -100,7 +95,7 @@ def get_guest_star_session(
     )
 
 
-def create_guest_star_session(
+async def create_guest_star_session(
     token: str, client_id: str, broadcaster_id: str
 ) -> GuestStarSession:
     url = ENDPOINT_SESSIONS
@@ -110,7 +105,7 @@ def create_guest_star_session(
     }
     payload = {"broadcaster_id": broadcaster_id}
 
-    session = http.send_post_get_result(url, headers, payload)[0]
+    session = (await http.send_post_get_result(url, headers, payload))[0]
 
     return GuestStarSession(
         session["id"],
@@ -129,7 +124,7 @@ def create_guest_star_session(
     )
 
 
-def end_guest_star_session(
+async def end_guest_star_session(
     token: str, client_id: str, broadcaster_id: str, session_id: str
 ) -> GuestStarSession:
     url = ENDPOINT_SESSIONS
@@ -139,7 +134,7 @@ def end_guest_star_session(
     }
     data = {"broadcaster_id": broadcaster_id, "session_id": session_id}
 
-    session = http.send_delete_get_result(url, headers, data)[0]
+    session = (await http.send_delete_get_result(url, headers, data))[0]
 
     return GuestStarSession(
         session["id"],
@@ -158,7 +153,7 @@ def end_guest_star_session(
     )
 
 
-def get_guest_star_invites(
+async def get_guest_star_invites(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, session_id: str
 ) -> list[GuestStarInvite]:
     url = ENDPOINT_INVITES
@@ -172,7 +167,7 @@ def get_guest_star_invites(
         "session_id": session_id,
     }
 
-    invites = http.send_get(url, headers, params)
+    invites = await http.send_get(url, headers, params)
 
     return [
         GuestStarInvite(
@@ -188,7 +183,7 @@ def get_guest_star_invites(
     ]
 
 
-def send_guest_star_invite(
+async def send_guest_star_invite(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -208,10 +203,10 @@ def send_guest_star_invite(
         "guest_id": guest_id,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def delete_guest_star_invite(
+async def delete_guest_star_invite(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -231,10 +226,10 @@ def delete_guest_star_invite(
         "guest_id": guest_id,
     }
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def assign_guest_star_slot(
+async def assign_guest_star_slot(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -256,10 +251,10 @@ def assign_guest_star_slot(
         "slot_id": slot_id,
     }
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def update_guest_star_slot(
+async def update_guest_star_slot(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -283,10 +278,10 @@ def update_guest_star_slot(
     if destination_slot_id is not None:
         data["destination_slot_id"] = destination_slot_id
 
-    http.send_patch(url, headers, data)
+    await http.send_patch(url, headers, data)
 
 
-def delete_guest_star_slot(
+async def delete_guest_star_slot(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -312,10 +307,10 @@ def delete_guest_star_slot(
     if should_reinvite_guest is not None:
         data["should_reinvite_guest"] = should_reinvite_guest
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def update_guest_star_slot_settings(
+async def update_guest_star_slot_settings(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -350,4 +345,4 @@ def update_guest_star_slot_settings(
     if volume is not None:
         data["volume"] = volume
 
-    http.send_patch(url, headers, data)
+    await http.send_patch(url, headers, data)

@@ -2,7 +2,7 @@ from .._utils import http
 from ..dataclasses import Channel, Subscription, User
 
 
-def get_broadcaster_subscriptions(
+async def get_broadcaster_subscriptions(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -23,7 +23,9 @@ def get_broadcaster_subscriptions(
     if first != 20:
         params["first"] = first
 
-    subscriptions = http.send_get_with_pagination(url, headers, params, first, 100)
+    subscriptions = await http.send_get_with_pagination(
+        url, headers, params, first, 100
+    )
 
     return [
         Subscription(
@@ -52,7 +54,7 @@ def get_broadcaster_subscriptions(
     ]
 
 
-def check_user_subscription(
+async def check_user_subscription(
     token: str, client_id: str, broadcaster_id: str, user_id: str
 ) -> Subscription:
     url = "https://api.twitch.tv/helix/subscriptions/user"
@@ -62,7 +64,7 @@ def check_user_subscription(
     }
     params = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-    subscription = http.send_get(url, headers, params)[0]
+    subscription = (await http.send_get(url, headers, params))[0]
 
     return Subscription(
         Channel(

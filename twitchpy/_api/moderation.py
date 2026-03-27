@@ -1,16 +1,9 @@
 from datetime import datetime
 
 from .._utils import date, http
-from ..dataclasses import (
-    AutoModSettings,
-    BannedUser,
-    BlockedTerm,
-    Channel,
-    ChatterWarning,
-    ShieldModeStatus,
-    UnbanRequest,
-    User,
-)
+from ..dataclasses import (AutoModSettings, BannedUser, BlockedTerm, Channel,
+                           ChatterWarning, ShieldModeStatus, UnbanRequest,
+                           User)
 
 ENDPOINT_BLOCKED_TERMS = "https://api.twitch.tv/helix/moderation/blocked_terms"
 ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
@@ -18,7 +11,7 @@ ENDPOINT_MODERATORS = "https://api.twitch.tv/helix/moderation/moderators"
 CONTENT_TYPE_APPLICATION_JSON = "application/json"
 
 
-def check_automod_status(
+async def check_automod_status(
     token: str, client_id: str, broadcaster_id: str, data: list[tuple[str, str]]
 ) -> list[tuple[str, bool]]:
     url = "https://api.twitch.tv/helix/moderation/enforcements/status"
@@ -31,7 +24,7 @@ def check_automod_status(
         "data": data,
     }
 
-    messages_status = http.send_post_get_result(url, headers, payload)
+    messages_status = await http.send_post_get_result(url, headers, payload)
 
     return [
         (message_status["msg_id"], message_status["is_permited"])
@@ -39,7 +32,7 @@ def check_automod_status(
     ]
 
 
-def manage_held_automod_messages(
+async def manage_held_automod_messages(
     token: str, client_id: str, user_id: str, msg_id: str, action: str
 ) -> None:
     url = "https://api.twitch.tv/helix/moderation/automod/message"
@@ -49,10 +42,10 @@ def manage_held_automod_messages(
     }
     payload = {"user_id": user_id, "msg_id": msg_id, "action": action}
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def get_automod_settings(
+async def get_automod_settings(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
 ) -> AutoModSettings:
     url = "https://api.twitch.tv/helix/moderation/automod/settings"
@@ -62,7 +55,7 @@ def get_automod_settings(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    settings = http.send_get(url, headers, params)[0]
+    settings = (await http.send_get(url, headers, params))[0]
 
     return AutoModSettings(
         settings["broadcaster_id"],
@@ -79,7 +72,7 @@ def get_automod_settings(
     )
 
 
-def update_automod_settings(
+async def update_automod_settings(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -131,7 +124,7 @@ def update_automod_settings(
     if swearing is not None:
         data["swearing"] = swearing
 
-    settings = http.send_put_get_result(url, headers, data)[0]
+    settings = (await http.send_put_get_result(url, headers, data))[0]
 
     return AutoModSettings(
         settings["broadcaster_id"],
@@ -148,7 +141,7 @@ def update_automod_settings(
     )
 
 
-def get_banned_users(
+async def get_banned_users(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -169,7 +162,7 @@ def get_banned_users(
     if first != 20:
         params["first"] = first
 
-    users = http.send_get_with_pagination(url, headers, params, first, 100)
+    users = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         BannedUser(
@@ -183,7 +176,7 @@ def get_banned_users(
     ]
 
 
-def ban_user(
+async def ban_user(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -210,10 +203,10 @@ def ban_user(
 
     payload["data"] = data
 
-    return http.send_post_get_result(url, headers, payload)[0]
+    return (await http.send_post_get_result(url, headers, payload))[0]
 
 
-def unban_user(
+async def unban_user(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, user_id: str
 ) -> None:
     url = "https://api.twitch.tv/helix/moderation/bans"
@@ -227,10 +220,10 @@ def unban_user(
         "user_id": user_id,
     }
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def get_unban_requests(
+async def get_unban_requests(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -253,7 +246,7 @@ def get_unban_requests(
     if user_id is not None:
         params["user_id"] = user_id
 
-    requests = http.send_get_with_pagination(url, headers, params, first, 100)
+    requests = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         UnbanRequest(
@@ -281,7 +274,7 @@ def get_unban_requests(
     ]
 
 
-def resolve_unban_requests(
+async def resolve_unban_requests(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -305,7 +298,7 @@ def resolve_unban_requests(
     if resolution_text is not None:
         data["resolution_text"] = resolution_text
 
-    request = http.send_patch_get_result(url, headers, data)[0]
+    request = (await http.send_patch_get_result(url, headers, data))[0]
 
     return UnbanRequest(
         request["id"],
@@ -330,7 +323,7 @@ def resolve_unban_requests(
     )
 
 
-def get_blocked_terms(
+async def get_blocked_terms(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, first: int = 20
 ) -> list[BlockedTerm]:
     url = ENDPOINT_BLOCKED_TERMS
@@ -345,7 +338,7 @@ def get_blocked_terms(
     if first != 20:
         params["first"] = first
 
-    terms = http.send_get_with_pagination(url, headers, params, first, 100)
+    terms = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         BlockedTerm(
@@ -361,7 +354,7 @@ def get_blocked_terms(
     ]
 
 
-def add_blocked_term(
+async def add_blocked_term(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, text: str
 ) -> BlockedTerm:
     url = ENDPOINT_BLOCKED_TERMS
@@ -376,7 +369,7 @@ def add_blocked_term(
         "text": text,
     }
 
-    term = http.send_post_get_result(url, headers, payload)[0]
+    term = (await http.send_post_get_result(url, headers, payload))[0]
 
     return BlockedTerm(
         term["broadcaster_id"],
@@ -389,7 +382,7 @@ def add_blocked_term(
     )
 
 
-def remove_blocked_term(
+async def remove_blocked_term(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -407,10 +400,10 @@ def remove_blocked_term(
         "moderator_id": moderator_id,
     }
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def delete_chat_messages(
+async def delete_chat_messages(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -427,10 +420,10 @@ def delete_chat_messages(
     if message_id is not None:
         data["message_id"] = message_id
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def get_moderated_channels(
+async def get_moderated_channels(
     token: str, client_id: str, user_id: str, first: int = 20
 ) -> list[Channel]:
     url = "https://api.twitch.tv/helix/moderation/channels"
@@ -440,7 +433,7 @@ def get_moderated_channels(
     }
     params = {"user_id": user_id}
 
-    channels = http.send_get_with_pagination(url, headers, params, first, 100)
+    channels = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         Channel(
@@ -454,7 +447,7 @@ def get_moderated_channels(
     ]
 
 
-def get_moderators(
+async def get_moderators(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -472,14 +465,14 @@ def get_moderators(
     if user_id is not None and len(user_id) > 0:
         params["user_id"] = user_id
 
-    users = http.send_get_with_pagination(url, headers, params, first, 100)
+    users = await http.send_get_with_pagination(url, headers, params, first, 100)
 
     return [
         User(user["user_id"], user["user_login"], user["user_name"]) for user in users
     ]
 
 
-def add_channel_moderator(
+async def add_channel_moderator(
     token: str, client_id: str, broadcaster_id: str, user_id: str
 ) -> None:
     url = ENDPOINT_MODERATORS
@@ -489,10 +482,10 @@ def add_channel_moderator(
     }
     payload = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-    http.send_post(url, headers, payload)
+    await http.send_post(url, headers, payload)
 
 
-def remove_channel_moderator(
+async def remove_channel_moderator(
     token: str, client_id: str, broadcaster_id: str, user_id: str
 ) -> None:
     url = ENDPOINT_MODERATORS
@@ -502,10 +495,10 @@ def remove_channel_moderator(
     }
     data = {"broadcaster_id": broadcaster_id, "user_id": user_id}
 
-    http.send_delete(url, headers, data)
+    await http.send_delete(url, headers, data)
 
 
-def update_shield_mode_status(
+async def update_shield_mode_status(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str, is_active: bool
 ) -> ShieldModeStatus:
     url = "https://api.twitch.tv/helix/moderation/shield_mode"
@@ -520,7 +513,7 @@ def update_shield_mode_status(
         "is_active": is_active,
     }
 
-    shield_mode_status = http.send_put_get_result(url, headers, data)[0]
+    shield_mode_status = (await http.send_put_get_result(url, headers, data))[0]
 
     return ShieldModeStatus(
         shield_mode_status["is_active"],
@@ -533,7 +526,7 @@ def update_shield_mode_status(
     )
 
 
-def get_shield_mode_status(
+async def get_shield_mode_status(
     token: str, client_id: str, broadcaster_id: str, moderator_id: str
 ) -> ShieldModeStatus:
     url = "https://api.twitch.tv/helix/moderation/shield_mode"
@@ -543,7 +536,7 @@ def get_shield_mode_status(
     }
     params = {"broadcaster_id": broadcaster_id, "moderator_id": moderator_id}
 
-    shield_mode_status = http.send_get(url, headers, params)[0]
+    shield_mode_status = (await http.send_get(url, headers, params))[0]
 
     return ShieldModeStatus(
         shield_mode_status["is_active"],
@@ -556,7 +549,7 @@ def get_shield_mode_status(
     )
 
 
-def warn_chat_user(
+async def warn_chat_user(
     token: str,
     client_id: str,
     broadcaster_id: str,
@@ -576,7 +569,7 @@ def warn_chat_user(
         "data": {"user_id": user_id, "reason": reason},
     }
 
-    warning = http.send_post_get_result(url, headers, payload)[0]
+    warning = (await http.send_post_get_result(url, headers, payload))[0]
 
     return ChatterWarning(
         warning["broadcaster_id"],
