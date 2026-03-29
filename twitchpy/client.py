@@ -1,6 +1,6 @@
 import json
 
-import requests
+import aiohttp
 
 from . import errors
 from ._api.ads import AdsAPI
@@ -100,44 +100,44 @@ class Client:
         self.videos = VideosAPI(self._access_token, self._client_id)
         self.whispers = WhispersAPI(self._access_token, self._client_id)
 
-    def validate_token(self) -> TokenInfo:
-        url = _URL_OAUTH2_VALIDATE
-        response = requests.get(
-            url,
-            headers={"Authorization": f"OAuth {self._access_token}"},
-            timeout=_DEFAULT_TIMEOUT,
-        )
+    async def validate_token(self) -> TokenInfo:
+        async with aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=_DEFAULT_TIMEOUT)
+        ) as session:
+            url = _URL_OAUTH2_VALIDATE
+            headers = {"Authorization": f"OAuth {self._access_token}"}
 
-        if response.ok:
-            response = response.json()
-            return TokenInfo(
-                response["client_id"],
-                response["login"],
-                response["scopes"],
-                response["user_id"],
-                response["expires_in"],
-            )
+            async with session.get(url, headers=headers) as response:
+                if not response.ok:
+                    raise errors.ClientError("Invalid client authorization")
 
-        else:
-            raise errors.ClientError("Invalid client authorization")
+                token_info = await response.json()
+                return TokenInfo(
+                    token_info["client_id"],
+                    token_info["login"],
+                    token_info["scopes"],
+                    token_info["user_id"],
+                    token_info["expires_in"],
+                )
 
-    def refresh_user_tokens(self, refresh_user_token: str) -> None:
-        url = _URL_OAUTH2_TOKEN
-        payload = {
-            "grant_type": "refresh_token",
-            "refresh_token": refresh_user_token,
-            "client_id": self._client_id,
-            "client_secret": self._client_secret,
-        }
+    async def refresh_user_tokens(self, refresh_user_token: str) -> None:
+        async with aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=_DEFAULT_TIMEOUT)
+        ) as session:
+            url = _URL_OAUTH2_TOKEN
+            payload = {
+                "grant_type": "refresh_token",
+                "refresh_token": refresh_user_token,
+                "client_id": self._client_id,
+                "client_secret": self._client_secret,
+            }
 
-        response = requests.post(url, json=payload, timeout=_DEFAULT_TIMEOUT)
+            async with session.post(url, json=payload) as response:
+                if not response.ok:
+                    raise errors.UserTokenError("Error obtaining user token")
 
-        if response.ok:
-            response = response.json()
-            self._save_tokens(response["access_token"], response["refresh_token"])
-
-        else:
-            raise errors.UserTokenError("Error obtaining user token")
+                tokens = await response.json()
+                self._save_tokens(tokens["access_token"], tokens["refresh_token"])
 
     def _save_tokens(self, access_token: str, refresh_token: str) -> None:
         with open("tokens.json", "wt") as tokens_file:
