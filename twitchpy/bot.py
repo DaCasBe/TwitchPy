@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import socket
 import ssl
@@ -159,7 +160,7 @@ class Bot:
             "CAP REQ", ":twitch.tv/commands twitch.tv/membership twitch.tv/tags"
         )
 
-    def join_channel(self, channel: str) -> None:
+    async def join_channel(self, channel: str) -> None:
         """
         Makes the bot to join into a channel
 
@@ -167,17 +168,17 @@ class Bot:
             channel (str): The channel to join
         """
 
-        self._execute_methods_before_join_channel(channel)
+        await self._execute_methods_before_join_channel(channel)
 
         self._send_join(channel)
         self._send_privmsg(channel, self.ready_message)
 
-        self._execute_methods_after_join_channel(channel)
+        await self._execute_methods_after_join_channel(channel)
 
         self._remove_methods_before_join_channel()
         self._remove_methods_after_join_channel()
 
-    def leave_channel(self, channel: str) -> None:
+    async def leave_channel(self, channel: str) -> None:
         """
         Makes the bot to leave into a channel
 
@@ -185,16 +186,16 @@ class Bot:
             channel (str): The channel to leave
         """
 
-        self._execute_methods_before_leave_channel(channel)
+        await self._execute_methods_before_leave_channel(channel)
 
         self._send_part(channel)
 
-        self._execute_methods_after_leave_channel(channel)
+        await self._execute_methods_after_leave_channel(channel)
 
         self._remove_methods_before_leave_channel()
         self._remove_methods_after_leave_channel()
 
-    def _connect(self) -> None:
+    async def _connect(self) -> None:
         self.irc.settimeout(_DEFAULT_TIMEOUT)
         self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
@@ -202,15 +203,15 @@ class Bot:
         self._request_irc_capabilities()
 
         for channel in self.channels:
-            self.join_channel(channel)
+            await self.join_channel(channel)
 
-    def run(self) -> None:
+    async def run(self) -> None:
         """
         Runs the bot
         """
 
-        self._connect()
-        self._loop()
+        await self._connect()
+        await self._loop()
 
     def stop(self) -> None:
         """
@@ -300,9 +301,12 @@ class Bot:
 
         return message
 
-    def _execute_methods_before_join_channel(self, channel: str) -> None:
-        for method in self.custom_methods_before_join_channel.values():
+    async def _execute_methods_before_join_channel(self, channel: str) -> None:
+        tasks = [
             method(channel)
+            for method in self.custom_methods_before_join_channel.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_before_join_channel(self) -> None:
         for method in self.methods_before_join_channel_to_remove:
@@ -311,9 +315,12 @@ class Bot:
 
         self.methods_before_join_channel_to_remove = []
 
-    def _execute_methods_after_join_channel(self, channel: str) -> None:
-        for method in self.custom_methods_after_join_channel.values():
+    async def _execute_methods_after_join_channel(self, channel: str) -> None:
+        tasks = [
             method(channel)
+            for method in self.custom_methods_after_join_channel.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_join_channel(self) -> None:
         for method in self.methods_after_join_channel_to_remove:
@@ -322,9 +329,12 @@ class Bot:
 
         self.methods_after_join_channel_to_remove = []
 
-    def _execute_methods_before_leave_channel(self, channel: str) -> None:
-        for method in self.custom_methods_before_leave_channel.values():
+    async def _execute_methods_before_leave_channel(self, channel: str) -> None:
+        tasks = [
             method(channel)
+            for method in self.custom_methods_before_leave_channel.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_before_leave_channel(self) -> None:
         for method in self.methods_before_leave_channel_to_remove:
@@ -333,9 +343,12 @@ class Bot:
 
         self.methods_before_leave_channel_to_remove = []
 
-    def _execute_methods_after_leave_channel(self, channel: str) -> None:
-        for method in self.custom_methods_after_leave_channel.values():
+    async def _execute_methods_after_leave_channel(self, channel: str) -> None:
+        tasks = [
             method(channel)
+            for method in self.custom_methods_after_leave_channel.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_leave_channel(self) -> None:
         for method in self.methods_after_leave_channel_to_remove:
@@ -344,9 +357,9 @@ class Bot:
 
         self.methods_after_leave_channel_to_remove = []
 
-    def _execute_checks(self) -> None:
-        for check in self.custom_checks.values():
-            check()
+    async def _execute_checks(self) -> None:
+        tasks = [check() for check in self.custom_checks.values()]
+        await asyncio.gather(*tasks)
 
     def _remove_checks(self) -> None:
         for check in self.checks_to_remove:
@@ -355,9 +368,9 @@ class Bot:
 
         self.checks_to_remove = []
 
-    def _execute_listeners(self, message: Message) -> None:
-        for listener in self.custom_listeners.values():
-            listener(message)
+    async def _execute_listeners(self, message: Message) -> None:
+        tasks = [listener(message) for listener in self.custom_listeners.values()]
+        await asyncio.gather(*tasks)
 
     def _remove_listeners(self) -> None:
         for listener in self.listeners_to_remove:
@@ -366,8 +379,8 @@ class Bot:
 
         self.listeners_to_remove = []
 
-    def _execute_command(self, message: Message) -> None:
-        self.custom_commands[message.text_command](message)
+    async def _execute_command(self, message: Message) -> None:
+        await self.custom_commands[message.text_command](message)
 
     def _remove_commands(self) -> None:
         for command in self.commands_to_remove:
@@ -376,9 +389,11 @@ class Bot:
 
         self.commands_to_remove = []
 
-    def _execute_methods_before_commands(self, message: Message) -> None:
-        for before in self.custom_methods_before_commands.values():
-            before(message)
+    async def _execute_methods_before_commands(self, message: Message) -> None:
+        tasks = [
+            before(message) for before in self.custom_methods_before_commands.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_before_commands(self) -> None:
         for method in self.methods_before_commands_to_remove:
@@ -387,9 +402,11 @@ class Bot:
 
         self.methods_before_commands_to_remove = []
 
-    def _execute_methods_after_commands(self, message: Message) -> None:
-        for after in self.custom_methods_after_commands.values():
-            after(message)
+    async def _execute_methods_after_commands(self, message: Message) -> None:
+        tasks = [
+            after(message) for after in self.custom_methods_after_commands.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_commands(self) -> None:
         for method in self.methods_after_commands_to_remove:
@@ -398,9 +415,11 @@ class Bot:
 
         self.methods_after_commands_to_remove = []
 
-    def _execute_methods_after_clearchat(self, message: Message) -> None:
-        for method in self.custom_methods_after_clearchat.values():
-            method(message)
+    async def _execute_methods_after_clearchat(self, message: Message) -> None:
+        tasks = [
+            method(message) for method in self.custom_methods_after_clearchat.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_clearchat(self) -> None:
         for method in self.methods_after_clearchat_to_remove:
@@ -409,9 +428,12 @@ class Bot:
 
         self.methods_after_clearchat_to_remove = []
 
-    def _execute_methods_after_delete_message(self, message: Message) -> None:
-        for method in self.custom_methods_after_delete_message.values():
+    async def _execute_methods_after_delete_message(self, message: Message) -> None:
+        tasks = [
             method(message)
+            for method in self.custom_methods_after_delete_message.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_delete_message(self) -> None:
         for method in self.methods_after_delete_message_to_remove:
@@ -420,9 +442,12 @@ class Bot:
 
         self.methods_after_delete_message_to_remove = []
 
-    def _execute_methods_after_bot_connected(self, message: Message) -> None:
-        for method in self.custom_methods_after_bot_connected.values():
+    async def _execute_methods_after_bot_connected(self, message: Message) -> None:
+        tasks = [
             method(message)
+            for method in self.custom_methods_after_bot_connected.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_bot_connected(self) -> None:
         for method in self.methods_after_bot_connected_to_remove:
@@ -431,9 +456,11 @@ class Bot:
 
         self.methods_after_bot_connected_to_remove = []
 
-    def _execute_methods_after_toggle_host(self, message: Message) -> None:
-        for method in self.custom_methods_after_toggle_host.values():
-            method(message)
+    async def _execute_methods_after_toggle_host(self, message: Message) -> None:
+        tasks = [
+            method(message) for method in self.custom_methods_after_toggle_host.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_toggle_host(self) -> None:
         for method in self.methods_after_toggle_host_to_remove:
@@ -442,9 +469,12 @@ class Bot:
 
         self.methods_after_toggle_host_to_remove = []
 
-    def _execute_methods_after_server_reconnect(self, message: Message) -> None:
-        for method in self.custom_methods_after_server_reconnect.values():
+    async def _execute_methods_after_server_reconnect(self, message: Message) -> None:
+        tasks = [
             method(message)
+            for method in self.custom_methods_after_server_reconnect.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_server_reconnect(self) -> None:
         for method in self.methods_after_server_reconnect_to_remove:
@@ -453,9 +483,12 @@ class Bot:
 
         self.methods_after_server_reconnect_to_remove = []
 
-    def _execute_methods_after_channel_change(self, message: Message) -> None:
-        for method in self.custom_methods_after_channel_change.values():
+    async def _execute_methods_after_channel_change(self, message: Message) -> None:
+        tasks = [
             method(message)
+            for method in self.custom_methods_after_channel_change.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_channel_change(self) -> None:
         for method in self.methods_after_channel_change_to_remove:
@@ -464,9 +497,9 @@ class Bot:
 
         self.methods_after_channel_change_to_remove = []
 
-    def _execute_methods_after_event(self, message: Message) -> None:
-        for method in self.custom_methods_after_event.values():
-            method(message)
+    async def _execute_methods_after_event(self, message: Message) -> None:
+        tasks = [method(message) for method in self.custom_methods_after_event.values()]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_event(self) -> None:
         for method in self.methods_after_event_to_remove:
@@ -475,9 +508,11 @@ class Bot:
 
         self.methods_after_event_to_remove = []
 
-    def _execute_methods_after_user_join(self, message: Message) -> None:
-        for method in self.custom_methods_after_user_join.values():
-            method(message)
+    async def _execute_methods_after_user_join(self, message: Message) -> None:
+        tasks = [
+            method(message) for method in self.custom_methods_after_user_join.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_user_join(self) -> None:
         for method in self.methods_after_user_join_to_remove:
@@ -486,9 +521,11 @@ class Bot:
 
         self.methods_after_user_join_to_remove = []
 
-    def _execute_methods_after_whisper(self, message: Message) -> None:
-        for method in self.custom_methods_after_whisper.values():
-            method(message)
+    async def _execute_methods_after_whisper(self, message: Message) -> None:
+        tasks = [
+            method(message) for method in self.custom_methods_after_whisper.values()
+        ]
+        await asyncio.gather(*tasks)
 
     def _remove_methods_after_whisper(self) -> None:
         for method in self.methods_after_whisper_to_remove:
@@ -506,10 +543,10 @@ class Bot:
             message.irc_tags,
         )
 
-    def _handle_part(self, message: Message) -> None:
+    async def _handle_part(self, message: Message) -> None:
         logger.info("%s > [%s] %s", message.irc_command, message.channel, message.user)
 
-        self._execute_methods_after_leave_channel(
+        await self._execute_methods_after_leave_channel(
             message.channel if message.channel is not None else ""
         )
         self._remove_methods_after_leave_channel()
@@ -519,7 +556,7 @@ class Bot:
 
         self._send_pong(message.text if message.text is not None else "")
 
-    def _handle_privmsg(self, message: Message) -> None:
+    async def _handle_privmsg(self, message: Message) -> None:
         logger.info(
             "%s > [%s] %s: %s | %s",
             message.irc_command,
@@ -529,18 +566,18 @@ class Bot:
             message.irc_tags,
         )
 
-        self._execute_listeners(message)
+        await self._execute_listeners(message)
         self._remove_listeners()
 
         if message.text_command in self.custom_commands:
-            self._execute_methods_before_commands(message)
+            await self._execute_methods_before_commands(message)
             self._remove_methods_before_commands()
-            self._execute_command(message)
+            await self._execute_command(message)
             self._remove_commands()
-            self._execute_methods_after_commands(message)
+            await self._execute_methods_after_commands(message)
             self._remove_methods_after_commands()
 
-    def _handle_clearchat(self, message: Message) -> None:
+    async def _handle_clearchat(self, message: Message) -> None:
         logger.info(
             "%s > [%s] %s | %s",
             message.irc_command,
@@ -549,10 +586,10 @@ class Bot:
             message.irc_tags,
         )
 
-        self._execute_methods_after_clearchat(message)
+        await self._execute_methods_after_clearchat(message)
         self._remove_methods_after_clearchat()
 
-    def _handle_clearmsg(self, message: Message) -> None:
+    async def _handle_clearmsg(self, message: Message) -> None:
         logger.info(
             "%s > [%s]: %s | %s",
             message.irc_command,
@@ -561,36 +598,36 @@ class Bot:
             message.irc_tags,
         )
 
-        self._execute_methods_after_delete_message(message)
+        await self._execute_methods_after_delete_message(message)
         self._remove_methods_after_delete_message()
 
-    def _handle_globaluserstate(self, message: Message) -> None:
+    async def _handle_globaluserstate(self, message: Message) -> None:
         logger.info("%s > | %s", message.irc_command, message.irc_tags)
 
-        self._execute_methods_after_bot_connected(message)
+        await self._execute_methods_after_bot_connected(message)
         self._remove_methods_after_bot_connected()
 
-    def _handle_hosttarget(self, message: Message) -> None:
+    async def _handle_hosttarget(self, message: Message) -> None:
         logger.info("%s > [%s]: %s", message.irc_command, message.channel, message.text)
 
-        self._execute_methods_after_toggle_host(message)
+        await self._execute_methods_after_toggle_host(message)
         self._remove_methods_after_toggle_host()
 
-    def _handle_reconnect(self, message: Message) -> None:
+    async def _handle_reconnect(self, message: Message) -> None:
         logger.info("%s >", message.irc_command)
 
-        self._execute_methods_after_server_reconnect(message)
+        await self._execute_methods_after_server_reconnect(message)
         self._remove_methods_after_server_reconnect()
 
-    def _handle_roomstate(self, message: Message) -> None:
+    async def _handle_roomstate(self, message: Message) -> None:
         logger.info(
             "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
         )
 
-        self._execute_methods_after_channel_change(message)
+        await self._execute_methods_after_channel_change(message)
         self._remove_methods_after_channel_change()
 
-    def _handle_usernotice(self, message: Message) -> None:
+    async def _handle_usernotice(self, message: Message) -> None:
         logger.info(
             "%s > [%s]: %s | %s",
             message.irc_command,
@@ -599,18 +636,18 @@ class Bot:
             message.irc_tags,
         )
 
-        self._execute_methods_after_event(message)
+        await self._execute_methods_after_event(message)
         self._remove_methods_after_event()
 
-    def _handle_userstate(self, message: Message) -> None:
+    async def _handle_userstate(self, message: Message) -> None:
         logger.info(
             "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
         )
 
-        self._execute_methods_after_user_join(message)
+        await self._execute_methods_after_user_join(message)
         self._remove_methods_after_user_join()
 
-    def _handle_whisper(self, message: Message) -> None:
+    async def _handle_whisper(self, message: Message) -> None:
         logger.info(
             "%s > %s: %s",
             message.irc_command,
@@ -618,10 +655,10 @@ class Bot:
             message.text,
         )
 
-        self._execute_methods_after_whisper(message)
+        await self._execute_methods_after_whisper(message)
         self._remove_methods_after_whisper()
 
-    def _handle_message(self, received_msg: str) -> None:
+    async def _handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
 
@@ -631,40 +668,40 @@ class Bot:
             self._handle_notice(message)
 
         elif message.irc_command == "PART":
-            self._handle_part(message)
+            await self._handle_part(message)
 
         elif message.irc_command == "PING":
             self._handle_ping(message)
 
         elif message.irc_command == "PRIVMSG":
-            self._handle_privmsg(message)
+            await self._handle_privmsg(message)
 
         elif message.irc_command == "CLEARCHAT":
-            self._handle_clearchat(message)
+            await self._handle_clearchat(message)
 
         elif message.irc_command == "CLEARMSG":
-            self._handle_clearmsg(message)
+            await self._handle_clearmsg(message)
 
         elif message.irc_command == "GLOBALUSERSTATE":
-            self._handle_globaluserstate(message)
+            await self._handle_globaluserstate(message)
 
         elif message.irc_command == "HOSTTARGET":
-            self._handle_hosttarget(message)
+            await self._handle_hosttarget(message)
 
         elif message.irc_command == "RECONNECT":
-            self._handle_reconnect(message)
+            await self._handle_reconnect(message)
 
         elif message.irc_command == "ROOMSTATE":
-            self._handle_roomstate(message)
+            await self._handle_roomstate(message)
 
         elif message.irc_command == "USERNOTICE":
-            self._handle_usernotice(message)
+            await self._handle_usernotice(message)
 
         elif message.irc_command == "USERSTATE":
-            self._handle_userstate(message)
+            await self._handle_userstate(message)
 
         elif message.irc_command == "WHISPER":
-            self._handle_whisper(message)
+            await self._handle_whisper(message)
 
         else:
             logger.info(
@@ -675,16 +712,16 @@ class Bot:
                 message.text,
             )
 
-    def _loop(self) -> None:
+    async def _loop(self) -> None:
         while not self._finish:
             try:
                 received_msgs = self.irc.recv(2048).decode()
 
                 for received_msg in received_msgs.split("\r\n"):
-                    self._handle_message(received_msg)
+                    await self._handle_message(received_msg)
 
             except socket.timeout:
-                self._execute_checks()
+                await self._execute_checks()
                 self._remove_checks()
 
     def send(self, channel: str, text: str) -> None:
