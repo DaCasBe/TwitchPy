@@ -51,8 +51,8 @@ class Bot:
             access_token,
             jwt_token,
         )
-        self.__oauth_token = oauth_token
-        self.__finish = False
+        self._oauth_token = oauth_token
+        self._finish = False
         self.username = username
 
         self.channels = []
@@ -113,7 +113,7 @@ class Bot:
 
         self.irc = ssl.SSLContext().wrap_socket(socket.socket())
 
-    def __send_command(self, command: str, args: str, tags: str | None = None) -> None:
+    def _send_command(self, command: str, args: str, tags: str | None = None) -> None:
         logger.info("%s%s < %s", tags + " " if tags is not None else "", command, args)
 
         self.irc.send(
@@ -122,25 +122,25 @@ class Bot:
             ).encode()
         )
 
-    def __send_join(self, channel: str) -> None:
-        self.__send_command("JOIN", f"#{channel}")
+    def _send_join(self, channel: str) -> None:
+        self._send_command("JOIN", f"#{channel}")
 
-    def __send_nick(self, username: str) -> None:
-        self.__send_command("NICK", username)
+    def _send_nick(self, username: str) -> None:
+        self._send_command("NICK", username)
 
-    def __send_part(self, channel: str) -> None:
-        self.__send_command("PART", f"#{channel}")
+    def _send_part(self, channel: str) -> None:
+        self._send_command("PART", f"#{channel}")
 
-    def __send_pass(self, oauth_token: str) -> None:
-        self.__send_command("PASS", oauth_token)
+    def _send_pass(self, oauth_token: str) -> None:
+        self._send_command("PASS", oauth_token)
 
-    def __send_pong(self, text: str) -> None:
-        self.__send_command("PONG", f":{text}")
+    def _send_pong(self, text: str) -> None:
+        self._send_command("PONG", f":{text}")
 
-    def __send_privmsg(
+    def _send_privmsg(
         self, channel: str, text: str, message_to_reply: str | None = None
     ) -> None:
-        self.__send_command(
+        self._send_command(
             "PRIVMSG",
             f"#{channel} :{text}",
             (
@@ -150,12 +150,12 @@ class Bot:
             ),
         )
 
-    def __login(self) -> None:
-        self.__send_pass(self.__oauth_token)
-        self.__send_nick(self.username)
+    def _login(self) -> None:
+        self._send_pass(self._oauth_token)
+        self._send_nick(self.username)
 
-    def __request_irc_capabilities(self) -> None:
-        self.__send_command(
+    def _request_irc_capabilities(self) -> None:
+        self._send_command(
             "CAP REQ", ":twitch.tv/commands twitch.tv/membership twitch.tv/tags"
         )
 
@@ -167,15 +167,15 @@ class Bot:
             channel (str): The channel to join
         """
 
-        self.__execute_methods_before_join_channel(channel)
+        self._execute_methods_before_join_channel(channel)
 
-        self.__send_join(channel)
-        self.__send_privmsg(channel, self.ready_message)
+        self._send_join(channel)
+        self._send_privmsg(channel, self.ready_message)
 
-        self.__execute_methods_after_join_channel(channel)
+        self._execute_methods_after_join_channel(channel)
 
-        self.__remove_methods_before_join_channel()
-        self.__remove_methods_after_join_channel()
+        self._remove_methods_before_join_channel()
+        self._remove_methods_after_join_channel()
 
     def leave_channel(self, channel: str) -> None:
         """
@@ -185,21 +185,21 @@ class Bot:
             channel (str): The channel to leave
         """
 
-        self.__execute_methods_before_leave_channel(channel)
+        self._execute_methods_before_leave_channel(channel)
 
-        self.__send_part(channel)
+        self._send_part(channel)
 
-        self.__execute_methods_after_leave_channel(channel)
+        self._execute_methods_after_leave_channel(channel)
 
-        self.__remove_methods_before_leave_channel()
-        self.__remove_methods_after_leave_channel()
+        self._remove_methods_before_leave_channel()
+        self._remove_methods_after_leave_channel()
 
-    def __connect(self) -> None:
+    def _connect(self) -> None:
         self.irc.settimeout(_DEFAULT_TIMEOUT)
         self.irc.connect((_IRC_SERVER, _IRC_PORT))
 
-        self.__login()
-        self.__request_irc_capabilities()
+        self._login()
+        self._request_irc_capabilities()
 
         for channel in self.channels:
             self.join_channel(channel)
@@ -209,17 +209,17 @@ class Bot:
         Runs the bot
         """
 
-        self.__connect()
-        self.__loop()
+        self._connect()
+        self._loop()
 
     def stop(self) -> None:
         """
         Stops the bot
         """
 
-        self.__finish = True
+        self._finish = True
 
-    def __get_user_from_prefix(self, prefix: str) -> str | None:
+    def _get_user_from_prefix(self, prefix: str) -> str | None:
         domain = prefix.split("!")[0]
 
         if domain.endswith(".tmi.twitch.tv"):
@@ -230,13 +230,13 @@ class Bot:
 
         return None
 
-    def __remove_prefix(self, string: str, prefix: str) -> str:
+    def _remove_prefix(self, string: str, prefix: str) -> str:
         if not string.startswith(prefix):
             return string
 
         return string[len(prefix) :]
 
-    def __parse_message(self, received_msg: str) -> Message:
+    def _parse_message(self, received_msg: str) -> Message:
         parts = received_msg.split(" ")
 
         prefix = None
@@ -252,13 +252,13 @@ class Bot:
         if parts[0].startswith("@"):
             irc_tags = dict(
                 item.split("=")
-                for item in self.__remove_prefix(parts[0], "@").split(";")
+                for item in self._remove_prefix(parts[0], "@").split(";")
             )
             parts = parts[1:]
 
         if parts[0].startswith(":"):
-            prefix = self.__remove_prefix(parts[0], ":")
-            user = self.__get_user_from_prefix(prefix)
+            prefix = self._remove_prefix(parts[0], ":")
+            user = self._get_user_from_prefix(prefix)
             parts = parts[1:]
 
         text_start = next(
@@ -271,7 +271,7 @@ class Bot:
             text = " ".join(text_parts)
 
             if text_parts[0].startswith(self.command_prefix):
-                text_command = self.__remove_prefix(text_parts[0], self.command_prefix)
+                text_command = self._remove_prefix(text_parts[0], self.command_prefix)
                 text_args = text_parts[1:]
 
             parts = parts[:text_start]
@@ -300,204 +300,204 @@ class Bot:
 
         return message
 
-    def __execute_methods_before_join_channel(self, channel: str) -> None:
+    def _execute_methods_before_join_channel(self, channel: str) -> None:
         for method in self.custom_methods_before_join_channel.values():
             method(channel)
 
-    def __remove_methods_before_join_channel(self) -> None:
+    def _remove_methods_before_join_channel(self) -> None:
         for method in self.methods_before_join_channel_to_remove:
             if method in self.custom_methods_before_join_channel:
                 self.custom_methods_before_join_channel.pop(method)
 
         self.methods_before_join_channel_to_remove = []
 
-    def __execute_methods_after_join_channel(self, channel: str) -> None:
+    def _execute_methods_after_join_channel(self, channel: str) -> None:
         for method in self.custom_methods_after_join_channel.values():
             method(channel)
 
-    def __remove_methods_after_join_channel(self) -> None:
+    def _remove_methods_after_join_channel(self) -> None:
         for method in self.methods_after_join_channel_to_remove:
             if method in self.custom_methods_after_join_channel:
                 self.custom_methods_after_join_channel.pop(method)
 
         self.methods_after_join_channel_to_remove = []
 
-    def __execute_methods_before_leave_channel(self, channel: str) -> None:
+    def _execute_methods_before_leave_channel(self, channel: str) -> None:
         for method in self.custom_methods_before_leave_channel.values():
             method(channel)
 
-    def __remove_methods_before_leave_channel(self) -> None:
+    def _remove_methods_before_leave_channel(self) -> None:
         for method in self.methods_before_leave_channel_to_remove:
             if method in self.custom_methods_before_leave_channel:
                 self.custom_methods_before_leave_channel.pop(method)
 
         self.methods_before_leave_channel_to_remove = []
 
-    def __execute_methods_after_leave_channel(self, channel: str) -> None:
+    def _execute_methods_after_leave_channel(self, channel: str) -> None:
         for method in self.custom_methods_after_leave_channel.values():
             method(channel)
 
-    def __remove_methods_after_leave_channel(self) -> None:
+    def _remove_methods_after_leave_channel(self) -> None:
         for method in self.methods_after_leave_channel_to_remove:
             if method in self.custom_methods_after_leave_channel:
                 self.custom_methods_after_leave_channel.pop(method)
 
         self.methods_after_leave_channel_to_remove = []
 
-    def __execute_checks(self) -> None:
+    def _execute_checks(self) -> None:
         for check in self.custom_checks.values():
             check()
 
-    def __remove_checks(self) -> None:
+    def _remove_checks(self) -> None:
         for check in self.checks_to_remove:
             if check in self.custom_checks:
                 self.custom_checks.pop(check)
 
         self.checks_to_remove = []
 
-    def __execute_listeners(self, message: Message) -> None:
+    def _execute_listeners(self, message: Message) -> None:
         for listener in self.custom_listeners.values():
             listener(message)
 
-    def __remove_listeners(self) -> None:
+    def _remove_listeners(self) -> None:
         for listener in self.listeners_to_remove:
             if listener in self.custom_listeners:
                 self.custom_listeners.pop(listener)
 
         self.listeners_to_remove = []
 
-    def __execute_command(self, message: Message) -> None:
+    def _execute_command(self, message: Message) -> None:
         self.custom_commands[message.text_command](message)
 
-    def __remove_commands(self) -> None:
+    def _remove_commands(self) -> None:
         for command in self.commands_to_remove:
             if command in self.custom_commands:
                 self.custom_commands.pop(command)
 
         self.commands_to_remove = []
 
-    def __execute_methods_before_commands(self, message: Message) -> None:
+    def _execute_methods_before_commands(self, message: Message) -> None:
         for before in self.custom_methods_before_commands.values():
             before(message)
 
-    def __remove_methods_before_commands(self) -> None:
+    def _remove_methods_before_commands(self) -> None:
         for method in self.methods_before_commands_to_remove:
             if method in self.custom_methods_before_commands:
                 self.custom_methods_before_commands.pop(method)
 
         self.methods_before_commands_to_remove = []
 
-    def __execute_methods_after_commands(self, message: Message) -> None:
+    def _execute_methods_after_commands(self, message: Message) -> None:
         for after in self.custom_methods_after_commands.values():
             after(message)
 
-    def __remove_methods_after_commands(self) -> None:
+    def _remove_methods_after_commands(self) -> None:
         for method in self.methods_after_commands_to_remove:
             if method in self.custom_methods_after_commands:
                 self.custom_methods_after_commands.pop(method)
 
         self.methods_after_commands_to_remove = []
 
-    def __execute_methods_after_clearchat(self, message: Message) -> None:
+    def _execute_methods_after_clearchat(self, message: Message) -> None:
         for method in self.custom_methods_after_clearchat.values():
             method(message)
 
-    def __remove_methods_after_clearchat(self) -> None:
+    def _remove_methods_after_clearchat(self) -> None:
         for method in self.methods_after_clearchat_to_remove:
             if method in self.custom_methods_after_clearchat:
                 self.custom_methods_after_clearchat.pop(method)
 
         self.methods_after_clearchat_to_remove = []
 
-    def __execute_methods_after_delete_message(self, message: Message) -> None:
+    def _execute_methods_after_delete_message(self, message: Message) -> None:
         for method in self.custom_methods_after_delete_message.values():
             method(message)
 
-    def __remove_methods_after_delete_message(self) -> None:
+    def _remove_methods_after_delete_message(self) -> None:
         for method in self.methods_after_delete_message_to_remove:
             if method in self.custom_methods_after_delete_message:
                 self.custom_methods_after_delete_message.pop(method)
 
         self.methods_after_delete_message_to_remove = []
 
-    def __execute_methods_after_bot_connected(self, message: Message) -> None:
+    def _execute_methods_after_bot_connected(self, message: Message) -> None:
         for method in self.custom_methods_after_bot_connected.values():
             method(message)
 
-    def __remove_methods_after_bot_connected(self) -> None:
+    def _remove_methods_after_bot_connected(self) -> None:
         for method in self.methods_after_bot_connected_to_remove:
             if method in self.custom_methods_after_bot_connected:
                 self.custom_methods_after_bot_connected.pop(method)
 
         self.methods_after_bot_connected_to_remove = []
 
-    def __execute_methods_after_toggle_host(self, message: Message) -> None:
+    def _execute_methods_after_toggle_host(self, message: Message) -> None:
         for method in self.custom_methods_after_toggle_host.values():
             method(message)
 
-    def __remove_methods_after_toggle_host(self) -> None:
+    def _remove_methods_after_toggle_host(self) -> None:
         for method in self.methods_after_toggle_host_to_remove:
             if method in self.custom_methods_after_toggle_host:
                 self.custom_methods_after_toggle_host.pop(method)
 
         self.methods_after_toggle_host_to_remove = []
 
-    def __execute_methods_after_server_reconnect(self, message: Message) -> None:
+    def _execute_methods_after_server_reconnect(self, message: Message) -> None:
         for method in self.custom_methods_after_server_reconnect.values():
             method(message)
 
-    def __remove_methods_after_server_reconnect(self) -> None:
+    def _remove_methods_after_server_reconnect(self) -> None:
         for method in self.methods_after_server_reconnect_to_remove:
             if method in self.custom_methods_after_server_reconnect:
                 self.custom_methods_after_server_reconnect.pop(method)
 
         self.methods_after_server_reconnect_to_remove = []
 
-    def __execute_methods_after_channel_change(self, message: Message) -> None:
+    def _execute_methods_after_channel_change(self, message: Message) -> None:
         for method in self.custom_methods_after_channel_change.values():
             method(message)
 
-    def __remove_methods_after_channel_change(self) -> None:
+    def _remove_methods_after_channel_change(self) -> None:
         for method in self.methods_after_channel_change_to_remove:
             if method in self.custom_methods_after_channel_change:
                 self.custom_methods_after_channel_change.pop(method)
 
         self.methods_after_channel_change_to_remove = []
 
-    def __execute_methods_after_event(self, message: Message) -> None:
+    def _execute_methods_after_event(self, message: Message) -> None:
         for method in self.custom_methods_after_event.values():
             method(message)
 
-    def __remove_methods_after_event(self) -> None:
+    def _remove_methods_after_event(self) -> None:
         for method in self.methods_after_event_to_remove:
             if method in self.custom_methods_after_event:
                 self.custom_methods_after_event.pop(method)
 
         self.methods_after_event_to_remove = []
 
-    def __execute_methods_after_user_join(self, message: Message) -> None:
+    def _execute_methods_after_user_join(self, message: Message) -> None:
         for method in self.custom_methods_after_user_join.values():
             method(message)
 
-    def __remove_methods_after_user_join(self) -> None:
+    def _remove_methods_after_user_join(self) -> None:
         for method in self.methods_after_user_join_to_remove:
             if method in self.custom_methods_after_user_join:
                 self.custom_methods_after_user_join.pop(method)
 
         self.methods_after_user_join_to_remove = []
 
-    def __execute_methods_after_whisper(self, message: Message) -> None:
+    def _execute_methods_after_whisper(self, message: Message) -> None:
         for method in self.custom_methods_after_whisper.values():
             method(message)
 
-    def __remove_methods_after_whisper(self) -> None:
+    def _remove_methods_after_whisper(self) -> None:
         for method in self.methods_after_whisper_to_remove:
             if method in self.custom_methods_after_whisper:
                 self.custom_methods_after_whisper.pop(method)
 
         self.methods_after_whisper_to_remove = []
 
-    def __handle_notice(self, message: Message) -> None:
+    def _handle_notice(self, message: Message) -> None:
         logger.info(
             "%s > [%s]: %s | %s",
             message.irc_command,
@@ -506,20 +506,20 @@ class Bot:
             message.irc_tags,
         )
 
-    def __handle_part(self, message: Message) -> None:
+    def _handle_part(self, message: Message) -> None:
         logger.info("%s > [%s] %s", message.irc_command, message.channel, message.user)
 
-        self.__execute_methods_after_leave_channel(
+        self._execute_methods_after_leave_channel(
             message.channel if message.channel is not None else ""
         )
-        self.__remove_methods_after_leave_channel()
+        self._remove_methods_after_leave_channel()
 
-    def __handle_ping(self, message: Message) -> None:
+    def _handle_ping(self, message: Message) -> None:
         logger.info("%s > :%s", message.irc_command, message.text)
 
-        self.__send_pong(message.text if message.text is not None else "")
+        self._send_pong(message.text if message.text is not None else "")
 
-    def __handle_privmsg(self, message: Message) -> None:
+    def _handle_privmsg(self, message: Message) -> None:
         logger.info(
             "%s > [%s] %s: %s | %s",
             message.irc_command,
@@ -529,18 +529,18 @@ class Bot:
             message.irc_tags,
         )
 
-        self.__execute_listeners(message)
-        self.__remove_listeners()
+        self._execute_listeners(message)
+        self._remove_listeners()
 
         if message.text_command in self.custom_commands:
-            self.__execute_methods_before_commands(message)
-            self.__remove_methods_before_commands()
-            self.__execute_command(message)
-            self.__remove_commands()
-            self.__execute_methods_after_commands(message)
-            self.__remove_methods_after_commands()
+            self._execute_methods_before_commands(message)
+            self._remove_methods_before_commands()
+            self._execute_command(message)
+            self._remove_commands()
+            self._execute_methods_after_commands(message)
+            self._remove_methods_after_commands()
 
-    def __handle_clearchat(self, message: Message) -> None:
+    def _handle_clearchat(self, message: Message) -> None:
         logger.info(
             "%s > [%s] %s | %s",
             message.irc_command,
@@ -549,10 +549,10 @@ class Bot:
             message.irc_tags,
         )
 
-        self.__execute_methods_after_clearchat(message)
-        self.__remove_methods_after_clearchat()
+        self._execute_methods_after_clearchat(message)
+        self._remove_methods_after_clearchat()
 
-    def __handle_clearmsg(self, message: Message) -> None:
+    def _handle_clearmsg(self, message: Message) -> None:
         logger.info(
             "%s > [%s]: %s | %s",
             message.irc_command,
@@ -561,36 +561,36 @@ class Bot:
             message.irc_tags,
         )
 
-        self.__execute_methods_after_delete_message(message)
-        self.__remove_methods_after_delete_message()
+        self._execute_methods_after_delete_message(message)
+        self._remove_methods_after_delete_message()
 
-    def __handle_globaluserstate(self, message: Message) -> None:
+    def _handle_globaluserstate(self, message: Message) -> None:
         logger.info("%s > | %s", message.irc_command, message.irc_tags)
 
-        self.__execute_methods_after_bot_connected(message)
-        self.__remove_methods_after_bot_connected()
+        self._execute_methods_after_bot_connected(message)
+        self._remove_methods_after_bot_connected()
 
-    def __handle_hosttarget(self, message: Message) -> None:
+    def _handle_hosttarget(self, message: Message) -> None:
         logger.info("%s > [%s]: %s", message.irc_command, message.channel, message.text)
 
-        self.__execute_methods_after_toggle_host(message)
-        self.__remove_methods_after_toggle_host()
+        self._execute_methods_after_toggle_host(message)
+        self._remove_methods_after_toggle_host()
 
-    def __handle_reconnect(self, message: Message) -> None:
+    def _handle_reconnect(self, message: Message) -> None:
         logger.info("%s >", message.irc_command)
 
-        self.__execute_methods_after_server_reconnect(message)
-        self.__remove_methods_after_server_reconnect()
+        self._execute_methods_after_server_reconnect(message)
+        self._remove_methods_after_server_reconnect()
 
-    def __handle_roomstate(self, message: Message) -> None:
+    def _handle_roomstate(self, message: Message) -> None:
         logger.info(
             "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
         )
 
-        self.__execute_methods_after_channel_change(message)
-        self.__remove_methods_after_channel_change()
+        self._execute_methods_after_channel_change(message)
+        self._remove_methods_after_channel_change()
 
-    def __handle_usernotice(self, message: Message) -> None:
+    def _handle_usernotice(self, message: Message) -> None:
         logger.info(
             "%s > [%s]: %s | %s",
             message.irc_command,
@@ -599,18 +599,18 @@ class Bot:
             message.irc_tags,
         )
 
-        self.__execute_methods_after_event(message)
-        self.__remove_methods_after_event()
+        self._execute_methods_after_event(message)
+        self._remove_methods_after_event()
 
-    def __handle_userstate(self, message: Message) -> None:
+    def _handle_userstate(self, message: Message) -> None:
         logger.info(
             "%s > [%s] | %s", message.irc_command, message.channel, message.irc_tags
         )
 
-        self.__execute_methods_after_user_join(message)
-        self.__remove_methods_after_user_join()
+        self._execute_methods_after_user_join(message)
+        self._remove_methods_after_user_join()
 
-    def __handle_whisper(self, message: Message) -> None:
+    def _handle_whisper(self, message: Message) -> None:
         logger.info(
             "%s > %s: %s",
             message.irc_command,
@@ -618,53 +618,53 @@ class Bot:
             message.text,
         )
 
-        self.__execute_methods_after_whisper(message)
-        self.__remove_methods_after_whisper()
+        self._execute_methods_after_whisper(message)
+        self._remove_methods_after_whisper()
 
-    def __handle_message(self, received_msg: str) -> None:
+    def _handle_message(self, received_msg: str) -> None:
         if len(received_msg) == 0:
             return
 
-        message = self.__parse_message(received_msg)
+        message = self._parse_message(received_msg)
 
         if message.irc_command == "NOTICE":
-            self.__handle_notice(message)
+            self._handle_notice(message)
 
         elif message.irc_command == "PART":
-            self.__handle_part(message)
+            self._handle_part(message)
 
         elif message.irc_command == "PING":
-            self.__handle_ping(message)
+            self._handle_ping(message)
 
         elif message.irc_command == "PRIVMSG":
-            self.__handle_privmsg(message)
+            self._handle_privmsg(message)
 
         elif message.irc_command == "CLEARCHAT":
-            self.__handle_clearchat(message)
+            self._handle_clearchat(message)
 
         elif message.irc_command == "CLEARMSG":
-            self.__handle_clearmsg(message)
+            self._handle_clearmsg(message)
 
         elif message.irc_command == "GLOBALUSERSTATE":
-            self.__handle_globaluserstate(message)
+            self._handle_globaluserstate(message)
 
         elif message.irc_command == "HOSTTARGET":
-            self.__handle_hosttarget(message)
+            self._handle_hosttarget(message)
 
         elif message.irc_command == "RECONNECT":
-            self.__handle_reconnect(message)
+            self._handle_reconnect(message)
 
         elif message.irc_command == "ROOMSTATE":
-            self.__handle_roomstate(message)
+            self._handle_roomstate(message)
 
         elif message.irc_command == "USERNOTICE":
-            self.__handle_usernotice(message)
+            self._handle_usernotice(message)
 
         elif message.irc_command == "USERSTATE":
-            self.__handle_userstate(message)
+            self._handle_userstate(message)
 
         elif message.irc_command == "WHISPER":
-            self.__handle_whisper(message)
+            self._handle_whisper(message)
 
         else:
             logger.info(
@@ -675,17 +675,17 @@ class Bot:
                 message.text,
             )
 
-    def __loop(self) -> None:
-        while not self.__finish:
+    def _loop(self) -> None:
+        while not self._finish:
             try:
                 received_msgs = self.irc.recv(2048).decode()
 
                 for received_msg in received_msgs.split("\r\n"):
-                    self.__handle_message(received_msg)
+                    self._handle_message(received_msg)
 
             except socket.timeout:
-                self.__execute_checks()
-                self.__remove_checks()
+                self._execute_checks()
+                self._remove_checks()
 
     def send(self, channel: str, text: str) -> None:
         """
@@ -696,7 +696,7 @@ class Bot:
             text (str): Message's text
         """
 
-        self.__send_privmsg(channel, text)
+        self._send_privmsg(channel, text)
 
     def reply(self, channel: str, message_id: str, text: str) -> None:
         """
@@ -708,7 +708,7 @@ class Bot:
             text (str): Message's text
         """
 
-        self.__send_privmsg(channel, text, message_id)
+        self._send_privmsg(channel, text, message_id)
 
     def ban(self, channel: str, user: str, reason: str = "") -> None:
         """

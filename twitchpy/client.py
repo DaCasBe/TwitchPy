@@ -60,51 +60,51 @@ class Client:
             jwt_token (str, optional): JWT Token
         """
 
-        self.client_id = client_id
-        self.client_secret = client_secret
-        self.__access_token = access_token
-        self.__jwt_token = jwt_token
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._access_token = access_token
+        self._jwt_token = jwt_token
 
-        self.ads = AdsAPI(self.__access_token, self.client_id)
-        self.analytics = AnalyticsAPI(self.__access_token, self.client_id)
-        self.bits = BitsAPI(self.__access_token, self.client_id)
-        self.channels = ChannelsAPI(self.__access_token, self.client_id)
-        self.channel_points = ChannelPointsAPI(self.__access_token, self.client_id)
-        self.charity = CharityAPI(self.__access_token, self.client_id)
-        self.chat = ChatAPI(self.__access_token, self.client_id)
-        self.clips = ClipsAPI(self.__access_token, self.client_id)
-        self.conduits = ConduitsAPI(self.__access_token, self.client_id)
+        self.ads = AdsAPI(self._access_token, self._client_id)
+        self.analytics = AnalyticsAPI(self._access_token, self._client_id)
+        self.bits = BitsAPI(self._access_token, self._client_id)
+        self.channels = ChannelsAPI(self._access_token, self._client_id)
+        self.channel_points = ChannelPointsAPI(self._access_token, self._client_id)
+        self.charity = CharityAPI(self._access_token, self._client_id)
+        self.chat = ChatAPI(self._access_token, self._client_id)
+        self.clips = ClipsAPI(self._access_token, self._client_id)
+        self.conduits = ConduitsAPI(self._access_token, self._client_id)
         self.content_classification_labels = ContentClassificationLabelsAPI(
-            self.__access_token, self.client_id
+            self._access_token, self._client_id
         )
-        self.entitlements = EntitlementsAPI(self.__access_token, self.client_id)
+        self.entitlements = EntitlementsAPI(self._access_token, self._client_id)
         self.extensions = ExtensionsAPI(
-            self.client_id, self.__access_token, self.__jwt_token
+            self._client_id, self._access_token, self._jwt_token
         )
-        self.eventsub = EventSubAPI(self.__access_token, self.client_id)
-        self.games = GamesAPI(self.__access_token, self.client_id)
-        self.goals = GoalsAPI(self.__access_token, self.client_id)
-        self.guest_star = GuestStarAPI(self.__access_token, self.client_id)
-        self.hype_train = HypeTrainAPI(self.__access_token, self.client_id)
-        self.moderation = ModerationAPI(self.__access_token, self.client_id)
-        self.polls = PollsAPI(self.__access_token, self.client_id)
-        self.predictions = PredictionsAPI(self.__access_token, self.client_id)
-        self.raids = RaidsAPI(self.__access_token, self.client_id)
-        self.schedule = ScheduleAPI(self.__access_token, self.client_id)
-        self.search = SearchAPI(self.__access_token, self.client_id)
-        self.streams = StreamsAPI(self.__access_token, self.client_id)
-        self.subscriptions = SubscriptionsAPI(self.__access_token, self.client_id)
-        self.tags = TagsAPI(self.__access_token, self.client_id)
-        self.teams = TeamsAPI(self.__access_token, self.client_id)
-        self.users = UsersAPI(self.__access_token, self.client_id)
-        self.videos = VideosAPI(self.__access_token, self.client_id)
-        self.whispers = WhispersAPI(self.__access_token, self.client_id)
+        self.eventsub = EventSubAPI(self._access_token, self._client_id)
+        self.games = GamesAPI(self._access_token, self._client_id)
+        self.goals = GoalsAPI(self._access_token, self._client_id)
+        self.guest_star = GuestStarAPI(self._access_token, self._client_id)
+        self.hype_train = HypeTrainAPI(self._access_token, self._client_id)
+        self.moderation = ModerationAPI(self._access_token, self._client_id)
+        self.polls = PollsAPI(self._access_token, self._client_id)
+        self.predictions = PredictionsAPI(self._access_token, self._client_id)
+        self.raids = RaidsAPI(self._access_token, self._client_id)
+        self.schedule = ScheduleAPI(self._access_token, self._client_id)
+        self.search = SearchAPI(self._access_token, self._client_id)
+        self.streams = StreamsAPI(self._access_token, self._client_id)
+        self.subscriptions = SubscriptionsAPI(self._access_token, self._client_id)
+        self.tags = TagsAPI(self._access_token, self._client_id)
+        self.teams = TeamsAPI(self._access_token, self._client_id)
+        self.users = UsersAPI(self._access_token, self._client_id)
+        self.videos = VideosAPI(self._access_token, self._client_id)
+        self.whispers = WhispersAPI(self._access_token, self._client_id)
 
     def validate_token(self) -> TokenInfo:
         url = _URL_OAUTH2_VALIDATE
         response = requests.get(
             url,
-            headers={"Authorization": f"OAuth {self.__access_token}"},
+            headers={"Authorization": f"OAuth {self._access_token}"},
             timeout=_DEFAULT_TIMEOUT,
         )
 
@@ -126,20 +126,20 @@ class Client:
         payload = {
             "grant_type": "refresh_token",
             "refresh_token": refresh_user_token,
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
+            "client_id": self._client_id,
+            "client_secret": self._client_secret,
         }
 
         response = requests.post(url, json=payload, timeout=_DEFAULT_TIMEOUT)
 
         if response.ok:
             response = response.json()
-            self.__save_tokens(response["access_token"], response["refresh_token"])
+            self._save_tokens(response["access_token"], response["refresh_token"])
 
         else:
             raise errors.UserTokenError("Error obtaining user token")
 
-    def __save_tokens(self, access_token: str, refresh_token: str) -> None:
+    def _save_tokens(self, access_token: str, refresh_token: str) -> None:
         with open("tokens.json", "wt") as tokens_file:
             json.dump(
                 {"access_token": access_token, "refresh_token": refresh_token},
