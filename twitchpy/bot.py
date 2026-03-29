@@ -6,7 +6,6 @@ from typing import Callable
 from .client import Client
 from .dataclasses import Message
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -26,12 +25,10 @@ class Bot:
         oauth_token: str,
         client_id: str,
         client_secret: str,
-        redirect_uri: str,
-        tokens_path: str,
+        access_token: str,
         username: str,
         channels: list[str],
         command_prefix: str,
-        authorization_code: str | None = None,
         jwt_token: str | None = None,
         ready_message: str | None = None,
     ):
@@ -40,12 +37,10 @@ class Bot:
             oauth_token (str): OAuth token
             client_id (str): Client ID
             client_secret (str): Client secret
-            redirect_uri (str): Redirect URI
-            tokens_path (str): Path of tokens file (file included)
+            access_token (str): Access token
             username (str): Name of the bot
             channels (list): Names of channels the bot will access
             command_prefix (str): Prefix of the commands the bot will recognize
-            code (str): Authorization code for getting an user token
             jwt_token (str): JWT Token
             ready_message (str): Message that the bot will send through the chats of the channels it access
         """
@@ -53,9 +48,7 @@ class Bot:
         self.client = Client(
             client_id,
             client_secret,
-            redirect_uri,
-            tokens_path,
-            authorization_code,
+            access_token,
             jwt_token,
         )
         self.__oauth_token = oauth_token
