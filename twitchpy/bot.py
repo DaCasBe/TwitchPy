@@ -2,8 +2,8 @@ import asyncio
 import logging
 import socket
 import ssl
+from collections.abc import Awaitable, Callable
 from datetime import datetime
-from typing import Callable
 
 from .client import Client
 from .dataclasses import Message
@@ -22,7 +22,7 @@ class Bot:
     Represents a bot
     """
 
-    async def __init__(
+    def __init__(
         self,
         oauth_token: str,
         client_id: str,
@@ -57,7 +57,6 @@ class Bot:
             access_token_expiration,
             jwt_token,
         )
-        await self.client.validate_access_token()
         self._oauth_token = oauth_token
         self._finish = False
         self.username = username
@@ -216,6 +215,7 @@ class Bot:
         Runs the bot
         """
 
+        await self.client.validate_access_token()
         await self._connect()
         await self._loop()
 
@@ -1109,7 +1109,7 @@ class Bot:
         self.send(channel, f"/w {user} {text}")
 
     def add_method_before_join_channel(
-        self, name: str, method: Callable[[str], None]
+        self, name: str, method: Callable[[str], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed before joinnnig a channel
@@ -1132,7 +1132,7 @@ class Bot:
         self.methods_before_join_channel_to_remove.append(name)
 
     def add_method_after_join_channel(
-        self, name: str, method: Callable[[str], None]
+        self, name: str, method: Callable[[str], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after joinnnig a channel
@@ -1155,7 +1155,7 @@ class Bot:
         self.methods_after_join_channel_to_remove.append(name)
 
     def add_method_before_leave_channel(
-        self, name: str, method: Callable[[str], None]
+        self, name: str, method: Callable[[str], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed before leaving a channel
@@ -1178,7 +1178,7 @@ class Bot:
         self.methods_before_leave_channel_to_remove.append(name)
 
     def add_method_after_leave_channel(
-        self, name: str, method: Callable[[str], None]
+        self, name: str, method: Callable[[str], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after leaving a channel
@@ -1200,7 +1200,7 @@ class Bot:
 
         self.methods_after_leave_channel_to_remove.append(name)
 
-    def add_check(self, name: str, check: Callable[[], None]) -> None:
+    def add_check(self, name: str, check: Callable[[], Awaitable[None]]) -> None:
         """
         Adds a check to the bot
         Checks work permanently
@@ -1222,7 +1222,9 @@ class Bot:
 
         self.checks_to_remove.append(name)
 
-    def add_listener(self, name: str, listener: Callable[[Message], None]) -> None:
+    def add_listener(
+        self, name: str, listener: Callable[[Message], Awaitable[None]]
+    ) -> None:
         """
         Adds a listener to the bot
         Listeners work only when a message is received
@@ -1245,7 +1247,9 @@ class Bot:
 
         self.listeners_to_remove.append(name)
 
-    def add_command(self, name: str, command: Callable[[Message], None]) -> None:
+    def add_command(
+        self, name: str, command: Callable[[Message], Awaitable[None]]
+    ) -> None:
         """
         Adds a command to the bot
         Commands must receive as a parameter the messages which call them
@@ -1268,7 +1272,7 @@ class Bot:
         self.commands_to_remove.append(name)
 
     def add_method_before_commands(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed before each command
@@ -1291,7 +1295,7 @@ class Bot:
         self.methods_before_commands_to_remove.append(name)
 
     def add_method_after_commands(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after each command
@@ -1314,7 +1318,7 @@ class Bot:
         self.methods_after_commands_to_remove.append(name)
 
     def add_method_after_clearchat(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after each chat clearing
@@ -1337,7 +1341,7 @@ class Bot:
         self.methods_after_clearchat_to_remove.append(name)
 
     def add_method_after_delete_message(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after each time a message is deleted
@@ -1360,7 +1364,7 @@ class Bot:
         self.methods_after_delete_message_to_remove.append(name)
 
     def add_method_after_bot_connected(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after a bot connects to a chat
@@ -1383,7 +1387,7 @@ class Bot:
         self.methods_after_bot_connected_to_remove.append(name)
 
     def add_method_after_toggle_host(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after a channel toggles hosting
@@ -1406,7 +1410,7 @@ class Bot:
         self.methods_after_toggle_host_to_remove.append(name)
 
     def add_method_after_server_reconnect(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after a reconnect warning
@@ -1429,7 +1433,7 @@ class Bot:
         self.methods_after_server_reconnect_to_remove.append(name)
 
     def add_method_after_channel_change(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after a channel's chat settings change
@@ -1452,7 +1456,7 @@ class Bot:
         self.methods_after_channel_change_to_remove.append(name)
 
     def add_method_after_event(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after an event occurs
@@ -1475,7 +1479,7 @@ class Bot:
         self.methods_after_event_to_remove.append(name)
 
     def add_method_after_user_join(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after an user joins into a channel
@@ -1498,7 +1502,7 @@ class Bot:
         self.methods_after_user_join_to_remove.append(name)
 
     def add_method_after_whisper(
-        self, name: str, method: Callable[[Message], None]
+        self, name: str, method: Callable[[Message], Awaitable[None]]
     ) -> None:
         """
         Adds to the bot a method that will be executed after a whisper is received
