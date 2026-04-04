@@ -2,6 +2,7 @@ import asyncio
 import logging
 import socket
 import ssl
+from datetime import datetime
 from typing import Callable
 
 from .client import Client
@@ -21,12 +22,14 @@ class Bot:
     Represents a bot
     """
 
-    def __init__(
+    async def __init__(
         self,
         oauth_token: str,
         client_id: str,
         client_secret: str,
         access_token: str,
+        refresh_token: str,
+        access_token_expiration: datetime,
         username: str,
         channels: list[str],
         command_prefix: str,
@@ -50,8 +53,11 @@ class Bot:
             client_id,
             client_secret,
             access_token,
+            refresh_token,
+            access_token_expiration,
             jwt_token,
         )
+        await self.client.validate_access_token()
         self._oauth_token = oauth_token
         self._finish = False
         self.username = username
@@ -718,6 +724,10 @@ class Bot:
                 received_msgs = self.irc.recv(2048).decode()
 
                 for received_msg in received_msgs.split("\r\n"):
+                    if self.client.access_token_expiration < datetime.now():
+                        await self.client.refresh_access_token()
+                        self.client.save_access_token()
+
                     await self._handle_message(received_msg)
 
             except socket.timeout:

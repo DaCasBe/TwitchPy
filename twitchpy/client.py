@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, timedelta
 
 import aiohttp
 
@@ -50,6 +51,8 @@ class Client:
         client_id: str,
         client_secret: str,
         access_token: str,
+        refresh_token: str,
+        access_token_expiration: datetime,
         jwt_token: str | None = None,
     ):
         """
@@ -63,6 +66,8 @@ class Client:
         self._client_id = client_id
         self._client_secret = client_secret
         self._access_token = access_token
+        self._refresh_token = refresh_token
+        self.access_token_expiration = access_token_expiration
         self._jwt_token = jwt_token
 
         self.ads = AdsAPI(self._access_token, self._client_id)
@@ -100,7 +105,7 @@ class Client:
         self.videos = VideosAPI(self._access_token, self._client_id)
         self.whispers = WhispersAPI(self._access_token, self._client_id)
 
-    async def validate_token(self) -> TokenInfo:
+    async def validate_access_token(self) -> TokenInfo:
         async with aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=_DEFAULT_TIMEOUT)
         ) as session:
@@ -120,14 +125,14 @@ class Client:
                     token_info["expires_in"],
                 )
 
-    async def refresh_user_tokens(self, refresh_user_token: str) -> None:
+    async def refresh_access_token(self) -> None:
         async with aiohttp.ClientSession(
             timeout=aiohttp.ClientTimeout(total=_DEFAULT_TIMEOUT)
         ) as session:
             url = _URL_OAUTH2_TOKEN
             payload = {
                 "grant_type": "refresh_token",
-                "refresh_token": refresh_user_token,
+                "refresh_token": self._refresh_token,
                 "client_id": self._client_id,
                 "client_secret": self._client_secret,
             }
@@ -137,11 +142,23 @@ class Client:
                     raise errors.UserTokenError("Error obtaining user token")
 
                 tokens = await response.json()
-                self._save_tokens(tokens["access_token"], tokens["refresh_token"])
+                (
+                    self._access_token,
+                    self._refresh_token,
+                    self.access_token_expiration,
+                ) = (
+                    tokens["access_token"],
+                    tokens["refresh_token"],
+                    datetime.now() + timedelta(seconds=tokens["expires_in"]),
+                )
 
-    def _save_tokens(self, access_token: str, refresh_token: str) -> None:
+    def save_access_token(self) -> None:
         with open("tokens.json", "wt") as tokens_file:
             json.dump(
-                {"access_token": access_token, "refresh_token": refresh_token},
+                {
+                    "access_token": self._access_token,
+                    "refresh_token": self._refresh_token,
+                    "access_token_expiration": self.access_token_expiration,
+                },
                 tokens_file,
             )
