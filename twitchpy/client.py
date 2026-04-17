@@ -158,7 +158,7 @@ class Client:
                 {
                     "access_token": self._access_token,
                     "refresh_token": self._refresh_token,
-                    "access_token_expiration": self.access_token_expiration,
+                    "access_token_expiration": self.access_token_expiration.timestamp(),
                 },
                 tokens_file,
             )

@@ -5,6 +5,7 @@ import ssl
 from collections.abc import Awaitable, Callable
 from datetime import datetime
 
+from . import errors
 from .client import Client
 from .dataclasses import Message
 
@@ -215,7 +216,12 @@ class Bot:
         Runs the bot
         """
 
-        await self.client.validate_access_token()
+        try:
+            await self.client.validate_access_token()
+        except errors.ClientError:
+            await self.client.refresh_access_token()
+            self.client.save_access_token()
+
         await self._connect()
         await self._loop()
 
